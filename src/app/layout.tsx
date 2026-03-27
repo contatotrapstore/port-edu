@@ -34,6 +34,10 @@ export const metadata: Metadata = {
     "React",
     "Next.js",
   ],
+  icons: {
+    icon: "/EdevsHub.png",
+    apple: "/EdevsHub.png",
+  },
   openGraph: {
     title: "EDevsHub | Eduardo Gouveia — Full Stack Developer",
     description: "Portfolio imersivo com experiência 3D interativa",

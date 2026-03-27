@@ -47,6 +47,18 @@ html, body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(200, 200, 200, 0.2); border-radius: 2px; }
 
+/* Hide scrollbar for sections on mobile */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Disable glitch on mobile (too messy on small screens) */
+@media (max-width: 768px) {
+  .glitch-text::before,
+  .glitch-text::after {
+    display: none;
+  }
+}
+
 /* === GLITCH TEXT EFFECT === */
 .glitch-text {
   position: relative;

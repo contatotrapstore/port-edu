@@ -197,10 +197,10 @@ function Section({
   return (
     <section
       id={id}
-      className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 overflow-y-auto overflow-x-hidden ${className}`}
+      className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
       style={{ opacity, zIndex: opacity > 0 ? 10 : 0, visibility: opacity > 0 ? "visible" : "hidden" }}
     >
-      <div className="pointer-events-auto max-w-6xl w-full px-4 md:px-8 lg:px-12 py-20 md:py-0">
+      <div className="pointer-events-auto max-w-6xl w-full px-5 md:px-8 lg:px-12 my-auto py-16 md:py-8">
         {children}
       </div>
     </section>
@@ -263,7 +263,7 @@ function ChapterDots({
   onChapterClick: (i: number) => void;
 }) {
   return (
-    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-4">
+    <div className="hidden md:flex fixed right-6 top-1/2 -translate-y-1/2 z-20 flex-col gap-4">
       {chapters.map((ch, i) => (
         <button
           key={ch.id}
@@ -385,7 +385,7 @@ export default function Home() {
 
           {/* Subtitle with typewriter */}
           <motion.div
-            className="mt-5 font-[family-name:var(--font-jetbrains-mono)] text-sm md:text-base text-[#4ade80]"
+            className="mt-4 font-[family-name:var(--font-jetbrains-mono)] text-[11px] sm:text-sm md:text-base text-[#4ade80]"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
             transition={{ duration: 0.5, delay: 1.2 }}
@@ -409,7 +409,7 @@ export default function Home() {
 
           {/* Social proof badges */}
           <motion.div
-            className="mt-8 flex items-center justify-center gap-2.5 flex-wrap"
+            className="mt-5 md:mt-8 flex items-center justify-center gap-1.5 md:gap-2.5 flex-wrap"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
             transition={{ duration: 1, delay: 2.5 }}
@@ -433,7 +433,7 @@ export default function Home() {
 
       {/* ============ ABOUT ============ */}
       <Section id="about" progress={progress} range={[0.2, 0.4]}>
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-start md:items-center">
           {/* Terminal with bio */}
           <div className="terminal-window">
             <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
@@ -522,7 +522,7 @@ export default function Home() {
             // avaliações de clientes
           </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {testimonials.map((t, i) => (
             <div key={i} className="terminal-window p-4">
               <div className="text-[#fbbf24] text-[10px] mb-2">{"★".repeat(t.rating)}</div>
