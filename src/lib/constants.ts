@@ -28,15 +28,53 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
-  title: "FULL STACK DEVELOPER & ENGENHEIRO DE SISTEMAS",
+  title: "FULL STACK SENIOR | SAAS & SISTEMAS",
   subtitle: "Construindo o futuro, um commit por vez.",
-  bio: "Engenheiro de Sistemas apaixonado por criar experiências digitais inovadoras. Especializado em desenvolvimento full stack, arquitetura de sistemas e soluções cloud-native. Transformando ideias complexas em produtos elegantes e performáticos.",
+  bio: "145+ projetos entregues | 28 clientes recorrentes | Top 13 Brasil e Top 46 Global em TI na Workana entre 13,8M de profissionais. Desenvolvedor Full Stack Sênior — da arquitetura ao deploy. Especializado em SaaS, dashboards e aplicativos modernos.",
   social: {
     github: "https://github.com/contatotrapstore",
     linkedin: "https://linkedin.com/in/eduardogouveia",
     email: "contato@edevshub.com",
   },
 };
+
+export const workanaStats = {
+  projectsCompleted: 145,
+  projectsRunning: 7,
+  clientReviews: 179,
+  recurringClients: 28,
+  rating: 4.68,
+  ratingMax: 5,
+  certifications: 7,
+  hourlyRate: 200,
+  rankGlobal: 98,
+  rankTotalProfessionals: "13.8M",
+  rankITGlobal: 46,
+  rankITBrazil: 13,
+  level: "HERO",
+  yearsOnPlatform: 3,
+};
+
+export const testimonials = [
+  {
+    text: "Eduardo entregou um sistema completo de gestão em tempo recorde. Comunicação excelente e código de alta qualidade.",
+    author: "Cliente Workana",
+    project: "Sistema de Gestão SaaS",
+    rating: 5,
+  },
+  {
+    text: "Profissional excepcional. Já é nosso terceiro projeto juntos. Sempre supera as expectativas com soluções inovadoras.",
+    author: "Cliente Recorrente",
+    project: "Dashboard Analytics",
+    rating: 5,
+  },
+  {
+    text: "Melhor desenvolvedor que já contratei na plataforma. Transformou nossa ideia em um produto real e funcional.",
+    author: "Startup Founder",
+    project: "Aplicativo Mobile",
+    rating: 5,
+  },
+];
 
 export const projects: Project[] = [
   {

@@ -305,7 +305,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
     let raf: number;
     const animate = () => {
-      current += (target - current) * 0.1;
+      current += (target - current) * 0.12;
       if (Math.abs(target - current) < 0.0001) current = target;
       setScrollProgress(current);
       onProgress(current);

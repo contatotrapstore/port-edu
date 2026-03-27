@@ -12,8 +12,10 @@ import {
   codeSnippets,
   loadingMessages,
   catColors,
+  workanaStats,
+  testimonials,
 } from "@/lib/constants";
-import { Mail, ChevronDown, ArrowRight } from "lucide-react";
+import { Mail, ChevronDown, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 const Experience = dynamic(
   () => import("@/components/experience/Experience"),
@@ -182,15 +184,15 @@ function Section({
   const [start, end] = range;
   const isVisible = progress >= start - 0.1 && progress <= end + 0.1;
   const localP = (progress - start) / (end - start);
-  const fadeIn = start === 0 ? 1 : Math.min(1, Math.max(0, (localP + 0.15) * 4));
-  const fadeOut = end >= 1 ? 1 : Math.min(1, Math.max(0, (1.15 - localP) * 4));
+  const fadeIn = start === 0 ? 1 : Math.min(1, Math.max(0, localP * 8));
+  const fadeOut = end >= 1 ? 1 : Math.min(1, Math.max(0, (1 - localP) * 8));
   const opacity = isVisible ? Math.min(fadeIn, fadeOut) : 0;
 
   return (
     <section
       id={id}
       className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${className}`}
-      style={{ opacity, zIndex: isVisible ? 10 : 0 }}
+      style={{ opacity, zIndex: isVisible ? 10 : 0, visibility: opacity > 0 ? "visible" : "hidden" }}
     >
       <div className="pointer-events-auto max-w-6xl w-full px-6 md:px-12">
         {children}
@@ -281,6 +283,7 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentChapter, setCurrentChapter] = useState(0);
+  const [carouselIdx, setCarouselIdx] = useState(0);
 
   const handleLoaded = useCallback(() => setIsLoaded(true), []);
   const handleProgress = useCallback((p: number) => {
@@ -325,10 +328,10 @@ export default function Home() {
       <Section id="hero" progress={progress} range={[0, 0.2]}>
         <div className="text-center relative grid-overlay scan-line">
           {/* HUD brackets */}
-          <div className="hud-bracket -top-8 -left-4">[</div>
-          <div className="hud-bracket -top-8 -right-4">]</div>
-          <div className="hud-bracket -bottom-8 -left-4">[</div>
-          <div className="hud-bracket -bottom-8 -right-4">]</div>
+          <div className="hud-bracket -top-8 -left-4 hidden md:block">[</div>
+          <div className="hud-bracket -top-8 -right-4 hidden md:block">]</div>
+          <div className="hud-bracket -bottom-8 -left-4 hidden md:block">[</div>
+          <div className="hud-bracket -bottom-8 -right-4 hidden md:block">]</div>
 
           {/* Floating code snippets in corners */}
           {codeSnippets.slice(0, 4).map((snippet, i) => (
@@ -357,7 +360,7 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.5 }}
           >
             <h1
-              className="glitch-text text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] font-extrabold tracking-tighter leading-[0.85]"
+              className="glitch-text text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[10rem] font-extrabold tracking-tighter leading-[0.85]"
               data-text="EDUARDO GOUVEIA"
             >
               <span className="block">EDUARDO</span>
@@ -396,6 +399,27 @@ export default function Home() {
             </p>
             <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           </motion.div>
+
+          {/* Social proof badges */}
+          <motion.div
+            className="mt-6 flex items-center justify-center gap-3 flex-wrap"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isLoaded ? 1 : 0 }}
+            transition={{ duration: 1, delay: 2.5 }}
+          >
+            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/20 px-2 py-1 rounded border border-white/[0.06] bg-white/[0.02]">
+              Top 13 Brasil
+            </span>
+            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/20 px-2 py-1 rounded border border-white/[0.06] bg-white/[0.02]">
+              145+ Projetos
+            </span>
+            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24]/40 px-2 py-1 rounded border border-[#fbbf24]/10 bg-[#fbbf24]/[0.03]">
+              ★ 4.68/5
+            </span>
+            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/40 px-2 py-1 rounded border border-[#4ade80]/10 bg-[#4ade80]/[0.03]">
+              HERO
+            </span>
+          </motion.div>
         </div>
       </Section>
 
@@ -423,24 +447,71 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="flex gap-8 justify-center">
-            {[
-              { value: 5, suffix: "+", label: "Anos Exp." },
-              { value: 20, suffix: "+", label: "Projetos" },
-              { value: 10, suffix: "+", label: "Tecnologias" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-3xl md:text-5xl font-bold text-gradient-silver flex items-baseline justify-center">
-                  <AnimatedCounter target={stat.value} />
-                  <span>{stat.suffix}</span>
+          {/* Workana Profile Card */}
+          <div className="terminal-window">
+            <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
+              <div className="terminal-dots">
+                <span /><span /><span />
+              </div>
+              <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
+                workana-profile.json
+              </span>
+            </div>
+            <div className="p-5">
+              {/* HERO badge + name */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-11 h-11 rounded-full border-2 border-[#fbbf24] flex items-center justify-center bg-[#fbbf24]/10 shrink-0">
+                  <span className="text-[#fbbf24] font-bold text-[9px] font-[family-name:var(--font-jetbrains-mono)]">
+                    HERO
+                  </span>
                 </div>
-                <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-white/30 mt-2">
-                  {stat.label}
+                <div>
+                  <div className="text-white font-semibold text-sm">Eduardo Gouveia</div>
+                  <div className="text-white/35 text-xs">Full Stack Senior</div>
                 </div>
               </div>
-            ))}
+              {/* Rating */}
+              <div className="flex items-center gap-2 mb-4 text-sm">
+                <span className="text-[#fbbf24]">★</span>
+                <span className="text-white font-bold">{workanaStats.rating}</span>
+                <span className="text-white/25">/5</span>
+                <span className="text-white/15">•</span>
+                <span className="text-white/35 text-xs">{workanaStats.clientReviews} avaliações</span>
+              </div>
+              {/* Stats grid */}
+              <div className="grid grid-cols-2 gap-2.5 text-xs font-[family-name:var(--font-jetbrains-mono)]">
+                <div className="bg-white/[0.03] rounded-lg p-2.5">
+                  <div className="text-gradient-silver text-lg font-bold">{workanaStats.projectsCompleted}+</div>
+                  <div className="text-white/25 mt-0.5">projetos</div>
+                </div>
+                <div className="bg-white/[0.03] rounded-lg p-2.5">
+                  <div className="text-gradient-silver text-lg font-bold">{workanaStats.recurringClients}</div>
+                  <div className="text-white/25 mt-0.5">recorrentes</div>
+                </div>
+                <div className="bg-white/[0.03] rounded-lg p-2.5">
+                  <div className="text-[#4ade80] text-lg font-bold">#{workanaStats.rankITBrazil}</div>
+                  <div className="text-white/25 mt-0.5">Brasil</div>
+                </div>
+                <div className="bg-white/[0.03] rounded-lg p-2.5">
+                  <div className="text-[#60a5fa] text-lg font-bold">#{workanaStats.rankITGlobal}</div>
+                  <div className="text-white/25 mt-0.5">Global</div>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Testimonials */}
+        <div className="grid md:grid-cols-3 gap-3 mt-6">
+          {testimonials.map((t, i) => (
+            <div key={i} className="terminal-window p-4">
+              <div className="text-[#fbbf24] text-[10px] mb-2">{"★".repeat(t.rating)}</div>
+              <p className="text-white/40 text-[11px] leading-relaxed italic">&ldquo;{t.text}&rdquo;</p>
+              <div className="mt-3 text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-white/20">
+                — {t.author} • {t.project}
+              </div>
+            </div>
+          ))}
         </div>
       </Section>
 
@@ -452,52 +523,90 @@ export default function Home() {
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-8" />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map((project) => (
-              <div
-                key={project.id}
-                className="group terminal-window glow-silver hover:-translate-y-1 transition-all duration-300"
+          {/* Carousel */}
+          <div className="relative">
+            <div className="overflow-hidden rounded-xl">
+              <motion.div
+                className="flex gap-4"
+                animate={{ x: `-${carouselIdx * (100 / 3 + 1.5)}%` }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
-                {/* IDE title bar */}
-                <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
-                  <div className="terminal-dots">
-                    <span /><span /><span />
-                  </div>
-                  <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
-                    {project.id}.tsx
-                  </span>
-                </div>
-
-                <div className="p-5">
-                  <h3 className="text-base font-semibold text-white mb-2 font-[family-name:var(--font-jetbrains-mono)]">
-                    {project.title}
-                  </h3>
-                  <p className="text-[11px] text-white/35 leading-relaxed mb-4 line-clamp-3">
-                    {project.description}
-                  </p>
-
-                  {/* Tech tags as XML */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {project.tech.map((t) => (
-                      <span
-                        key={t}
-                        className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/40 border border-white/[0.06]"
-                      >
-                        &lt;{t} /&gt;
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="group terminal-window glow-silver hover:-translate-y-1 transition-all duration-300 min-w-[calc(100%-0px)] md:min-w-[calc(50%-8px)] lg:min-w-[calc(33.333%-11px)] shrink-0"
+                  >
+                    {/* IDE title bar */}
+                    <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
+                      <div className="terminal-dots">
+                        <span /><span /><span />
+                      </div>
+                      <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
+                        {project.id}.tsx
                       </span>
-                    ))}
-                  </div>
-
-                  {project.github && (
-                    <div className="mt-4 flex items-center gap-1 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/25 group-hover:text-white/50 transition-colors">
-                      <span className="text-[#4ade80]">$</span> git clone{" "}
-                      {project.id}
-                      <ArrowRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                  )}
-                </div>
+
+                    <div className="p-5">
+                      <h3 className="text-base font-semibold text-white mb-2 font-[family-name:var(--font-jetbrains-mono)]">
+                        {project.title}
+                      </h3>
+                      <p className="text-[11px] text-white/35 leading-relaxed mb-4 line-clamp-3">
+                        {project.description}
+                      </p>
+
+                      {/* Tech tags as XML */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {project.tech.map((t) => (
+                          <span
+                            key={t}
+                            className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/40 border border-white/[0.06]"
+                          >
+                            &lt;{t} /&gt;
+                          </span>
+                        ))}
+                      </div>
+
+                      {project.github && (
+                        <div className="mt-4 flex items-center gap-1 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/25 group-hover:text-white/50 transition-colors">
+                          <span className="text-[#4ade80]">$</span> git clone{" "}
+                          {project.id}
+                          <ArrowRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Carousel controls */}
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex gap-2">
+                {projects.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCarouselIdx(i)}
+                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                      carouselIdx === i ? "bg-white w-4" : "bg-white/20"
+                    }`}
+                  />
+                ))}
               </div>
-            ))}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCarouselIdx(Math.max(0, carouselIdx - 1))}
+                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setCarouselIdx(Math.min(projects.length - 1, carouselIdx + 1))}
+                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </Section>
