@@ -33,8 +33,8 @@ export const siteConfig: SiteConfig = {
   bio: "145+ projetos entregues | 28 clientes recorrentes | Top 13 Brasil e Top 46 Global em TI na Workana entre 13,8M de profissionais. Desenvolvedor Full Stack Sênior — da arquitetura ao deploy. Especializado em SaaS, dashboards e aplicativos modernos.",
   social: {
     github: "https://github.com/GouveiaZx",
-    linkedin: "https://www.linkedin.com/in/eduardo-gouveia-282018323/",
-    email: "gouveiarx@gmail.com",
+    linkedin: "",
+    email: "",
   },
 };
 
@@ -78,53 +78,68 @@ export const testimonials = [
 
 export const projects: Project[] = [
   {
-    id: "biosync",
-    title: "BioSync Game",
+    id: "pace",
+    title: "PACE",
     description:
-      "Plataforma gamificada de saúde e bem-estar com mecânicas de RPG. Sistema de missões diárias, tracking de hábitos e competição social.",
-    tech: ["Next.js", "Supabase", "TypeScript", "Tailwind CSS", "GSAP"],
-    image: "/images/projects/biosync.jpg",
-    github: "https://github.com/contatotrapstore/biosync",
+      "Plataforma de Neurofeedback e Gestão. Sistema completo para clínicas de neurofeedback com dashboards em tempo real e gestão de pacientes.",
+    tech: ["React.js", "Next.js", "Node.js", "PostgreSQL"],
+    image: "/images/projects/pace.png",
   },
   {
-    id: "neurogame",
-    title: "NeuroGame",
+    id: "neuroone",
+    title: "NeuroOne",
     description:
-      "Jogo educacional de neurociência com visualizações 3D interativas do cérebro humano. Experiência imersiva de aprendizado.",
-    tech: ["React", "Three.js", "WebGL", "Node.js", "MongoDB"],
-    image: "/images/projects/neurogame.jpg",
+      "Sistema Web para Neurofeedback. Interface moderna para sessões de neurofeedback com visualização de dados cerebrais e relatórios clínicos.",
+    tech: ["HTML", "CSS", "JavaScript", "Web Design"],
+    image: "/images/projects/neuroone.png",
   },
   {
-    id: "orcazap",
-    title: "OrçaZap",
+    id: "neuroialab",
+    title: "NeuroIA Lab",
     description:
-      "Sistema automatizado de orçamentos via WhatsApp. Integração com APIs de mensageria, geração de PDFs e dashboard analytics.",
-    tech: ["Node.js", "Express", "PostgreSQL", "WhatsApp API", "React"],
-    image: "/images/projects/orcazap.jpg",
+      "SaaS com Dashboard e Gestão integrada com Inteligência Artificial. Plataforma completa para análise de dados neurológicos.",
+    tech: ["TypeScript", "React", "Node.js", "AI/ML"],
+    image: "/images/projects/neuroialab.png",
   },
   {
-    id: "psicolsys",
-    title: "PsicolSys",
+    id: "anamex",
+    title: "AnamNex",
     description:
-      "Sistema de gestão para clínicas de psicologia. Agendamento, prontuário eletrônico, teleconsulta e relatórios clínicos.",
-    tech: ["Next.js", "Supabase", "TypeScript", "Tailwind CSS"],
-    image: "/images/projects/psicolsys.jpg",
+      "Plataforma SaaS para Processos Internos. Sistema de gestão empresarial com automação de workflows e controle de processos.",
+    tech: ["PHP", "JavaScript", "MySQL", "Laravel"],
+    image: "/images/projects/anamex.png",
   },
   {
-    id: "plataforma-micro",
-    title: "Plataforma Micro",
+    id: "connote",
+    title: "ConNote",
     description:
-      "Plataforma de microserviços com arquitetura distribuída. API Gateway, service mesh e observabilidade integrada.",
-    tech: ["Docker", "Kubernetes", "Go", "gRPC", "Redis"],
-    image: "/images/projects/plataforma-micro.jpg",
+      "Aplicativo Desktop de Gestão. Software desktop robusto para gerenciamento de notas, contratos e documentos empresariais.",
+    tech: ["JavaScript", "CSS", "Electron", "Node.js"],
+    image: "/images/projects/connote.png",
   },
   {
-    id: "edevshub",
-    title: "EDevsHub Portfolio",
+    id: "cacaostore",
+    title: "Cacao Store",
     description:
-      "Este portfolio imersivo com experiência 3D interativa. Canvas WebGL com partículas, efeitos cyberpunk e scroll-driven animations.",
-    tech: ["Next.js", "Three.js", "R3F", "Framer Motion", "Tailwind"],
-    image: "/images/projects/edevshub.jpg",
+      "E-commerce Responsivo completo. Loja virtual com design premium, integração de pagamentos e gestão de estoque.",
+    tech: ["Shopify", "Liquid", "JavaScript", "CSS"],
+    image: "/images/projects/cacaostore.png",
+  },
+  {
+    id: "click",
+    title: "Click",
+    description:
+      "Sistema Interno com Dashboard Mobile. Aplicativo de gestão interna com dashboard responsivo e notificações em tempo real.",
+    tech: ["JavaScript", "React.js", "Node.js", "MongoDB"],
+    image: "/images/projects/click.png",
+  },
+  {
+    id: "clinafy",
+    title: "Clinafy",
+    description:
+      "SaaS para Clínicas com IA. Plataforma de gestão clínica com inteligência artificial para agendamento e prontuários eletrônicos.",
+    tech: ["JavaScript", "TypeScript", "React", "AI/ML"],
+    image: "/images/projects/clinafy.png",
   },
 ];
 

@@ -191,10 +191,10 @@ function Section({
   return (
     <section
       id={id}
-      className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${className}`}
+      className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 overflow-y-auto overflow-x-hidden ${className}`}
       style={{ opacity, zIndex: isVisible ? 10 : 0, visibility: opacity > 0 ? "visible" : "hidden" }}
     >
-      <div className="pointer-events-auto max-w-6xl w-full px-4 md:px-8 lg:px-12">
+      <div className="pointer-events-auto max-w-6xl w-full px-4 md:px-8 lg:px-12 py-20 md:py-0">
         {children}
       </div>
     </section>
@@ -361,7 +361,7 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.5 }}
           >
             <h1
-              className="glitch-text text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[10rem] font-extrabold tracking-tighter leading-[0.85]"
+              className="glitch-text text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-[10rem] font-extrabold tracking-tighter leading-[0.85]"
               data-text="EDUARDO GOUVEIA"
             >
               <span className="block">EDUARDO</span>
@@ -462,16 +462,21 @@ export default function Home() {
               </span>
             </div>
             <div className="p-5">
-              {/* HERO badge + name + rating in one row */}
+              {/* Profile photo + name + rating */}
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-12 h-12 rounded-full border-2 border-[#fbbf24] flex items-center justify-center bg-[#fbbf24]/10 shrink-0 shadow-[0_0_15px_rgba(251,191,36,0.15)]">
-                  <span className="text-[#fbbf24] font-bold text-[10px] font-[family-name:var(--font-jetbrains-mono)]">
-                    HERO
-                  </span>
+                <div className="relative shrink-0">
+                  <img
+                    src="/images/profile.jpeg"
+                    alt="Eduardo Gouveia"
+                    className="w-14 h-14 rounded-full object-cover border-2 border-[#fbbf24]/50"
+                  />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-[#111] bg-[#fbbf24]/20 flex items-center justify-center">
+                    <span className="text-[#fbbf24] font-bold text-[6px] font-[family-name:var(--font-jetbrains-mono)]">H</span>
+                  </div>
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-semibold text-sm">Eduardo Gouveia</div>
-                  <div className="text-white/35 text-xs">Full Stack Senior</div>
+                  <div className="text-white/35 text-xs">Full Stack Senior · HERO</div>
                 </div>
                 <div className="text-right">
                   <div className="flex items-center gap-1">
@@ -555,6 +560,17 @@ export default function Home() {
                       </span>
                     </div>
 
+                    {/* Project image */}
+                    {project.image && (
+                      <div className="relative h-36 overflow-hidden bg-white/[0.02]">
+                        <img
+                          src={project.image}
+                          alt={project.title}
+                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                      </div>
+                    )}
                     <div className="p-5">
                       <h3 className="text-base font-semibold text-white mb-2 font-[family-name:var(--font-jetbrains-mono)]">
                         {project.title}
@@ -628,7 +644,7 @@ export default function Home() {
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-8" />
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             {(["frontend", "backend", "devops", "tools"] as const).map(
               (category) => (
                 <div key={category} className="relative">
@@ -694,7 +710,7 @@ export default function Home() {
 
       {/* ============ CONTACT ============ */}
       <Section id="contact" progress={progress} range={[0.85, 1.0]}>
-        <div className="max-w-xl mx-auto">
+        <div className="max-w-xl mx-auto w-full">
           <div className="terminal-window">
             <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
               <div className="terminal-dots">
@@ -728,27 +744,15 @@ export default function Home() {
                   <span className="text-white/15">--profile</span>
                 </a>
                 <a
-                  href={siteConfig.social.linkedin}
+                  href="https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1"
                 >
                   <span className="text-[#4ade80]">$</span>
                   <span>open</span>
-                  <LinkedinIcon className="w-3.5 h-3.5" />
-                  <span>linkedin</span>
-                  <span className="text-white/15">--connect</span>
-                </a>
-                <a
-                  href={`mailto:${siteConfig.social.email}`}
-                  className="flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1"
-                >
-                  <span className="text-[#4ade80]">$</span>
-                  <span>send-mail</span>
-                  <Mail className="w-3.5 h-3.5" />
-                  <span className="text-white/15">
-                    {siteConfig.social.email}
-                  </span>
+                  <span>workana</span>
+                  <span className="text-white/15">--hire</span>
                 </a>
               </div>
 
