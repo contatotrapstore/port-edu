@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -14,21 +14,28 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "Eduardo Gouveia | Engenheiro de Sistemas",
+  title: "EDevsHub | Eduardo Gouveia — Full Stack Developer",
   description:
-    "Portfolio imersivo de Eduardo Gouveia — Engenheiro de Sistemas e Desenvolvedor Full Stack. Experiência 3D interativa.",
+    "Portfolio imersivo de Eduardo Gouveia — Full Stack Developer & Systems Engineer. Experiência 3D interativa cyberpunk.",
   keywords: [
     "Eduardo Gouveia",
+    "EDevsHub",
     "portfolio",
-    "engenheiro de sistemas",
     "full stack developer",
+    "systems engineer",
     "WebGL",
     "React",
     "Next.js",
   ],
   openGraph: {
-    title: "Eduardo Gouveia | Engenheiro de Sistemas",
+    title: "EDevsHub | Eduardo Gouveia — Full Stack Developer",
     description: "Portfolio imersivo com experiência 3D interativa",
     type: "website",
   },
@@ -40,7 +47,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${jakarta.variable}`}>
+    <html
+      lang="pt-BR"
+      className={`${inter.variable} ${jakarta.variable} ${jetbrainsMono.variable}`}
+    >
       <body>{children}</body>
     </html>
   );

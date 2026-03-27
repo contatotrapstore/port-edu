@@ -11,7 +11,7 @@ export interface Project {
 export interface Skill {
   name: string;
   category: "frontend" | "backend" | "devops" | "tools";
-  level: number; // 0-1
+  level: number;
 }
 
 export interface SiteConfig {
@@ -28,8 +28,8 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
-  title: "ENGENHEIRO DE SISTEMAS",
-  subtitle: "Full Stack Developer & Systems Engineer",
+  title: "FULL STACK DEVELOPER & SYSTEMS ENGINEER",
+  subtitle: "Building the future, one commit at a time.",
   bio: "Engenheiro de Sistemas apaixonado por criar experiências digitais inovadoras. Especializado em desenvolvimento full stack, arquitetura de sistemas e soluções cloud-native. Transformando ideias complexas em produtos elegantes e performáticos.",
   social: {
     github: "https://github.com/contatotrapstore",
@@ -80,6 +80,14 @@ export const projects: Project[] = [
     tech: ["Docker", "Kubernetes", "Go", "gRPC", "Redis"],
     image: "/images/projects/plataforma-micro.jpg",
   },
+  {
+    id: "edevshub",
+    title: "EDevsHub Portfolio",
+    description:
+      "Este portfolio imersivo com experiência 3D interativa. Canvas WebGL com partículas, efeitos cyberpunk e scroll-driven animations.",
+    tech: ["Next.js", "Three.js", "R3F", "Framer Motion", "Tailwind"],
+    image: "/images/projects/edevshub.jpg",
+  },
 ];
 
 export const skills: Skill[] = [
@@ -116,3 +124,35 @@ export const chapters = [
   { id: "skills", label: "Skills", range: [0.65, 0.85] as [number, number] },
   { id: "contact", label: "Contato", range: [0.85, 1.0] as [number, number] },
 ];
+
+// Floating code snippets for hero decoration
+export const codeSnippets = [
+  { lang: "javascript", code: "const app = express();\napp.listen(3000);", color: "#fbbf24" },
+  { lang: "python", code: "def neural_net(x):\n  return model.predict(x)", color: "#60a5fa" },
+  { lang: "go", code: "func main() {\n  http.ListenAndServe(\n    \":8080\", nil)\n}", color: "#34d399" },
+  { lang: "sql", code: "SELECT * FROM users\nWHERE active = true;", color: "#c084fc" },
+  { lang: "typescript", code: "interface Dev {\n  name: string;\n  stack: string[];\n}", color: "#60a5fa" },
+  { lang: "css", code: ".matrix {\n  display: grid;\n  animation: glow 2s;\n}", color: "#fb923c" },
+  { lang: "bash", code: "$ docker compose up -d\n$ kubectl apply -f deploy", color: "#4ade80" },
+  { lang: "rust", code: "fn main() {\n  println!(\"Hello!\");\n}", color: "#fb923c" },
+];
+
+// Terminal loading messages
+export const loadingMessages = [
+  "Initializing runtime environment",
+  "Loading neural networks",
+  "Compiling shaders",
+  "Connecting to matrix",
+  "Mounting file systems",
+  "Establishing secure connection",
+  "Rendering 3D scene",
+  "System ready",
+];
+
+// Skill category colors (silver-based theme)
+export const catColors: Record<string, string> = {
+  frontend: "#c0c0c0",
+  backend: "#60a5fa",
+  devops: "#4ade80",
+  tools: "#c084fc",
+};
