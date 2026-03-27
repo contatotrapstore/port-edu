@@ -139,7 +139,7 @@ function LoadingScreen({ isLoaded }: { isLoaded: boolean }) {
         animate={{ opacity: 1, filter: "blur(0px)" }}
         transition={{ duration: 1 }}
       >
-        <Image src="/Logo.png" alt="EDevsHub" width={180} height={48} priority className="" />
+        <Image src="/EdevsHub.png" alt="EDevsHub" width={180} height={48} priority className="invert mix-blend-screen" />
       </motion.div>
 
       {/* Terminal boot messages */}
@@ -213,12 +213,12 @@ function Navbar({
     <nav className="fixed top-0 left-0 right-0 z-30 px-6 md:px-10 py-5 flex justify-between items-center backdrop-blur-xl bg-[#0a0a0a]/80 border-b border-white/[0.06]">
       <div className="flex items-center gap-3">
         <Image
-          src="/Logo.png"
+          src="/EdevsHub.png"
           alt="EDevsHub"
           width={140}
           height={36}
           style={{ width: "auto", height: "28px" }}
-          className=""
+          className="invert mix-blend-screen"
         />
         <span className="hidden md:flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/60 ml-4 border-l border-white/[0.06] pl-4">
           <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
