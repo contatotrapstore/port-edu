@@ -139,7 +139,7 @@ function LoadingScreen({ isLoaded }: { isLoaded: boolean }) {
         animate={{ opacity: 1, filter: "blur(0px)" }}
         transition={{ duration: 1 }}
       >
-        <Image src="/Logo.png" alt="EDevsHub" width={180} height={48} priority />
+        <Image src="/Logo.png" alt="EDevsHub" width={180} height={48} priority className="" />
       </motion.div>
 
       {/* Terminal boot messages */}
@@ -184,8 +184,8 @@ function Section({
   const [start, end] = range;
   const isVisible = progress >= start - 0.1 && progress <= end + 0.1;
   const localP = (progress - start) / (end - start);
-  const fadeIn = start === 0 ? 1 : Math.min(1, Math.max(0, localP * 8));
-  const fadeOut = end >= 1 ? 1 : Math.min(1, Math.max(0, (1 - localP) * 8));
+  const fadeIn = start === 0 ? 1 : Math.min(1, Math.max(0, (localP + 0.1) * 6));
+  const fadeOut = end >= 1 ? 1 : Math.min(1, Math.max(0, (1.1 - localP) * 6));
   const opacity = isVisible ? Math.min(fadeIn, fadeOut) : 0;
 
   return (
@@ -218,6 +218,7 @@ function Navbar({
           width={140}
           height={36}
           style={{ width: "auto", height: "28px" }}
+          className=""
         />
         <span className="hidden md:flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/60 ml-4 border-l border-white/[0.06] pl-4">
           <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
@@ -502,7 +503,12 @@ export default function Home() {
         </div>
 
         {/* Testimonials */}
-        <div className="grid md:grid-cols-3 gap-3 mt-6">
+        <div className="mt-10 mb-2">
+          <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/20 mb-4">
+            // avaliações de clientes
+          </p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-4">
           {testimonials.map((t, i) => (
             <div key={i} className="terminal-window p-4">
               <div className="text-[#fbbf24] text-[10px] mb-2">{"★".repeat(t.rating)}</div>
