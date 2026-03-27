@@ -1,11 +1,14 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useMemo, useState } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
 
-// Silver floating particles
-function Particles({ count = 400 }) {
+// Shared scroll ref — updated by animation loop, read by CameraController
+const scrollRef = { current: 0 };
+
+// Silver floating particles (optimized: 250 count, 4-segment spheres)
+function Particles({ count = 250 }) {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -38,13 +41,13 @@ function Particles({ count = 400 }) {
 
   return (
     <instancedMesh ref={mesh} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[1, 6, 6]} />
+      <sphereGeometry args={[1, 4, 4]} />
       <meshBasicMaterial color="#aaaaaa" transparent opacity={0.4} />
     </instancedMesh>
   );
 }
 
-// Wireframe icosahedron (futuristic/digital feel)
+// Wireframe icosahedron
 function FloatingGeo() {
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
@@ -62,7 +65,7 @@ function FloatingGeo() {
   );
 }
 
-// Second wireframe geometry for visual depth
+// Second wireframe geometry
 function FloatingGeo2() {
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
@@ -79,10 +82,10 @@ function FloatingGeo2() {
   );
 }
 
-// DNA Helix in silver tones
+// DNA Helix in silver tones (optimized: 60 count, 4-segment spheres)
 function DNAHelix() {
   const group = useRef<THREE.Group>(null);
-  const count = 80;
+  const count = 60;
   const meshA = useRef<THREE.InstancedMesh>(null);
   const meshB = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
@@ -113,22 +116,22 @@ function DNAHelix() {
   return (
     <group ref={group} position={[-5, -55, -5]}>
       <instancedMesh ref={meshA} args={[undefined, undefined, count]}>
-        <sphereGeometry args={[1, 8, 8]} />
+        <sphereGeometry args={[1, 4, 4]} />
         <meshBasicMaterial color="#aaaaaa" transparent opacity={0.35} />
       </instancedMesh>
       <instancedMesh ref={meshB} args={[undefined, undefined, count]}>
-        <sphereGeometry args={[1, 8, 8]} />
+        <sphereGeometry args={[1, 4, 4]} />
         <meshBasicMaterial color="#666666" transparent opacity={0.25} />
       </instancedMesh>
     </group>
   );
 }
 
-// Matrix-style rain (green falling particles in the background)
+// Matrix rain (optimized: 80 count)
 function MatrixRain() {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const count = 150;
+  const count = 80;
 
   const data = useMemo(() => {
     return Array.from({ length: count }, () => ({
@@ -162,22 +165,21 @@ function MatrixRain() {
   );
 }
 
-// Grid plane (Tron-style)
+// Grid plane (Tron-style) — static, no useFrame needed
 function GridPlane() {
   return (
     <group position={[0, -6, 0]} rotation={[-Math.PI / 2, 0, 0]}>
       <gridHelper
-        args={[200, 80, "#1a1a1a", "#141414"]}
+        args={[200, 60, "#1a1a1a", "#141414"]}
         rotation={[Math.PI / 2, 0, 0]}
       />
     </group>
   );
 }
 
-// Floating code brackets { } [ ] < >
+// Floating brackets (optimized: 20 count)
 function FloatingBrackets() {
-  const group = useRef<THREE.Group>(null);
-  const count = 30;
+  const count = 20;
   const meshes = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
@@ -217,11 +219,11 @@ function FloatingBrackets() {
   );
 }
 
-// Silver rain for contact area
+// Silver rain (optimized: 100 count, 4-segment spheres)
 function SilverRain() {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const count = 200;
+  const count = 100;
 
   const data = useMemo(() => {
     return Array.from({ length: count }, () => ({
@@ -249,18 +251,19 @@ function SilverRain() {
 
   return (
     <instancedMesh ref={mesh} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[1, 6, 6]} />
+      <sphereGeometry args={[1, 4, 4]} />
       <meshBasicMaterial color="#999999" transparent opacity={0.3} />
     </instancedMesh>
   );
 }
 
-// Camera controller
-function CameraController({ scrollProgress }: { scrollProgress: number }) {
+// Camera reads from shared ref — no React re-renders
+function CameraController() {
   useFrame(({ camera }) => {
-    const targetY = -scrollProgress * 80;
+    const p = scrollRef.current;
+    const targetY = -p * 80;
     camera.position.y += (targetY - camera.position.y) * 0.05;
-    camera.position.z = 10 + Math.sin(scrollProgress * Math.PI) * 2;
+    camera.position.z = 10 + Math.sin(p * Math.PI) * 2;
   });
   return null;
 }
@@ -271,7 +274,7 @@ interface ExperienceProps {
 }
 
 export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const lastReported = useRef(0);
 
   useEffect(() => {
     const timer = setTimeout(onLoaded, 2000);
@@ -307,8 +310,16 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     const animate = () => {
       current += (target - current) * 0.12;
       if (Math.abs(target - current) < 0.0001) current = target;
-      setScrollProgress(current);
-      onProgress(current);
+
+      // Update shared ref (no re-render) — 3D reads this at 60fps
+      scrollRef.current = current;
+
+      // Throttle React updates — only when changed significantly
+      if (Math.abs(current - lastReported.current) > 0.003) {
+        lastReported.current = current;
+        onProgress(current);
+      }
+
       raf = requestAnimationFrame(animate);
     };
 
@@ -329,13 +340,13 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
   return (
     <Canvas
-      gl={{ antialias: true, alpha: false }}
+      gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
       dpr={[1, 1.5]}
       camera={{ position: [0, 0, 10], fov: 60, near: 0.1, far: 200 }}
       style={{ background: "#0a0a0a" }}
     >
       <color attach="background" args={["#0a0a0a"]} />
-      <CameraController scrollProgress={scrollProgress} />
+      <CameraController />
       <Particles />
       <FloatingGeo />
       <FloatingGeo2 />

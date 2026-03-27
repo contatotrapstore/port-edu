@@ -194,7 +194,7 @@ function Section({
       className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${className}`}
       style={{ opacity, zIndex: isVisible ? 10 : 0, visibility: opacity > 0 ? "visible" : "hidden" }}
     >
-      <div className="pointer-events-auto max-w-6xl w-full px-6 md:px-12">
+      <div className="pointer-events-auto max-w-6xl w-full px-4 md:px-8 lg:px-12">
         {children}
       </div>
     </section>
@@ -527,10 +527,10 @@ export default function Home() {
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-2">
             Projetos<span className="text-white/20">.</span>
           </h2>
-          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-8" />
+          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-10" />
 
           {/* Carousel */}
-          <div className="relative">
+          <div className="relative pt-2">
             <div className="overflow-hidden rounded-xl">
               <motion.div
                 className="flex gap-4"
