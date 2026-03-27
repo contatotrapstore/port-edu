@@ -28,8 +28,8 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
-  title: "FULL STACK DEVELOPER & SYSTEMS ENGINEER",
-  subtitle: "Building the future, one commit at a time.",
+  title: "FULL STACK DEVELOPER & ENGENHEIRO DE SISTEMAS",
+  subtitle: "Construindo o futuro, um commit por vez.",
   bio: "Engenheiro de Sistemas apaixonado por criar experiências digitais inovadoras. Especializado em desenvolvimento full stack, arquitetura de sistemas e soluções cloud-native. Transformando ideias complexas em produtos elegantes e performáticos.",
   social: {
     github: "https://github.com/contatotrapstore",

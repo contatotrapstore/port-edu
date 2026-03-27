@@ -180,10 +180,10 @@ function Section({
   range: [number, number];
 }) {
   const [start, end] = range;
-  const isVisible = progress >= start - 0.05 && progress <= end + 0.05;
+  const isVisible = progress >= start - 0.1 && progress <= end + 0.1;
   const localP = (progress - start) / (end - start);
-  const fadeIn = Math.min(1, localP * 4);
-  const fadeOut = Math.min(1, (1 - localP) * 4 + 0.5);
+  const fadeIn = start === 0 ? 1 : Math.min(1, Math.max(0, (localP + 0.15) * 4));
+  const fadeOut = end >= 1 ? 1 : Math.min(1, Math.max(0, (1.15 - localP) * 4));
   const opacity = isVisible ? Math.min(fadeIn, fadeOut) : 0;
 
   return (
@@ -208,20 +208,35 @@ function Navbar({
   onChapterClick: (i: number) => void;
 }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-30 px-6 md:px-10 py-4 flex justify-between items-center backdrop-blur-md bg-[#0a0a0a]/60 border-b border-white/[0.04]">
-      <Image src="/Logo.png" alt="EDevsHub" width={120} height={32} />
-      <ul className="hidden md:flex gap-8">
+    <nav className="fixed top-0 left-0 right-0 z-30 px-6 md:px-10 py-5 flex justify-between items-center backdrop-blur-xl bg-[#0a0a0a]/80 border-b border-white/[0.06]">
+      <div className="flex items-center gap-3">
+        <Image
+          src="/Logo.png"
+          alt="EDevsHub"
+          width={140}
+          height={36}
+          style={{ width: "auto", height: "28px" }}
+        />
+        <span className="hidden md:flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/60 ml-4 border-l border-white/[0.06] pl-4">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
+          online
+        </span>
+      </div>
+      <ul className="hidden md:flex gap-6">
         {chapters.map((ch, i) => (
           <li key={ch.id}>
             <button
               onClick={() => onChapterClick(i)}
-              className={`text-xs uppercase tracking-[2px] font-[family-name:var(--font-jetbrains-mono)] transition-colors duration-300 ${
+              className={`relative text-[11px] uppercase tracking-[2px] font-[family-name:var(--font-jetbrains-mono)] py-2 transition-all duration-300 ${
                 currentChapter === i
                   ? "text-white"
-                  : "text-white/30 hover:text-white/60"
+                  : "text-white/25 hover:text-white/50"
               }`}
             >
               {ch.label}
+              {currentChapter === i && (
+                <span className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+              )}
             </button>
           </li>
         ))}
@@ -319,7 +334,7 @@ export default function Home() {
           {codeSnippets.slice(0, 4).map((snippet, i) => (
             <motion.div
               key={snippet.lang}
-              className="hidden lg:block absolute code-block opacity-[0.12] text-[10px]"
+              className="hidden md:block absolute code-block opacity-[0.12] text-[10px]"
               style={{
                 top: i < 2 ? "10%" : "auto",
                 bottom: i >= 2 ? "10%" : "auto",
@@ -336,21 +351,31 @@ export default function Home() {
           ))}
 
           {/* Main heading with glitch */}
-          <motion.h1
-            className="glitch-text text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold tracking-tight leading-none"
-            data-text="EDUARDO GOUVEIA"
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 40 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            EDUARDO
-            <br />
-            <span className="text-gradient-silver">GOUVEIA</span>
-          </motion.h1>
+            <h1
+              className="glitch-text text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] font-extrabold tracking-tighter leading-[0.85]"
+              data-text="EDUARDO GOUVEIA"
+            >
+              <span className="block">EDUARDO</span>
+              <span className="block text-gradient-silver">GOUVEIA</span>
+            </h1>
+          </motion.div>
+
+          {/* Decorative line */}
+          <motion.div
+            className="h-px w-32 mx-auto mt-6 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: isLoaded ? 1 : 0 }}
+            transition={{ duration: 1, delay: 1 }}
+          />
 
           {/* Subtitle with typewriter */}
           <motion.div
-            className="mt-6 font-[family-name:var(--font-jetbrains-mono)] text-sm md:text-base text-[#4ade80]"
+            className="mt-5 font-[family-name:var(--font-jetbrains-mono)] text-sm md:text-base text-[#4ade80]"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
             transition={{ duration: 0.5, delay: 1.2 }}
