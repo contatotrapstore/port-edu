@@ -118,14 +118,6 @@ export const projects: Project[] = [
     image: "/images/projects/connote.png",
   },
   {
-    id: "cacaostore",
-    title: "Cacao Store",
-    description:
-      "E-commerce Responsivo completo. Loja virtual com design premium, integração de pagamentos e gestão de estoque.",
-    tech: ["Shopify", "Liquid", "JavaScript", "CSS"],
-    image: "/images/projects/cacaostore.png",
-  },
-  {
     id: "click",
     title: "Click",
     description:
@@ -140,6 +132,14 @@ export const projects: Project[] = [
       "SaaS para Clínicas com IA. Plataforma de gestão clínica com inteligência artificial para agendamento e prontuários eletrônicos.",
     tech: ["JavaScript", "TypeScript", "React", "AI/ML"],
     image: "/images/projects/clinafy.png",
+  },
+  {
+    id: "cacaostore",
+    title: "Cacao Store",
+    description:
+      "E-commerce Responsivo completo. Loja virtual com design premium, integração de pagamentos e gestão de estoque.",
+    tech: ["Shopify", "Liquid", "JavaScript", "CSS"],
+    image: "/images/projects/cacaostore.png",
   },
 ];
 

@@ -532,10 +532,10 @@ export default function Home() {
       {/* ============ PROJECTS ============ */}
       <Section id="projects" progress={progress} range={[0.4, 0.65]}>
         <div>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-2">
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
             Projetos<span className="text-white/20">.</span>
           </h2>
-          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-10" />
+          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
 
           {/* Carousel */}
           <div className="relative pt-2">
@@ -562,7 +562,7 @@ export default function Home() {
 
                     {/* Project image */}
                     {project.image && (
-                      <div className="relative h-36 overflow-hidden bg-white/[0.02]">
+                      <div className="relative h-44 md:h-48 overflow-hidden bg-white/[0.02]">
                         <img
                           src={project.image}
                           alt={project.title}
@@ -607,7 +607,7 @@ export default function Home() {
             {/* Carousel controls */}
             <div className="flex items-center justify-between mt-4">
               <div className="flex gap-2">
-                {projects.map((_, i) => (
+                {projects.slice(0, projects.length - 2).map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCarouselIdx(i)}
@@ -625,7 +625,7 @@ export default function Home() {
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setCarouselIdx(Math.min(projects.length - 1, carouselIdx + 1))}
+                  onClick={() => setCarouselIdx(Math.min(projects.length - 3, carouselIdx + 1))}
                   className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
                 >
                   <ChevronRight className="w-4 h-4" />
