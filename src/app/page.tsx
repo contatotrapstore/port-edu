@@ -403,22 +403,23 @@ export default function Home() {
 
           {/* Social proof badges */}
           <motion.div
-            className="mt-6 flex items-center justify-center gap-3 flex-wrap"
+            className="mt-8 flex items-center justify-center gap-2.5 flex-wrap"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
             transition={{ duration: 1, delay: 2.5 }}
           >
-            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/20 px-2 py-1 rounded border border-white/[0.06] bg-white/[0.02]">
+            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
               Top 13 Brasil
             </span>
-            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/20 px-2 py-1 rounded border border-white/[0.06] bg-white/[0.02]">
+            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm">
               145+ Projetos
             </span>
-            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24]/40 px-2 py-1 rounded border border-[#fbbf24]/10 bg-[#fbbf24]/[0.03]">
+            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24] px-3 py-1.5 rounded-full border border-[#fbbf24]/20 bg-[#fbbf24]/[0.06] backdrop-blur-sm">
               ★ 4.68/5
             </span>
-            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/40 px-2 py-1 rounded border border-[#4ade80]/10 bg-[#4ade80]/[0.03]">
-              HERO
+            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24] px-3 py-1.5 rounded-full border border-[#fbbf24]/25 bg-[#fbbf24]/[0.08] backdrop-blur-sm font-bold">
+              🏆 HERO
             </span>
           </motion.div>
         </div>
@@ -449,7 +450,9 @@ export default function Home() {
           </div>
 
           {/* Workana Profile Card */}
-          <div className="terminal-window">
+          <div className="terminal-window relative overflow-hidden">
+            {/* Subtle glow accent top */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-[#fbbf24]/30 to-transparent" />
             <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
               <div className="terminal-dots">
                 <span /><span /><span />
@@ -459,43 +462,43 @@ export default function Home() {
               </span>
             </div>
             <div className="p-5">
-              {/* HERO badge + name */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-11 h-11 rounded-full border-2 border-[#fbbf24] flex items-center justify-center bg-[#fbbf24]/10 shrink-0">
-                  <span className="text-[#fbbf24] font-bold text-[9px] font-[family-name:var(--font-jetbrains-mono)]">
+              {/* HERO badge + name + rating in one row */}
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-12 h-12 rounded-full border-2 border-[#fbbf24] flex items-center justify-center bg-[#fbbf24]/10 shrink-0 shadow-[0_0_15px_rgba(251,191,36,0.15)]">
+                  <span className="text-[#fbbf24] font-bold text-[10px] font-[family-name:var(--font-jetbrains-mono)]">
                     HERO
                   </span>
                 </div>
-                <div>
+                <div className="flex-1">
                   <div className="text-white font-semibold text-sm">Eduardo Gouveia</div>
                   <div className="text-white/35 text-xs">Full Stack Senior</div>
                 </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[#fbbf24] text-sm">★★★★★</span>
+                  </div>
+                  <div className="text-[10px] text-white/30 font-[family-name:var(--font-jetbrains-mono)]">
+                    {workanaStats.rating}/5 · {workanaStats.clientReviews} reviews
+                  </div>
+                </div>
               </div>
-              {/* Rating */}
-              <div className="flex items-center gap-2 mb-4 text-sm">
-                <span className="text-[#fbbf24]">★</span>
-                <span className="text-white font-bold">{workanaStats.rating}</span>
-                <span className="text-white/25">/5</span>
-                <span className="text-white/15">•</span>
-                <span className="text-white/35 text-xs">{workanaStats.clientReviews} avaliações</span>
-              </div>
-              {/* Stats grid */}
+              {/* Stats grid with accent borders */}
               <div className="grid grid-cols-2 gap-2.5 text-xs font-[family-name:var(--font-jetbrains-mono)]">
-                <div className="bg-white/[0.03] rounded-lg p-2.5">
-                  <div className="text-gradient-silver text-lg font-bold">{workanaStats.projectsCompleted}+</div>
-                  <div className="text-white/25 mt-0.5">projetos</div>
+                <div className="bg-white/[0.03] rounded-lg p-3 border-l-2 border-white/10">
+                  <div className="text-gradient-silver text-xl font-bold">{workanaStats.projectsCompleted}+</div>
+                  <div className="text-white/30 mt-0.5">projetos entregues</div>
                 </div>
-                <div className="bg-white/[0.03] rounded-lg p-2.5">
-                  <div className="text-gradient-silver text-lg font-bold">{workanaStats.recurringClients}</div>
-                  <div className="text-white/25 mt-0.5">recorrentes</div>
+                <div className="bg-white/[0.03] rounded-lg p-3 border-l-2 border-white/10">
+                  <div className="text-gradient-silver text-xl font-bold">{workanaStats.recurringClients}</div>
+                  <div className="text-white/30 mt-0.5">clientes recorrentes</div>
                 </div>
-                <div className="bg-white/[0.03] rounded-lg p-2.5">
-                  <div className="text-[#4ade80] text-lg font-bold">#{workanaStats.rankITBrazil}</div>
-                  <div className="text-white/25 mt-0.5">Brasil</div>
+                <div className="bg-white/[0.03] rounded-lg p-3 border-l-2 border-[#4ade80]/30">
+                  <div className="text-[#4ade80] text-xl font-bold">#{workanaStats.rankITBrazil}</div>
+                  <div className="text-white/30 mt-0.5">ranking Brasil</div>
                 </div>
-                <div className="bg-white/[0.03] rounded-lg p-2.5">
-                  <div className="text-[#60a5fa] text-lg font-bold">#{workanaStats.rankITGlobal}</div>
-                  <div className="text-white/25 mt-0.5">Global</div>
+                <div className="bg-white/[0.03] rounded-lg p-3 border-l-2 border-[#60a5fa]/30">
+                  <div className="text-[#60a5fa] text-xl font-bold">#{workanaStats.rankITGlobal}</div>
+                  <div className="text-white/30 mt-0.5">ranking Global</div>
                 </div>
               </div>
             </div>

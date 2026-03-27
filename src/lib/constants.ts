@@ -32,9 +32,9 @@ export const siteConfig: SiteConfig = {
   subtitle: "Construindo o futuro, um commit por vez.",
   bio: "145+ projetos entregues | 28 clientes recorrentes | Top 13 Brasil e Top 46 Global em TI na Workana entre 13,8M de profissionais. Desenvolvedor Full Stack Sênior — da arquitetura ao deploy. Especializado em SaaS, dashboards e aplicativos modernos.",
   social: {
-    github: "https://github.com/contatotrapstore",
-    linkedin: "https://linkedin.com/in/eduardogouveia",
-    email: "contato@edevshub.com",
+    github: "https://github.com/GouveiaZx",
+    linkedin: "https://www.linkedin.com/in/eduardo-gouveia-282018323/",
+    email: "gouveiarx@gmail.com",
   },
 };
 
@@ -152,7 +152,7 @@ export const skills: Skill[] = [
   { name: "Git", category: "tools", level: 0.95 },
   { name: "Linux", category: "tools", level: 0.85 },
   { name: "Figma", category: "tools", level: 0.7 },
-  { name: "Claude Code", category: "tools", level: 0.95 },
+  { name: "VS Code", category: "tools", level: 0.95 },
 ];
 
 export const chapters = [
