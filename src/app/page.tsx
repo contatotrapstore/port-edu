@@ -537,96 +537,114 @@ export default function Home() {
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
 
-          {/* Carousel */}
-          <div className="relative pt-2">
-            <div className="overflow-hidden rounded-xl">
-              <motion.div
-                className="flex gap-4"
-                animate={{ x: `-${carouselIdx * (100 / 3 + 1.5)}%` }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              >
-                {projects.map((project) => (
-                  <div
-                    key={project.id}
-                    className="group terminal-window glow-silver hover:-translate-y-1 transition-all duration-300 min-w-[calc(100%-0px)] md:min-w-[calc(50%-8px)] lg:min-w-[calc(33.333%-11px)] shrink-0"
-                  >
-                    {/* IDE title bar */}
-                    <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
-                      <div className="terminal-dots">
-                        <span /><span /><span />
-                      </div>
-                      <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
-                        {project.id}.tsx
-                      </span>
-                    </div>
-
-                    {/* Project image */}
-                    {project.image && (
-                      <div className="relative h-44 md:h-48 overflow-hidden bg-white/[0.02]">
-                        <img
-                          src={project.image}
-                          alt={project.title}
-                          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
-                      </div>
-                    )}
-                    <div className="p-5">
-                      <h3 className="text-base font-semibold text-white mb-2 font-[family-name:var(--font-jetbrains-mono)]">
-                        {project.title}
-                      </h3>
-                      <p className="text-[11px] text-white/35 leading-relaxed mb-4 line-clamp-3">
-                        {project.description}
-                      </p>
-
-                      {/* Tech tags as XML */}
-                      <div className="flex flex-wrap gap-1.5">
-                        {project.tech.map((t) => (
-                          <span
-                            key={t}
-                            className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/40 border border-white/[0.06]"
-                          >
-                            &lt;{t} /&gt;
-                          </span>
-                        ))}
-                      </div>
-
-                      {project.github && (
-                        <div className="mt-4 flex items-center gap-1 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/25 group-hover:text-white/50 transition-colors">
-                          <span className="text-[#4ade80]">$</span> git clone{" "}
-                          {project.id}
-                          <ArrowRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      )}
-                    </div>
+          {/* Carousel — 1 card visible, infinite loop */}
+          <div className="relative">
+            {/* Main card display */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Current project — main card */}
+              <div className="group terminal-window glow-silver md:col-span-1">
+                <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
+                  <div className="terminal-dots">
+                    <span /><span /><span />
                   </div>
-                ))}
-              </motion.div>
+                  <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
+                    {projects[carouselIdx].id}.tsx
+                  </span>
+                  <span className="ml-auto text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/15">
+                    {carouselIdx + 1}/{projects.length}
+                  </span>
+                </div>
+                {projects[carouselIdx].image && (
+                  <div className="relative h-48 md:h-56 overflow-hidden bg-white/[0.02]">
+                    <motion.img
+                      key={projects[carouselIdx].id}
+                      src={projects[carouselIdx].image}
+                      alt={projects[carouselIdx].title}
+                      className="w-full h-full object-cover"
+                      initial={{ opacity: 0, scale: 1.05 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4 }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                  </div>
+                )}
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold text-white mb-2 font-[family-name:var(--font-jetbrains-mono)]">
+                    {projects[carouselIdx].title}
+                  </h3>
+                  <p className="text-xs text-white/40 leading-relaxed mb-4">
+                    {projects[carouselIdx].description}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {projects[carouselIdx].tech.map((t) => (
+                      <span
+                        key={t}
+                        className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/40 border border-white/[0.06]"
+                      >
+                        &lt;{t} /&gt;
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Next project preview — hidden on mobile */}
+              <div
+                className="hidden md:block terminal-window opacity-50 hover:opacity-70 transition-opacity cursor-pointer"
+                onClick={() => setCarouselIdx((carouselIdx + 1) % projects.length)}
+              >
+                <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
+                  <div className="terminal-dots">
+                    <span /><span /><span />
+                  </div>
+                  <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
+                    {projects[(carouselIdx + 1) % projects.length].id}.tsx
+                  </span>
+                </div>
+                {projects[(carouselIdx + 1) % projects.length].image && (
+                  <div className="relative h-56 overflow-hidden bg-white/[0.02]">
+                    <img
+                      src={projects[(carouselIdx + 1) % projects.length].image}
+                      alt={projects[(carouselIdx + 1) % projects.length].title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                  </div>
+                )}
+                <div className="p-5">
+                  <h3 className="text-base font-semibold text-white/60 mb-2 font-[family-name:var(--font-jetbrains-mono)]">
+                    {projects[(carouselIdx + 1) % projects.length].title}
+                  </h3>
+                  <p className="text-[11px] text-white/25 leading-relaxed line-clamp-2">
+                    {projects[(carouselIdx + 1) % projects.length].description}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Carousel controls */}
-            <div className="flex items-center justify-between mt-4">
-              <div className="flex gap-2">
-                {projects.slice(0, projects.length - 2).map((_, i) => (
+            {/* Controls */}
+            <div className="flex items-center justify-between mt-5">
+              <div className="flex gap-1.5">
+                {projects.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCarouselIdx(i)}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      carouselIdx === i ? "bg-white w-4" : "bg-white/20"
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      carouselIdx === i ? "bg-white w-6" : "bg-white/15 w-1.5 hover:bg-white/30"
                     }`}
                   />
                 ))}
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => setCarouselIdx(Math.max(0, carouselIdx - 1))}
-                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
+                  onClick={() => setCarouselIdx((carouselIdx - 1 + projects.length) % projects.length)}
+                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setCarouselIdx(Math.min(projects.length - 3, carouselIdx + 1))}
-                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
+                  onClick={() => setCarouselIdx((carouselIdx + 1) % projects.length)}
+                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
