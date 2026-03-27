@@ -182,17 +182,23 @@ function Section({
   range: [number, number];
 }) {
   const [start, end] = range;
-  const isVisible = progress >= start - 0.1 && progress <= end + 0.1;
+  const isFirst = start === 0;
+  const isLast = end >= 1;
+  const isActive = progress >= start && progress < end;
   const localP = (progress - start) / (end - start);
-  const fadeIn = start === 0 ? 1 : Math.min(1, Math.max(0, (localP + 0.1) * 6));
-  const fadeOut = end >= 1 ? 1 : Math.min(1, Math.max(0, (1.1 - localP) * 6));
-  const opacity = isVisible ? Math.min(fadeIn, fadeOut) : 0;
+
+  let opacity = 0;
+  if (isActive || (isFirst && progress < start) || (isLast && progress >= end)) {
+    opacity = 1;
+    if (!isLast && localP > 0.9) opacity = Math.max(0, (1 - localP) * 10);
+    if (!isFirst && localP < 0.1) opacity = Math.min(1, localP * 10);
+  }
 
   return (
     <section
       id={id}
       className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 overflow-y-auto overflow-x-hidden ${className}`}
-      style={{ opacity, zIndex: isVisible ? 10 : 0, visibility: opacity > 0 ? "visible" : "hidden" }}
+      style={{ opacity, zIndex: opacity > 0 ? 10 : 0, visibility: opacity > 0 ? "visible" : "hidden" }}
     >
       <div className="pointer-events-auto max-w-6xl w-full px-4 md:px-8 lg:px-12 py-20 md:py-0">
         {children}

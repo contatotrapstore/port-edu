@@ -302,7 +302,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
     const handleGoto = (e: Event) => {
       const idx = (e as CustomEvent).detail.index;
-      const targets = [0, 0.2, 0.4, 0.65, 0.85];
+      const targets = [0.05, 0.3, 0.52, 0.75, 0.92];
       if (idx >= 0 && idx < targets.length) target = targets[idx];
     };
 
