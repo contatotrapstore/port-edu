@@ -200,7 +200,7 @@ function Section({
       className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
       style={{ opacity, zIndex: opacity > 0 ? 10 : 0, visibility: opacity > 0 ? "visible" : "hidden" }}
     >
-      <div className="pointer-events-auto max-w-6xl w-full px-5 md:px-8 lg:px-12 my-auto py-16 md:py-8">
+      <div className="pointer-events-auto max-w-6xl w-full my-auto py-16 md:py-8" style={{ paddingLeft: 'clamp(20px, 5vw, 48px)', paddingRight: 'clamp(20px, 5vw, 48px)' }}>
         {children}
       </div>
     </section>
