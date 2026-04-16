@@ -215,42 +215,89 @@ function Navbar({
   currentChapter: number;
   onChapterClick: (i: number) => void;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-30 px-6 md:px-10 py-5 flex justify-between items-center backdrop-blur-xl bg-[#0a0a0a]/80 border-b border-white/[0.06]">
-      <div className="flex items-center gap-3">
-        <Image
-          src="/EdevsHub.png"
-          alt="EDevsHub"
-          width={140}
-          height={36}
-          style={{ width: "auto", height: "28px" }}
-          className="invert mix-blend-screen"
-        />
-        <span className="hidden md:flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/60 ml-4 border-l border-white/[0.06] pl-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
-          online
-        </span>
-      </div>
-      <ul className="hidden md:flex gap-6">
-        {chapters.map((ch, i) => (
-          <li key={ch.id}>
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-30 px-5 md:px-10 py-4 md:py-5 flex justify-between items-center backdrop-blur-xl bg-[#0a0a0a]/80 border-b border-white/[0.06]">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/EdevsHub.png"
+            alt="EDevsHub"
+            width={140}
+            height={36}
+            style={{ width: "auto", height: "24px" }}
+            className="invert mix-blend-screen md:[height:28px]"
+          />
+          <span className="hidden md:flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/60 ml-4 border-l border-white/[0.06] pl-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
+            online
+          </span>
+        </div>
+
+        {/* Desktop nav */}
+        <ul className="hidden md:flex gap-6">
+          {chapters.map((ch, i) => (
+            <li key={ch.id}>
+              <button
+                onClick={() => onChapterClick(i)}
+                className={`relative text-[11px] uppercase tracking-[2px] font-[family-name:var(--font-jetbrains-mono)] py-2 transition-all duration-300 ${
+                  currentChapter === i
+                    ? "text-white"
+                    : "text-white/25 hover:text-white/50"
+                }`}
+              >
+                {ch.label}
+                {currentChapter === i && (
+                  <span className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {/* Hamburger button (mobile) */}
+        <button
+          className="md:hidden flex flex-col gap-1.5 p-2"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menu"
+        >
+          <span className={`block w-5 h-px bg-white transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[4px]" : ""}`} />
+          <span className={`block w-5 h-px bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
+          <span className={`block w-5 h-px bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[4px]" : ""}`} />
+        </button>
+      </nav>
+
+      {/* Mobile menu overlay */}
+      {menuOpen && (
+        <motion.div
+          className="fixed inset-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {chapters.map((ch, i) => (
             <button
-              onClick={() => onChapterClick(i)}
-              className={`relative text-[11px] uppercase tracking-[2px] font-[family-name:var(--font-jetbrains-mono)] py-2 transition-all duration-300 ${
-                currentChapter === i
-                  ? "text-white"
-                  : "text-white/25 hover:text-white/50"
+              key={ch.id}
+              onClick={() => { onChapterClick(i); setMenuOpen(false); }}
+              className={`text-lg font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[4px] transition-colors ${
+                currentChapter === i ? "text-white" : "text-white/30"
               }`}
             >
+              <span className="text-[#4ade80] mr-2">0{i + 1}</span>
               {ch.label}
-              {currentChapter === i && (
-                <span className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-              )}
             </button>
-          </li>
-        ))}
-      </ul>
-    </nav>
+          ))}
+          <button
+            onClick={() => setMenuOpen(false)}
+            className="mt-8 text-xs font-[family-name:var(--font-jetbrains-mono)] text-white/20 uppercase tracking-[3px]"
+          >
+            [ fechar ]
+          </button>
+        </motion.div>
+      )}
+    </>
   );
 }
 
@@ -323,7 +370,7 @@ export default function Home() {
       {/* Scroll indicator */}
       <motion.div
         className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
-        animate={{ opacity: progress < 0.05 ? 1 : 0 }}
+        animate={{ opacity: progress < 0.08 ? 1 : 0 }}
       >
         <div className="font-[family-name:var(--font-jetbrains-mono)] text-xs text-[#4ade80]">
           <span className="cursor-blink">&gt;</span> scroll_down
@@ -416,7 +463,7 @@ export default function Home() {
           >
             <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
-              Top 13 Brasil
+              Top {workanaStats.rankITBrazil} Brasil
             </span>
             <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm">
               145+ Projetos
@@ -428,11 +475,38 @@ export default function Home() {
               🏆 HERO
             </span>
           </motion.div>
+
+          {/* CTA */}
+          <motion.div
+            className="mt-8 flex items-center justify-center gap-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isLoaded ? 1 : 0 }}
+            transition={{ duration: 1, delay: 3 }}
+          >
+            <button
+              onClick={() => handleChapterClick(2)}
+              className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] px-4 py-2 rounded border border-[#4ade80]/20 bg-[#4ade80]/[0.05] hover:bg-[#4ade80]/10 transition-all cursor-pointer"
+            >
+              [ ver_projetos ]
+            </button>
+            <button
+              onClick={() => handleChapterClick(4)}
+              className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/40 px-4 py-2 rounded border border-white/10 hover:border-white/20 hover:text-white/60 transition-all cursor-pointer"
+            >
+              [ contato ]
+            </button>
+          </motion.div>
         </div>
       </Section>
 
       {/* ============ ABOUT ============ */}
       <Section id="about" progress={progress} range={[0.2, 0.4]}>
+        <div>
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
+            Sobre<span className="text-white/20">.</span>
+          </h2>
+          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
+        </div>
         <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-start md:items-center">
           {/* Terminal with bio */}
           <div className="terminal-window">
@@ -488,8 +562,8 @@ export default function Home() {
                   <div className="flex items-center gap-1">
                     <span className="text-[#fbbf24] text-sm">★★★★★</span>
                   </div>
-                  <div className="text-[10px] text-white/30 font-[family-name:var(--font-jetbrains-mono)]">
-                    {workanaStats.rating}/5 · {workanaStats.clientReviews} reviews
+                  <div className="text-[9px] text-white/30 font-[family-name:var(--font-jetbrains-mono)]">
+                    {workanaStats.rating} · {workanaStats.clientReviews}
                   </div>
                 </div>
               </div>
@@ -635,8 +709,8 @@ export default function Home() {
                   <button
                     key={i}
                     onClick={() => setCarouselIdx(i)}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      carouselIdx === i ? "bg-white w-6" : "bg-white/15 w-1.5 hover:bg-white/30"
+                    className={`h-2 md:h-1.5 rounded-full transition-all duration-300 ${
+                      carouselIdx === i ? "bg-white w-6" : "bg-white/15 w-2 md:w-1.5 hover:bg-white/30"
                     }`}
                   />
                 ))}
@@ -702,7 +776,7 @@ export default function Home() {
                             <span className="text-white/60 font-[family-name:var(--font-jetbrains-mono)]">
                               {skill.name}
                             </span>
-                            <span className="font-[family-name:var(--font-jetbrains-mono)] text-white/25">
+                            <span className="font-[family-name:var(--font-jetbrains-mono)] text-white/25 shrink-0 ml-2">
                               {Math.round(skill.level * 100)}%
                             </span>
                           </div>
@@ -735,6 +809,10 @@ export default function Home() {
       {/* ============ CONTACT ============ */}
       <Section id="contact" progress={progress} range={[0.85, 1.0]}>
         <div className="max-w-xl mx-auto w-full">
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
+            Contato<span className="text-white/20">.</span>
+          </h2>
+          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
           <div className="terminal-window">
             <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
               <div className="terminal-dots">
@@ -759,7 +837,7 @@ export default function Home() {
                   href={siteConfig.social.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1"
+                  className="flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1 cursor-pointer"
                 >
                   <span className="text-[#4ade80]">$</span>
                   <span>open</span>
@@ -771,7 +849,7 @@ export default function Home() {
                   href="https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1"
+                  className="flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1 cursor-pointer"
                 >
                   <span className="text-[#4ade80]">$</span>
                   <span>open</span>
