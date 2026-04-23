@@ -453,16 +453,16 @@ export default function Home() {
 
           {/* Tagline */}
           <motion.div
-            className="mt-4 flex items-center justify-center gap-4"
+            className="mt-4 flex items-center justify-center gap-3 md:gap-4 px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
             transition={{ duration: 1, delay: 2 }}
           >
-            <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            <p className="text-xs text-white/30 font-[family-name:var(--font-jetbrains-mono)]">
+            <div className="hidden md:block h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            <p className="text-[11px] md:text-xs text-white/30 font-[family-name:var(--font-jetbrains-mono)] text-center">
               {siteConfig.subtitle}
             </p>
-            <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            <div className="hidden md:block h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           </motion.div>
 
           {/* Premium Pill Badges — centralizados, destacados */}
@@ -596,19 +596,19 @@ export default function Home() {
               </div>
               {/* Stats grid with accent borders */}
               <div className="grid grid-cols-2 gap-2.5 text-xs font-[family-name:var(--font-jetbrains-mono)]">
-                <div className="bg-white/[0.03] rounded-lg p-3 border-l-2 border-white/10">
+                <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
                   <div className="text-gradient-silver text-xl font-bold">{workanaStats.projectsCompleted}+</div>
                   <div className="text-white/30 mt-0.5">projetos entregues</div>
                 </div>
-                <div className="bg-white/[0.03] rounded-lg p-3 border-l-2 border-white/10">
+                <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
                   <div className="text-gradient-silver text-xl font-bold">{workanaStats.recurringClients}</div>
                   <div className="text-white/30 mt-0.5">clientes recorrentes</div>
                 </div>
-                <div className="bg-white/[0.03] rounded-lg p-3 border-l-2 border-[#4ade80]/30">
+                <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-[#4ade80]/30">
                   <div className="text-[#4ade80] text-xl font-bold">#{workanaStats.rankITBrazil}</div>
                   <div className="text-white/30 mt-0.5">ranking Brasil</div>
                 </div>
-                <div className="bg-white/[0.03] rounded-lg p-3 border-l-2 border-[#60a5fa]/30">
+                <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-[#60a5fa]/30">
                   <div className="text-[#60a5fa] text-xl font-bold">#{workanaStats.rankITGlobal}</div>
                   <div className="text-white/30 mt-0.5">ranking Global</div>
                 </div>
@@ -618,24 +618,24 @@ export default function Home() {
         </div>
 
         {/* Result Metrics — value-for-client */}
-        <div className="mt-10">
+        <div className="mt-10 md:mt-12">
           <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/20 mb-4">
             // métricas que importam
           </p>
-          <div className="grid grid-cols-3 gap-2 md:gap-4">
+          <div className="grid grid-cols-3 gap-3 md:gap-4">
             {resultMetrics.map((m, i) => (
               <motion.div
                 key={m.label}
-                className="terminal-window p-3 md:p-5 text-center"
+                className="terminal-window p-4 md:p-5 text-center"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.15 }}
               >
-                <div className="text-xl md:text-3xl font-bold text-gradient-silver">
+                <div className="text-2xl md:text-3xl font-bold text-gradient-silver">
                   {m.value}
                 </div>
-                <div className="text-[9px] md:text-xs font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] mt-1">
+                <div className="text-[8px] md:text-xs font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[1.5px] md:tracking-[2px] text-[#4ade80] mt-1.5">
                   {m.label}
                 </div>
                 <div className="text-[9px] md:text-[10px] text-white/30 mt-1 hidden md:block">
@@ -654,32 +654,34 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {testimonials.map((t, i) => (
-            <div key={i} className="terminal-window p-5 relative">
-              {/* Verified badge */}
-              {t.verified && (
-                <div className="absolute top-4 right-4 flex items-center gap-1 text-[8px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] bg-[#4ade80]/10 px-1.5 py-0.5 rounded border border-[#4ade80]/20">
-                  <span className="w-1 h-1 rounded-full bg-[#4ade80]" />
-                  VERIFICADO
-                </div>
-              )}
-              <div className="text-[#fbbf24] text-[10px] mb-3 mt-0.5">{"★".repeat(t.rating)}</div>
-              <p className="text-white/50 text-[11px] leading-relaxed italic mb-3">
+            <div key={i} className="terminal-window p-5 md:p-6 flex flex-col">
+              {/* Header: stars + verified badge */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="text-[#fbbf24] text-[11px]">{"★".repeat(t.rating)}</div>
+                {t.verified && (
+                  <div className="flex items-center gap-1 text-[8px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] bg-[#4ade80]/10 px-2 py-0.5 rounded border border-[#4ade80]/20 shrink-0">
+                    <span className="w-1 h-1 rounded-full bg-[#4ade80]" />
+                    VERIFICADO
+                  </div>
+                )}
+              </div>
+              <p className="text-white/50 text-[11px] md:text-xs leading-relaxed italic mb-4 flex-1">
                 <span className="text-white/20 text-lg leading-none">&ldquo;</span>
                 {t.text}
                 <span className="text-white/20 text-lg leading-none">&rdquo;</span>
               </p>
-              <div className="flex items-center justify-between flex-wrap gap-1 pt-2 border-t border-white/[0.04]">
-                <div className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
+              <div className="flex flex-col gap-1.5 pt-3 border-t border-white/[0.06]">
+                <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/40">
                   — {t.author}
                 </div>
-                <div className="flex items-center gap-1.5 text-[8px] font-[family-name:var(--font-jetbrains-mono)]">
-                  <span className="text-white/20">{t.date}</span>
+                <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-[family-name:var(--font-jetbrains-mono)] flex-wrap">
+                  <span className="text-white/25">{t.date}</span>
                   <span className="text-white/15">·</span>
-                  <span className="text-[#60a5fa]/60">{t.projectType}</span>
+                  <span className="text-[#60a5fa]/70">{t.projectType}</span>
                   {t.recurring && (
                     <>
                       <span className="text-white/15">·</span>
-                      <span className="text-[#4ade80]/60">recorrente</span>
+                      <span className="text-[#4ade80]/70">recorrente</span>
                     </>
                   )}
                 </div>
