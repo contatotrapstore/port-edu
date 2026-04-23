@@ -33,6 +33,16 @@ const Experience = dynamic(
 );
 
 // --- SVG Icons ---
+function BrazilFlag({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 14" width="18" height="12" className={className} aria-label="Brasil">
+      <rect width="20" height="14" rx="2" fill="#009c3b" />
+      <polygon points="10,1.5 18.5,7 10,12.5 1.5,7" fill="#ffdf00" />
+      <circle cx="10" cy="7" r="2.2" fill="#002776" />
+    </svg>
+  );
+}
+
 function GithubIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -472,10 +482,10 @@ export default function Home() {
             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
             transition={{ duration: 0.6, delay: 2.3 }}
           >
-            {/* TOP BR — destaque máximo */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#4ade80] px-3 py-1.5 rounded-full border border-[#4ade80]/30 bg-[#4ade80]/[0.08] backdrop-blur-sm flex items-center gap-1.5 shadow-[0_0_15px_rgba(74,222,128,0.15)]">
-              <span className="text-sm">🇧🇷</span>
-              TOP {workanaStats.rankITBrazil} BRASIL
+            {/* TOP BR — destaque máximo com bandeira SVG real */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#4ade80] px-3.5 py-1.5 rounded-full border border-[#4ade80]/40 bg-[#4ade80]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
+              <BrazilFlag className="shrink-0" />
+              <span>TOP <span className="text-white">#{workanaStats.rankITBrazil}</span> BRASIL</span>
             </span>
             {/* Global */}
             <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#60a5fa] px-3 py-1.5 rounded-full border border-[#60a5fa]/25 bg-[#60a5fa]/[0.06] backdrop-blur-sm flex items-center gap-1.5">

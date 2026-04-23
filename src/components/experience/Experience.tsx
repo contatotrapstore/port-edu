@@ -285,7 +285,27 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     let target = 0;
     let current = 0;
 
+    // Retorna a section ativa (opacity > 0.5) para decidir se deve delegar scroll
+    const getVisibleSection = (): HTMLElement | null => {
+      const sections = document.querySelectorAll<HTMLElement>("section[id]");
+      for (const s of sections) {
+        if (parseFloat(s.style.opacity || "0") > 0.5) return s;
+      }
+      return null;
+    };
+
     const handleWheel = (e: WheelEvent) => {
+      const section = getVisibleSection();
+      if (section) {
+        const st = section.scrollTop;
+        const max = section.scrollHeight - section.clientHeight;
+        if (max > 4) {
+          // Scroll down com conteúdo abaixo → deixa scroll nativo
+          if (e.deltaY > 0 && st < max - 2) return;
+          // Scroll up com conteúdo acima → deixa scroll nativo
+          if (e.deltaY < 0 && st > 2) return;
+        }
+      }
       e.preventDefault();
       target += e.deltaY * 0.0006;
       target = Math.max(0, Math.min(1, target));
@@ -294,8 +314,18 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     let touchY = 0;
     const handleTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY; };
     const handleTouchMove = (e: TouchEvent) => {
+      const section = getVisibleSection();
+      const dy = touchY - e.touches[0].clientY; // dy>0: swipe up (scroll down)
+      if (section) {
+        const st = section.scrollTop;
+        const max = section.scrollHeight - section.clientHeight;
+        if (max > 4) {
+          if (dy > 0 && st < max - 2) { touchY = e.touches[0].clientY; return; }
+          if (dy < 0 && st > 2) { touchY = e.touches[0].clientY; return; }
+        }
+      }
       e.preventDefault();
-      target += (touchY - e.touches[0].clientY) * 0.002;
+      target += dy * 0.002;
       target = Math.max(0, Math.min(1, target));
       touchY = e.touches[0].clientY;
     };
