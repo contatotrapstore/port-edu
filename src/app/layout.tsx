@@ -43,10 +43,6 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Eduardo Gouveia" }],
   creator: "Eduardo Gouveia",
-  icons: {
-    icon: "/EdevsHub.png",
-    apple: "/EdevsHub.png",
-  },
   robots: {
     index: true,
     follow: true,
