@@ -47,7 +47,7 @@ export const workanaStats = {
   projectsRunning: 7,
   clientReviews: 179,
   recurringClients: 28,
-  rating: 4.68,
+  rating: 4.69,
   ratingMax: 5,
   certifications: 7,
   hourlyRate: 200,

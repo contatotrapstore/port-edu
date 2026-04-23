@@ -487,23 +487,28 @@ export default function Home() {
               <BrazilFlag className="shrink-0" />
               <span>TOP <span className="text-white">#{workanaStats.rankITBrazil}</span> BRASIL</span>
             </span>
-            {/* Global */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#60a5fa] px-3 py-1.5 rounded-full border border-[#60a5fa]/25 bg-[#60a5fa]/[0.06] backdrop-blur-sm flex items-center gap-1.5">
-              <span className="text-sm">🌎</span>
-              Top {workanaStats.rankITGlobal} Global
+            {/* Global — destaque #7 */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#60a5fa] px-3.5 py-1.5 rounded-full border border-[#60a5fa]/40 bg-[#60a5fa]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(96,165,250,0.2)]">
+              <svg viewBox="0 0 14 14" width="14" height="14" className="shrink-0" aria-label="Global">
+                <circle cx="7" cy="7" r="6.5" fill="none" stroke="#60a5fa" strokeWidth="1.2" />
+                <ellipse cx="7" cy="7" rx="3" ry="6.5" fill="none" stroke="#60a5fa" strokeWidth="1.2" />
+                <line x1="0.5" y1="7" x2="13.5" y2="7" stroke="#60a5fa" strokeWidth="1.2" />
+              </svg>
+              <span>TOP <span className="text-white">#{workanaStats.rankITGlobal}</span> GLOBAL</span>
             </span>
-            {/* Projetos */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/60 px-3 py-1.5 rounded-full border border-white/15 bg-white/[0.04] backdrop-blur-sm">
-              {workanaStats.projectsCompleted}+ Projetos
+            {/* Projetos — destaque número */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/60 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/[0.05] backdrop-blur-sm">
+              <span className="text-white font-bold">{workanaStats.projectsCompleted}+</span> Projetos
             </span>
-            {/* Rating */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24] px-3 py-1.5 rounded-full border border-[#fbbf24]/25 bg-[#fbbf24]/[0.06] backdrop-blur-sm flex items-center gap-1">
+            {/* Rating — destaque nota */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24] px-3.5 py-1.5 rounded-full border border-[#fbbf24]/30 bg-[#fbbf24]/[0.08] backdrop-blur-sm flex items-center gap-1">
               <span>★</span>
-              {workanaStats.rating}/5
+              <span className="text-white font-bold">{workanaStats.rating}</span>
+              <span className="text-[#fbbf24]/70">/5</span>
               <span className="text-[#fbbf24]/50 ml-0.5">({workanaStats.clientReviews})</span>
             </span>
             {/* HERO */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#fbbf24] px-3 py-1.5 rounded-full border border-[#fbbf24]/40 bg-[#fbbf24]/[0.10] backdrop-blur-sm flex items-center gap-1.5 shadow-[0_0_15px_rgba(251,191,36,0.2)]">
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#fbbf24] px-3.5 py-1.5 rounded-full border border-[#fbbf24]/40 bg-[#fbbf24]/[0.10] backdrop-blur-sm flex items-center gap-1.5 shadow-[0_0_20px_rgba(251,191,36,0.25)]">
               <span>🏆</span>
               HERO
             </span>
