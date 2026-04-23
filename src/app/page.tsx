@@ -465,70 +465,52 @@ export default function Home() {
             <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           </motion.div>
 
-          {/* Terminal Stats — social proof em tempo real */}
+          {/* Premium Pill Badges — centralizados, destacados */}
           <motion.div
-            className="mt-6 md:mt-8 max-w-md mx-auto text-left font-[family-name:var(--font-jetbrains-mono)] text-[11px] md:text-xs space-y-1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 0.5, delay: 2.3 }}
+            className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-2 md:gap-2.5"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
+            transition={{ duration: 0.6, delay: 2.3 }}
           >
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -10 }}
-              transition={{ duration: 0.4, delay: 2.4 }}
-              className="flex items-center gap-2"
-            >
-              <span className="text-[#4ade80]">&gt;</span>
-              <span className="text-white/40">projetos_entregues:</span>
-              <span className="text-white font-bold">{workanaStats.projectsCompleted}+</span>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -10 }}
-              transition={{ duration: 0.4, delay: 2.7 }}
-              className="flex items-center gap-2"
-            >
-              <span className="text-[#4ade80]">&gt;</span>
-              <span className="text-white/40">ranking_brasil_ti:</span>
-              <span className="text-[#4ade80] font-bold">#{workanaStats.rankITBrazil}</span>
-              <span className="text-white/20 text-[10px]">de {workanaStats.rankTotalProfessionals}</span>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -10 }}
-              transition={{ duration: 0.4, delay: 3.0 }}
-              className="flex items-center gap-2"
-            >
-              <span className="text-[#4ade80]">&gt;</span>
-              <span className="text-white/40">avaliacoes_5_estrelas:</span>
-              <span className="text-[#fbbf24] font-bold">{workanaStats.clientReviews}</span>
-              <span className="text-[#fbbf24]">★</span>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -10 }}
-              transition={{ duration: 0.4, delay: 3.3 }}
-              className="flex items-center gap-2"
-            >
-              <span className="text-[#4ade80]">&gt;</span>
-              <span className="text-white/40">clientes_recorrentes:</span>
-              <span className="text-white font-bold">{workanaStats.recurringClients}</span>
-              <span className="text-white/20 text-[10px]">· nível {workanaStats.level}</span>
-            </motion.div>
+            {/* TOP BR — destaque máximo */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#4ade80] px-3 py-1.5 rounded-full border border-[#4ade80]/30 bg-[#4ade80]/[0.08] backdrop-blur-sm flex items-center gap-1.5 shadow-[0_0_15px_rgba(74,222,128,0.15)]">
+              <span className="text-sm">🇧🇷</span>
+              TOP {workanaStats.rankITBrazil} BRASIL
+            </span>
+            {/* Global */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#60a5fa] px-3 py-1.5 rounded-full border border-[#60a5fa]/25 bg-[#60a5fa]/[0.06] backdrop-blur-sm flex items-center gap-1.5">
+              <span className="text-sm">🌎</span>
+              Top {workanaStats.rankITGlobal} Global
+            </span>
+            {/* Projetos */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/60 px-3 py-1.5 rounded-full border border-white/15 bg-white/[0.04] backdrop-blur-sm">
+              {workanaStats.projectsCompleted}+ Projetos
+            </span>
+            {/* Rating */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24] px-3 py-1.5 rounded-full border border-[#fbbf24]/25 bg-[#fbbf24]/[0.06] backdrop-blur-sm flex items-center gap-1">
+              <span>★</span>
+              {workanaStats.rating}/5
+              <span className="text-[#fbbf24]/50 ml-0.5">({workanaStats.clientReviews})</span>
+            </span>
+            {/* HERO */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#fbbf24] px-3 py-1.5 rounded-full border border-[#fbbf24]/40 bg-[#fbbf24]/[0.10] backdrop-blur-sm flex items-center gap-1.5 shadow-[0_0_15px_rgba(251,191,36,0.2)]">
+              <span>🏆</span>
+              HERO
+            </span>
           </motion.div>
 
           {/* CTA Primary — Workana Hire */}
           <motion.div
-            className="mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3"
+            className="mt-7 md:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md sm:max-w-none mx-auto"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
-            transition={{ duration: 0.6, delay: 3.6 }}
+            transition={{ duration: 0.6, delay: 2.8 }}
           >
             <a
               href={workanaStats.workanaProfileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-6 py-3 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-all cursor-pointer shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] flex items-center gap-2"
+              className="group relative h-11 text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-6 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-all cursor-pointer shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] flex items-center justify-center gap-2"
             >
               <span className="text-[10px]">★</span>
               CONTRATAR VIA WORKANA
@@ -536,7 +518,7 @@ export default function Home() {
             </a>
             <button
               onClick={() => handleChapterClick(2)}
-              className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] px-4 py-3 rounded border border-[#4ade80]/20 bg-[#4ade80]/[0.05] hover:bg-[#4ade80]/10 transition-all cursor-pointer"
+              className="h-11 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] px-5 rounded-lg border border-[#4ade80]/20 bg-[#4ade80]/[0.05] hover:bg-[#4ade80]/10 hover:border-[#4ade80]/40 transition-all cursor-pointer flex items-center justify-center"
             >
               [ ver_projetos ]
             </button>

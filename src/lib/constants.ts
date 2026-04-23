@@ -34,7 +34,7 @@ export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
   title: "FULL STACK SENIOR | SAAS & SISTEMAS",
   subtitle: "Construindo o futuro, um commit por vez.",
-  bio: "145+ projetos entregues | 28 clientes recorrentes | Top 13 Brasil e Top 46 Global em TI na Workana entre 13,8M de profissionais. Desenvolvedor Full Stack Sênior — da arquitetura ao deploy. Especializado em SaaS, dashboards e aplicativos modernos.",
+  bio: "145+ projetos entregues | 28 clientes recorrentes | Top 3 Brasil e Top 7 Global em TI na Workana entre 14,02M de profissionais. Desenvolvedor Full Stack Sênior — da arquitetura ao deploy. Especializado em SaaS, dashboards e aplicativos modernos.",
   social: {
     github: "https://github.com/GouveiaZx",
     linkedin: "",
