@@ -210,7 +210,7 @@ function Section({
       className={`fixed inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
       style={{ opacity, zIndex: opacity > 0 ? 10 : 0, visibility: opacity > 0 ? "visible" : "hidden" }}
     >
-      <div className="pointer-events-auto max-w-6xl w-full my-auto py-16 md:py-8" style={{ paddingLeft: 'clamp(20px, 5vw, 48px)', paddingRight: 'clamp(20px, 5vw, 48px)' }}>
+      <div className="pointer-events-auto max-w-6xl w-full my-auto py-16 md:py-8" style={{ paddingLeft: 'clamp(24px, 6vw, 48px)', paddingRight: 'clamp(24px, 6vw, 48px)' }}>
         {children}
       </div>
     </section>
@@ -568,7 +568,7 @@ export default function Home() {
                 workana-profile.json
               </span>
             </div>
-            <div className="p-5">
+            <div className="p-5 md:p-6">
               {/* Profile photo + name + rating */}
               <div className="flex items-center gap-3 mb-5">
                 <div className="relative shrink-0">
@@ -654,15 +654,15 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {testimonials.map((t, i) => (
-            <div key={i} className="terminal-window p-4 relative">
+            <div key={i} className="terminal-window p-5 relative">
               {/* Verified badge */}
               {t.verified && (
-                <div className="absolute top-3 right-3 flex items-center gap-1 text-[8px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] bg-[#4ade80]/10 px-1.5 py-0.5 rounded border border-[#4ade80]/20">
+                <div className="absolute top-4 right-4 flex items-center gap-1 text-[8px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] bg-[#4ade80]/10 px-1.5 py-0.5 rounded border border-[#4ade80]/20">
                   <span className="w-1 h-1 rounded-full bg-[#4ade80]" />
                   VERIFICADO
                 </div>
               )}
-              <div className="text-[#fbbf24] text-[10px] mb-2">{"★".repeat(t.rating)}</div>
+              <div className="text-[#fbbf24] text-[10px] mb-3 mt-0.5">{"★".repeat(t.rating)}</div>
               <p className="text-white/50 text-[11px] leading-relaxed italic mb-3">
                 <span className="text-white/20 text-lg leading-none">&ldquo;</span>
                 {t.text}
