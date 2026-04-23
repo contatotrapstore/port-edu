@@ -14,8 +14,18 @@ import {
   catColors,
   workanaStats,
   testimonials,
+  resultMetrics,
 } from "@/lib/constants";
 import { Mail, ChevronDown, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+
+// Project category colors
+const projectCategoryColors: Record<string, string> = {
+  saas: "#60a5fa",
+  ecommerce: "#fbbf24",
+  mobile: "#c084fc",
+  sistema: "#4ade80",
+  web: "#fb923c",
+};
 
 const Experience = dynamic(
   () => import("@/components/experience/Experience"),
@@ -338,6 +348,7 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [currentChapter, setCurrentChapter] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
+  const [skillFilter, setSkillFilter] = useState<"all" | "frontend" | "backend" | "devops" | "tools">("all");
 
   const handleLoaded = useCallback(() => setIsLoaded(true), []);
   const handleProgress = useCallback((p: number) => {
@@ -454,46 +465,80 @@ export default function Home() {
             <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           </motion.div>
 
-          {/* Social proof badges */}
+          {/* Terminal Stats — social proof em tempo real */}
           <motion.div
-            className="mt-5 md:mt-8 flex items-center justify-center gap-1.5 md:gap-2.5 flex-wrap"
+            className="mt-6 md:mt-8 max-w-md mx-auto text-left font-[family-name:var(--font-jetbrains-mono)] text-[11px] md:text-xs space-y-1"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 1, delay: 2.5 }}
+            transition={{ duration: 0.5, delay: 2.3 }}
           >
-            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
-              Top {workanaStats.rankITBrazil} Brasil
-            </span>
-            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-sm">
-              145+ Projetos
-            </span>
-            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24] px-3 py-1.5 rounded-full border border-[#fbbf24]/20 bg-[#fbbf24]/[0.06] backdrop-blur-sm">
-              ★ 4.68/5
-            </span>
-            <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24] px-3 py-1.5 rounded-full border border-[#fbbf24]/25 bg-[#fbbf24]/[0.08] backdrop-blur-sm font-bold">
-              🏆 HERO
-            </span>
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -10 }}
+              transition={{ duration: 0.4, delay: 2.4 }}
+              className="flex items-center gap-2"
+            >
+              <span className="text-[#4ade80]">&gt;</span>
+              <span className="text-white/40">projetos_entregues:</span>
+              <span className="text-white font-bold">{workanaStats.projectsCompleted}+</span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -10 }}
+              transition={{ duration: 0.4, delay: 2.7 }}
+              className="flex items-center gap-2"
+            >
+              <span className="text-[#4ade80]">&gt;</span>
+              <span className="text-white/40">ranking_brasil_ti:</span>
+              <span className="text-[#4ade80] font-bold">#{workanaStats.rankITBrazil}</span>
+              <span className="text-white/20 text-[10px]">de {workanaStats.rankTotalProfessionals}</span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -10 }}
+              transition={{ duration: 0.4, delay: 3.0 }}
+              className="flex items-center gap-2"
+            >
+              <span className="text-[#4ade80]">&gt;</span>
+              <span className="text-white/40">avaliacoes_5_estrelas:</span>
+              <span className="text-[#fbbf24] font-bold">{workanaStats.clientReviews}</span>
+              <span className="text-[#fbbf24]">★</span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -10 }}
+              transition={{ duration: 0.4, delay: 3.3 }}
+              className="flex items-center gap-2"
+            >
+              <span className="text-[#4ade80]">&gt;</span>
+              <span className="text-white/40">clientes_recorrentes:</span>
+              <span className="text-white font-bold">{workanaStats.recurringClients}</span>
+              <span className="text-white/20 text-[10px]">· nível {workanaStats.level}</span>
+            </motion.div>
           </motion.div>
 
-          {/* CTA */}
+          {/* CTA Primary — Workana Hire */}
           <motion.div
-            className="mt-8 flex items-center justify-center gap-3"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 1, delay: 3 }}
+            className="mt-8 md:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
+            transition={{ duration: 0.6, delay: 3.6 }}
           >
+            <a
+              href={workanaStats.workanaProfileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-6 py-3 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-all cursor-pointer shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] flex items-center gap-2"
+            >
+              <span className="text-[10px]">★</span>
+              CONTRATAR VIA WORKANA
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
             <button
               onClick={() => handleChapterClick(2)}
-              className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] px-4 py-2 rounded border border-[#4ade80]/20 bg-[#4ade80]/[0.05] hover:bg-[#4ade80]/10 transition-all cursor-pointer"
+              className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] px-4 py-3 rounded border border-[#4ade80]/20 bg-[#4ade80]/[0.05] hover:bg-[#4ade80]/10 transition-all cursor-pointer"
             >
               [ ver_projetos ]
-            </button>
-            <button
-              onClick={() => handleChapterClick(4)}
-              className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/40 px-4 py-2 rounded border border-white/10 hover:border-white/20 hover:text-white/60 transition-all cursor-pointer"
-            >
-              [ contato ]
             </button>
           </motion.div>
         </div>
@@ -590,22 +635,88 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Result Metrics — value-for-client */}
+        <div className="mt-10">
+          <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/20 mb-4">
+            // métricas que importam
+          </p>
+          <div className="grid grid-cols-3 gap-2 md:gap-4">
+            {resultMetrics.map((m, i) => (
+              <motion.div
+                key={m.label}
+                className="terminal-window p-3 md:p-5 text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+              >
+                <div className="text-xl md:text-3xl font-bold text-gradient-silver">
+                  {m.value}
+                </div>
+                <div className="text-[9px] md:text-xs font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] mt-1">
+                  {m.label}
+                </div>
+                <div className="text-[9px] md:text-[10px] text-white/30 mt-1 hidden md:block">
+                  {m.description}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
         {/* Testimonials */}
         <div className="mt-10 mb-2">
           <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/20 mb-4">
-            // avaliações de clientes
+            // avaliações verificadas
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {testimonials.map((t, i) => (
-            <div key={i} className="terminal-window p-4">
+            <div key={i} className="terminal-window p-4 relative">
+              {/* Verified badge */}
+              {t.verified && (
+                <div className="absolute top-3 right-3 flex items-center gap-1 text-[8px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] bg-[#4ade80]/10 px-1.5 py-0.5 rounded border border-[#4ade80]/20">
+                  <span className="w-1 h-1 rounded-full bg-[#4ade80]" />
+                  VERIFICADO
+                </div>
+              )}
               <div className="text-[#fbbf24] text-[10px] mb-2">{"★".repeat(t.rating)}</div>
-              <p className="text-white/40 text-[11px] leading-relaxed italic">&ldquo;{t.text}&rdquo;</p>
-              <div className="mt-3 text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-white/20">
-                — {t.author} • {t.project}
+              <p className="text-white/50 text-[11px] leading-relaxed italic mb-3">
+                <span className="text-white/20 text-lg leading-none">&ldquo;</span>
+                {t.text}
+                <span className="text-white/20 text-lg leading-none">&rdquo;</span>
+              </p>
+              <div className="flex items-center justify-between flex-wrap gap-1 pt-2 border-t border-white/[0.04]">
+                <div className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
+                  — {t.author}
+                </div>
+                <div className="flex items-center gap-1.5 text-[8px] font-[family-name:var(--font-jetbrains-mono)]">
+                  <span className="text-white/20">{t.date}</span>
+                  <span className="text-white/15">·</span>
+                  <span className="text-[#60a5fa]/60">{t.projectType}</span>
+                  {t.recurring && (
+                    <>
+                      <span className="text-white/15">·</span>
+                      <span className="text-[#4ade80]/60">recorrente</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Link to all reviews */}
+        <div className="mt-5 text-center">
+          <a
+            href={workanaStats.workanaProfileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/30 hover:text-[#fbbf24] transition-colors inline-flex items-center gap-2"
+          >
+            ver todas as {workanaStats.clientReviews} avaliações
+            <span>→</span>
+          </a>
         </div>
       </Section>
 
@@ -649,12 +760,46 @@ export default function Home() {
                   </div>
                 )}
                 <div className="p-5">
-                  <h3 className="text-lg font-semibold text-white mb-2 font-[family-name:var(--font-jetbrains-mono)]">
-                    {projects[carouselIdx].title}
-                  </h3>
-                  <p className="text-xs text-white/40 leading-relaxed mb-4">
+                  {/* Category tag */}
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-jetbrains-mono)]">
+                      {projects[carouselIdx].title}
+                    </h3>
+                    <span
+                      className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-1 rounded border font-bold"
+                      style={{
+                        color: projectCategoryColors[projects[carouselIdx].category],
+                        borderColor: `${projectCategoryColors[projects[carouselIdx].category]}30`,
+                        backgroundColor: `${projectCategoryColors[projects[carouselIdx].category]}10`,
+                      }}
+                    >
+                      {projects[carouselIdx].category}
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/40 leading-relaxed mb-3">
                     {projects[carouselIdx].description}
                   </p>
+
+                  {/* Output metrics */}
+                  {projects[carouselIdx].output && (
+                    <div className="mb-4 pb-3 border-b border-white/[0.04]">
+                      <div className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] mb-1.5">
+                        &gt; output:
+                      </div>
+                      <ul className="space-y-0.5">
+                        {projects[carouselIdx].output!.map((o) => (
+                          <li
+                            key={o}
+                            className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 flex items-start gap-1.5"
+                          >
+                            <span className="text-[#4ade80]/60 shrink-0">•</span>
+                            <span>{o}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
                   <div className="flex flex-wrap gap-1.5">
                     {projects[carouselIdx].tech.map((t) => (
                       <span
@@ -737,15 +882,48 @@ export default function Home() {
       {/* ============ SKILLS ============ */}
       <Section id="skills" progress={progress} range={[0.65, 0.85]}>
         <div>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-2">
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
             Skills<span className="text-white/20">.</span>
           </h2>
-          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-8" />
+          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
+
+          {/* Filter buttons */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {(["all", "frontend", "backend", "devops", "tools"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setSkillFilter(f)}
+                className={`text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-3 py-1.5 rounded border transition-all cursor-pointer ${
+                  skillFilter === f
+                    ? "text-white border-white/30 bg-white/[0.05]"
+                    : "text-white/30 border-white/[0.06] hover:border-white/15 hover:text-white/60"
+                }`}
+                style={
+                  skillFilter === f && f !== "all"
+                    ? {
+                        color: catColors[f],
+                        borderColor: `${catColors[f]}40`,
+                        backgroundColor: `${catColors[f]}10`,
+                      }
+                    : undefined
+                }
+              >
+                [ {f === "all" ? "todas" : f} ]
+              </button>
+            ))}
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            {(["frontend", "backend", "devops", "tools"] as const).map(
-              (category) => (
-                <div key={category} className="relative">
+            {(["frontend", "backend", "devops", "tools"] as const)
+              .filter((category) => skillFilter === "all" || skillFilter === category)
+              .map((category) => (
+                <motion.div
+                  key={category}
+                  className="relative"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
                   <div className="flex items-center gap-2 mb-5">
                     <div
                       className="w-2 h-2 rounded-full"
@@ -772,12 +950,17 @@ export default function Home() {
                       .filter((s) => s.category === category)
                       .map((skill) => (
                         <div key={skill.name}>
-                          <div className="flex justify-between text-[11px] mb-1.5">
-                            <span className="text-white/60 font-[family-name:var(--font-jetbrains-mono)]">
-                              {skill.name}
+                          <div className="flex justify-between text-[11px] mb-1.5 items-center gap-2">
+                            <span className="text-white/60 font-[family-name:var(--font-jetbrains-mono)] flex items-center gap-1.5 min-w-0">
+                              <span className="truncate">{skill.name}</span>
+                              {skill.hot && (
+                                <span className="text-[8px] font-bold text-[#fb923c] bg-[#fb923c]/10 px-1 py-0.5 rounded border border-[#fb923c]/20 shrink-0">
+                                  HOT
+                                </span>
+                              )}
                             </span>
-                            <span className="font-[family-name:var(--font-jetbrains-mono)] text-white/25 shrink-0 ml-2">
-                              {Math.round(skill.level * 100)}%
+                            <span className="font-[family-name:var(--font-jetbrains-mono)] text-white/40 shrink-0 text-[10px]">
+                              {skill.years}+ anos
                             </span>
                           </div>
                           <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
@@ -799,20 +982,69 @@ export default function Home() {
                         </div>
                       ))}
                   </div>
-                </div>
-              )
-            )}
+                </motion.div>
+              ))}
           </div>
         </div>
       </Section>
 
       {/* ============ CONTACT ============ */}
       <Section id="contact" progress={progress} range={[0.85, 1.0]}>
-        <div className="max-w-xl mx-auto w-full">
+        <div className="max-w-2xl mx-auto w-full">
           <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
             Contato<span className="text-white/20">.</span>
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
+
+          {/* Hero headline */}
+          <div className="mb-6">
+            <h3 className="text-lg md:text-2xl font-bold text-white leading-tight">
+              Vamos construir o próximo{" "}
+              <span className="text-gradient-silver">SaaS de sucesso</span>?
+            </h3>
+            <p className="text-[11px] md:text-xs text-white/40 font-[family-name:var(--font-jetbrains-mono)] mt-2">
+              resposta em até 2h úteis · trabalho com clientes no mundo todo
+            </p>
+          </div>
+
+          {/* CTA Principal Workana */}
+          <a
+            href={workanaStats.workanaProfileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block mb-5 terminal-window border-[#fbbf24]/30 hover:border-[#fbbf24]/60 transition-all cursor-pointer"
+            style={{
+              borderWidth: "1px",
+              boxShadow: "0 0 20px rgba(251, 191, 36, 0.08)",
+            }}
+          >
+            <div className="flex items-center h-8 px-3 bg-[#fbbf24]/[0.05] border-b border-[#fbbf24]/10">
+              <div className="terminal-dots">
+                <span /><span /><span />
+              </div>
+              <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24]/60">
+                hire.sh — executable
+              </span>
+            </div>
+            <div className="p-5 md:p-6 flex items-center justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24]/50 uppercase tracking-[2px] mb-1">
+                  ★ hero · top {workanaStats.rankITBrazil} brasil · {workanaStats.rating}/5
+                </div>
+                <div className="text-base md:text-xl font-bold text-white font-[family-name:var(--font-jetbrains-mono)]">
+                  CONTRATAR VIA WORKANA
+                </div>
+                <div className="text-[10px] md:text-xs text-white/40 mt-1">
+                  {workanaStats.clientReviews} avaliações · {workanaStats.recurringClients} clientes recorrentes
+                </div>
+              </div>
+              <div className="text-[#fbbf24] text-2xl md:text-3xl font-bold group-hover:translate-x-1 transition-transform shrink-0">
+                →
+              </div>
+            </div>
+          </a>
+
+          {/* Terminal secondary links */}
           <div className="terminal-window">
             <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
               <div className="terminal-dots">
@@ -823,13 +1055,12 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="p-6 font-[family-name:var(--font-jetbrains-mono)] text-sm space-y-3">
+            <div className="p-5 md:p-6 font-[family-name:var(--font-jetbrains-mono)] text-sm space-y-3">
               <p className="text-[#4ade80]">
                 $ echo &quot;Vamos Conversar&quot;
               </p>
               <p className="text-white/40 text-xs leading-relaxed">
-                Tem um projeto em mente? Vamos transformar sua ideia em
-                realidade.
+                Tem um projeto em mente? Vamos transformar sua ideia em realidade.
               </p>
 
               <div className="space-y-2 pt-4">
@@ -846,7 +1077,7 @@ export default function Home() {
                   <span className="text-white/15">--profile</span>
                 </a>
                 <a
-                  href="https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6"
+                  href={workanaStats.workanaProfileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1 cursor-pointer"
@@ -868,7 +1099,7 @@ export default function Home() {
           </div>
 
           {/* Footer */}
-          <div className="mt-12 text-center text-[10px] text-white/15 uppercase tracking-[2px] font-[family-name:var(--font-jetbrains-mono)]">
+          <div className="mt-10 text-center text-[10px] text-white/15 uppercase tracking-[2px] font-[family-name:var(--font-jetbrains-mono)]">
             &copy; {new Date().getFullYear()} Eduardo Gouveia — Built with
             Next.js & Three.js
           </div>
