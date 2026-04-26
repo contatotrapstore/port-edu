@@ -313,22 +313,34 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
     let touchY = 0;
     const handleTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY; };
+
+    // PASSIVE listener: NUNCA chama preventDefault, deixa native scroll iOS rolar
+    // Chapter advance só dispara quando section está NO LIMITE (top ou bottom)
+    // ou quando section não tem overflow (max <= 4).
     const handleTouchMove = (e: TouchEvent) => {
+      if (!e.touches[0]) return;
       const section = getVisibleSection();
-      const dy = touchY - e.touches[0].clientY; // dy>0: swipe up (scroll down)
-      if (section) {
-        const st = section.scrollTop;
-        const max = section.scrollHeight - section.clientHeight;
-        if (max > 4) {
-          if (dy > 0 && st < max - 2) { touchY = e.touches[0].clientY; return; }
-          if (dy < 0 && st > 2) { touchY = e.touches[0].clientY; return; }
-        }
+      const dy = touchY - e.touches[0].clientY; // dy>0: swipe up (quer scroll down)
+      touchY = e.touches[0].clientY;
+
+      if (!section) {
+        target += dy * 0.0012;
+        target = Math.max(0, Math.min(1, target));
+        return;
       }
-      e.preventDefault();
-      target += dy * 0.0012;
-      target = Math.max(0, Math.min(1, target));
-      touchY = e.touches[0].clientY;
-      touchY = e.touches[0].clientY;
+
+      const st = section.scrollTop;
+      const max = section.scrollHeight - section.clientHeight;
+      const noOverflow = max <= 4;
+      const atBottom = st >= max - 2;
+      const atTop = st <= 2;
+
+      // Avança chapter quando: sem overflow OU (swipe up & no fundo) OU (swipe down & no topo)
+      if (noOverflow || (dy > 0 && atBottom) || (dy < 0 && atTop)) {
+        target += dy * 0.0012;
+        target = Math.max(0, Math.min(1, target));
+      }
+      // Senão: deixa native scroll do iOS lidar (já está rolando porque listener é passive)
     };
 
     const handleGoto = (e: Event) => {
@@ -356,7 +368,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
     window.addEventListener("gotoChapter", handleGoto);
     raf = requestAnimationFrame(animate);
 
