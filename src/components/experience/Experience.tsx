@@ -325,8 +325,9 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
         }
       }
       e.preventDefault();
-      target += dy * 0.002;
+      target += dy * 0.0012;
       target = Math.max(0, Math.min(1, target));
+      touchY = e.touches[0].clientY;
       touchY = e.touches[0].clientY;
     };
 
