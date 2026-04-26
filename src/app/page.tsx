@@ -228,7 +228,7 @@ function Section({
         pointerEvents: opacity > 0 ? "auto" : "none",
       }}
     >
-      <div className="min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:py-12 px-6 md:px-8 lg:px-12">
+      <div className="min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:pt-24 md:pb-16 px-6 md:px-8 lg:px-12">
         <div className="w-full">
           {children}
         </div>
