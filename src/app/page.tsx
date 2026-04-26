@@ -217,16 +217,18 @@ function Section({
   return (
     <section
       id={id}
-      className={`fixed inset-0 pointer-events-none transition-opacity duration-300 overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
+      className={`fixed inset-0 transition-opacity duration-300 overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
       style={{
         opacity,
         zIndex: opacity > 0 ? 10 : 0,
         visibility: opacity > 0 ? "visible" : "hidden",
         touchAction: "pan-y",
         WebkitOverflowScrolling: "touch",
+        overscrollBehavior: "contain",
+        pointerEvents: opacity > 0 ? "auto" : "none",
       }}
     >
-      <div className="pointer-events-auto min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:py-12 px-6 md:px-8 lg:px-12">
+      <div className="min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:py-12 px-6 md:px-8 lg:px-12">
         <div className="w-full">
           {children}
         </div>
