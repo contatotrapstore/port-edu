@@ -24,14 +24,14 @@ const siteUrl = "https://edevshub.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "EDevsHub | Eduardo Gouveia — Top 3 Brasil Full Stack Workana",
+  title: "EDevsHub | Eduardo Gouveia — Top 2 Brasil Full Stack Workana",
   description:
-    "Eduardo Gouveia — Full Stack Senior, Top 3 Brasil em TI na Workana. 145+ projetos entregues, 4.68/5 ⭐, nível HERO. Especialista em SaaS, Dashboards e Sistemas.",
+    "Eduardo Gouveia — Full Stack Senior, Top 2 Brasil em TI na Workana. 145+ projetos entregues, 4.69/5 ⭐, nível HERO. Especialista em SaaS, Dashboards e Sistemas.",
   keywords: [
     "Eduardo Gouveia",
     "EDevsHub",
     "Full Stack Developer",
-    "Top 3 Brasil Workana",
+    "Top 2 Brasil Workana",
     "Workana HERO",
     "desenvolvedor SaaS",
     "dashboard desenvolvedor",
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: siteUrl,
     siteName: "EDevsHub — Eduardo Gouveia",
-    title: "EDevsHub | Top 3 Brasil Full Stack Developer na Workana",
+    title: "EDevsHub | Top 2 Brasil Full Stack Developer na Workana",
     description:
-      "145+ projetos entregues · 4.68/5 ⭐ · Nível HERO · Top 3 Brasil em TI. Especialista em SaaS, Dashboards e Sistemas.",
+      "145+ projetos entregues · 4.69/5 ⭐ · Nível HERO · Top 2 Brasil em TI. Especialista em SaaS, Dashboards e Sistemas.",
     images: [
       {
         url: "/EdevsHub.png",
@@ -72,9 +72,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "EDevsHub | Top 3 Brasil Full Stack Developer",
+    title: "EDevsHub | Top 2 Brasil Full Stack Developer",
     description:
-      "145+ projetos · 4.68/5 ⭐ · HERO Workana. Especialista SaaS & Sistemas.",
+      "145+ projetos · 4.69/5 ⭐ · HERO Workana. Especialista SaaS & Sistemas.",
     images: ["/EdevsHub.png"],
   },
   alternates: {
@@ -89,7 +89,7 @@ const structuredData = {
   url: siteUrl,
   jobTitle: "Full Stack Senior Developer",
   description:
-    "Desenvolvedor Full Stack Senior, Top 3 Brasil em TI na Workana. Especializado em SaaS, Dashboards e Sistemas.",
+    "Desenvolvedor Full Stack Senior, Top 2 Brasil em TI na Workana. Especializado em SaaS, Dashboards e Sistemas.",
   image: `${siteUrl}/EdevsHub.png`,
   sameAs: [
     "https://github.com/GouveiaZx",
@@ -107,8 +107,8 @@ const structuredData = {
   ],
   award: [
     "Nível HERO na Workana (mais alto nível)",
-    "Top 3 Brasil em TI e Programação (Workana)",
-    "Top 7 Global em TI e Programação (Workana)",
+    "Top 2 Brasil em TI e Programação (Workana)",
+    "Top 3 Global em TI e Programação (Workana)",
   ],
 };
 

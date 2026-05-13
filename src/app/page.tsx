@@ -497,7 +497,7 @@ export default function Home() {
               <BrazilFlag className="shrink-0" />
               <span>TOP <span className="text-white">#{workanaStats.rankITBrazil}</span> BRASIL</span>
             </span>
-            {/* Global — destaque #7 */}
+            {/* Global — destaque #3 */}
             <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#60a5fa] px-3.5 py-1.5 rounded-full border border-[#60a5fa]/40 bg-[#60a5fa]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(96,165,250,0.2)]">
               <svg viewBox="0 0 14 14" width="14" height="14" className="shrink-0" aria-label="Global">
                 <circle cx="7" cy="7" r="6.5" fill="none" stroke="#60a5fa" strokeWidth="1.2" />
