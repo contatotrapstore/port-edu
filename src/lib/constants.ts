@@ -308,18 +308,29 @@ export const projects: Project[] = [
     id: "clinafy",
     title: "Clinafy",
     description:
-      "SaaS para Clínicas com IA. Plataforma de gestão clínica com inteligência artificial para agendamento e prontuários eletrônicos.",
+      "Sistema para profissionais de saúde mental: prontuário eletrônico com IA, agenda inteligente, teleconsulta e gestão financeira — tudo em um só lugar.",
+    overview:
+      "Plataforma SaaS para profissionais e clínicas de saúde mental que reúne prontuário eletrônico com IA, agenda inteligente, teleconsulta integrada e gestão financeira completa. Mais de 500 profissionais e 50.000 consultas.",
     problem:
-      "Clínicas precisavam de agendamento inteligente, prontuários eletrônicos seguros e telemedicina.",
+      "Profissionais de saúde mental usavam ferramentas fragmentadas para prontuário, agenda, teleconsulta e financeiro — sem um sistema único.",
     approach:
-      "Plataforma clínica com IA para agendamento, prontuários eletrônicos e telemedicina integrada.",
-    tech: ["JavaScript", "TypeScript", "React", "AI/ML"],
+      "SaaS que centraliza prontuário eletrônico com IA (transcrição automática e insights), agendamento inteligente, teleconsulta e gestão financeira, com área do paciente e app instalável (PWA).",
+    features: [
+      "Prontuário eletrônico com IA (transcrição + insights)",
+      "Agenda inteligente",
+      "Teleconsulta integrada",
+      "Avaliações clínicas padronizadas",
+      "Gestão financeira completa",
+      "Área do paciente + app instalável (PWA)",
+    ],
+    tech: ["React", "TypeScript", "Node.js", "IA"],
     image: "/images/projects/clinafy.webp",
+    url: "https://clinafy.com",
     category: "saas",
     output: [
-      "agendamento inteligente com IA",
-      "prontuários eletrônicos seguros",
-      "telemedicina integrada",
+      "+500 profissionais ativos",
+      "+50.000 consultas realizadas",
+      "4.9/5 de avaliação",
     ],
   },
   {
