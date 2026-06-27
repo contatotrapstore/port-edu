@@ -287,24 +287,6 @@ export const projects: Project[] = [
     ],
   },
   {
-    id: "click",
-    title: "Click",
-    description:
-      "Sistema Interno com Dashboard Mobile. Aplicativo de gestão interna com dashboard responsivo e notificações em tempo real.",
-    problem:
-      "A gestão interna exigia acesso mobile com notificações em tempo real e integração entre sistemas.",
-    approach:
-      "App de gestão mobile-first com notificações em tempo real e integração multi-sistema.",
-    tech: ["JavaScript", "React.js", "Node.js", "MongoDB"],
-    image: "/images/projects/click.webp",
-    category: "mobile",
-    output: [
-      "notificações em tempo real",
-      "dashboard mobile-first",
-      "integração multi-sistema",
-    ],
-  },
-  {
     id: "clinafy",
     title: "Clinafy",
     description:
@@ -358,6 +340,25 @@ export const projects: Project[] = [
       "loja no ar e vendendo",
       "design responsivo premium",
       "gestão simples pelo cliente",
+    ],
+  },
+  {
+    // Projeto interno (não público) — sem case/página, fica por último.
+    id: "click",
+    title: "Click",
+    description:
+      "Sistema Interno com Dashboard Mobile. Aplicativo de gestão interna com dashboard responsivo e notificações em tempo real.",
+    problem:
+      "A gestão interna exigia acesso mobile com notificações em tempo real e integração entre sistemas.",
+    approach:
+      "App de gestão mobile-first com notificações em tempo real e integração multi-sistema.",
+    tech: ["JavaScript", "React.js", "Node.js", "MongoDB"],
+    image: "/images/projects/click.webp",
+    category: "mobile",
+    output: [
+      "notificações em tempo real",
+      "dashboard mobile-first",
+      "integração multi-sistema",
     ],
   },
 ];

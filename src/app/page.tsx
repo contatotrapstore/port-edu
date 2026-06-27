@@ -804,13 +804,15 @@ export default function Home() {
                     ))}
                   </div>
 
-                  <button
-                    onClick={() => setCaseStudy(projects[carouselIdx])}
-                    className="group/cta mt-5 inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#4ade80]/30 bg-[#4ade80]/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] hover:bg-[#4ade80]/[0.12] hover:border-[#4ade80]/50 transition-all"
-                  >
-                    ver case
-                    <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
-                  </button>
+                  {projects[carouselIdx].overview && (
+                    <button
+                      onClick={() => setCaseStudy(projects[carouselIdx])}
+                      className="group/cta mt-5 inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#4ade80]/30 bg-[#4ade80]/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] hover:bg-[#4ade80]/[0.12] hover:border-[#4ade80]/50 transition-all"
+                    >
+                      ver case
+                      <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
+                    </button>
+                  )}
                 </div>
               </div>
 

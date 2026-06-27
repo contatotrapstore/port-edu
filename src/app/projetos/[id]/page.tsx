@@ -7,8 +7,11 @@ import AmbientBackdrop from "@/components/AmbientBackdrop";
 
 const siteUrl = "https://edevshub.com";
 
+// Only projects with real case-study content get a page; others (e.g. Click) 404.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
-  return projects.map((p) => ({ id: p.id }));
+  return projects.filter((p) => p.overview).map((p) => ({ id: p.id }));
 }
 
 export async function generateMetadata({
@@ -42,7 +45,7 @@ export default async function ProjectPage({
 }) {
   const { id } = await params;
   const project = projects.find((p) => p.id === id);
-  if (!project) notFound();
+  if (!project || !project.overview) notFound();
 
   const color = projectColors[project.category];
   const jsonLd = {
