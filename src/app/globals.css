@@ -14,7 +14,7 @@
   --code-orange: #fb923c;
   --text-primary: #ffffff;
   --text-secondary: #a0a0a0;
-  --text-muted: #555555;
+  --text-muted: #6e6e6e;
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-hover: rgba(200, 200, 200, 0.2);
 }
@@ -225,4 +225,45 @@ html, body {
   line-height: 1;
   pointer-events: none;
   user-select: none;
+}
+
+/* === FOCUS VISIBLE (keyboard a11y) === */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip-to-content link — hidden until focused */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  transform: translateY(-150%);
+  transition: transform 0.2s ease;
+  background: var(--bg-card);
+  color: var(--foreground);
+  border: 1px solid var(--border-hover);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-family: var(--font-jetbrains-mono, monospace);
+  font-size: 12px;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  .glitch-text::before,
+  .glitch-text::after { display: none; }
+  .scan-line::before,
+  .cursor-blink { animation: none; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

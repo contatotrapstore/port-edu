@@ -1,8 +1,9 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
 import * as THREE from "three";
+import { chapterTargets } from "@/lib/constants";
 
 // Shared scroll ref — updated by animation loop, read by CameraController
 const scrollRef = { current: 0 };
@@ -128,10 +129,9 @@ function DNAHelix() {
 }
 
 // Matrix rain (optimized: 80 count)
-function MatrixRain() {
+function MatrixRain({ count = 80 }) {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const count = 80;
 
   const data = useMemo(() => {
     return Array.from({ length: count }, () => ({
@@ -220,10 +220,9 @@ function FloatingBrackets() {
 }
 
 // Silver rain (optimized: 100 count, 4-segment spheres)
-function SilverRain() {
+function SilverRain({ count = 100 }) {
   const mesh = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const count = 100;
 
   const data = useMemo(() => {
     return Array.from({ length: count }, () => ({
@@ -275,10 +274,40 @@ interface ExperienceProps {
 
 export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
   const lastReported = useRef(0);
+  const canvasReadyRef = useRef(false);
+
+  // a11y: honor reduced-motion (freeze the scene). perf: lighter scene on small/low-memory devices.
+  const [reduced] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+  const [lowPower] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      (window.innerWidth < 768 || ((navigator as { deviceMemory?: number }).deviceMemory ?? 8) < 4)
+  );
 
   useEffect(() => {
-    const timer = setTimeout(onLoaded, 2000);
-    return () => clearTimeout(timer);
+    // Loader exits as soon as the WebGL canvas is ready — with a short minimum so the
+    // boot sequence still reads, and a hard cap so the hero is never blocked for long.
+    let done = false;
+    let poll: ReturnType<typeof setInterval> | undefined;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      if (poll) clearInterval(poll);
+      clearTimeout(cap);
+      onLoaded();
+    };
+    const min = setTimeout(() => {
+      if (canvasReadyRef.current) finish();
+      else poll = setInterval(() => { if (canvasReadyRef.current) finish(); }, 120);
+    }, 650);
+    const cap = setTimeout(finish, 1200);
+    return () => {
+      clearTimeout(min);
+      clearTimeout(cap);
+      if (poll) clearInterval(poll);
+    };
   }, [onLoaded]);
 
   useEffect(() => {
@@ -295,6 +324,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     };
 
     const handleWheel = (e: WheelEvent) => {
+      if (document.documentElement.hasAttribute("data-modal-open")) return;
       const section = getVisibleSection();
       if (section) {
         const st = section.scrollTop;
@@ -319,6 +349,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     // ou quando section não tem overflow (max <= 4).
     const handleTouchMove = (e: TouchEvent) => {
       if (!e.touches[0]) return;
+      if (document.documentElement.hasAttribute("data-modal-open")) return;
       const section = getVisibleSection();
       const dy = touchY - e.touches[0].clientY; // dy>0: swipe up (quer scroll down)
       touchY = e.touches[0].clientY;
@@ -343,10 +374,57 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       // Senão: deixa native scroll do iOS lidar (já está rolando porque listener é passive)
     };
 
-    const handleGoto = (e: Event) => {
-      const idx = (e as CustomEvent).detail.index;
-      const targets = [0.05, 0.3, 0.52, 0.75, 0.92];
-      if (idx >= 0 && idx < targets.length) target = targets[idx];
+    const goToChapter = (idx: number) => {
+      if (idx >= 0 && idx < chapterTargets.length) target = chapterTargets[idx];
+    };
+    const handleGoto = (e: Event) => goToChapter((e as CustomEvent).detail.index);
+
+    // Keyboard navigation (a11y) — arrows / PageUp-Down / Home / End jump between chapters.
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.documentElement.hasAttribute("data-modal-open")) return;
+      const el = e.target as HTMLElement | null;
+      const tag = el?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || el?.isContentEditable) return;
+
+      // Scroll the inner content of long sections first (parity with wheel/touch),
+      // only jumping chapters once the section is at its boundary.
+      const section = getVisibleSection();
+      if (section) {
+        const st = section.scrollTop;
+        const max = section.scrollHeight - section.clientHeight;
+        const step = e.key === "PageDown" || e.key === "PageUp" ? section.clientHeight * 0.85 : 140;
+        if ((e.key === "ArrowDown" || e.key === "PageDown") && max > 4 && st < max - 2) {
+          e.preventDefault();
+          section.scrollBy({ top: step, behavior: "smooth" });
+          return;
+        }
+        if ((e.key === "ArrowUp" || e.key === "PageUp") && max > 4 && st > 2) {
+          e.preventDefault();
+          section.scrollBy({ top: -step, behavior: "smooth" });
+          return;
+        }
+      }
+
+      let idx = 0;
+      let best = Infinity;
+      chapterTargets.forEach((t, i) => {
+        const d = Math.abs(current - t);
+        if (d < best) { best = d; idx = i; }
+      });
+      switch (e.key) {
+        case "ArrowDown":
+        case "PageDown":
+          e.preventDefault(); goToChapter(Math.min(idx + 1, chapterTargets.length - 1)); break;
+        case "ArrowUp":
+        case "PageUp":
+          e.preventDefault(); goToChapter(Math.max(idx - 1, 0)); break;
+        case "Home":
+          e.preventDefault(); goToChapter(0); break;
+        case "End":
+          e.preventDefault(); goToChapter(chapterTargets.length - 1); break;
+        default:
+          return;
+      }
     };
 
     let raf: number;
@@ -369,6 +447,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("gotoChapter", handleGoto);
     raf = requestAnimationFrame(animate);
 
@@ -376,6 +455,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("gotoChapter", handleGoto);
       cancelAnimationFrame(raf);
     };
@@ -383,21 +463,23 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
   return (
     <Canvas
-      gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
-      dpr={[1, 1.5]}
+      gl={{ antialias: !lowPower, alpha: false, powerPreference: "high-performance" }}
+      dpr={lowPower ? [1, 1] : [1, 1.5]}
+      frameloop={reduced ? "demand" : "always"}
       camera={{ position: [0, 0, 10], fov: 60, near: 0.1, far: 200 }}
       style={{ background: "#0a0a0a" }}
+      onCreated={() => { canvasReadyRef.current = true; }}
     >
       <color attach="background" args={["#0a0a0a"]} />
       <CameraController />
-      <Particles />
+      <Particles count={lowPower ? 140 : 250} />
       <FloatingGeo />
       <FloatingGeo2 />
       <DNAHelix />
-      <MatrixRain />
+      <MatrixRain count={lowPower ? 48 : 80} />
       <GridPlane />
       <FloatingBrackets />
-      <SilverRain />
+      <SilverRain count={lowPower ? 50 : 100} />
     </Canvas>
   );
 }

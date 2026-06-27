@@ -1,5 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#0a0a0a"/>
-  <rect width="32" height="32" rx="6" fill="none" stroke="#4ade80" stroke-opacity="0.3" stroke-width="1"/>
-  <text x="16" y="22" font-family="ui-monospace, 'JetBrains Mono', 'Courier New', monospace" font-size="16" font-weight="700" fill="#4ade80" text-anchor="middle">&gt;_</text>
+  <defs>
+    <linearGradient id="edh-fav" x1="0" y1="0" x2="0" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5ef08f"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#0a0a0a"/>
+  <rect x="0.75" y="0.75" width="30.5" height="30.5" rx="6.25" fill="none" stroke="#4ade80" stroke-opacity="0.35" stroke-width="1.5"/>
+  <path d="M9 10 L15 16 L9 22" fill="none" stroke="url(#edh-fav)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="16.5" y="19.9" width="7" height="2.6" rx="1.3" fill="url(#edh-fav)"/>
 </svg>

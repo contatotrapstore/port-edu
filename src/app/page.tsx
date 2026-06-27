@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState, useCallback, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import {
   siteConfig,
   projects,
@@ -12,20 +12,18 @@ import {
   codeSnippets,
   loadingMessages,
   catColors,
+  projectColors,
   workanaStats,
   testimonials,
   resultMetrics,
 } from "@/lib/constants";
 import { Mail, ChevronDown, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-
-// Project category colors
-const projectCategoryColors: Record<string, string> = {
-  saas: "#60a5fa",
-  ecommerce: "#fbbf24",
-  mobile: "#c084fc",
-  sistema: "#4ade80",
-  web: "#fb923c",
-};
+import AmbientBackdrop from "@/components/AmbientBackdrop";
+import AmbientAudio from "@/components/AmbientAudio";
+import ProjectCaseStudy from "@/components/ProjectCaseStudy";
+import TerminalHeader from "@/components/TerminalHeader";
+import type { Project } from "@/lib/constants";
+import { track } from "@vercel/analytics";
 
 const Experience = dynamic(
   () => import("@/components/experience/Experience"),
@@ -91,37 +89,6 @@ function TypewriterText({ text, delay = 0 }: { text: string; delay?: number }) {
   );
 }
 
-// --- Animated Counter ---
-function AnimatedCounter({ target, duration = 1500 }: { target: number; duration?: number }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const started = useRef(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true;
-          const startTime = Date.now();
-          const animate = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.round(eased * target));
-            if (progress < 1) requestAnimationFrame(animate);
-          };
-          requestAnimationFrame(animate);
-        }
-      },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target, duration]);
-
-  return <div ref={ref}>{count}</div>;
-}
-
 // --- Loading Screen ---
 function LoadingScreen({ isLoaded }: { isLoaded: boolean }) {
   const [progress, setProgress] = useState(0);
@@ -138,7 +105,7 @@ function LoadingScreen({ isLoaded }: { isLoaded: boolean }) {
     }
     setProgress(100);
     setMsgIndex(loadingMessages.length - 1);
-    setTimeout(() => setVisible(false), 900);
+    setTimeout(() => setVisible(false), 550);
   }, [isLoaded]);
 
   if (!visible) return null;
@@ -151,7 +118,7 @@ function LoadingScreen({ isLoaded }: { isLoaded: boolean }) {
     <motion.div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]"
       animate={{ opacity: isLoaded ? 0 : 1 }}
-      transition={{ duration: 0.8, delay: 0.3 }}
+      transition={{ duration: 0.5 }}
     >
       {/* Logo with glitch reveal */}
       <motion.div
@@ -271,10 +238,11 @@ function Navbar({
             <li key={ch.id}>
               <button
                 onClick={() => onChapterClick(i)}
+                aria-current={currentChapter === i ? "page" : undefined}
                 className={`relative text-[11px] uppercase tracking-[2px] font-[family-name:var(--font-jetbrains-mono)] py-2 transition-all duration-300 ${
                   currentChapter === i
                     ? "text-white"
-                    : "text-white/25 hover:text-white/50"
+                    : "text-white/50 hover:text-white/80"
                 }`}
               >
                 {ch.label}
@@ -311,8 +279,9 @@ function Navbar({
             <button
               key={ch.id}
               onClick={() => { onChapterClick(i); setMenuOpen(false); }}
+              aria-current={currentChapter === i ? "page" : undefined}
               className={`text-lg font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[4px] transition-colors ${
-                currentChapter === i ? "text-white" : "text-white/30"
+                currentChapter === i ? "text-white" : "text-white/55"
               }`}
             >
               <span className="text-[#4ade80] mr-2">0{i + 1}</span>
@@ -340,18 +309,23 @@ function ChapterDots({
   onChapterClick: (i: number) => void;
 }) {
   return (
-    <div className="hidden md:flex fixed right-6 top-1/2 -translate-y-1/2 z-20 flex-col gap-4">
+    <div className="hidden md:flex fixed right-5 top-1/2 -translate-y-1/2 z-20 flex-col gap-1">
       {chapters.map((ch, i) => (
         <button
           key={ch.id}
           onClick={() => onChapterClick(i)}
-          className={`group relative w-2.5 h-2.5 rounded-full border transition-all duration-400 ${
-            currentChapter === i
-              ? "border-white bg-white shadow-[0_0_12px_rgba(200,200,200,0.3)]"
-              : "border-white/20 hover:border-white/50 hover:scale-125"
-          }`}
+          aria-label={`Ir para ${ch.label}`}
+          aria-current={currentChapter === i ? "page" : undefined}
+          className="group relative flex items-center justify-center w-8 h-8"
         >
-          <span className="absolute right-6 top-1/2 -translate-y-1/2 whitespace-nowrap text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/40 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span
+            className={`block w-2.5 h-2.5 rounded-full border transition-all duration-300 ${
+              currentChapter === i
+                ? "border-white bg-white shadow-[0_0_12px_rgba(200,200,200,0.3)]"
+                : "border-white/40 group-hover:border-white/70 group-hover:scale-125"
+            }`}
+          />
+          <span className="absolute right-8 top-1/2 -translate-y-1/2 whitespace-nowrap text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/60 opacity-0 group-hover:opacity-100 transition-opacity">
             {ch.label}
           </span>
         </button>
@@ -369,6 +343,7 @@ export default function Home() {
   const [currentChapter, setCurrentChapter] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [skillFilter, setSkillFilter] = useState<"all" | "frontend" | "backend" | "devops" | "tools">("all");
+  const [caseStudy, setCaseStudy] = useState<Project | null>(null);
 
   const handleLoaded = useCallback(() => setIsLoaded(true), []);
   const handleProgress = useCallback((p: number) => {
@@ -385,8 +360,25 @@ export default function Home() {
     );
   }, []);
 
+  // Deep-link: /#projects (e.g. back from a case page) jumps to that chapter once the 3D
+  // scene is mounted (isLoaded) — guarantees the gotoChapter listener already exists.
+  useEffect(() => {
+    if (!isLoaded) return;
+    const hash = window.location.hash.replace("#", "");
+    if (!hash) return;
+    const idx = chapters.findIndex((c) => c.id === hash);
+    if (idx <= 0) return;
+    const t = setTimeout(
+      () => window.dispatchEvent(new CustomEvent("gotoChapter", { detail: { index: idx } })),
+      120
+    );
+    return () => clearTimeout(t);
+  }, [isLoaded]);
+
   return (
-    <>
+    <MotionConfig reducedMotion="user">
+      <a href="#hero" className="skip-link">Pular para o conteúdo</a>
+
       <LoadingScreen isLoaded={isLoaded} />
 
       {/* 3D Background */}
@@ -394,9 +386,18 @@ export default function Home() {
         <Experience onLoaded={handleLoaded} onProgress={handleProgress} />
       </div>
 
+      {/* Ambient AI backdrop — static texture (global depth) + hero-only animated loop */}
+      <AmbientBackdrop heroActive={progress < 0.18} />
+
       {/* Navigation */}
       <Navbar currentChapter={currentChapter} onChapterClick={handleChapterClick} />
       <ChapterDots currentChapter={currentChapter} onChapterClick={handleChapterClick} />
+
+      {/* Optional ambient soundtrack (off by default) */}
+      <AmbientAudio />
+
+      {/* Project case-study modal */}
+      <ProjectCaseStudy project={caseStudy} onClose={() => setCaseStudy(null)} />
 
       {/* Scroll indicator */}
       <motion.div
@@ -440,9 +441,9 @@ export default function Home() {
 
           {/* Main heading with glitch */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 40 }}
-            transition={{ duration: 1, delay: 0.5 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
           >
             <h1
               className="glitch-text text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-[10rem] font-extrabold tracking-tighter leading-[0.85]"
@@ -458,7 +459,7 @@ export default function Home() {
             className="h-px w-32 mx-auto mt-6 bg-gradient-to-r from-transparent via-white/20 to-transparent"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: isLoaded ? 1 : 0 }}
-            transition={{ duration: 1, delay: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
           />
 
           {/* Subtitle with typewriter */}
@@ -466,9 +467,9 @@ export default function Home() {
             className="mt-4 font-[family-name:var(--font-jetbrains-mono)] text-[11px] sm:text-sm md:text-base text-[#4ade80]"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 0.5, delay: 1.2 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
           >
-            <TypewriterText text={siteConfig.title} delay={1500} />
+            <TypewriterText text={siteConfig.title} delay={500} />
           </motion.div>
 
           {/* Tagline */}
@@ -476,10 +477,10 @@ export default function Home() {
             className="mt-4 flex items-center justify-center gap-3 md:gap-4 px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
-            transition={{ duration: 1, delay: 2 }}
+            transition={{ duration: 0.6, delay: 0.55 }}
           >
             <div className="hidden md:block h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-            <p className="text-[11px] md:text-xs text-white/30 font-[family-name:var(--font-jetbrains-mono)] text-center">
+            <p className="text-[11px] md:text-xs text-white/55 font-[family-name:var(--font-jetbrains-mono)] text-center">
               {siteConfig.subtitle}
             </p>
             <div className="hidden md:block h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
@@ -490,7 +491,7 @@ export default function Home() {
             className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-2 md:gap-2.5"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
-            transition={{ duration: 0.6, delay: 2.3 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
           >
             {/* TOP BR — destaque máximo com bandeira SVG real */}
             <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#4ade80] px-3.5 py-1.5 rounded-full border border-[#4ade80]/40 bg-[#4ade80]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
@@ -529,12 +530,13 @@ export default function Home() {
             className="mt-7 md:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md sm:max-w-none mx-auto"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
-            transition={{ duration: 0.6, delay: 2.8 }}
+            transition={{ duration: 0.6, delay: 0.85 }}
           >
             <a
               href={workanaStats.workanaProfileUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => track("workana_cta", { location: "hero" })}
               className="group relative h-11 text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-6 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-all cursor-pointer shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] flex items-center justify-center gap-2"
             >
               <span className="text-[10px]">★</span>
@@ -562,14 +564,7 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-6 md:gap-12 items-start md:items-center">
           {/* Terminal with bio */}
           <div className="terminal-window">
-            <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
-              <div className="terminal-dots">
-                <span /><span /><span />
-              </div>
-              <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
-                about.md — bash
-              </span>
-            </div>
+            <TerminalHeader title="about.md — bash" />
             <div className="p-5 font-[family-name:var(--font-jetbrains-mono)] text-sm">
               <p className="text-[#4ade80]">$ cat about.md</p>
               <p className="text-white/50 mt-3 leading-relaxed text-xs">
@@ -585,14 +580,7 @@ export default function Home() {
           <div className="terminal-window relative overflow-hidden">
             {/* Subtle glow accent top */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-[#fbbf24]/30 to-transparent" />
-            <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
-              <div className="terminal-dots">
-                <span /><span /><span />
-              </div>
-              <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
-                workana-profile.json
-              </span>
-            </div>
+            <TerminalHeader title="workana-profile.json" />
             <div className="p-5 md:p-6">
               {/* Profile photo + name + rating */}
               <div className="flex items-center gap-3 mb-5">
@@ -608,7 +596,7 @@ export default function Home() {
                 </div>
                 <div className="flex-1">
                   <div className="text-white font-semibold text-sm">Eduardo Gouveia</div>
-                  <div className="text-white/35 text-xs">Full Stack Senior · HERO</div>
+                  <div className="text-white/55 text-xs">Full Stack Senior · HERO</div>
                 </div>
                 <div className="text-right">
                   <div className="flex items-center gap-1">
@@ -620,22 +608,22 @@ export default function Home() {
                 </div>
               </div>
               {/* Stats grid with accent borders */}
-              <div className="grid grid-cols-2 gap-2.5 text-xs font-[family-name:var(--font-jetbrains-mono)]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-[family-name:var(--font-jetbrains-mono)]">
                 <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
                   <div className="text-gradient-silver text-xl font-bold">{workanaStats.projectsCompleted}+</div>
-                  <div className="text-white/30 mt-0.5">projetos entregues</div>
+                  <div className="text-white/55 mt-0.5">projetos entregues</div>
                 </div>
                 <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
                   <div className="text-gradient-silver text-xl font-bold">{workanaStats.recurringClients}</div>
-                  <div className="text-white/30 mt-0.5">clientes recorrentes</div>
+                  <div className="text-white/55 mt-0.5">clientes recorrentes</div>
                 </div>
                 <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-[#4ade80]/30">
                   <div className="text-[#4ade80] text-xl font-bold">#{workanaStats.rankITBrazil}</div>
-                  <div className="text-white/30 mt-0.5">ranking Brasil</div>
+                  <div className="text-white/55 mt-0.5">ranking Brasil</div>
                 </div>
                 <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-[#60a5fa]/30">
                   <div className="text-[#60a5fa] text-xl font-bold">#{workanaStats.rankITGlobal}</div>
-                  <div className="text-white/30 mt-0.5">ranking Global</div>
+                  <div className="text-white/55 mt-0.5">ranking Global</div>
                 </div>
               </div>
             </div>
@@ -644,7 +632,7 @@ export default function Home() {
 
         {/* Result Metrics — value-for-client */}
         <div className="mt-10 md:mt-12">
-          <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/20 mb-4">
+          <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40 mb-4">
             // métricas que importam
           </p>
           <div className="grid grid-cols-3 gap-3 md:gap-4">
@@ -660,10 +648,10 @@ export default function Home() {
                 <div className="text-2xl md:text-3xl font-bold text-gradient-silver">
                   {m.value}
                 </div>
-                <div className="text-[8px] md:text-xs font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[1.5px] md:tracking-[2px] text-[#4ade80] mt-1.5">
+                <div className="text-[10px] md:text-xs font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[1px] md:tracking-[2px] text-[#4ade80] mt-1.5">
                   {m.label}
                 </div>
-                <div className="text-[9px] md:text-[10px] text-white/30 mt-1 hidden md:block">
+                <div className="text-[10px] md:text-[11px] text-white/50 mt-1 hidden md:block">
                   {m.description}
                 </div>
               </motion.div>
@@ -673,11 +661,11 @@ export default function Home() {
 
         {/* Testimonials */}
         <div className="mt-10 mb-2">
-          <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/20 mb-4">
+          <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40 mb-4">
             // avaliações verificadas
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {testimonials.map((t, i) => (
             <div key={i} className="terminal-window p-5 md:p-6 flex flex-col">
               {/* Header: stars + verified badge */}
@@ -696,11 +684,11 @@ export default function Home() {
                 <span className="text-white/20 text-lg leading-none">&rdquo;</span>
               </p>
               <div className="flex flex-col gap-1.5 pt-3 border-t border-white/[0.06]">
-                <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/40">
+                <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/55">
                   — {t.author}
                 </div>
                 <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-[family-name:var(--font-jetbrains-mono)] flex-wrap">
-                  <span className="text-white/25">{t.date}</span>
+                  <span className="text-white/45">{t.date}</span>
                   <span className="text-white/15">·</span>
                   <span className="text-[#60a5fa]/70">{t.projectType}</span>
                   {t.recurring && (
@@ -721,7 +709,7 @@ export default function Home() {
             href={workanaStats.workanaProfileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/30 hover:text-[#fbbf24] transition-colors inline-flex items-center gap-2"
+            className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 hover:text-[#fbbf24] transition-colors inline-flex items-center gap-2"
           >
             ver todas as {workanaStats.clientReviews} avaliações
             <span>→</span>
@@ -743,29 +731,25 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Current project — main card */}
               <div className="group terminal-window glow-silver md:col-span-1">
-                <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
-                  <div className="terminal-dots">
-                    <span /><span /><span />
-                  </div>
-                  <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
-                    {projects[carouselIdx].id}.tsx
-                  </span>
-                  <span className="ml-auto text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/15">
-                    {carouselIdx + 1}/{projects.length}
-                  </span>
-                </div>
+                <TerminalHeader
+                  title={`${projects[carouselIdx].id}.tsx`}
+                  right={`${carouselIdx + 1}/${projects.length}`}
+                />
                 {projects[carouselIdx].image && (
-                  <div className="relative h-48 md:h-56 overflow-hidden bg-white/[0.02]">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
                     <motion.img
                       key={projects[carouselIdx].id}
                       src={projects[carouselIdx].image}
                       alt={projects[carouselIdx].title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                       initial={{ opacity: 0, scale: 1.05 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.4 }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                    {/* screen treatment: bottom fade + top sheen + inset frame */}
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                    <div className="absolute inset-x-0 top-0 h-px bg-white/10 pointer-events-none" />
+                    <div className="absolute inset-0 ring-1 ring-inset ring-white/[0.06] pointer-events-none" />
                   </div>
                 )}
                 <div className="p-5">
@@ -777,15 +761,15 @@ export default function Home() {
                     <span
                       className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-1 rounded border font-bold"
                       style={{
-                        color: projectCategoryColors[projects[carouselIdx].category],
-                        borderColor: `${projectCategoryColors[projects[carouselIdx].category]}30`,
-                        backgroundColor: `${projectCategoryColors[projects[carouselIdx].category]}10`,
+                        color: projectColors[projects[carouselIdx].category],
+                        borderColor: `${projectColors[projects[carouselIdx].category]}30`,
+                        backgroundColor: `${projectColors[projects[carouselIdx].category]}10`,
                       }}
                     >
                       {projects[carouselIdx].category}
                     </span>
                   </div>
-                  <p className="text-xs text-white/40 leading-relaxed mb-3">
+                  <p className="text-xs text-white/55 leading-relaxed mb-3">
                     {projects[carouselIdx].description}
                   </p>
 
@@ -813,12 +797,20 @@ export default function Home() {
                     {projects[carouselIdx].tech.map((t) => (
                       <span
                         key={t}
-                        className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/40 border border-white/[0.06]"
+                        className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/55 border border-white/[0.06]"
                       >
                         &lt;{t} /&gt;
                       </span>
                     ))}
                   </div>
+
+                  <button
+                    onClick={() => setCaseStudy(projects[carouselIdx])}
+                    className="group/cta mt-5 inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#4ade80]/30 bg-[#4ade80]/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] hover:bg-[#4ade80]/[0.12] hover:border-[#4ade80]/50 transition-all"
+                  >
+                    ver case
+                    <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
+                  </button>
                 </div>
               </div>
 
@@ -827,29 +819,24 @@ export default function Home() {
                 className="hidden md:block terminal-window opacity-50 hover:opacity-70 transition-opacity cursor-pointer"
                 onClick={() => setCarouselIdx((carouselIdx + 1) % projects.length)}
               >
-                <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
-                  <div className="terminal-dots">
-                    <span /><span /><span />
-                  </div>
-                  <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
-                    {projects[(carouselIdx + 1) % projects.length].id}.tsx
-                  </span>
-                </div>
+                <TerminalHeader title={`${projects[(carouselIdx + 1) % projects.length].id}.tsx`} />
                 {projects[(carouselIdx + 1) % projects.length].image && (
-                  <div className="relative h-56 overflow-hidden bg-white/[0.02]">
+                  <div className="group/preview relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
                     <img
                       src={projects[(carouselIdx + 1) % projects.length].image}
                       alt={projects[(carouselIdx + 1) % projects.length].title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top transition-transform duration-700 group-hover/preview:scale-[1.04]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                    <div className="absolute inset-x-0 top-0 h-px bg-white/10 pointer-events-none" />
+                    <div className="absolute inset-0 ring-1 ring-inset ring-white/[0.06] pointer-events-none" />
                   </div>
                 )}
                 <div className="p-5">
                   <h3 className="text-base font-semibold text-white/60 mb-2 font-[family-name:var(--font-jetbrains-mono)]">
                     {projects[(carouselIdx + 1) % projects.length].title}
                   </h3>
-                  <p className="text-[11px] text-white/25 leading-relaxed line-clamp-2">
+                  <p className="text-[11px] text-white/45 leading-relaxed line-clamp-2">
                     {projects[(carouselIdx + 1) % projects.length].description}
                   </p>
                 </div>
@@ -872,13 +859,15 @@ export default function Home() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setCarouselIdx((carouselIdx - 1 + projects.length) % projects.length)}
-                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
+                  aria-label="Projeto anterior"
+                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-white/30 transition-all"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setCarouselIdx((carouselIdx + 1) % projects.length)}
-                  className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/30 transition-all"
+                  aria-label="Próximo projeto"
+                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-white/30 transition-all"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -905,7 +894,7 @@ export default function Home() {
                 className={`text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-3 py-1.5 rounded border transition-all cursor-pointer ${
                   skillFilter === f
                     ? "text-white border-white/30 bg-white/[0.05]"
-                    : "text-white/30 border-white/[0.06] hover:border-white/15 hover:text-white/60"
+                    : "text-white/55 border-white/[0.06] hover:border-white/20 hover:text-white/80"
                 }`}
                 style={
                   skillFilter === f && f !== "all"
@@ -922,7 +911,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {(["frontend", "backend", "devops", "tools"] as const)
               .filter((category) => skillFilter === "all" || skillFilter === category)
               .map((category) => (
@@ -968,7 +957,7 @@ export default function Home() {
                                 </span>
                               )}
                             </span>
-                            <span className="font-[family-name:var(--font-jetbrains-mono)] text-white/40 shrink-0 text-[10px]">
+                            <span className="font-[family-name:var(--font-jetbrains-mono)] text-white/55 shrink-0 text-[10px]">
                               {skill.years}+ anos
                             </span>
                           </div>
@@ -1011,7 +1000,7 @@ export default function Home() {
               Vamos construir o próximo{" "}
               <span className="text-gradient-silver">SaaS de sucesso</span>?
             </h3>
-            <p className="text-[11px] md:text-xs text-white/40 font-[family-name:var(--font-jetbrains-mono)] mt-2">
+            <p className="text-[11px] md:text-xs text-white/55 font-[family-name:var(--font-jetbrains-mono)] mt-2">
               resposta em até 2h úteis · trabalho com clientes no mundo todo
             </p>
           </div>
@@ -1021,20 +1010,14 @@ export default function Home() {
             href={workanaStats.workanaProfileUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => track("workana_cta", { location: "contact" })}
             className="group block mb-5 terminal-window border-[#fbbf24]/30 hover:border-[#fbbf24]/60 transition-all cursor-pointer"
             style={{
               borderWidth: "1px",
               boxShadow: "0 0 20px rgba(251, 191, 36, 0.08)",
             }}
           >
-            <div className="flex items-center h-8 px-3 bg-[#fbbf24]/[0.05] border-b border-[#fbbf24]/10">
-              <div className="terminal-dots">
-                <span /><span /><span />
-              </div>
-              <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24]/60">
-                hire.sh — executable
-              </span>
-            </div>
+            <TerminalHeader tone="gold" title="hire.sh — executable" />
             <div className="p-5 md:p-6 flex items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <div className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24]/50 uppercase tracking-[2px] mb-1">
@@ -1055,14 +1038,7 @@ export default function Home() {
 
           {/* Terminal secondary links */}
           <div className="terminal-window">
-            <div className="flex items-center h-8 px-3 bg-white/[0.03] border-b border-white/[0.06]">
-              <div className="terminal-dots">
-                <span /><span /><span />
-              </div>
-              <span className="ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
-                contact — bash
-              </span>
-            </div>
+            <TerminalHeader title="contact — bash" />
 
             <div className="p-5 md:p-6 font-[family-name:var(--font-jetbrains-mono)] text-sm space-y-3">
               <p className="text-[#4ade80]">
@@ -1114,6 +1090,6 @@ export default function Home() {
           </div>
         </div>
       </Section>
-    </>
+    </MotionConfig>
   );
 }

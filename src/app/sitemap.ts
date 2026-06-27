@@ -1,12 +1,22 @@
 import { MetadataRoute } from "next";
+import { projects } from "@/lib/constants";
+
+const siteUrl = "https://edevshub.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const now = new Date();
   return [
     {
-      url: "https://edevshub.com",
-      lastModified: new Date(),
+      url: siteUrl,
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 1,
     },
+    ...projects.map((p) => ({
+      url: `${siteUrl}/projetos/${p.id}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
   ];
 }
