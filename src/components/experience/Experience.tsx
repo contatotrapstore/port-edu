@@ -3,7 +3,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useMemo, useState } from "react";
 import * as THREE from "three";
-import { chapterTargets } from "@/lib/constants";
+import { chapterTargets, chapters } from "@/lib/constants";
 
 // Shared scroll ref — updated by animation loop, read by CameraController
 const scrollRef = { current: 0 };
@@ -311,6 +311,55 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
   }, [onLoaded]);
 
   useEffect(() => {
+    // ---------- MOBILE (<md): natural document scroll ----------
+    // No scroll-jack at all — the page flows like any landing page. Progress is
+    // DERIVED from the native scroll position (mapped through each chapter's range)
+    // so the 3D camera, navbar, HUD and progress bar stay in sync.
+    const mql = window.matchMedia("(min-width: 768px)");
+    if (!mql.matches) {
+      const sections = Array.from(document.querySelectorAll<HTMLElement>("main section[id]"));
+      let raf2 = 0;
+      const compute = () => {
+        raf2 = 0;
+        if (!sections.length) return;
+        const mid = window.scrollY + window.innerHeight * 0.4;
+        let idx = 0;
+        for (let i = 0; i < sections.length; i++) {
+          if (sections[i].offsetTop <= mid) idx = i;
+        }
+        const s = sections[idx];
+        const frac = Math.min(1, Math.max(0, (mid - s.offsetTop) / Math.max(1, s.offsetHeight)));
+        const [rs, re] = chapters[idx].range;
+        const p = rs + frac * (re - rs);
+        scrollRef.current = p;
+        if (Math.abs(p - lastReported.current) > 0.002) {
+          lastReported.current = p;
+          onProgress(p);
+        }
+      };
+      const onScroll = () => {
+        if (!raf2) raf2 = requestAnimationFrame(compute);
+      };
+      const handleGotoMobile = (e: Event) => {
+        const idx = (e as CustomEvent).detail.index;
+        sections[idx]?.scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("gotoChapter", handleGotoMobile);
+      const onModeChange = () => window.location.reload(); // crossing the breakpoint swaps modes
+      mql.addEventListener("change", onModeChange);
+      compute();
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("gotoChapter", handleGotoMobile);
+        mql.removeEventListener("change", onModeChange);
+        if (raf2) cancelAnimationFrame(raf2);
+      };
+    }
+    const onModeChange = () => window.location.reload();
+    mql.addEventListener("change", onModeChange);
+
+    // ---------- DESKTOP (md+): cinematic chapter scroll ----------
     let target = 0;
     let current = 0;
 
@@ -504,6 +553,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("gotoChapter", handleGoto);
+      mql.removeEventListener("change", onModeChange);
       cancelAnimationFrame(raf);
     };
   }, [onProgress]);

@@ -102,17 +102,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Mobile: persistent "there's more below" cue — a first-time visitor's swipe
-          snaps to a section; without this, the stop reads as "the site ended". */}
-      {currentChapter > 0 && currentChapter < chapters.length - 1 && (
-        <button
-          onClick={() => handleChapterClick(currentChapter + 1)}
-          aria-label="Próxima seção"
-          className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-20 p-2 text-white/40"
-        >
-          <ChevronDown className="w-5 h-5 animate-bounce" />
-        </button>
-      )}
 
       {/* Optional ambient soundtrack (off by default) */}
       <AmbientAudio />

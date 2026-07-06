@@ -238,7 +238,7 @@ export default function SkillConstellation({
               className="text-[10px] uppercase tracking-[3px] font-[family-name:var(--font-jetbrains-mono)] font-bold mb-2"
               style={{ color: catColors[cat] }}
             >
-              {`{ ${cat} }`}
+              {`{ ${CLUSTERS[cat].label} }`}
             </div>
             <div className="flex flex-wrap gap-1.5">
               {skills

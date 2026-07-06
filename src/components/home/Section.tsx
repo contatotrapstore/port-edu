@@ -41,10 +41,13 @@ export default function Section({
     }
   }
 
+  // Mobile (<md): plain document flow — always visible, no fade/drift, natural scroll
+  // like any landing page. The max-md:! overrides beat the desktop inline styles.
+  // Desktop (md+): fixed chapter driven by scroll progress.
   return (
     <section
       id={id}
-      className={`fixed inset-0 overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
+      className={`max-md:!static max-md:!opacity-100 max-md:!visible max-md:!pointer-events-auto max-md:!z-auto md:fixed md:inset-0 md:overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
       style={{
         opacity,
         zIndex: opacity > 0 ? 10 : 0,
@@ -56,9 +59,9 @@ export default function Section({
         willChange: "opacity",
       }}
     >
-      <div className="min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:pt-24 md:pb-16 px-6 md:px-8 lg:px-12">
+      <div className="relative z-10 max-md:min-h-[100svh] md:min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:pt-24 md:pb-16 px-6 md:px-8 lg:px-12">
         <div
-          className="w-full motion-reduce:!transform-none"
+          className="w-full max-md:!transform-none motion-reduce:!transform-none"
           style={{ transform: `translateY(${drift}px)`, willChange: "transform" }}
         >
           {children}
