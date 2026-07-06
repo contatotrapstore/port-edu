@@ -1,9 +1,10 @@
 "use client";
 
 import { m, AnimatePresence } from "framer-motion";
-import { projects, chapters, projectColors } from "@/lib/constants";
+import { projects, chapters, projectColors, workanaStats } from "@/lib/constants";
 import type { Project } from "@/lib/constants";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { track } from "@vercel/analytics";
 import TerminalHeader from "@/components/TerminalHeader";
 import Section from "@/components/home/Section";
 import SectionNext from "@/components/home/SectionNext";
@@ -26,9 +27,20 @@ export default function ProjectsSection({
   return (
     <Section id="projects" progress={progress} range={rangeOf("projects")}>
       <div>
-        <h2 className="font-display text-2xl md:text-4xl font-bold text-white mb-2">
-          Projetos<span className="text-white/20">.</span>
-        </h2>
+        <div className="flex flex-wrap items-end justify-between gap-2 mb-2">
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-white">
+            Projetos em destaque<span className="text-white/20">.</span>
+          </h2>
+          <a
+            href={workanaStats.workanaProfileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track("workana_cta", { location: "projects_all" })}
+            className="font-[family-name:var(--font-jetbrains-mono)] text-[11px] text-white/50 hover:text-[#4ade80] transition-colors pb-1"
+          >
+            {projects.length} de {workanaStats.projectsCompleted}+ entregues — ver todos ↗
+          </a>
+        </div>
         <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
 
         {/* Desktop: editorial index list + live preview panel */}

@@ -430,23 +430,33 @@ export const skills: Skill[] = [
   { name: "Three.js", category: "frontend", level: 0.75, years: 2 },
   { name: "Tailwind CSS", category: "frontend", level: 0.95, years: 4, hot: true },
   { name: "GSAP", category: "frontend", level: 0.8, years: 3 },
+  { name: "React Native", category: "frontend", level: 0.75, years: 3 },
+  { name: "Framer", category: "frontend", level: 0.7, years: 2 },
   // Backend
   { name: "Node.js", category: "backend", level: 0.9, years: 5, hot: true },
+  { name: "PHP", category: "backend", level: 0.85, years: 5 },
+  { name: "Laravel", category: "backend", level: 0.8, years: 4 },
   { name: "Python", category: "backend", level: 0.8, years: 4 },
-  { name: "Go", category: "backend", level: 0.7, years: 2 },
   { name: "PostgreSQL", category: "backend", level: 0.85, years: 5 },
+  { name: "MySQL", category: "backend", level: 0.85, years: 5 },
   { name: "MongoDB", category: "backend", level: 0.8, years: 4 },
   { name: "Supabase", category: "backend", level: 0.9, years: 3 },
   // DevOps
   { name: "Docker", category: "devops", level: 0.85, years: 4 },
   { name: "Kubernetes", category: "devops", level: 0.7, years: 2 },
   { name: "AWS", category: "devops", level: 0.75, years: 3 },
+  { name: "Vercel", category: "devops", level: 0.9, years: 4 },
+  { name: "Railway", category: "devops", level: 0.8, years: 3 },
   { name: "CI/CD", category: "devops", level: 0.8, years: 4 },
-  // Tools
+  // Plataformas & integrações
+  { name: "WordPress", category: "tools", level: 0.9, years: 5 },
+  { name: "Shopify", category: "tools", level: 0.8, years: 3 },
+  { name: "Electron", category: "tools", level: 0.75, years: 2 },
+  { name: "OpenAI API", category: "tools", level: 0.85, years: 3 },
+  { name: "Evolution API", category: "tools", level: 0.8, years: 2 },
   { name: "Git", category: "tools", level: 0.95, years: 6 },
   { name: "Linux", category: "tools", level: 0.85, years: 5 },
   { name: "Figma", category: "tools", level: 0.7, years: 3 },
-  { name: "VS Code", category: "tools", level: 0.95, years: 6 },
 ];
 
 // Journey order: proof of work right after the hero; skills stays light before contact.

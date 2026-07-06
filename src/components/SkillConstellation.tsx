@@ -11,7 +11,7 @@ const CLUSTERS: Record<Skill["category"], { cx: number; cy: number; label: strin
   frontend: { cx: 215, cy: 128, label: "frontend" },
   backend: { cx: 610, cy: 128, label: "backend" },
   devops: { cx: 215, cy: 328, label: "devops" },
-  tools: { cx: 610, cy: 328, label: "tools" },
+  tools: { cx: 610, cy: 328, label: "plataformas" },
 };
 
 type Node = Skill & { x: number; y: number; r: number };
