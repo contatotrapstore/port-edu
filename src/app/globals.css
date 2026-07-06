@@ -22,6 +22,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
 html, body {
@@ -30,6 +33,7 @@ html, body {
   overflow: hidden;
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 ::selection {
@@ -69,16 +73,25 @@ html, body {
   overflow: hidden;
 }
 
+/* Monochrome glitch: fires on entrance (finite) and on hover — never loops forever. */
 .glitch-text::before {
-  color: #ff0040;
+  color: rgba(230, 230, 230, 0.65);
   z-index: -1;
-  animation: glitch-1 3s infinite linear alternate-reverse;
+  animation: glitch-1 0.7s steps(2, end) 3;
 }
 
 .glitch-text::after {
-  color: #0ff;
+  color: rgba(130, 130, 130, 0.55);
   z-index: -2;
-  animation: glitch-2 2s infinite linear alternate-reverse;
+  animation: glitch-2 0.5s steps(2, end) 3;
+}
+
+.glitch-text:hover::before {
+  animation: glitch-1 0.7s steps(2, end) infinite;
+}
+
+.glitch-text:hover::after {
+  animation: glitch-2 0.5s steps(2, end) infinite;
 }
 
 @keyframes glitch-1 {

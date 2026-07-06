@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { projectColors, workanaStats, type Project } from "@/lib/constants";
+import CaseGallery from "@/components/CaseGallery";
 
 function Label({ children, color }: { children: ReactNode; color: string }) {
   return (
@@ -21,6 +22,10 @@ export default function CaseStudyContent({ project }: { project: Project }) {
       <p className="text-sm leading-relaxed text-white/75">
         {project.overview || project.description}
       </p>
+
+      {project.gallery && project.gallery.length > 0 && (
+        <CaseGallery images={project.gallery} title={project.title} />
+      )}
 
       {project.problem && (
         <div>

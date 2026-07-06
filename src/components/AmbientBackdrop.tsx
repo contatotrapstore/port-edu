@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from "react";
  */
 export default function AmbientBackdrop({ heroActive }: { heroActive: boolean }) {
   const [capable, setCapable] = useState(false);
+  const [ready, setReady] = useState(false); // gate the ~1-2MB download off the critical path
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -20,12 +21,29 @@ export default function AmbientBackdrop({ heroActive }: { heroActive: boolean })
     );
   }, []);
 
+  // Mount/download the video only after the browser goes idle post-load.
+  useEffect(() => {
+    if (!capable) return;
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void) => number;
+      cancelIdleCallback?: (h: number) => void;
+    };
+    const hasIdle = typeof w.requestIdleCallback === "function";
+    const handle = hasIdle
+      ? w.requestIdleCallback!(() => setReady(true))
+      : window.setTimeout(() => setReady(true), 2500);
+    return () => {
+      if (hasIdle) w.cancelIdleCallback?.(handle);
+      else clearTimeout(handle);
+    };
+  }, [capable]);
+
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
     if (heroActive) v.play().catch(() => {});
     else v.pause();
-  }, [heroActive, capable]);
+  }, [heroActive, ready]);
 
   return (
     <div aria-hidden className="fixed inset-0 z-0 pointer-events-none">
@@ -33,17 +51,20 @@ export default function AmbientBackdrop({ heroActive }: { heroActive: boolean })
         className="absolute inset-0 bg-cover bg-center mix-blend-screen opacity-25 motion-reduce:opacity-15"
         style={{ backgroundImage: "url(/textures/hero-grid.webp)" }}
       />
-      {capable && (
+      {capable && ready && (
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover mix-blend-screen transition-opacity duration-1000"
           style={{ opacity: heroActive ? 0.45 : 0 }}
-          src="/video/hero-loop.mp4"
           muted
           loop
           playsInline
-          preload="metadata"
-        />
+          preload="auto"
+          autoPlay={heroActive}
+        >
+          <source src="/video/hero-loop.webm" type="video/webm" />
+          <source src="/video/hero-loop.mp4" type="video/mp4" />
+        </video>
       )}
     </div>
   );

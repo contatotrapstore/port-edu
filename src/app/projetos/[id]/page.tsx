@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { projects, projectColors, siteConfig } from "@/lib/constants";
 import CaseStudyContent from "@/components/CaseStudyContent";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
@@ -50,18 +51,31 @@ export default async function ProjectPage({
   const color = projectColors[project.category];
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    name: project.title,
-    description: project.overview || project.description,
-    image: `${siteUrl}${project.image}`,
-    url: `${siteUrl}/projetos/${project.id}`,
-    keywords: project.tech.join(", "),
-    ...(project.url ? { sameAs: project.url } : {}),
-    creator: {
-      "@type": "Person",
-      name: siteConfig.name,
-      url: siteUrl,
-    },
+    "@graph": [
+      {
+        "@type": "CreativeWork",
+        name: project.title,
+        description: project.overview || project.description,
+        image: `${siteUrl}${project.image}`,
+        url: `${siteUrl}/projetos/${project.id}`,
+        keywords: project.tech.join(", "),
+        ...(project.url ? { sameAs: project.url } : {}),
+        creator: { "@type": "Person", name: siteConfig.name, url: `${siteUrl}/#person` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
+          { "@type": "ListItem", position: 2, name: "Projetos", item: `${siteUrl}/#projects` },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: project.title,
+            item: `${siteUrl}/projetos/${project.id}`,
+          },
+        ],
+      },
+    ],
   };
 
   return (
@@ -75,15 +89,23 @@ export default async function ProjectPage({
 
       <main className="fixed inset-0 z-10 overflow-y-auto scrollbar-none">
         <div className="mx-auto max-w-3xl min-h-full px-5 md:px-8 py-10 md:py-16">
-          <Link
-            href="/#projects"
-            className="inline-flex items-center gap-2 text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-white/55 hover:text-white transition-colors"
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-2 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/50"
           >
-            <span aria-hidden>←</span> voltar aos projetos
-          </Link>
+            <Link href="/" className="hover:text-white transition-colors">
+              início
+            </Link>
+            <span aria-hidden className="text-white/25">/</span>
+            <Link href="/#projects" className="hover:text-white transition-colors">
+              projetos
+            </Link>
+            <span aria-hidden className="text-white/25">/</span>
+            <span className="text-[#4ade80]">{project.id}</span>
+          </nav>
 
           <div className="mt-7 flex items-start justify-between gap-3">
-            <h1 className="text-3xl md:text-5xl font-bold text-white font-[family-name:var(--font-jetbrains-mono)] leading-tight">
+            <h1 className="font-display text-3xl md:text-5xl font-bold text-white leading-tight tracking-tight">
               {project.title}
             </h1>
             <div className="flex flex-col items-end gap-1.5 shrink-0 pt-1">
@@ -103,11 +125,13 @@ export default async function ProjectPage({
 
           {project.image && (
             <div className="mt-6 relative aspect-[16/10] overflow-hidden rounded-lg border border-white/[0.08] bg-[#0d0d0d]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={project.image}
                 alt={project.title}
-                className="w-full h-full object-cover object-top"
+                fill
+                sizes="(max-width: 768px) 92vw, 768px"
+                priority
+                className="object-cover object-top"
               />
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
             </div>
@@ -116,6 +140,52 @@ export default async function ProjectPage({
           <div className="mt-8 rounded-xl border border-white/[0.06] bg-[#0a0a0a]/60 backdrop-blur-sm p-5 md:p-7">
             <CaseStudyContent project={project} />
           </div>
+
+          {/* Prev / next case — no dead ends */}
+          {(() => {
+            const cases = projects.filter((p) => p.overview);
+            const idx = cases.findIndex((p) => p.id === project.id);
+            const prev = cases[(idx - 1 + cases.length) % cases.length];
+            const next = cases[(idx + 1) % cases.length];
+            const CardNav = ({
+              p,
+              dir,
+            }: {
+              p: (typeof cases)[number];
+              dir: "prev" | "next";
+            }) => (
+              <Link
+                href={`/projetos/${p.id}`}
+                className={`group flex items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0a0a0a]/60 backdrop-blur-sm p-4 hover:border-white/20 transition-colors ${
+                  dir === "next" ? "flex-row-reverse text-right" : ""
+                }`}
+              >
+                <span className="relative h-14 w-24 shrink-0 overflow-hidden rounded border border-white/[0.08]">
+                  <Image
+                    src={p.cover ?? p.image}
+                    alt=""
+                    fill
+                    sizes="96px"
+                    className="object-cover object-center opacity-80 group-hover:opacity-100 transition-opacity"
+                  />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[9px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-white/45 mb-0.5">
+                    {dir === "prev" ? "← case anterior" : "próximo case →"}
+                  </span>
+                  <span className="block font-display font-bold text-white text-sm truncate group-hover:text-[#4ade80] transition-colors">
+                    {p.title}
+                  </span>
+                </span>
+              </Link>
+            );
+            return (
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <CardNav p={prev} dir="prev" />
+                <CardNav p={next} dir="next" />
+              </div>
+            );
+          })()}
         </div>
       </main>
     </>

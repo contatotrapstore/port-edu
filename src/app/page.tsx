@@ -3,27 +3,29 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useState, useCallback, useEffect, useRef } from "react";
-import { motion, MotionConfig } from "framer-motion";
+import { m, LazyMotion, domMax, MotionConfig, AnimatePresence } from "framer-motion";
 import {
   siteConfig,
   projects,
-  skills,
   chapters,
   codeSnippets,
   loadingMessages,
-  catColors,
   projectColors,
   workanaStats,
   testimonials,
   resultMetrics,
 } from "@/lib/constants";
-import { Mail, ChevronDown, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
 import AmbientAudio from "@/components/AmbientAudio";
 import ProjectCaseStudy from "@/components/ProjectCaseStudy";
 import TerminalHeader from "@/components/TerminalHeader";
+import TerminalCursor from "@/components/TerminalCursor";
+import TerminalPrompt from "@/components/TerminalPrompt";
+import SkillConstellation from "@/components/SkillConstellation";
 import type { Project } from "@/lib/constants";
 import { track } from "@vercel/analytics";
+import CanvasErrorBoundary from "@/components/CanvasErrorBoundary";
 
 const Experience = dynamic(
   () => import("@/components/experience/Experience"),
@@ -115,19 +117,22 @@ function LoadingScreen({ isLoaded }: { isLoaded: boolean }) {
   const bar = "\u2588".repeat(filled) + "\u2591".repeat(barLength - filled);
 
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]"
-      animate={{ opacity: isLoaded ? 0 : 1 }}
-      transition={{ duration: 0.5 }}
+      animate={{
+        opacity: isLoaded ? 0 : 1,
+        clipPath: isLoaded ? "inset(0 0 100% 0)" : "inset(0 0 0% 0)",
+      }}
+      transition={{ duration: 0.6, ease: [0.65, 0, 0.35, 1] }}
     >
       {/* Logo with glitch reveal */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, filter: "blur(10px)" }}
         animate={{ opacity: 1, filter: "blur(0px)" }}
         transition={{ duration: 1 }}
       >
-        <Image src="/EdevsHub.png" alt="EDevsHub" width={180} height={48} priority className="invert mix-blend-screen" />
-      </motion.div>
+        <Image src="/EdevsHub.webp" alt="EDevsHub" width={180} height={48} priority className="invert mix-blend-screen" />
+      </m.div>
 
       {/* Terminal boot messages */}
       <div className="mt-8 font-[family-name:var(--font-jetbrains-mono)] text-xs space-y-1 w-72">
@@ -150,7 +155,7 @@ function LoadingScreen({ isLoaded }: { isLoaded: boolean }) {
       <div className="mt-4 font-[family-name:var(--font-jetbrains-mono)] text-xs text-white/30">
         [{bar}] {Math.round(progress)}%
       </div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -174,17 +179,31 @@ function Section({
   const isActive = progress >= start && progress < end;
   const localP = (progress - start) / (end - start);
 
+  // Wider crossfade zones (18% of the range) + eased drift = silky hand-off between
+  // chapters. Opacity/transform are driven directly by scroll progress (no CSS
+  // transition fighting the scroll), so the values track the finger/wheel 1:1.
+  const ZONE = 0.18;
+  const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
   let opacity = 0;
+  let drift = 0;
   if (isActive || (isFirst && progress < start) || (isLast && progress >= end)) {
     opacity = 1;
-    if (!isLast && localP > 0.9) opacity = Math.max(0, (1 - localP) * 10);
-    if (!isFirst && localP < 0.1) opacity = Math.min(1, localP * 10);
+    if (!isLast && localP > 1 - ZONE) {
+      const t = (localP - (1 - ZONE)) / ZONE; // 0→1 while exiting
+      opacity = 1 - easeOut(t);
+      drift = -easeOut(t) * 30; // exiting: slides up
+    }
+    if (!isFirst && localP < ZONE) {
+      const t = localP / ZONE; // 0→1 while entering
+      opacity = easeOut(t);
+      drift = (1 - easeOut(t)) * 30; // entering: rises from below
+    }
   }
 
   return (
     <section
       id={id}
-      className={`fixed inset-0 transition-opacity duration-300 overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
+      className={`fixed inset-0 overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
       style={{
         opacity,
         zIndex: opacity > 0 ? 10 : 0,
@@ -192,11 +211,15 @@ function Section({
         touchAction: "pan-y",
         WebkitOverflowScrolling: "touch",
         overscrollBehavior: "contain",
-        pointerEvents: opacity > 0 ? "auto" : "none",
+        pointerEvents: opacity > 0.35 ? "auto" : "none",
+        willChange: "opacity",
       }}
     >
       <div className="min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:pt-24 md:pb-16 px-6 md:px-8 lg:px-12">
-        <div className="w-full">
+        <div
+          className="w-full motion-reduce:!transform-none"
+          style={{ transform: `translateY(${drift}px)`, willChange: "transform" }}
+        >
           {children}
         </div>
       </div>
@@ -219,16 +242,16 @@ function Navbar({
       <nav className="fixed top-0 left-0 right-0 z-30 px-6 md:px-10 py-4 md:py-5 flex justify-between items-center backdrop-blur-xl bg-[#0a0a0a]/80 border-b border-white/[0.06]">
         <div className="flex items-center gap-3">
           <Image
-            src="/EdevsHub.png"
+            src="/EdevsHub.webp"
             alt="EDevsHub"
             width={140}
             height={36}
             style={{ width: "auto", height: "24px" }}
             className="invert mix-blend-screen md:[height:28px]"
           />
-          <span className="hidden md:flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/60 ml-4 border-l border-white/[0.06] pl-4">
+          <span className="hidden md:flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/80 ml-4 border-l border-white/[0.06] pl-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
-            online
+            disponível p/ projetos
           </span>
         </div>
 
@@ -254,9 +277,30 @@ function Navbar({
           ))}
         </ul>
 
-        {/* Hamburger button (mobile) */}
+        {/* Persistent hire CTA */}
+        <a
+          href={workanaStats.workanaProfileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => track("workana_cta", { location: "navbar" })}
+          className="hidden md:inline-flex items-center gap-1.5 h-8 px-4 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1.5px] hover:bg-[#fcd34d] transition-colors shrink-0 ml-4"
+        >
+          ★ Contratar
+        </a>
+
+        {/* Mobile: compact CTA + hamburger */}
+        <div className="md:hidden flex items-center gap-2">
+          <a
+            href={workanaStats.workanaProfileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track("workana_cta", { location: "navbar" })}
+            className="inline-flex items-center h-8 px-3 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1px]"
+          >
+            Contratar
+          </a>
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="flex flex-col gap-1.5 p-2"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Menu"
         >
@@ -264,11 +308,12 @@ function Navbar({
           <span className={`block w-5 h-px bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
           <span className={`block w-5 h-px bg-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[4px]" : ""}`} />
         </button>
+        </div>
       </nav>
 
       {/* Mobile menu overlay */}
       {menuOpen && (
-        <motion.div
+        <m.div
           className="fixed inset-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-xl flex flex-col items-center justify-center gap-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -294,7 +339,7 @@ function Navbar({
           >
             [ fechar ]
           </button>
-        </motion.div>
+        </m.div>
       )}
     </>
   );
@@ -334,6 +379,43 @@ function ChapterDots({
   );
 }
 
+// --- Chapter HUD ("02 / 05 — SOBRE") ---
+function ChapterHUD({ currentChapter }: { currentChapter: number }) {
+  const ch = chapters[currentChapter];
+  if (!ch) return null;
+  return (
+    <div className="hidden md:flex fixed left-6 bottom-24 z-20 items-center gap-2 font-[family-name:var(--font-jetbrains-mono)] text-[10px] tracking-[2px] select-none pointer-events-none">
+      <span className="text-[#4ade80]">{String(currentChapter + 1).padStart(2, "0")}</span>
+      <span className="text-white/40">/ {String(chapters.length).padStart(2, "0")}</span>
+      <span className="w-6 h-px bg-white/20" />
+      <span className="uppercase text-white/60">{ch.label}</span>
+    </div>
+  );
+}
+
+// --- Terminal-style transition teaser ("$ cd ../sobre →") ---
+function SectionNext({
+  index,
+  onChapterClick,
+}: {
+  index: number;
+  onChapterClick: (i: number) => void;
+}) {
+  const next = chapters[index + 1];
+  if (!next) return null;
+  return (
+    <div className="mt-10 flex justify-center">
+      <button
+        onClick={() => onChapterClick(index + 1)}
+        className="group inline-flex items-center gap-2 font-[family-name:var(--font-jetbrains-mono)] text-[11px] text-white/50 hover:text-[#4ade80] transition-colors py-2 px-3"
+      >
+        <span className="text-[#4ade80]">$</span> cd ../{next.id}
+        <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+      </button>
+    </div>
+  );
+}
+
 // ===========================================
 // MAIN PAGE
 // ===========================================
@@ -342,7 +424,6 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [currentChapter, setCurrentChapter] = useState(0);
   const [carouselIdx, setCarouselIdx] = useState(0);
-  const [skillFilter, setSkillFilter] = useState<"all" | "frontend" | "backend" | "devops" | "tools">("all");
   const [caseStudy, setCaseStudy] = useState<Project | null>(null);
 
   const handleLoaded = useCallback(() => setIsLoaded(true), []);
@@ -352,6 +433,13 @@ export default function Home() {
       (ch) => p >= ch.range[0] && p < ch.range[1]
     );
     setCurrentChapter(idx >= 0 ? idx : chapters.length - 1);
+  }, []);
+
+  const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
+
+  const openCase = useCallback((p: Project) => {
+    track("ver_case", { id: p.id });
+    setCaseStudy(p);
   }, []);
 
   const handleChapterClick = useCallback((i: number) => {
@@ -376,14 +464,17 @@ export default function Home() {
   }, [isLoaded]);
 
   return (
+    <LazyMotion features={domMax} strict>
     <MotionConfig reducedMotion="user">
       <a href="#hero" className="skip-link">Pular para o conteúdo</a>
 
       <LoadingScreen isLoaded={isLoaded} />
 
-      {/* 3D Background */}
-      <div className="fixed inset-0 z-0">
-        <Experience onLoaded={handleLoaded} onProgress={handleProgress} />
+      {/* 3D Background (decorative — hidden from assistive tech) */}
+      <div className="fixed inset-0 z-0" aria-hidden="true">
+        <CanvasErrorBoundary onError={handleLoaded}>
+          <Experience onLoaded={handleLoaded} onProgress={handleProgress} />
+        </CanvasErrorBoundary>
       </div>
 
       {/* Ambient AI backdrop — static texture (global depth) + hero-only animated loop */}
@@ -392,26 +483,35 @@ export default function Home() {
       {/* Navigation */}
       <Navbar currentChapter={currentChapter} onChapterClick={handleChapterClick} />
       <ChapterDots currentChapter={currentChapter} onChapterClick={handleChapterClick} />
+      <ChapterHUD currentChapter={currentChapter} />
 
       {/* Optional ambient soundtrack (off by default) */}
       <AmbientAudio />
 
+      {/* Signature trailing caret cursor (desktop, motion-ok) */}
+      <TerminalCursor />
+
       {/* Project case-study modal */}
-      <ProjectCaseStudy project={caseStudy} onClose={() => setCaseStudy(null)} />
+      <AnimatePresence>
+        {caseStudy && (
+          <ProjectCaseStudy project={caseStudy} onClose={() => setCaseStudy(null)} />
+        )}
+      </AnimatePresence>
 
       {/* Scroll indicator */}
-      <motion.div
+      <m.div
         className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
         animate={{ opacity: progress < 0.08 ? 1 : 0 }}
       >
         <div className="font-[family-name:var(--font-jetbrains-mono)] text-xs text-[#4ade80]">
-          <span className="cursor-blink">&gt;</span> scroll_down
+          <span className="cursor-blink">&gt;</span> scroll_down <span className="text-white/35">· role ou use ↓</span>
         </div>
         <ChevronDown className="w-4 h-4 text-white/20 animate-bounce" />
-      </motion.div>
+      </m.div>
 
+      <main>
       {/* ============ HERO ============ */}
-      <Section id="hero" progress={progress} range={[0, 0.2]}>
+      <Section id="hero" progress={progress} range={rangeOf("hero")}>
         <div className="text-center relative grid-overlay scan-line">
           {/* HUD brackets */}
           <div className="hud-bracket -top-8 -left-4 hidden md:block">[</div>
@@ -421,9 +521,9 @@ export default function Home() {
 
           {/* Floating code snippets in corners */}
           {codeSnippets.slice(0, 4).map((snippet, i) => (
-            <motion.div
+            <m.div
               key={snippet.lang}
-              className="hidden md:block absolute code-block opacity-[0.12] text-[10px]"
+              className="hidden md:block absolute code-block opacity-[0.08] text-[10px]"
               style={{
                 top: i < 2 ? "10%" : "auto",
                 bottom: i >= 2 ? "10%" : "auto",
@@ -436,26 +536,26 @@ export default function Home() {
             >
               <div className="text-white/20 mb-1">// {snippet.lang}</div>
               {snippet.code}
-            </motion.div>
+            </m.div>
           ))}
 
           {/* Main heading with glitch */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <h1
-              className="glitch-text text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-[10rem] font-extrabold tracking-tighter leading-[0.85]"
+              className="glitch-text font-display text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-[10rem] font-bold tracking-tight leading-[0.9]"
               data-text="EDUARDO GOUVEIA"
             >
               <span className="block">EDUARDO</span>
               <span className="block text-gradient-silver">GOUVEIA</span>
             </h1>
-          </motion.div>
+          </m.div>
 
           {/* Decorative line */}
-          <motion.div
+          <m.div
             className="h-px w-32 mx-auto mt-6 bg-gradient-to-r from-transparent via-white/20 to-transparent"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: isLoaded ? 1 : 0 }}
@@ -463,17 +563,17 @@ export default function Home() {
           />
 
           {/* Subtitle with typewriter */}
-          <motion.div
+          <m.div
             className="mt-4 font-[family-name:var(--font-jetbrains-mono)] text-[11px] sm:text-sm md:text-base text-[#4ade80]"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
             transition={{ duration: 0.5, delay: 0.35 }}
           >
             <TypewriterText text={siteConfig.title} delay={500} />
-          </motion.div>
+          </m.div>
 
           {/* Tagline */}
-          <motion.div
+          <m.div
             className="mt-4 flex items-center justify-center gap-3 md:gap-4 px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: isLoaded ? 1 : 0 }}
@@ -484,49 +584,47 @@ export default function Home() {
               {siteConfig.subtitle}
             </p>
             <div className="hidden md:block h-px w-12 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          </motion.div>
+          </m.div>
 
           {/* Premium Pill Badges — centralizados, destacados */}
-          <motion.div
+          <m.div
             className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-2 md:gap-2.5"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
             transition={{ duration: 0.6, delay: 0.7 }}
           >
-            {/* TOP BR — destaque máximo com bandeira SVG real */}
+            {/* TOP BR — único badge com o acento herói (verde) */}
             <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#4ade80] px-3.5 py-1.5 rounded-full border border-[#4ade80]/40 bg-[#4ade80]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
               <BrazilFlag className="shrink-0" />
               <span>TOP <span className="text-white">#{workanaStats.rankITBrazil}</span> BRASIL</span>
             </span>
-            {/* Global — destaque #3 */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#60a5fa] px-3.5 py-1.5 rounded-full border border-[#60a5fa]/40 bg-[#60a5fa]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(96,165,250,0.2)]">
-              <svg viewBox="0 0 14 14" width="14" height="14" className="shrink-0" aria-label="Global">
-                <circle cx="7" cy="7" r="6.5" fill="none" stroke="#60a5fa" strokeWidth="1.2" />
-                <ellipse cx="7" cy="7" rx="3" ry="6.5" fill="none" stroke="#60a5fa" strokeWidth="1.2" />
-                <line x1="0.5" y1="7" x2="13.5" y2="7" stroke="#60a5fa" strokeWidth="1.2" />
-              </svg>
-              <span>TOP <span className="text-white">#{workanaStats.rankITGlobal}</span> GLOBAL</span>
-            </span>
-            {/* Projetos — destaque número */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/60 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/[0.05] backdrop-blur-sm">
-              <span className="text-white font-bold">{workanaStats.projectsCompleted}+</span> Projetos
-            </span>
-            {/* Rating — destaque nota */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24] px-3.5 py-1.5 rounded-full border border-[#fbbf24]/30 bg-[#fbbf24]/[0.08] backdrop-blur-sm flex items-center gap-1">
-              <span>★</span>
+            {/* Rating — sempre visível, pill neutro */}
+            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/70 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm flex items-center gap-1">
+              <span className="text-[#fbbf24]">★</span>
               <span className="text-white font-bold">{workanaStats.rating}</span>
-              <span className="text-[#fbbf24]/70">/5</span>
-              <span className="text-[#fbbf24]/50 ml-0.5">({workanaStats.clientReviews})</span>
+              <span>/5</span>
+              <span className="text-white/45 ml-0.5">({workanaStats.clientReviews})</span>
             </span>
-            {/* HERO */}
-            <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#fbbf24] px-3.5 py-1.5 rounded-full border border-[#fbbf24]/40 bg-[#fbbf24]/[0.10] backdrop-blur-sm flex items-center gap-1.5 shadow-[0_0_20px_rgba(251,191,36,0.25)]">
+            {/* Desktop-only: prova adicional em pills neutros */}
+            <span className="hidden sm:flex text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/70 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm items-center gap-2">
+              <svg viewBox="0 0 14 14" width="13" height="13" className="shrink-0 opacity-70" aria-label="Global">
+                <circle cx="7" cy="7" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                <ellipse cx="7" cy="7" rx="3" ry="6.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                <line x1="0.5" y1="7" x2="13.5" y2="7" stroke="currentColor" strokeWidth="1.2" />
+              </svg>
+              <span>TOP <span className="text-white font-bold">#{workanaStats.rankITGlobal}</span> GLOBAL</span>
+            </span>
+            <span className="hidden sm:flex text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/70 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm">
+              <span className="text-white font-bold">{workanaStats.projectsCompleted}+</span>&nbsp;Projetos
+            </span>
+            <span className="hidden sm:flex text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-white/80 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm items-center gap-1.5">
               <span>🏆</span>
               HERO
             </span>
-          </motion.div>
+          </m.div>
 
           {/* CTA Primary — Workana Hire */}
-          <motion.div
+          <m.div
             className="mt-7 md:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md sm:max-w-none mx-auto"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
@@ -544,19 +642,241 @@ export default function Home() {
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </a>
             <button
-              onClick={() => handleChapterClick(2)}
+              onClick={() => handleChapterClick(1)}
               className="h-11 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] px-5 rounded-lg border border-[#4ade80]/20 bg-[#4ade80]/[0.05] hover:bg-[#4ade80]/10 hover:border-[#4ade80]/40 transition-all cursor-pointer flex items-center justify-center"
             >
               [ ver_projetos ]
             </button>
-          </motion.div>
+          </m.div>
         </div>
       </Section>
 
-      {/* ============ ABOUT ============ */}
-      <Section id="about" progress={progress} range={[0.2, 0.4]}>
+      {/* ============ PROJECTS ============ */}
+      <Section id="projects" progress={progress} range={rangeOf("projects")}>
         <div>
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-white mb-2">
+            Projetos<span className="text-white/20">.</span>
+          </h2>
+          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
+
+          {/* Desktop: editorial index list + live preview panel */}
+          <div className="hidden md:grid md:grid-cols-[1fr_1.05fr] md:gap-10 lg:gap-14 items-start">
+            {/* Index list — all 8 at once */}
+            <ul className="flex flex-col">
+              {projects.map((p, i) => (
+                <li key={p.id}>
+                  <button
+                    onMouseEnter={() => setCarouselIdx(i)}
+                    onFocus={() => setCarouselIdx(i)}
+                    onClick={() => (p.overview ? openCase(p) : setCarouselIdx(i))}
+                    aria-current={carouselIdx === i}
+                    className={`group w-full flex items-baseline gap-4 py-3 border-b text-left transition-colors ${
+                      carouselIdx === i ? "border-white/25" : "border-white/[0.06] hover:border-white/15"
+                    }`}
+                  >
+                    <span
+                      className={`font-[family-name:var(--font-jetbrains-mono)] text-[11px] transition-colors ${
+                        carouselIdx === i ? "text-[#4ade80]" : "text-white/35"
+                      }`}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={`font-display text-2xl lg:text-3xl font-bold tracking-tight transition-colors ${
+                        carouselIdx === i ? "text-white" : "text-white/45 group-hover:text-white/75"
+                      }`}
+                    >
+                      {p.title}
+                    </span>
+                    <span
+                      className="ml-auto text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-0.5 rounded border shrink-0"
+                      style={{
+                        color: projectColors[p.category],
+                        borderColor: `${projectColors[p.category]}30`,
+                        backgroundColor: `${projectColors[p.category]}10`,
+                      }}
+                    >
+                      {p.category}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            {/* Preview panel — cover swaps with the hovered/active row */}
+            <div className="sticky top-24">
+              <div className="terminal-window glow-silver overflow-hidden">
+                <TerminalHeader
+                  title={`${projects[carouselIdx].id}.tsx`}
+                  right={`${carouselIdx + 1}/${projects.length}`}
+                />
+                <div className="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
+                  <AnimatePresence initial={false}>
+                    <m.img
+                      key={projects[carouselIdx].id}
+                      src={projects[carouselIdx].cover ?? projects[carouselIdx].image}
+                      alt={projects[carouselIdx].title}
+                      className="absolute inset-0 w-full h-full object-cover object-center"
+                      initial={{ opacity: 0, scale: 1.04 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </AnimatePresence>
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                  <div className="absolute inset-0 ring-1 ring-inset ring-white/[0.06] pointer-events-none" />
+                </div>
+                <div className="p-5">
+                  <p className="text-xs text-white/55 leading-relaxed line-clamp-2 mb-3">
+                    {projects[carouselIdx].description}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {projects[carouselIdx].tech.map((t) => (
+                      <span
+                        key={t}
+                        className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/55 border border-white/[0.06]"
+                      >
+                        &lt;{t} /&gt;
+                      </span>
+                    ))}
+                  </div>
+                  {projects[carouselIdx].overview && (
+                    <button
+                      onClick={() => openCase(projects[carouselIdx])}
+                      className="group/cta inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#4ade80]/30 bg-[#4ade80]/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] hover:bg-[#4ade80]/[0.12] hover:border-[#4ade80]/50 transition-all"
+                    >
+                      ver case
+                      <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: swipeable card + dots/arrows */}
+          <div className="md:hidden">
+            <m.div
+              className="terminal-window glow-silver touch-pan-y"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -60) setCarouselIdx((carouselIdx + 1) % projects.length);
+                else if (info.offset.x > 60)
+                  setCarouselIdx((carouselIdx - 1 + projects.length) % projects.length);
+              }}
+            >
+              <TerminalHeader
+                title={`${projects[carouselIdx].id}.tsx`}
+                right={`${carouselIdx + 1}/${projects.length}`}
+              />
+              {projects[carouselIdx].image && (
+                <div className="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
+                  <m.img
+                    key={projects[carouselIdx].id}
+                    src={projects[carouselIdx].cover ?? projects[carouselIdx].image}
+                    alt={projects[carouselIdx].title}
+                    className="w-full h-full object-cover object-center pointer-events-none"
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute top-2 left-4 font-display text-6xl font-bold text-white/[0.14] select-none pointer-events-none leading-none"
+                  >
+                    {String(carouselIdx + 1).padStart(2, "0")}
+                  </span>
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                  <div className="absolute inset-0 ring-1 ring-inset ring-white/[0.06] pointer-events-none" />
+                </div>
+              )}
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-jetbrains-mono)]">
+                    {projects[carouselIdx].title}
+                  </h3>
+                  <span
+                    className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-1 rounded border font-bold"
+                    style={{
+                      color: projectColors[projects[carouselIdx].category],
+                      borderColor: `${projectColors[projects[carouselIdx].category]}30`,
+                      backgroundColor: `${projectColors[projects[carouselIdx].category]}10`,
+                    }}
+                  >
+                    {projects[carouselIdx].category}
+                  </span>
+                </div>
+                <p className="text-xs text-white/55 leading-relaxed mb-3">
+                  {projects[carouselIdx].description}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {projects[carouselIdx].tech.map((t) => (
+                    <span
+                      key={t}
+                      className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/55 border border-white/[0.06]"
+                    >
+                      &lt;{t} /&gt;
+                    </span>
+                  ))}
+                </div>
+                {projects[carouselIdx].overview && (
+                  <button
+                    onClick={() => openCase(projects[carouselIdx])}
+                    className="group/cta mt-5 inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#4ade80]/30 bg-[#4ade80]/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] hover:bg-[#4ade80]/[0.12] hover:border-[#4ade80]/50 transition-all"
+                  >
+                    ver case
+                    <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
+                  </button>
+                )}
+              </div>
+            </m.div>
+
+            {/* Controls */}
+            <div className="flex items-center justify-between mt-5">
+              <div className="flex gap-1.5">
+                {projects.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCarouselIdx(i)}
+                    aria-label={`Projeto ${i + 1}`}
+                    className="py-3 px-0.5 -my-3 flex items-center"
+                  >
+                    <span
+                      className={`block h-2 rounded-full transition-all duration-300 ${
+                        carouselIdx === i ? "bg-white w-6" : "bg-white/15 w-2 hover:bg-white/30"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCarouselIdx((carouselIdx - 1 + projects.length) % projects.length)}
+                  aria-label="Projeto anterior"
+                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-white/30 transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setCarouselIdx((carouselIdx + 1) % projects.length)}
+                  aria-label="Próximo projeto"
+                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-white/30 transition-all"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <SectionNext index={1} onChapterClick={handleChapterClick} />
+      </Section>
+
+      {/* ============ ABOUT ============ */}
+      <Section id="about" progress={progress} range={rangeOf("about")}>
+        <div>
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-white mb-2">
             Sobre<span className="text-white/20">.</span>
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
@@ -586,7 +906,7 @@ export default function Home() {
               <div className="flex items-center gap-3 mb-5">
                 <div className="relative shrink-0">
                   <img
-                    src="/images/profile.jpeg"
+                    src="/images/profile.webp"
                     alt="Eduardo Gouveia"
                     className="w-14 h-14 rounded-full object-cover border-2 border-[#fbbf24]/50"
                   />
@@ -636,9 +956,9 @@ export default function Home() {
             // métricas que importam
           </p>
           <div className="grid grid-cols-3 gap-3 md:gap-4">
-            {resultMetrics.map((m, i) => (
-              <motion.div
-                key={m.label}
+            {resultMetrics.map((metric, i) => (
+              <m.div
+                key={metric.label}
                 className="terminal-window p-4 md:p-5 text-center"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -646,15 +966,15 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: i * 0.15 }}
               >
                 <div className="text-2xl md:text-3xl font-bold text-gradient-silver">
-                  {m.value}
+                  {metric.value}
                 </div>
                 <div className="text-[10px] md:text-xs font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[1px] md:tracking-[2px] text-[#4ade80] mt-1.5">
-                  {m.label}
+                  {metric.label}
                 </div>
                 <div className="text-[10px] md:text-[11px] text-white/50 mt-1 hidden md:block">
-                  {m.description}
+                  {metric.description}
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -665,9 +985,9 @@ export default function Home() {
             // avaliações verificadas
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3 -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
           {testimonials.map((t, i) => (
-            <div key={i} className="terminal-window p-5 md:p-6 flex flex-col">
+            <div key={i} className="terminal-window p-5 md:p-6 flex flex-col min-w-[85%] snap-center sm:min-w-[70%] md:min-w-0">
               {/* Header: stars + verified badge */}
               <div className="flex items-center justify-between gap-2 mb-3">
                 <div className="text-[#fbbf24] text-[11px]">{"★".repeat(t.rating)}</div>
@@ -687,7 +1007,7 @@ export default function Home() {
                 <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/55">
                   — {t.author}
                 </div>
-                <div className="flex items-center gap-1.5 text-[8px] md:text-[9px] font-[family-name:var(--font-jetbrains-mono)] flex-wrap">
+                <div className="flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] flex-wrap">
                   <span className="text-white/45">{t.date}</span>
                   <span className="text-white/15">·</span>
                   <span className="text-[#60a5fa]/70">{t.projectType}</span>
@@ -715,296 +1035,61 @@ export default function Home() {
             <span>→</span>
           </a>
         </div>
-      </Section>
-
-      {/* ============ PROJECTS ============ */}
-      <Section id="projects" progress={progress} range={[0.4, 0.65]}>
-        <div>
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
-            Projetos<span className="text-white/20">.</span>
-          </h2>
-          <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
-
-          {/* Carousel — 1 card visible, infinite loop */}
-          <div className="relative">
-            {/* Main card display */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Current project — main card */}
-              <div className="group terminal-window glow-silver md:col-span-1">
-                <TerminalHeader
-                  title={`${projects[carouselIdx].id}.tsx`}
-                  right={`${carouselIdx + 1}/${projects.length}`}
-                />
-                {projects[carouselIdx].image && (
-                  <div className="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
-                    <motion.img
-                      key={projects[carouselIdx].id}
-                      src={projects[carouselIdx].image}
-                      alt={projects[carouselIdx].title}
-                      className="w-full h-full object-cover object-top"
-                      initial={{ opacity: 0, scale: 1.05 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4 }}
-                    />
-                    {/* screen treatment: bottom fade + top sheen + inset frame */}
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#111] via-transparent to-transparent" />
-                    <div className="absolute inset-x-0 top-0 h-px bg-white/10 pointer-events-none" />
-                    <div className="absolute inset-0 ring-1 ring-inset ring-white/[0.06] pointer-events-none" />
-                  </div>
-                )}
-                <div className="p-5">
-                  {/* Category tag */}
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-jetbrains-mono)]">
-                      {projects[carouselIdx].title}
-                    </h3>
-                    <span
-                      className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-1 rounded border font-bold"
-                      style={{
-                        color: projectColors[projects[carouselIdx].category],
-                        borderColor: `${projectColors[projects[carouselIdx].category]}30`,
-                        backgroundColor: `${projectColors[projects[carouselIdx].category]}10`,
-                      }}
-                    >
-                      {projects[carouselIdx].category}
-                    </span>
-                  </div>
-                  <p className="text-xs text-white/55 leading-relaxed mb-3">
-                    {projects[carouselIdx].description}
-                  </p>
-
-                  {/* Output metrics */}
-                  {projects[carouselIdx].output && (
-                    <div className="mb-4 pb-3 border-b border-white/[0.04]">
-                      <div className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] mb-1.5">
-                        &gt; output:
-                      </div>
-                      <ul className="space-y-0.5">
-                        {projects[carouselIdx].output!.map((o) => (
-                          <li
-                            key={o}
-                            className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 flex items-start gap-1.5"
-                          >
-                            <span className="text-[#4ade80]/60 shrink-0">•</span>
-                            <span>{o}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <div className="flex flex-wrap gap-1.5">
-                    {projects[carouselIdx].tech.map((t) => (
-                      <span
-                        key={t}
-                        className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/55 border border-white/[0.06]"
-                      >
-                        &lt;{t} /&gt;
-                      </span>
-                    ))}
-                  </div>
-
-                  {projects[carouselIdx].overview && (
-                    <button
-                      onClick={() => setCaseStudy(projects[carouselIdx])}
-                      className="group/cta mt-5 inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#4ade80]/30 bg-[#4ade80]/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] hover:bg-[#4ade80]/[0.12] hover:border-[#4ade80]/50 transition-all"
-                    >
-                      ver case
-                      <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Next project preview — hidden on mobile */}
-              <div
-                className="hidden md:block terminal-window opacity-50 hover:opacity-70 transition-opacity cursor-pointer"
-                onClick={() => setCarouselIdx((carouselIdx + 1) % projects.length)}
-              >
-                <TerminalHeader title={`${projects[(carouselIdx + 1) % projects.length].id}.tsx`} />
-                {projects[(carouselIdx + 1) % projects.length].image && (
-                  <div className="group/preview relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
-                    <img
-                      src={projects[(carouselIdx + 1) % projects.length].image}
-                      alt={projects[(carouselIdx + 1) % projects.length].title}
-                      className="w-full h-full object-cover object-top transition-transform duration-700 group-hover/preview:scale-[1.04]"
-                    />
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#111] via-transparent to-transparent" />
-                    <div className="absolute inset-x-0 top-0 h-px bg-white/10 pointer-events-none" />
-                    <div className="absolute inset-0 ring-1 ring-inset ring-white/[0.06] pointer-events-none" />
-                  </div>
-                )}
-                <div className="p-5">
-                  <h3 className="text-base font-semibold text-white/60 mb-2 font-[family-name:var(--font-jetbrains-mono)]">
-                    {projects[(carouselIdx + 1) % projects.length].title}
-                  </h3>
-                  <p className="text-[11px] text-white/45 leading-relaxed line-clamp-2">
-                    {projects[(carouselIdx + 1) % projects.length].description}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Controls */}
-            <div className="flex items-center justify-between mt-5">
-              <div className="flex gap-1.5">
-                {projects.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCarouselIdx(i)}
-                    className={`h-2 md:h-1.5 rounded-full transition-all duration-300 ${
-                      carouselIdx === i ? "bg-white w-6" : "bg-white/15 w-2 md:w-1.5 hover:bg-white/30"
-                    }`}
-                  />
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setCarouselIdx((carouselIdx - 1 + projects.length) % projects.length)}
-                  aria-label="Projeto anterior"
-                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-white/30 transition-all"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setCarouselIdx((carouselIdx + 1) % projects.length)}
-                  aria-label="Próximo projeto"
-                  className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-white/30 transition-all"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      <SectionNext index={2} onChapterClick={handleChapterClick} />
       </Section>
 
       {/* ============ SKILLS ============ */}
-      <Section id="skills" progress={progress} range={[0.65, 0.85]}>
+      <Section id="skills" progress={progress} range={rangeOf("skills")}>
         <div>
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-white mb-2">
             Skills<span className="text-white/20">.</span>
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
 
-          {/* Filter buttons */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {(["all", "frontend", "backend", "devops", "tools"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setSkillFilter(f)}
-                className={`text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-3 py-1.5 rounded border transition-all cursor-pointer ${
-                  skillFilter === f
-                    ? "text-white border-white/30 bg-white/[0.05]"
-                    : "text-white/55 border-white/[0.06] hover:border-white/20 hover:text-white/80"
-                }`}
-                style={
-                  skillFilter === f && f !== "all"
-                    ? {
-                        color: catColors[f],
-                        borderColor: `${catColors[f]}40`,
-                        backgroundColor: `${catColors[f]}10`,
-                      }
-                    : undefined
-                }
-              >
-                [ {f === "all" ? "todas" : f} ]
-              </button>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {(["frontend", "backend", "devops", "tools"] as const)
-              .filter((category) => skillFilter === "all" || skillFilter === category)
-              .map((category) => (
-                <motion.div
-                  key={category}
-                  className="relative"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="flex items-center gap-2 mb-5">
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: catColors[category] }}
-                    />
-                    <h3
-                      className="text-[10px] uppercase tracking-[3px] font-[family-name:var(--font-jetbrains-mono)] font-bold"
-                      style={{ color: catColors[category] }}
-                    >
-                      {"{"} {category} {"}"}
-                    </h3>
-                  </div>
-
-                  {/* Circuit line */}
-                  <div
-                    className="absolute left-1 top-10 bottom-0 w-px"
-                    style={{
-                      backgroundColor: `${catColors[category]}15`,
-                    }}
-                  />
-
-                  <div className="space-y-4 pl-4">
-                    {skills
-                      .filter((s) => s.category === category)
-                      .map((skill) => (
-                        <div key={skill.name}>
-                          <div className="flex justify-between text-[11px] mb-1.5 items-center gap-2">
-                            <span className="text-white/60 font-[family-name:var(--font-jetbrains-mono)] flex items-center gap-1.5 min-w-0">
-                              <span className="truncate">{skill.name}</span>
-                              {skill.hot && (
-                                <span className="text-[8px] font-bold text-[#fb923c] bg-[#fb923c]/10 px-1 py-0.5 rounded border border-[#fb923c]/20 shrink-0">
-                                  HOT
-                                </span>
-                              )}
-                            </span>
-                            <span className="font-[family-name:var(--font-jetbrains-mono)] text-white/55 shrink-0 text-[10px]">
-                              {skill.years}+ anos
-                            </span>
-                          </div>
-                          <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
-                            <motion.div
-                              className="h-full rounded-full"
-                              initial={{ width: 0 }}
-                              whileInView={{ width: `${skill.level * 100}%` }}
-                              viewport={{ once: true }}
-                              transition={{
-                                duration: 1.2,
-                                ease: "easeOut",
-                              }}
-                              style={{
-                                background: `linear-gradient(90deg, ${catColors[category]}40, ${catColors[category]})`,
-                                boxShadow: `0 0 8px ${catColors[category]}30`,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </motion.div>
-              ))}
-          </div>
+          <SkillConstellation onOpenCase={openCase} />
         </div>
+      <SectionNext index={3} onChapterClick={handleChapterClick} />
       </Section>
 
       {/* ============ CONTACT ============ */}
-      <Section id="contact" progress={progress} range={[0.85, 1.0]}>
+      <Section id="contact" progress={progress} range={rangeOf("contact")}>
         <div className="max-w-2xl mx-auto w-full">
-          <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
+          <h2 className="font-display text-2xl md:text-4xl font-bold text-white mb-2">
             Contato<span className="text-white/20">.</span>
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
 
           {/* Hero headline */}
           <div className="mb-6">
-            <h3 className="text-lg md:text-2xl font-bold text-white leading-tight">
+            <span className="inline-flex items-center gap-2 mb-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] px-3 py-1 rounded-full border border-[#4ade80]/30 bg-[#4ade80]/[0.08]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
+              aceitando novos projetos
+            </span>
+            <h3 className="font-display text-lg md:text-2xl font-bold text-white leading-tight">
               Vamos construir o próximo{" "}
               <span className="text-gradient-silver">SaaS de sucesso</span>?
             </h3>
             <p className="text-[11px] md:text-xs text-white/55 font-[family-name:var(--font-jetbrains-mono)] mt-2">
               resposta em até 2h úteis · trabalho com clientes no mundo todo
             </p>
+          </div>
+
+          {/* Por que me contratar */}
+          <div className="mb-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5 font-[family-name:var(--font-jetbrains-mono)]">
+            <div className="terminal-window p-3.5">
+              <div className="text-[#fbbf24] text-xs font-bold mb-0.5">★ Sênior de verdade</div>
+              <div className="text-[10px] text-white/55">
+                Top {workanaStats.rankITBrazil} Brasil · nível {workanaStats.level}
+              </div>
+            </div>
+            <div className="terminal-window p-3.5">
+              <div className="text-[#4ade80] text-xs font-bold mb-0.5">⚡ Resposta rápida</div>
+              <div className="text-[10px] text-white/55">retorno em ~2h úteis</div>
+            </div>
+            <div className="terminal-window p-3.5">
+              <div className="text-gradient-silver text-xs font-bold mb-0.5">↻ Clientes que voltam</div>
+              <div className="text-[10px] text-white/55">{workanaStats.recurringClients} recorrentes</div>
+            </div>
           </div>
 
           {/* CTA Principal Workana */}
@@ -1076,11 +1161,8 @@ export default function Home() {
                 </a>
               </div>
 
-              <div className="pt-4 border-t border-white/[0.06]">
-                <p className="text-[#4ade80]">
-                  $ git clone my-next-project{" "}
-                  <span className="cursor-blink">_</span>
-                </p>
+              <div className="pt-2 border-t border-white/[0.06]">
+                <TerminalPrompt />
               </div>
             </div>
           </div>
@@ -1092,6 +1174,8 @@ export default function Home() {
           </div>
         </div>
       </Section>
+      </main>
     </MotionConfig>
+    </LazyMotion>
   );
 }

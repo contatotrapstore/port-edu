@@ -314,14 +314,21 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     let target = 0;
     let current = 0;
 
-    // Retorna a section ativa (opacity > 0.5) para decidir se deve delegar scroll
+    // Retorna a section ativa (opacity > 0.5) para decidir se deve delegar scroll.
+    // NodeList é cacheado — as sections são estáticas após o mount (INP win).
+    let cachedSections: HTMLElement[] | null = null;
     const getVisibleSection = (): HTMLElement | null => {
-      const sections = document.querySelectorAll<HTMLElement>("section[id]");
-      for (const s of sections) {
+      if (!cachedSections || cachedSections.length === 0) {
+        cachedSections = Array.from(document.querySelectorAll<HTMLElement>("section[id]"));
+      }
+      for (const s of cachedSections) {
         if (parseFloat(s.style.opacity || "0") > 0.5) return s;
       }
       return null;
     };
+
+    // Timestamp of the last user scroll input — drives the idle snap-to-chapter.
+    let lastInput = 0;
 
     const handleWheel = (e: WheelEvent) => {
       if (document.documentElement.hasAttribute("data-modal-open")) return;
@@ -339,6 +346,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       e.preventDefault();
       target += e.deltaY * 0.0006;
       target = Math.max(0, Math.min(1, target));
+      lastInput = performance.now();
     };
 
     let touchY = 0;
@@ -357,6 +365,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       if (!section) {
         target += dy * 0.0012;
         target = Math.max(0, Math.min(1, target));
+        lastInput = performance.now();
         return;
       }
 
@@ -370,6 +379,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       if (noOverflow || (dy > 0 && atBottom) || (dy < 0 && atTop)) {
         target += dy * 0.0012;
         target = Math.max(0, Math.min(1, target));
+        lastInput = performance.now();
       }
       // Senão: deixa native scroll do iOS lidar (já está rolando porque listener é passive)
     };
@@ -429,14 +439,33 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
     let raf: number;
     const animate = () => {
-      current += (target - current) * 0.12;
+      // Idle snap: shortly after the user stops scrolling, the target eases into the
+      // nearest chapter — no more half-faded "stuck between sections" states.
+      if (
+        lastInput > 0 &&
+        performance.now() - lastInput > 240 &&
+        !document.documentElement.hasAttribute("data-modal-open")
+      ) {
+        let nearest = chapterTargets[0];
+        for (const t of chapterTargets) {
+          if (Math.abs(t - target) < Math.abs(nearest - target)) nearest = t;
+        }
+        target += (nearest - target) * 0.07;
+        if (Math.abs(nearest - target) < 0.0004) {
+          target = nearest;
+          lastInput = 0;
+        }
+      }
+
+      // Softer glide (silkier settle than the old 0.12)
+      current += (target - current) * 0.095;
       if (Math.abs(target - current) < 0.0001) current = target;
 
       // Update shared ref (no re-render) — 3D reads this at 60fps
       scrollRef.current = current;
 
-      // Throttle React updates — only when changed significantly
-      if (Math.abs(current - lastReported.current) > 0.003) {
+      // Finer throttle: fades/drifts get ~2x more steps → visibly smoother
+      if (Math.abs(current - lastReported.current) > 0.0015) {
         lastReported.current = current;
         onProgress(current);
       }

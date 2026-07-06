@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import Image from "next/image";
+import { m, LazyMotion, domAnimation } from "framer-motion";
 import { X } from "lucide-react";
 import { projectColors, type Project } from "@/lib/constants";
 import CaseStudyContent from "@/components/CaseStudyContent";
@@ -65,22 +66,25 @@ export default function ProjectCaseStudy({
   const color = projectColors[project.category];
 
   return (
-    <motion.div
+    <LazyMotion features={domAnimation} strict>
+    <m.div
       className="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="case-title"
     >
-      <motion.div
+      <m.div
         ref={dialogRef}
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto scrollbar-none rounded-lg border border-white/10 bg-[#0c0c0d] shadow-2xl"
-        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        initial={{ opacity: 0, y: 28, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        exit={{ opacity: 0, y: 20, scale: 0.97, transition: { duration: 0.2 } }}
+        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center h-9 px-3 bg-[#0c0c0d] border-b border-white/[0.08]">
@@ -103,7 +107,13 @@ export default function ProjectCaseStudy({
         {/* Hero image */}
         {project.image && (
           <div className="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
-            <img src={project.image} alt={project.title} className="w-full h-full object-cover object-top" />
+            <Image
+              src={project.image}
+              alt={project.title}
+              fill
+              sizes="(max-width: 768px) 92vw, 640px"
+              className="object-cover object-top"
+            />
             <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0c0c0d] via-transparent to-transparent" />
           </div>
         )}
@@ -133,7 +143,8 @@ ver case completo <span aria-hidden>→</span>
 
           <CaseStudyContent project={project} />
         </div>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
+    </LazyMotion>
   );
 }

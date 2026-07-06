@@ -4,6 +4,10 @@ export interface Project {
   description: string;
   tech: string[];
   image: string;
+  /** Stylized cinematic cover for the carousel card (real screenshot stays in the case). */
+  cover?: string;
+  /** Extra real screenshots shown as a gallery inside the case study. */
+  gallery?: string[];
   url?: string;
   github?: string;
   category: "saas" | "ecommerce" | "mobile" | "sistema" | "web";
@@ -41,7 +45,7 @@ export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
   title: "FULL STACK SENIOR | SAAS & SISTEMAS",
   subtitle: "Construindo o futuro, um commit por vez.",
-  bio: "144+ projetos entregues | 28 clientes recorrentes | Top 2 Brasil e Top 3 Global em TI na Workana entre 14,15M de profissionais. Desenvolvedor Full Stack Sênior — da arquitetura ao deploy. Especializado em SaaS, dashboards e aplicativos modernos.",
+  bio: "Desenvolvedor Full Stack Sênior. Transformo ideias em produtos reais — da arquitetura ao deploy — com foco em SaaS, dashboards e sistemas com IA. 144+ projetos entregues e 28 clientes que voltam: comunicação clara, prazos cumpridos e código que escala. Top 1 Brasil em TI na Workana, nível HERO.",
   social: {
     github: "https://github.com/GouveiaZx",
     linkedin: "",
@@ -52,16 +56,16 @@ export const siteConfig: SiteConfig = {
 export const workanaStats = {
   projectsCompleted: 144,
   projectsRunning: 7,
-  clientReviews: 163,
+  clientReviews: 167,
   recurringClients: 28,
-  rating: 4.71,
+  rating: 4.72,
   ratingMax: 5,
   certifications: 7,
   hourlyRate: 200,
-  rankGlobal: 3,
-  rankTotalProfessionals: "14.15M",
-  rankITGlobal: 3,
-  rankITBrazil: 2,
+  rankGlobal: 10,
+  rankTotalProfessionals: "14.5M",
+  rankITGlobal: 8,
+  rankITBrazil: 1,
   level: "HERO",
   yearsOnPlatform: 3,
   workanaProfileUrl: "https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6",
@@ -71,7 +75,7 @@ export const workanaStats = {
 export const resultMetrics = [
   { value: "99.8%", label: "uptime médio", description: "infraestrutura robusta" },
   { value: "< 2s", label: "tempo de entrega", description: "deploy automatizado" },
-  { value: "4.71/5", label: "nota média", description: "163 avaliações verificadas" },
+  { value: "4.72/5", label: "nota média", description: "167 avaliações verificadas" },
 ];
 
 // Avaliações reais verificadas (Workana) — texto verbatim do perfil
@@ -136,6 +140,46 @@ export const testimonials = [
     recurring: false,
     rating: 5,
   },
+  {
+    text: "Obrigado Eduardo, o trabalho ficou incrível. Espero trabalharmos juntos em novos projetos no futuro.",
+    author: "Júlio Abeilard da Silva",
+    project: "Curso de vendas na Hotmart + página de vendas otimizada",
+    projectType: "Página de Vendas",
+    date: "Jun/2026",
+    verified: true,
+    recurring: false,
+    rating: 5,
+  },
+  {
+    text: "Excelente profissional, entende com facilidade a ideia, eficiente no desenvolvimento, recomendo com certeza. Com certeza um ótimo investimento.",
+    author: "Milton Souza",
+    project: "Site de notícias e revista digital com painel admin e IA",
+    projectType: "Portal + IA",
+    date: "Abr/2026",
+    verified: true,
+    recurring: false,
+    rating: 5,
+  },
+  {
+    text: "Me entregou o projeto antes do prazo. Me deu muitas ideias que melhoraram muito o projeto inicial. Muito experiente e muito fácil de lidar. Recomendo mil vezes.",
+    author: "Tales Sales",
+    project: "Plataforma usando o ChatGPT",
+    projectType: "Plataforma GPT",
+    date: "Set/2025",
+    verified: true,
+    recurring: false,
+    rating: 5,
+  },
+  {
+    text: "Excelente profissional, entregou muito mais que eu esperava. Inclusive entregou vídeos e arquivos adicionais explicando cada etapa de como resolver qualquer problema futuramente. Super recomendo.",
+    author: "Arthur Marwin Morcerf",
+    project: "Site institucional de empresa",
+    projectType: "Site Institucional",
+    date: "2025",
+    verified: true,
+    recurring: false,
+    rating: 5,
+  },
 ];
 
 export const projects: Project[] = [
@@ -160,6 +204,8 @@ export const projects: Project[] = [
     ],
     tech: ["React.js", "Next.js", "Node.js", "IA"],
     image: "/images/projects/pace.webp",
+    cover: "/images/projects/covers/pace.webp",
+    gallery: ["/images/projects/pace-1.webp", "/images/projects/pace-2.webp", "/images/projects/pace-3.webp", "/images/projects/pace-4.webp", "/images/projects/pace-5.webp", "/images/projects/pace-6.webp"],
     url: "https://neuroone.jogosadm.com.br/clinica",
     year: "2026",
     category: "saas",
@@ -190,6 +236,8 @@ export const projects: Project[] = [
     ],
     tech: ["Three.js", "JavaScript", "PHP", "PWA"],
     image: "/images/projects/neuroone.webp",
+    cover: "/images/projects/covers/neuroone.webp",
+    gallery: ["/images/projects/neuroone-1.webp", "/images/projects/neuroone-2.webp", "/images/projects/neuroone-3.webp", "/images/projects/neuroone-4.webp", "/images/projects/neuroone-5.webp"],
     url: "https://neuroone.jogosadm.com.br",
     year: "2025",
     category: "web",
@@ -220,6 +268,8 @@ export const projects: Project[] = [
     ],
     tech: ["TypeScript", "Node.js", "IA", "SaaS"],
     image: "/images/projects/neuroialab.webp",
+    cover: "/images/projects/covers/neuroialab.webp",
+    gallery: ["/images/projects/neuroialab-1.webp", "/images/projects/neuroialab-2.webp", "/images/projects/neuroialab-3.webp"],
     url: "https://www.neuroialab.com.br/store",
     year: "2025",
     category: "saas",
@@ -250,6 +300,8 @@ export const projects: Project[] = [
     ],
     tech: ["React.js", "PHP", "JavaScript", "IA"],
     image: "/images/projects/anamex.webp",
+    cover: "/images/projects/covers/anamex.webp",
+    gallery: ["/images/projects/anamex-1.webp", "/images/projects/anamex-2.webp", "/images/projects/anamex-3.webp", "/images/projects/anamex-4.webp", "/images/projects/anamex-5.webp"],
     year: "2026",
     category: "saas",
     output: [
@@ -279,6 +331,8 @@ export const projects: Project[] = [
     ],
     tech: ["JavaScript", "Electron", "IA", "Desktop"],
     image: "/images/projects/connote.webp",
+    cover: "/images/projects/covers/connote.webp",
+    gallery: ["/images/projects/connote-1.webp", "/images/projects/connote-2.webp", "/images/projects/connote-3.webp"],
     category: "sistema",
     output: [
       "produtividade com IA no fluxo de trabalho",
@@ -307,6 +361,8 @@ export const projects: Project[] = [
     ],
     tech: ["React", "TypeScript", "Node.js", "IA"],
     image: "/images/projects/clinafy.webp",
+    cover: "/images/projects/covers/clinafy.webp",
+    gallery: ["/images/projects/clinafy-1.webp", "/images/projects/clinafy-2.webp"],
     url: "https://clinafy.com",
     category: "saas",
     output: [
@@ -334,6 +390,8 @@ export const projects: Project[] = [
     ],
     tech: ["Shopify", "Liquid", "JavaScript", "Responsive"],
     image: "/images/projects/cacaostore.webp",
+    cover: "/images/projects/covers/cacaostore.webp",
+    gallery: ["/images/projects/cacaostore-1.webp", "/images/projects/cacaostore-2.webp", "/images/projects/cacaostore-3.webp"],
     url: "https://cacaostore.com.br/",
     category: "ecommerce",
     output: [
@@ -354,6 +412,7 @@ export const projects: Project[] = [
       "App de gestão mobile-first com notificações em tempo real e integração multi-sistema.",
     tech: ["JavaScript", "React.js", "Node.js", "MongoDB"],
     image: "/images/projects/click.webp",
+    cover: "/images/projects/covers/click.webp",
     category: "mobile",
     output: [
       "notificações em tempo real",
@@ -390,17 +449,18 @@ export const skills: Skill[] = [
   { name: "VS Code", category: "tools", level: 0.95, years: 6 },
 ];
 
+// Journey order: proof of work right after the hero; skills stays light before contact.
 export const chapters = [
   { id: "hero", label: "Início", range: [0, 0.2] as [number, number] },
-  { id: "about", label: "Sobre", range: [0.2, 0.4] as [number, number] },
-  { id: "projects", label: "Projetos", range: [0.4, 0.65] as [number, number] },
-  { id: "skills", label: "Skills", range: [0.65, 0.85] as [number, number] },
+  { id: "projects", label: "Projetos", range: [0.2, 0.45] as [number, number] },
+  { id: "about", label: "Sobre", range: [0.45, 0.7] as [number, number] },
+  { id: "skills", label: "Skills", range: [0.7, 0.85] as [number, number] },
   { id: "contact", label: "Contato", range: [0.85, 1.0] as [number, number] },
 ];
 
 // Scroll targets (0–1) one per chapter — single source for wheel/keyboard/dots nav.
 // Order matches `chapters`; hero sits near the very top (0.05) intentionally.
-export const chapterTargets = [0.05, 0.3, 0.52, 0.75, 0.92];
+export const chapterTargets = [0.05, 0.3, 0.55, 0.77, 0.92];
 
 // Floating code snippets for hero decoration
 export const codeSnippets = [
