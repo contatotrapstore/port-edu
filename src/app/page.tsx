@@ -94,6 +94,26 @@ export default function Home() {
       <ChapterDots currentChapter={currentChapter} onChapterClick={handleChapterClick} />
       <ChapterHUD currentChapter={currentChapter} />
 
+      {/* Reading progress — hairline at the very top (mobile + desktop orientation cue) */}
+      <div className="fixed top-0 left-0 right-0 h-[2px] z-40 pointer-events-none" aria-hidden>
+        <div
+          className="h-full bg-gradient-to-r from-[#4ade80]/70 to-[#4ade80]"
+          style={{ width: `${Math.min(100, Math.max(2, progress * 100))}%` }}
+        />
+      </div>
+
+      {/* Mobile: persistent "there's more below" cue — a first-time visitor's swipe
+          snaps to a section; without this, the stop reads as "the site ended". */}
+      {currentChapter > 0 && currentChapter < chapters.length - 1 && (
+        <button
+          onClick={() => handleChapterClick(currentChapter + 1)}
+          aria-label="Próxima seção"
+          className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-20 p-2 text-white/40"
+        >
+          <ChevronDown className="w-5 h-5 animate-bounce" />
+        </button>
+      )}
+
       {/* Optional ambient soundtrack (off by default) */}
       <AmbientAudio />
 

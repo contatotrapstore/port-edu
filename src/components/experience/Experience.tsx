@@ -327,8 +327,9 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       return null;
     };
 
-    // Timestamp of the last user scroll input — drives the idle snap-to-chapter.
+    // Timestamp + direction of the last user scroll input — drive the directional idle snap.
     let lastInput = 0;
+    let lastDir = 0;
 
     const handleWheel = (e: WheelEvent) => {
       if (document.documentElement.hasAttribute("data-modal-open")) return;
@@ -347,6 +348,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       target += e.deltaY * 0.0006;
       target = Math.max(0, Math.min(1, target));
       lastInput = performance.now();
+      lastDir = Math.sign(e.deltaY) || lastDir;
     };
 
     let touchY = 0;
@@ -366,6 +368,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
         target += dy * 0.0012;
         target = Math.max(0, Math.min(1, target));
         lastInput = performance.now();
+        lastDir = Math.sign(dy) || lastDir;
         return;
       }
 
@@ -380,6 +383,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
         target += dy * 0.0012;
         target = Math.max(0, Math.min(1, target));
         lastInput = performance.now();
+        lastDir = Math.sign(dy) || lastDir;
       }
       // Senão: deixa native scroll do iOS lidar (já está rolando porque listener é passive)
     };
@@ -439,21 +443,35 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
     let raf: number;
     const animate = () => {
-      // Idle snap: shortly after the user stops scrolling, the target eases into the
-      // nearest chapter — no more half-faded "stuck between sections" states.
+      // Idle snap — DIRECTIONAL: after the user stops scrolling, settle onto the next
+      // chapter in the direction of the gesture (never bounce back). A first-time
+      // mobile visitor's short swipe always advances instead of feeling "stuck".
       if (
         lastInput > 0 &&
         performance.now() - lastInput > 240 &&
         !document.documentElement.hasAttribute("data-modal-open")
       ) {
-        let nearest = chapterTargets[0];
-        for (const t of chapterTargets) {
-          if (Math.abs(t - target) < Math.abs(nearest - target)) nearest = t;
+        let nearest: number;
+        if (lastDir > 0) {
+          // moving down: first chapter at/after where we are (0.02 = accidental-nudge tolerance)
+          nearest =
+            chapterTargets.find((t) => t >= target - 0.02) ??
+            chapterTargets[chapterTargets.length - 1];
+        } else if (lastDir < 0) {
+          // moving up: last chapter at/before where we are
+          nearest =
+            [...chapterTargets].reverse().find((t) => t <= target + 0.02) ?? chapterTargets[0];
+        } else {
+          nearest = chapterTargets[0];
+          for (const t of chapterTargets) {
+            if (Math.abs(t - target) < Math.abs(nearest - target)) nearest = t;
+          }
         }
         target += (nearest - target) * 0.07;
         if (Math.abs(nearest - target) < 0.0004) {
           target = nearest;
           lastInput = 0;
+          lastDir = 0;
         }
       }
 
