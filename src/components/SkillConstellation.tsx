@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { skills, projects, catColors, type Project, type Skill } from "@/lib/constants";
+import { skills, catColors, type Project, type Skill } from "@/lib/constants";
+import { useLocale } from "@/lib/locale";
+import { t } from "@/lib/i18n";
+import { getContent } from "@/lib/content.en";
 
 const W = 820;
 const H = 440;
@@ -20,11 +23,11 @@ function normalize(name: string) {
   return name.toLowerCase().replace(/\.js$/, "").replace(/\s+/g, "");
 }
 
-function relatedProjects(skill: string): Project[] {
+function relatedProjects(projects: Project[], skill: string): Project[] {
   const n = normalize(skill);
   return projects.filter((p) =>
-    p.tech.some((t) => {
-      const tn = normalize(t);
+    p.tech.some((tech) => {
+      const tn = normalize(tech);
       return tn === n || tn.includes(n) || n.includes(tn);
     })
   );
@@ -36,6 +39,10 @@ export default function SkillConstellation({
   onOpenCase: (p: Project) => void;
 }) {
   const [active, setActive] = useState<string | null>(null);
+  const locale = useLocale();
+  const { projects } = getContent(locale);
+  const clusterLabel = (cat: Skill["category"]) =>
+    cat === "tools" ? t(locale, "skills.platforms") : CLUSTERS[cat].label;
 
   const { nodes, edges } = useMemo(() => {
     const byCat: Record<string, Node[]> = { frontend: [], backend: [], devops: [], tools: [] };
@@ -72,7 +79,7 @@ export default function SkillConstellation({
   }, []);
 
   const activeNode = nodes.find((n) => n.name === active) ?? null;
-  const related = activeNode ? relatedProjects(activeNode.name) : [];
+  const related = activeNode ? relatedProjects(projects, activeNode.name) : [];
   const isNeighbor = (n: Node) =>
     !!activeNode &&
     (n.name === activeNode.name ||
@@ -93,7 +100,7 @@ export default function SkillConstellation({
           viewBox={`0 0 ${W} ${H}`}
           className="w-full h-auto select-none"
           role="group"
-          aria-label="Constelação de tecnologias"
+          aria-label={t(locale, "skills.constellationAria")}
         >
           {/* edges */}
           {edges.map(([a, b], i) => {
@@ -125,7 +132,7 @@ export default function SkillConstellation({
               fontSize="11"
               letterSpacing="3"
             >
-              {`{ ${CLUSTERS[cat].label} }`}
+              {`{ ${clusterLabel(cat)} }`}
             </text>
           ))}
           {/* nodes */}
@@ -170,7 +177,7 @@ export default function SkillConstellation({
         {nodes.map((n) => (
           <button
             key={n.name}
-            aria-label={`${n.name} — ${n.years}+ anos`}
+            aria-label={`${n.name} — ${n.years}+ ${t(locale, "skills.years")}`}
             onMouseEnter={() => setActive(n.name)}
             onFocus={() => setActive(n.name)}
             onClick={() => setActive(active === n.name ? null : n.name)}
@@ -197,13 +204,13 @@ export default function SkillConstellation({
             <div className="flex items-baseline justify-between gap-2 mb-1.5">
               <span className="font-display font-bold text-white text-sm">{activeNode.name}</span>
               <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/55">
-                {activeNode.years}+ anos
+                {activeNode.years}+ {t(locale, "skills.years")}
               </span>
             </div>
             {related.length > 0 ? (
               <>
                 <div className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] mb-1">
-                  &gt; usado em:
+                  &gt; {t(locale, "skills.usedIn")}
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {related.slice(0, 4).map((p) => (
@@ -223,7 +230,7 @@ export default function SkillConstellation({
               </>
             ) : (
               <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/45">
-                stack de suporte no dia a dia
+                {t(locale, "skills.supportStack")}
               </div>
             )}
           </div>
@@ -238,7 +245,7 @@ export default function SkillConstellation({
               className="text-[10px] uppercase tracking-[3px] font-[family-name:var(--font-jetbrains-mono)] font-bold mb-2"
               style={{ color: catColors[cat] }}
             >
-              {`{ ${CLUSTERS[cat].label} }`}
+              {`{ ${clusterLabel(cat)} }`}
             </div>
             <div className="flex flex-wrap gap-1.5">
               {skills
@@ -248,7 +255,7 @@ export default function SkillConstellation({
                     key={s.name}
                     className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] px-2.5 py-1 rounded border border-white/10 bg-white/[0.04] text-white/70"
                   >
-                    {s.name} <span className="text-white/40">· {s.years}+a</span>
+                    {s.name} <span className="text-white/40">· {s.years}+{t(locale, "skills.yearsAbbrev")}</span>
                   </span>
                 ))}
             </div>

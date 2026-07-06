@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { m, LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
+import { useLocale } from "@/lib/locale";
+import { t } from "@/lib/i18n";
 
 /**
  * Real-screenshot gallery for case studies: main image + thumbnail strip +
@@ -14,6 +16,7 @@ export default function CaseGallery({ images, title }: { images: string[]; title
   const [idx, setIdx] = useState(0);
   const [open, setOpen] = useState(false);
   const openerRef = useRef<HTMLButtonElement>(null);
+  const locale = useLocale();
 
   const next = useCallback(() => setIdx((i) => (i + 1) % images.length), [images.length]);
   const prev = useCallback(
@@ -42,26 +45,26 @@ export default function CaseGallery({ images, title }: { images: string[]; title
     <LazyMotion features={domAnimation} strict>
     <div>
       <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] mb-2 text-[#c0c0c0]">
-        &gt; telas do projeto:
+        &gt; {t(locale, "gallery.screens")}:
       </div>
 
       {/* Main image */}
       <button
         ref={openerRef}
         onClick={() => setOpen(true)}
-        aria-label="Ampliar imagem"
+        aria-label={t(locale, "gallery.enlargeAria")}
         className="group relative block w-full aspect-[16/10] overflow-hidden rounded-lg border border-white/[0.08] bg-[#0d0d0d] cursor-zoom-in"
       >
         <Image
           key={images[idx]}
           src={images[idx]}
-          alt={`${title} — tela ${idx + 1}`}
+          alt={`${title} — ${t(locale, "gallery.screen")} ${idx + 1}`}
           fill
           sizes="(max-width: 768px) 92vw, 640px"
           className="object-cover object-top"
         />
         <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 rounded bg-black/60 px-2 py-1 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/75 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Maximize2 className="h-3 w-3" /> ampliar
+          <Maximize2 className="h-3 w-3" /> {t(locale, "gallery.enlarge")}
         </span>
         <span className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-1 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/75">
           {idx + 1}/{images.length}
@@ -75,7 +78,7 @@ export default function CaseGallery({ images, title }: { images: string[]; title
             <button
               key={src}
               onClick={() => setIdx(i)}
-              aria-label={`Tela ${i + 1}`}
+              aria-label={t(locale, "gallery.screenNth", { n: i + 1 })}
               aria-current={i === idx}
               className={`relative h-14 w-24 shrink-0 overflow-hidden rounded border transition-all ${
                 i === idx
@@ -100,11 +103,11 @@ export default function CaseGallery({ images, title }: { images: string[]; title
             onClick={() => setOpen(false)}
             role="dialog"
             aria-modal="true"
-            aria-label={`Galeria de ${title}`}
+            aria-label={t(locale, "gallery.of", { title })}
           >
             <button
               onClick={() => setOpen(false)}
-              aria-label="Fechar galeria"
+              aria-label={t(locale, "gallery.closeAria")}
               className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             >
               <X className="h-5 w-5" />
@@ -113,14 +116,14 @@ export default function CaseGallery({ images, title }: { images: string[]; title
               <>
                 <button
                   onClick={(e) => { e.stopPropagation(); prev(); }}
-                  aria-label="Anterior"
+                  aria-label={t(locale, "gallery.prevAria")}
                   className="absolute left-3 md:left-6 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); next(); }}
-                  aria-label="Próxima"
+                  aria-label={t(locale, "gallery.nextAria")}
                   className="absolute right-3 md:right-6 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   <ChevronRight className="h-5 w-5" />
@@ -138,7 +141,7 @@ export default function CaseGallery({ images, title }: { images: string[]; title
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={images[idx]}
-                alt={`${title} — tela ${idx + 1} ampliada`}
+                alt={`${title} — ${t(locale, "gallery.screen")} ${idx + 1} ${t(locale, "gallery.enlargedSuffix")}`}
                 className="h-full w-full object-contain"
               />
             </m.div>

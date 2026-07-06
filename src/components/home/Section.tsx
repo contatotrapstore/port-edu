@@ -59,7 +59,7 @@ export default function Section({
         willChange: "opacity",
       }}
     >
-      <div className="relative z-10 max-md:min-h-[100svh] md:min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:pt-24 md:pb-16 px-6 md:px-8 lg:px-12">
+      <div className={`relative z-10 ${id === "hero" ? "max-md:min-h-[100svh]" : "max-md:py-6"} md:min-h-full flex flex-col items-center justify-center max-w-6xl w-full mx-auto py-20 md:pt-24 md:pb-16 px-6 md:px-8 lg:px-12`}>
         <div
           className="w-full max-md:!transform-none motion-reduce:!transform-none"
           style={{ transform: `translateY(${drift}px)`, willChange: "transform" }}

@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { projects, projectColors, siteConfig } from "@/lib/constants";
+import { projectColors, siteConfig } from "@/lib/constants";
+import { getContent } from "@/lib/content.en";
+import { categoryLabel } from "@/lib/i18n";
+import { LocaleProvider } from "@/lib/locale";
 import CaseStudyContent from "@/components/CaseStudyContent";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
 
 const siteUrl = "https://edevshub.com";
+const { projects } = getContent("en");
 
 // Only projects with real case-study content get a page; others (e.g. Click) 404.
 export const dynamicParams = false;
@@ -24,7 +28,7 @@ export async function generateMetadata({
   const p = projects.find((x) => x.id === id);
   if (!p) return {};
   const description = p.overview || p.description;
-  const url = `${siteUrl}/projetos/${p.id}`;
+  const url = `${siteUrl}/en/projetos/${p.id}`;
   return {
     title: `${p.title} — Case | Eduardo Gouveia`,
     description,
@@ -37,6 +41,7 @@ export async function generateMetadata({
     },
     openGraph: {
       type: "article",
+      locale: "en_US",
       url,
       title: `${p.title} — Case · Eduardo Gouveia`,
       description,
@@ -63,7 +68,8 @@ export default async function ProjectPage({
         name: project.title,
         description: project.overview || project.description,
         image: `${siteUrl}${project.image}`,
-        url: `${siteUrl}/projetos/${project.id}`,
+        url: `${siteUrl}/en/projetos/${project.id}`,
+        inLanguage: "en",
         keywords: project.tech.join(", "),
         ...(project.url ? { sameAs: project.url } : {}),
         creator: { "@type": "Person", name: siteConfig.name, url: `${siteUrl}/#person` },
@@ -71,13 +77,13 @@ export default async function ProjectPage({
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
-          { "@type": "ListItem", position: 2, name: "Projetos", item: `${siteUrl}/#projects` },
+          { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/en` },
+          { "@type": "ListItem", position: 2, name: "Projects", item: `${siteUrl}/en#projects` },
           {
             "@type": "ListItem",
             position: 3,
             name: project.title,
-            item: `${siteUrl}/projetos/${project.id}`,
+            item: `${siteUrl}/en/projetos/${project.id}`,
           },
         ],
       },
@@ -85,7 +91,7 @@ export default async function ProjectPage({
   };
 
   return (
-    <>
+    <LocaleProvider locale="en">
       {/* Static textured backdrop only — no moving video behind reading content. */}
       <AmbientBackdrop heroActive={false} />
       <script
@@ -93,18 +99,18 @@ export default async function ProjectPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="fixed inset-0 z-10 overflow-y-auto scrollbar-none">
+      <main lang="en" className="fixed inset-0 z-10 overflow-y-auto scrollbar-none">
         <div className="mx-auto max-w-3xl min-h-full px-5 md:px-8 py-10 md:py-16">
           <nav
             aria-label="Breadcrumb"
             className="flex items-center gap-2 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/50"
           >
-            <Link href="/" className="hover:text-white transition-colors">
-              início
+            <Link href="/en" className="hover:text-white transition-colors">
+              home
             </Link>
             <span aria-hidden className="text-white/25">/</span>
-            <Link href="/#projects" className="hover:text-white transition-colors">
-              projetos
+            <Link href="/en#projects" className="hover:text-white transition-colors">
+              projects
             </Link>
             <span aria-hidden className="text-white/25">/</span>
             <span className="text-[#4ade80]">{project.id}</span>
@@ -119,7 +125,7 @@ export default async function ProjectPage({
                 className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-1 rounded border font-bold"
                 style={{ color, borderColor: `${color}30`, backgroundColor: `${color}10` }}
               >
-                {project.category}
+                {categoryLabel("en", project.category)}
               </span>
               {project.year && (
                 <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/40">
@@ -161,7 +167,7 @@ export default async function ProjectPage({
               dir: "prev" | "next";
             }) => (
               <Link
-                href={`/projetos/${p.id}`}
+                href={`/en/projetos/${p.id}`}
                 className={`group flex items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0a0a0a]/60 backdrop-blur-sm p-4 hover:border-white/20 transition-colors ${
                   dir === "next" ? "flex-row-reverse text-right" : ""
                 }`}
@@ -177,7 +183,7 @@ export default async function ProjectPage({
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[9px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-white/45 mb-0.5">
-                    {dir === "prev" ? "← case anterior" : "próximo case →"}
+                    {dir === "prev" ? "← previous case" : "next case →"}
                   </span>
                   <span className="block font-display font-bold text-white text-sm truncate group-hover:text-[#4ade80] transition-colors">
                     {p.title}
@@ -194,6 +200,6 @@ export default async function ProjectPage({
           })()}
         </div>
       </main>
-    </>
+    </LocaleProvider>
   );
 }

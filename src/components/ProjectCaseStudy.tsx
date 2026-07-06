@@ -7,6 +7,8 @@ import { m, LazyMotion, domAnimation } from "framer-motion";
 import { X } from "lucide-react";
 import { projectColors, type Project } from "@/lib/constants";
 import CaseStudyContent from "@/components/CaseStudyContent";
+import { useLocale } from "@/lib/locale";
+import { t, categoryLabel } from "@/lib/i18n";
 
 /**
  * Accessible case-study preview modal: role=dialog, focus trap, Esc / click-outside
@@ -21,6 +23,7 @@ export default function ProjectCaseStudy({
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const locale = useLocale();
 
   useEffect(() => {
     if (!project) return;
@@ -97,7 +100,7 @@ export default function ProjectCaseStudy({
           <button
             ref={closeRef}
             onClick={onClose}
-            aria-label="Fechar case study"
+            aria-label={t(locale, "case.close")}
             className="ml-auto w-8 h-8 flex items-center justify-center rounded text-white/55 hover:text-white hover:bg-white/[0.06] transition-colors"
           >
             <X className="w-4 h-4" />
@@ -130,15 +133,15 @@ export default function ProjectCaseStudy({
               className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-1 rounded border font-bold shrink-0"
               style={{ color, borderColor: `${color}30`, backgroundColor: `${color}10` }}
             >
-              {project.category}
+              {categoryLabel(locale, project.category)}
             </span>
           </div>
 
           <Link
-            href={`/projetos/${project.id}`}
+            href={`/${locale === "en" ? "en/" : ""}projetos/${project.id}`}
             className="inline-flex items-center gap-1.5 mb-5 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] hover:text-[#86efac] border-b border-[#4ade80]/30 hover:border-[#4ade80]/60 pb-0.5 transition-colors"
           >
-ver case completo <span aria-hidden>→</span>
+{t(locale, "case.viewFull")} <span aria-hidden>→</span>
           </Link>
 
           <CaseStudyContent project={project} />

@@ -1,11 +1,14 @@
 "use client";
 
 import { m } from "framer-motion";
-import { siteConfig, chapters, codeSnippets, workanaStats } from "@/lib/constants";
+import { chapters, codeSnippets, workanaStats } from "@/lib/constants";
 import { track } from "@vercel/analytics";
 import Section from "@/components/home/Section";
 import TypewriterText from "@/components/home/TypewriterText";
 import { BrazilFlag } from "@/components/home/icons";
+import { useLocale } from "@/lib/locale";
+import { t } from "@/lib/i18n";
+import { getContent } from "@/lib/content.en";
 
 const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
 
@@ -18,6 +21,8 @@ export default function HeroSection({
   isLoaded: boolean;
   onChapterClick: (i: number) => void;
 }) {
+  const locale = useLocale();
+  const { siteConfig } = getContent(locale);
   return (
     <Section id="hero" progress={progress} range={rangeOf("hero")}>
       <div className="text-center relative grid-overlay scan-line">
@@ -104,7 +109,7 @@ export default function HeroSection({
           {/* TOP BR — único badge com o acento herói (verde) */}
           <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#4ade80] px-3.5 py-1.5 rounded-full border border-[#4ade80]/40 bg-[#4ade80]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
             <BrazilFlag className="shrink-0" />
-            <span>TOP <span className="text-white">#{workanaStats.rankITBrazil}</span> BRASIL</span>
+            <span>TOP <span className="text-white">#{workanaStats.rankITBrazil}</span> {t(locale, "hero.brazil")}</span>
           </span>
           {/* Rating — sempre visível, pill neutro */}
           <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/70 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm flex items-center gap-1">
@@ -123,7 +128,7 @@ export default function HeroSection({
             <span>TOP <span className="text-white font-bold">#{workanaStats.rankITGlobal}</span> GLOBAL</span>
           </span>
           <span className="hidden sm:flex text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/70 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm">
-            <span className="text-white font-bold">{workanaStats.projectsCompleted}+</span>&nbsp;Projetos
+            <span className="text-white font-bold">{workanaStats.projectsCompleted}+</span>&nbsp;{t(locale, "hero.projectsPill")}
           </span>
           <span className="hidden sm:flex text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-white/80 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm items-center gap-1.5">
             <span>🏆</span>
@@ -146,14 +151,14 @@ export default function HeroSection({
             className="group relative h-11 text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-6 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-all cursor-pointer shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] flex items-center justify-center gap-2"
           >
             <span className="text-[10px]">★</span>
-            CONTRATAR VIA WORKANA
+            {t(locale, "hero.hireCta")}
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </a>
           <button
             onClick={() => onChapterClick(1)}
             className="h-11 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] px-5 rounded-lg border border-[#4ade80]/20 bg-[#4ade80]/[0.05] hover:bg-[#4ade80]/10 hover:border-[#4ade80]/40 transition-all cursor-pointer flex items-center justify-center"
           >
-            [ ver_projetos ]
+            [ {t(locale, "hero.viewProjects")} ]
           </button>
         </m.div>
       </div>

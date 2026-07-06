@@ -1,13 +1,16 @@
 "use client";
 
 import { m, AnimatePresence } from "framer-motion";
-import { projects, chapters, projectColors, workanaStats } from "@/lib/constants";
+import { chapters, projectColors, workanaStats } from "@/lib/constants";
 import type { Project } from "@/lib/constants";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { track } from "@vercel/analytics";
 import TerminalHeader from "@/components/TerminalHeader";
 import Section from "@/components/home/Section";
 import SectionNext from "@/components/home/SectionNext";
+import { useLocale } from "@/lib/locale";
+import { t, categoryLabel } from "@/lib/i18n";
+import { getContent } from "@/lib/content.en";
 
 const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
 
@@ -24,12 +27,14 @@ export default function ProjectsSection({
   openCase: (p: Project) => void;
   onChapterClick: (i: number) => void;
 }) {
+  const locale = useLocale();
+  const { projects } = getContent(locale);
   return (
     <Section id="projects" progress={progress} range={rangeOf("projects")}>
       <div>
         <div className="flex flex-wrap items-end justify-between gap-2 mb-2">
           <h2 className="font-display text-2xl md:text-4xl font-bold text-white">
-            Projetos em destaque<span className="text-white/20">.</span>
+            {t(locale, "projects.title")}<span className="text-white/20">.</span>
           </h2>
           <a
             href={workanaStats.workanaProfileUrl}
@@ -38,7 +43,10 @@ export default function ProjectsSection({
             onClick={() => track("workana_cta", { location: "projects_all" })}
             className="font-[family-name:var(--font-jetbrains-mono)] text-[11px] text-white/50 hover:text-[#4ade80] transition-colors pb-1"
           >
-            {projects.length} de {workanaStats.projectsCompleted}+ entregues — ver todos ↗
+            {t(locale, "projects.allLink", {
+              count: projects.length,
+              total: workanaStats.projectsCompleted,
+            })}
           </a>
         </div>
         <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
@@ -80,7 +88,7 @@ export default function ProjectsSection({
                       backgroundColor: `${projectColors[p.category]}10`,
                     }}
                   >
-                    {p.category}
+                    {categoryLabel(locale, p.category)}
                   </span>
                 </button>
               </li>
@@ -129,7 +137,7 @@ export default function ProjectsSection({
                     onClick={() => openCase(projects[carouselIdx])}
                     className="group/cta inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#4ade80]/30 bg-[#4ade80]/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] hover:bg-[#4ade80]/[0.12] hover:border-[#4ade80]/50 transition-all"
                   >
-                    ver case
+                    {t(locale, "projects.viewCase")}
                     <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
                   </button>
                 )}
@@ -189,7 +197,7 @@ export default function ProjectsSection({
                     backgroundColor: `${projectColors[projects[carouselIdx].category]}10`,
                   }}
                 >
-                  {projects[carouselIdx].category}
+                  {categoryLabel(locale, projects[carouselIdx].category)}
                 </span>
               </div>
               <p className="text-xs text-white/55 leading-relaxed mb-3">
@@ -210,7 +218,7 @@ export default function ProjectsSection({
                   onClick={() => openCase(projects[carouselIdx])}
                   className="group/cta mt-5 inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-[#4ade80]/30 bg-[#4ade80]/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-[#4ade80] hover:bg-[#4ade80]/[0.12] hover:border-[#4ade80]/50 transition-all"
                 >
-                  ver case
+                  {t(locale, "projects.viewCase")}
                   <span aria-hidden className="transition-transform group-hover/cta:translate-x-0.5">→</span>
                 </button>
               )}
@@ -224,7 +232,7 @@ export default function ProjectsSection({
                 <button
                   key={i}
                   onClick={() => setCarouselIdx(i)}
-                  aria-label={`Projeto ${i + 1}`}
+                  aria-label={t(locale, "projects.nth", { n: i + 1 })}
                   className="py-3 px-0.5 -my-3 flex items-center"
                 >
                   <span
@@ -238,14 +246,14 @@ export default function ProjectsSection({
             <div className="flex gap-2">
               <button
                 onClick={() => setCarouselIdx((carouselIdx - 1 + projects.length) % projects.length)}
-                aria-label="Projeto anterior"
+                aria-label={t(locale, "projects.prev")}
                 className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-white/30 transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setCarouselIdx((carouselIdx + 1) % projects.length)}
-                aria-label="Próximo projeto"
+                aria-label={t(locale, "projects.next")}
                 className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-white/55 hover:text-white hover:border-white/30 transition-all"
               >
                 <ChevronRight className="w-4 h-4" />

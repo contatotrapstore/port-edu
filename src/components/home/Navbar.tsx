@@ -1,10 +1,39 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { m } from "framer-motion";
 import { chapters, workanaStats } from "@/lib/constants";
 import { track } from "@vercel/analytics";
+import { useLocale } from "@/lib/locale";
+import { t, chaptersLabels } from "@/lib/i18n";
+
+/** PT | EN switch — links to the same pathname with/without the /en prefix. */
+function LocaleToggle({ className = "" }: { className?: string }) {
+  const locale = useLocale();
+  const pathname = usePathname() ?? "/";
+  const otherHref =
+    locale === "en"
+      ? pathname.replace(/^\/en(?=\/|$)/, "") || "/"
+      : pathname === "/"
+        ? "/en"
+        : `/en${pathname}`;
+
+  return (
+    <Link
+      href={otherHref}
+      aria-label={locale === "en" ? "Ver em português" : "View in English"}
+      onClick={() => track("locale_toggle", { to: locale === "en" ? "pt" : "en" })}
+      className={`inline-flex items-center gap-1 h-8 px-2.5 rounded-md border border-white/10 hover:border-white/25 transition-colors text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold tracking-[1px] ${className}`}
+    >
+      <span className={locale === "pt" ? "text-[#4ade80]" : "text-white/40"}>PT</span>
+      <span className="text-white/20">|</span>
+      <span className={locale === "en" ? "text-[#4ade80]" : "text-white/40"}>EN</span>
+    </Link>
+  );
+}
 
 // --- Navbar ---
 export default function Navbar({
@@ -15,6 +44,8 @@ export default function Navbar({
   onChapterClick: (i: number) => void;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const locale = useLocale();
+  const labels = chaptersLabels[locale];
 
   return (
     <>
@@ -30,7 +61,7 @@ export default function Navbar({
           />
           <span className="hidden md:flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]/80 ml-4 border-l border-white/[0.06] pl-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80] animate-pulse" />
-            disponível p/ projetos
+            {t(locale, "nav.available")}
           </span>
         </div>
 
@@ -47,7 +78,7 @@ export default function Navbar({
                     : "text-white/50 hover:text-white/80"
                 }`}
               >
-                {ch.label}
+                {labels[i] ?? ch.label}
                 {currentChapter === i && (
                   <span className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
                 )}
@@ -56,19 +87,23 @@ export default function Navbar({
           ))}
         </ul>
 
-        {/* Persistent hire CTA */}
-        <a
-          href={workanaStats.workanaProfileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => track("workana_cta", { location: "navbar" })}
-          className="hidden md:inline-flex items-center gap-1.5 h-8 px-4 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1.5px] hover:bg-[#fcd34d] transition-colors shrink-0 ml-4"
-        >
-          ★ Contratar
-        </a>
+        {/* Persistent hire CTA + locale toggle */}
+        <div className="hidden md:flex items-center gap-2 ml-4">
+          <LocaleToggle />
+          <a
+            href={workanaStats.workanaProfileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track("workana_cta", { location: "navbar" })}
+            className="inline-flex items-center gap-1.5 h-8 px-4 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1.5px] hover:bg-[#fcd34d] transition-colors shrink-0"
+          >
+            ★ {t(locale, "nav.hire")}
+          </a>
+        </div>
 
-        {/* Mobile: compact CTA + hamburger */}
+        {/* Mobile: locale toggle + compact CTA + hamburger */}
         <div className="md:hidden flex items-center gap-2">
+          <LocaleToggle />
           <a
             href={workanaStats.workanaProfileUrl}
             target="_blank"
@@ -76,7 +111,7 @@ export default function Navbar({
             onClick={() => track("workana_cta", { location: "navbar" })}
             className="inline-flex items-center h-8 px-3 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1px]"
           >
-            Contratar
+            {t(locale, "nav.hire")}
           </a>
         <button
           className="flex flex-col gap-1.5 p-2"
@@ -109,14 +144,14 @@ export default function Navbar({
               }`}
             >
               <span className="text-[#4ade80] mr-2">0{i + 1}</span>
-              {ch.label}
+              {labels[i] ?? ch.label}
             </button>
           ))}
           <button
             onClick={() => setMenuOpen(false)}
             className="mt-8 text-xs font-[family-name:var(--font-jetbrains-mono)] text-white/20 uppercase tracking-[3px]"
           >
-            [ fechar ]
+            [ {t(locale, "nav.close")} ]
           </button>
         </m.div>
       )}

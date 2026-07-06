@@ -1,10 +1,13 @@
 "use client";
 
 import { m } from "framer-motion";
-import { siteConfig, chapters, workanaStats, testimonials, resultMetrics } from "@/lib/constants";
+import { chapters, workanaStats } from "@/lib/constants";
 import TerminalHeader from "@/components/TerminalHeader";
 import Section from "@/components/home/Section";
 import SectionNext from "@/components/home/SectionNext";
+import { useLocale } from "@/lib/locale";
+import { t } from "@/lib/i18n";
+import { getContent } from "@/lib/content.en";
 
 const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
 
@@ -15,11 +18,13 @@ export default function AboutSection({
   progress: number;
   onChapterClick: (i: number) => void;
 }) {
+  const locale = useLocale();
+  const { siteConfig, resultMetrics, testimonials } = getContent(locale);
   return (
     <Section id="about" progress={progress} range={rangeOf("about")}>
       <div>
         <h2 className="font-display text-2xl md:text-4xl font-bold text-white mb-2">
-          Sobre<span className="text-white/20">.</span>
+          {t(locale, "about.title")}<span className="text-white/20">.</span>
         </h2>
         <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
       </div>
@@ -73,19 +78,19 @@ export default function AboutSection({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-[family-name:var(--font-jetbrains-mono)]">
               <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
                 <div className="text-gradient-silver text-xl font-bold">{workanaStats.projectsCompleted}+</div>
-                <div className="text-white/55 mt-0.5">projetos entregues</div>
+                <div className="text-white/55 mt-0.5">{t(locale, "about.delivered")}</div>
               </div>
               <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
                 <div className="text-gradient-silver text-xl font-bold">{workanaStats.recurringClients}</div>
-                <div className="text-white/55 mt-0.5">clientes recorrentes</div>
+                <div className="text-white/55 mt-0.5">{t(locale, "about.recurringClients")}</div>
               </div>
               <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-[#4ade80]/30">
                 <div className="text-[#4ade80] text-xl font-bold">#{workanaStats.rankITBrazil}</div>
-                <div className="text-white/55 mt-0.5">ranking Brasil</div>
+                <div className="text-white/55 mt-0.5">{t(locale, "about.rankBrazil")}</div>
               </div>
               <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-[#60a5fa]/30">
                 <div className="text-[#60a5fa] text-xl font-bold">#{workanaStats.rankITGlobal}</div>
-                <div className="text-white/55 mt-0.5">ranking Global</div>
+                <div className="text-white/55 mt-0.5">{t(locale, "about.rankGlobal")}</div>
               </div>
             </div>
           </div>
@@ -95,7 +100,7 @@ export default function AboutSection({
       {/* Result Metrics — value-for-client */}
       <div className="mt-10 md:mt-12">
         <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40 mb-4">
-          // métricas que importam
+          {t(locale, "about.metricsHeading")}
         </p>
         <div className="grid grid-cols-3 gap-3 md:gap-4">
           {resultMetrics.map((metric, i) => (
@@ -124,39 +129,39 @@ export default function AboutSection({
       {/* Testimonials */}
       <div className="mt-10 mb-2">
         <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40 mb-4">
-          // avaliações verificadas
+          {t(locale, "about.reviewsHeading")}
         </p>
       </div>
       <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3 -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
-        {testimonials.map((t, i) => (
+        {testimonials.map((tm, i) => (
           <div key={i} className="terminal-window p-5 md:p-6 flex flex-col min-w-[85%] snap-center sm:min-w-[70%] md:min-w-0">
             {/* Header: stars + verified badge */}
             <div className="flex items-center justify-between gap-2 mb-3">
-              <div className="text-[#fbbf24] text-[11px]">{"★".repeat(t.rating)}</div>
-              {t.verified && (
+              <div className="text-[#fbbf24] text-[11px]">{"★".repeat(tm.rating)}</div>
+              {tm.verified && (
                 <div className="flex items-center gap-1 text-[8px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] bg-[#4ade80]/10 px-2 py-0.5 rounded border border-[#4ade80]/20 shrink-0">
                   <span className="w-1 h-1 rounded-full bg-[#4ade80]" />
-                  VERIFICADO
+                  {t(locale, "about.verified")}
                 </div>
               )}
             </div>
             <p className="text-white/50 text-[11px] md:text-xs leading-relaxed italic mb-4 flex-1">
               <span className="text-white/20 text-lg leading-none">&ldquo;</span>
-              {t.text}
+              {tm.text}
               <span className="text-white/20 text-lg leading-none">&rdquo;</span>
             </p>
             <div className="flex flex-col gap-1.5 pt-3 border-t border-white/[0.06]">
               <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/55">
-                — {t.author}
+                — {tm.author}
               </div>
               <div className="flex items-center gap-1.5 text-[10px] font-[family-name:var(--font-jetbrains-mono)] flex-wrap">
-                <span className="text-white/45">{t.date}</span>
+                <span className="text-white/45">{tm.date}</span>
                 <span className="text-white/15">·</span>
-                <span className="text-[#60a5fa]/70">{t.projectType}</span>
-                {t.recurring && (
+                <span className="text-[#60a5fa]/70">{tm.projectType}</span>
+                {tm.recurring && (
                   <>
                     <span className="text-white/15">·</span>
-                    <span className="text-[#4ade80]/70">recorrente</span>
+                    <span className="text-[#4ade80]/70">{t(locale, "about.recurringTag")}</span>
                   </>
                 )}
               </div>
@@ -173,7 +178,7 @@ export default function AboutSection({
           rel="noopener noreferrer"
           className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 hover:text-[#fbbf24] transition-colors inline-flex items-center gap-2"
         >
-          ver todas as {workanaStats.clientReviews} avaliações
+          {t(locale, "about.allReviews", { count: workanaStats.clientReviews })}
           <span>→</span>
         </a>
       </div>
