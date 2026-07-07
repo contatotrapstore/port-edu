@@ -21,7 +21,7 @@ Portfolio pessoal de **Eduardo Gouveia** — Full Stack Senior, Top 1 Brasil em 
 - Top **#1 Brasil** em TI e Programação
 - Top **#10 Global** em TI e Programação
 - Nível **HERO** (mais alto da plataforma)
-- **144+** projetos entregues · **4.72★** · **167** avaliações verificadas
+- **165+** projetos entregues · **4.72★** · **201** avaliações verificadas
 
 ## Setup local
 

@@ -18,7 +18,7 @@ export const siteConfigEN: SiteConfig = {
   ...siteConfig,
   title: "SENIOR FULL STACK | SAAS & SYSTEMS",
   subtitle: "Building the future, one commit at a time.",
-  bio: "Senior Full Stack Developer. I turn ideas into real products — from architecture to deployment — focused on SaaS, dashboards and AI-powered systems. 144+ projects delivered and 28 returning clients: clear communication, deadlines met and code that scales. #1 in IT in Brazil on Workana, HERO level.",
+  bio: "Senior Full Stack Developer. I turn ideas into real products — from architecture to deployment — focused on SaaS, dashboards and AI-powered systems. 165+ projects delivered and 28 returning clients: clear communication, deadlines met and code that scales. #1 in IT in Brazil on Workana, HERO level.",
 };
 
 const projectOverridesEN: Record<string, Partial<Project>> = {
@@ -204,7 +204,7 @@ export const projectsEN: Project[] = projects.map((p) => ({
 export const resultMetricsEN: typeof resultMetrics = [
   { value: "99.8%", label: "average uptime", description: "resilient infrastructure" },
   { value: "< 2s", label: "delivery speed", description: "automated deployments" },
-  { value: "4.72/5", label: "average rating", description: "167 verified reviews" },
+  { value: "4.72/5", label: "average rating", description: "201 verified reviews" },
 ];
 
 // Testimonials: quote text/author stay verbatim (real reviews) — only the

@@ -6,7 +6,7 @@ const siteUrl = "https://edevshub.com";
 export const metadata: Metadata = {
   title: "EDevsHub | Eduardo Gouveia — #1 Full Stack Developer in Brazil (Workana)",
   description:
-    "Eduardo Gouveia — Senior Full Stack Developer, ranked #1 in IT in Brazil on Workana. 144+ projects delivered, 4.72/5 ⭐, HERO level. Specialist in SaaS, dashboards and AI systems.",
+    "Eduardo Gouveia — Senior Full Stack Developer, ranked #1 in IT in Brazil on Workana. 165+ projects delivered, 4.72/5 ⭐, HERO level. Specialist in SaaS, dashboards and AI systems.",
   keywords: [
     "Eduardo Gouveia",
     "EDevsHub",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName: "EDevsHub — Eduardo Gouveia",
     title: "EDevsHub | #1 Full Stack Developer in Brazil on Workana",
     description:
-      "144+ projects delivered · 4.72/5 ⭐ · HERO level · #1 in IT in Brazil. Specialist in SaaS, dashboards and systems.",
+      "165+ projects delivered · 4.72/5 ⭐ · HERO level · #1 in IT in Brazil. Specialist in SaaS, dashboards and systems.",
     images: [
       {
         url: "/og-cover.jpg",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "EDevsHub | #1 Full Stack Developer in Brazil",
     description:
-      "144+ projects · 4.72/5 ⭐ · Workana HERO. SaaS & systems specialist.",
+      "165+ projects · 4.72/5 ⭐ · Workana HERO. SaaS & systems specialist.",
     images: ["/og-cover.jpg"],
   },
 };

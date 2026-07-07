@@ -45,7 +45,7 @@ export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
   title: "FULL STACK SENIOR | SAAS & SISTEMAS",
   subtitle: "Construindo o futuro, um commit por vez.",
-  bio: "Desenvolvedor Full Stack Sênior. Transformo ideias em produtos reais — da arquitetura ao deploy — com foco em SaaS, dashboards e sistemas com IA. 144+ projetos entregues e 28 clientes que voltam: comunicação clara, prazos cumpridos e código que escala. Top 1 Brasil em TI na Workana, nível HERO.",
+  bio: "Desenvolvedor Full Stack Sênior. Transformo ideias em produtos reais — da arquitetura ao deploy — com foco em SaaS, dashboards e sistemas com IA. 165+ projetos entregues e 28 clientes que voltam: comunicação clara, prazos cumpridos e código que escala. Top 1 Brasil em TI na Workana, nível HERO.",
   social: {
     github: "https://github.com/GouveiaZx",
     linkedin: "",
@@ -54,9 +54,9 @@ export const siteConfig: SiteConfig = {
 };
 
 export const workanaStats = {
-  projectsCompleted: 144,
-  projectsRunning: 7,
-  clientReviews: 167,
+  projectsCompleted: 165,
+  projectsRunning: 13,
+  clientReviews: 201,
   recurringClients: 28,
   rating: 4.72,
   ratingMax: 5,
@@ -75,7 +75,7 @@ export const workanaStats = {
 export const resultMetrics = [
   { value: "99.8%", label: "uptime médio", description: "infraestrutura robusta" },
   { value: "< 2s", label: "tempo de entrega", description: "deploy automatizado" },
-  { value: "4.72/5", label: "nota média", description: "167 avaliações verificadas" },
+  { value: "4.72/5", label: "nota média", description: "201 avaliações verificadas" },
 ];
 
 // Avaliações reais verificadas (Workana) — texto verbatim do perfil
