@@ -49,8 +49,8 @@ export default function HomePage({ locale }: { locale: Locale }) {
     return () => clearTimeout(cap);
   }, []);
 
-  // Modo degradado: se o Canvas falhar (WebGL indisponível), os listeners de
-  // capítulo morrem junto com o Experience. A classe `webgl-failed` restaura o
+  // Modo degradado: se o WebGL não estiver disponível, o site não pode depender
+  // do Experience (scroll-jack + capítulos). A classe `webgl-failed` restaura o
   // scroll de documento via CSS e os cliques de menu passam a usar scrollIntoView.
   const canvasFailedRef = useRef(false);
   const handleCanvasError = useCallback(() => {
@@ -58,6 +58,25 @@ export default function HomePage({ locale }: { locale: Locale }) {
     document.documentElement.classList.add("webgl-failed");
     setIsLoaded(true);
   }, []);
+
+  // Probe síncrono de capacidade: o erro do renderer do three.js estoura como
+  // uncaught (fora do caminho do error boundary), então detectamos direto e nem
+  // montamos o Experience — nada de listeners de scroll-jack num site sem 3D.
+  const [webglOk] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      const probe = document.createElement("canvas");
+      const gl = probe.getContext("webgl2") || probe.getContext("webgl");
+      if (!gl) return false;
+      (gl as WebGLRenderingContext).getExtension("WEBGL_lose_context")?.loseContext();
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    if (!webglOk) handleCanvasError();
+  }, [webglOk, handleCanvasError]);
 
   const maxChapterSeen = useRef(0);
   const handleProgress = useCallback((p: number) => {
@@ -113,7 +132,9 @@ export default function HomePage({ locale }: { locale: Locale }) {
       {/* 3D Background (decorative — hidden from assistive tech) */}
       <div className="fixed inset-0 z-0" aria-hidden="true">
         <CanvasErrorBoundary onError={handleCanvasError}>
-          <Experience onLoaded={handleLoaded} onProgress={handleProgress} />
+          {webglOk ? (
+            <Experience onLoaded={handleLoaded} onProgress={handleProgress} />
+          ) : null}
         </CanvasErrorBoundary>
       </div>
 
