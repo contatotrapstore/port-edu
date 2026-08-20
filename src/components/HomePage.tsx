@@ -41,6 +41,14 @@ export default function HomePage({ locale }: { locale: Locale }) {
 
   const handleLoaded = useCallback(() => setIsLoaded(true), []);
 
+  // Teto absoluto do boot contado da hidratação. O teto interno do Experience só
+  // começa a contar depois do chunk three.js baixar (dynamic ssr:false) — em rede
+  // lenta o loader ficava sem limite real. Quem chegar primeiro vence.
+  useEffect(() => {
+    const cap = setTimeout(() => setIsLoaded(true), 1500);
+    return () => clearTimeout(cap);
+  }, []);
+
   // Modo degradado: se o Canvas falhar (WebGL indisponível), os listeners de
   // capítulo morrem junto com o Experience. A classe `webgl-failed` restaura o
   // scroll de documento via CSS e os cliques de menu passam a usar scrollIntoView.
@@ -100,7 +108,7 @@ export default function HomePage({ locale }: { locale: Locale }) {
     <MotionConfig reducedMotion="user">
       <a href="#hero" className="skip-link">{t(locale, "skip.content")}</a>
 
-      <LoadingScreen isLoaded={isLoaded} />
+      <LoadingScreen isLoaded={isLoaded} onSkip={handleLoaded} />
 
       {/* 3D Background (decorative — hidden from assistive tech) */}
       <div className="fixed inset-0 z-0" aria-hidden="true">

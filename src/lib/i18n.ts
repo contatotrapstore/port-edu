@@ -10,6 +10,7 @@ export const ui: Record<Locale, Record<string, string>> = {
     // Global / shell
     "skip.content": "Pular para o conteúdo",
     "scroll.hint": "role ou use ↓",
+    "loading.skip": "[ clique para pular ]",
 
     // Navbar
     "nav.available": "disponível p/ projetos",
@@ -119,6 +120,7 @@ export const ui: Record<Locale, Record<string, string>> = {
     // Global / shell
     "skip.content": "Skip to content",
     "scroll.hint": "scroll or press ↓",
+    "loading.skip": "[ click to skip ]",
 
     // Navbar
     "nav.available": "available for projects",
@@ -248,6 +250,30 @@ export function t(
 export const chaptersLabels: Record<Locale, string[]> = {
   pt: ["Início", "Projetos", "Sobre", "Skills", "Contato"],
   en: ["Home", "Projects", "About", "Skills", "Contact"],
+};
+
+/** Terminal boot messages per locale (LoadingScreen). */
+export const loadingMessagesByLocale: Record<Locale, string[]> = {
+  pt: [
+    "Inicializando ambiente de execução",
+    "Carregando redes neurais",
+    "Compilando shaders",
+    "Conectando à matrix",
+    "Montando sistemas de arquivos",
+    "Estabelecendo conexão segura",
+    "Renderizando cena 3D",
+    "Sistema pronto",
+  ],
+  en: [
+    "Initializing runtime environment",
+    "Loading neural networks",
+    "Compiling shaders",
+    "Connecting to matrix",
+    "Mounting file systems",
+    "Establishing secure connection",
+    "Rendering 3D scene",
+    "System ready",
+  ],
 };
 
 /** Display label for a project category badge (ids stay universal). */

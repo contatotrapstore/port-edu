@@ -104,7 +104,7 @@ export default function HeroSection({
           className="mt-6 md:mt-8 flex flex-wrap items-center justify-center gap-2 md:gap-2.5"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
         >
           {/* TOP BR — único badge com o acento herói (verde) */}
           <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#4ade80] px-3.5 py-1.5 rounded-full border border-[#4ade80]/40 bg-[#4ade80]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
@@ -141,7 +141,7 @@ export default function HeroSection({
           className="mt-7 md:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md sm:max-w-none mx-auto"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
-          transition={{ duration: 0.6, delay: 0.85 }}
+          transition={{ duration: 0.6, delay: 0.55 }}
         >
           <a
             href={workanaStats.workanaProfileUrl}

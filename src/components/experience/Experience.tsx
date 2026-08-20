@@ -301,8 +301,8 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     const min = setTimeout(() => {
       if (canvasReadyRef.current) finish();
       else poll = setInterval(() => { if (canvasReadyRef.current) finish(); }, 120);
-    }, 650);
-    const cap = setTimeout(finish, 1200);
+    }, 350);
+    const cap = setTimeout(finish, 800);
     return () => {
       clearTimeout(min);
       clearTimeout(cap);

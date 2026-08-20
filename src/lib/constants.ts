@@ -485,18 +485,6 @@ export const codeSnippets = [
   { lang: "rust", code: "fn main() {\n  println!(\"Hello!\");\n}", color: "#fb923c" },
 ];
 
-// Terminal loading messages
-export const loadingMessages = [
-  "Initializing runtime environment",
-  "Loading neural networks",
-  "Compiling shaders",
-  "Connecting to matrix",
-  "Mounting file systems",
-  "Establishing secure connection",
-  "Rendering 3D scene",
-  "System ready",
-];
-
 // Skill category colors (silver-based theme)
 export const catColors: Record<string, string> = {
   frontend: "#c0c0c0",
