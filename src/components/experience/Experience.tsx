@@ -380,24 +380,64 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     let lastInput = 0;
     let lastDir = 0;
 
+    // deltaMode: 0 = pixels (Chrome ~100/notch), 1 = lines (Firefox ~3/notch), 2 = pages.
+    // Sem normalizar, um notch do Firefox rende 0.0018 — nunca vence a tolerância de
+    // snap de 0.02 e o usuário fica preso em rubber-band no mesmo capítulo.
+    const LINE_PX = 16;
+    const normalizeWheel = (e: WheelEvent): number => {
+      if (e.deltaMode === 1) return e.deltaY * LINE_PX;
+      if (e.deltaMode === 2) return e.deltaY * window.innerHeight;
+      return e.deltaY;
+    };
+
+    // Gesto acumulado desde o último settle: garante que Σ|dy| ≥ ADVANCE_PX sempre
+    // avança pelo menos um capítulo, mesmo com wheels de delta minúsculo.
+    const ADVANCE_PX = 30;
+    let gestureAccum = 0;
+    let gestureFrom = -1;
+    const nearestIdx = (p: number) => {
+      let idx = 0;
+      let best = Infinity;
+      chapterTargets.forEach((t, i) => {
+        const d = Math.abs(p - t);
+        if (d < best) { best = d; idx = i; }
+      });
+      return idx;
+    };
+    const trackGesture = (dy: number) => {
+      if (lastInput === 0) {
+        gestureFrom = nearestIdx(target);
+        gestureAccum = 0;
+      }
+      gestureAccum += dy;
+    };
+
     const handleWheel = (e: WheelEvent) => {
       if (document.documentElement.hasAttribute("data-modal-open")) return;
+      const dy = normalizeWheel(e);
       const section = getVisibleSection();
       if (section) {
         const st = section.scrollTop;
         const max = section.scrollHeight - section.clientHeight;
         if (max > 4) {
-          // Scroll down com conteúdo abaixo → deixa scroll nativo
-          if (e.deltaY > 0 && st < max - 2) return;
-          // Scroll up com conteúdo acima → deixa scroll nativo
-          if (e.deltaY < 0 && st > 2) return;
+          const wantsInnerScroll = (dy > 0 && st < max - 2) || (dy < 0 && st > 2);
+          if (wantsInnerScroll) {
+            // Cursor dentro da section → scroll nativo cuida. Fora dela (navbar,
+            // dots, chrome fixo) não há ancestral rolável — roteia manualmente
+            // para nunca deixar o wheel cair no vazio.
+            if (section.contains(e.target as Node)) return;
+            e.preventDefault();
+            section.scrollTop += dy;
+            return;
+          }
         }
       }
       e.preventDefault();
-      target += e.deltaY * 0.0006;
+      trackGesture(dy);
+      target += dy * 0.0006;
       target = Math.max(0, Math.min(1, target));
       lastInput = performance.now();
-      lastDir = Math.sign(e.deltaY) || lastDir;
+      lastDir = Math.sign(dy) || lastDir;
     };
 
     let touchY = 0;
@@ -414,6 +454,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       touchY = e.touches[0].clientY;
 
       if (!section) {
+        trackGesture(dy);
         target += dy * 0.0012;
         target = Math.max(0, Math.min(1, target));
         lastInput = performance.now();
@@ -429,6 +470,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
       // Avança chapter quando: sem overflow OU (swipe up & no fundo) OU (swipe down & no topo)
       if (noOverflow || (dy > 0 && atBottom) || (dy < 0 && atTop)) {
+        trackGesture(dy);
         target += dy * 0.0012;
         target = Math.max(0, Math.min(1, target));
         lastInput = performance.now();
@@ -516,11 +558,26 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
             if (Math.abs(t - target) < Math.abs(nearest - target)) nearest = t;
           }
         }
+        // Garantia de avanço: um gesto real (Σ|dy| ≥ ADVANCE_PX) nunca devolve o
+        // usuário ao capítulo onde começou — dispositivos de delta minúsculo incluídos.
+        if (
+          gestureFrom >= 0 &&
+          nearest === chapterTargets[gestureFrom] &&
+          Math.abs(gestureAccum) >= ADVANCE_PX
+        ) {
+          const next = Math.min(
+            Math.max(gestureFrom + Math.sign(gestureAccum), 0),
+            chapterTargets.length - 1
+          );
+          nearest = chapterTargets[next];
+        }
         target += (nearest - target) * 0.07;
         if (Math.abs(nearest - target) < 0.0004) {
           target = nearest;
           lastInput = 0;
           lastDir = 0;
+          gestureAccum = 0;
+          gestureFrom = -1;
         }
       }
 
