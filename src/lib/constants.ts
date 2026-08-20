@@ -72,11 +72,11 @@ export const workanaStats = {
   workanaProfileUrl: "https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6",
 };
 
-// Metrics de resultado para clientes (valor-para-cliente)
+// Metrics de resultado para clientes — todas verificáveis no perfil Workana
 export const resultMetrics = [
-  { value: "99.8%", label: "uptime médio", description: "infraestrutura robusta" },
-  { value: "< 2s", label: "tempo de entrega", description: "deploy automatizado" },
-  { value: "4.72/5", label: "nota média", description: "201 avaliações verificadas" },
+  { value: "175", label: "projetos entregues", description: "em 3 anos e meio de Workana" },
+  { value: "37", label: "clientes recontrataram", description: "e seguem voltando" },
+  { value: "4.74/5", label: "nota média", description: "176 avaliações verificadas" },
 ];
 
 // Avaliações reais verificadas (Workana) — texto verbatim do perfil

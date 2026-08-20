@@ -202,9 +202,9 @@ export const projectsEN: Project[] = projects.map((p) => ({
 }));
 
 export const resultMetricsEN: typeof resultMetrics = [
-  { value: "99.8%", label: "average uptime", description: "resilient infrastructure" },
-  { value: "< 2s", label: "delivery speed", description: "automated deployments" },
-  { value: "4.72/5", label: "average rating", description: "201 verified reviews" },
+  { value: "175", label: "projects delivered", description: "in 3.5 years on Workana" },
+  { value: "37", label: "clients rehired", description: "and they keep coming back" },
+  { value: "4.74/5", label: "average rating", description: "176 verified reviews" },
 ];
 
 // Testimonials: quote text/author stay verbatim (real reviews) — only the
