@@ -40,6 +40,17 @@ export default function HomePage({ locale }: { locale: Locale }) {
   const [caseStudy, setCaseStudy] = useState<Project | null>(null);
 
   const handleLoaded = useCallback(() => setIsLoaded(true), []);
+
+  // Modo degradado: se o Canvas falhar (WebGL indisponível), os listeners de
+  // capítulo morrem junto com o Experience. A classe `webgl-failed` restaura o
+  // scroll de documento via CSS e os cliques de menu passam a usar scrollIntoView.
+  const canvasFailedRef = useRef(false);
+  const handleCanvasError = useCallback(() => {
+    canvasFailedRef.current = true;
+    document.documentElement.classList.add("webgl-failed");
+    setIsLoaded(true);
+  }, []);
+
   const maxChapterSeen = useRef(0);
   const handleProgress = useCallback((p: number) => {
     setProgress(p);
@@ -61,6 +72,12 @@ export default function HomePage({ locale }: { locale: Locale }) {
   }, []);
 
   const handleChapterClick = useCallback((i: number) => {
+    if (canvasFailedRef.current) {
+      document
+        .getElementById(chapters[i].id)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
     window.dispatchEvent(
       new CustomEvent("gotoChapter", { detail: { index: i } })
     );
@@ -74,12 +91,9 @@ export default function HomePage({ locale }: { locale: Locale }) {
     if (!hash) return;
     const idx = chapters.findIndex((c) => c.id === hash);
     if (idx <= 0) return;
-    const timer = setTimeout(
-      () => window.dispatchEvent(new CustomEvent("gotoChapter", { detail: { index: idx } })),
-      120
-    );
+    const timer = setTimeout(() => handleChapterClick(idx), 120);
     return () => clearTimeout(timer);
-  }, [isLoaded]);
+  }, [isLoaded, handleChapterClick]);
 
   const page = (
     <LazyMotion features={domMax} strict>
@@ -90,7 +104,7 @@ export default function HomePage({ locale }: { locale: Locale }) {
 
       {/* 3D Background (decorative — hidden from assistive tech) */}
       <div className="fixed inset-0 z-0" aria-hidden="true">
-        <CanvasErrorBoundary onError={handleLoaded}>
+        <CanvasErrorBoundary onError={handleCanvasError}>
           <Experience onLoaded={handleLoaded} onProgress={handleProgress} />
         </CanvasErrorBoundary>
       </div>

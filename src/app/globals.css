@@ -47,6 +47,30 @@ html, body {
   }
 }
 
+/* WebGL indisponível: os listeners de capítulo morrem com o canvas, então o
+   desktop volta ao fluxo natural de documento — o funil nunca fica sem saída.
+   !important vence os estilos inline do Section (mesmo padrão dos max-md:!). */
+html.webgl-failed,
+html.webgl-failed body {
+  overflow-y: auto !important;
+  height: auto !important;
+}
+
+@media (min-width: 768px) {
+  html.webgl-failed main section[id] {
+    position: static !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  html.webgl-failed .section-drift {
+    transform: none !important;
+  }
+  html.webgl-failed .scroll-indicator {
+    display: none;
+  }
+}
+
 ::selection {
   background: rgba(200, 200, 200, 0.3);
   color: #fff;
