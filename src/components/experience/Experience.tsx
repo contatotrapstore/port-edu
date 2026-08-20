@@ -433,6 +433,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
         }
       }
       e.preventDefault();
+      if (guardNavLock(dy)) return;
       trackGesture(dy);
       target += dy * 0.0006;
       target = Math.max(0, Math.min(1, target));
@@ -454,6 +455,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       touchY = e.touches[0].clientY;
 
       if (!section) {
+        if (guardNavLock(dy)) return;
         trackGesture(dy);
         target += dy * 0.0012;
         target = Math.max(0, Math.min(1, target));
@@ -470,6 +472,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
       // Avança chapter quando: sem overflow OU (swipe up & no fundo) OU (swipe down & no topo)
       if (noOverflow || (dy > 0 && atBottom) || (dy < 0 && atTop)) {
+        if (guardNavLock(dy)) return;
         trackGesture(dy);
         target += dy * 0.0012;
         target = Math.max(0, Math.min(1, target));
@@ -479,8 +482,32 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       // Senão: deixa native scroll do iOS lidar (já está rolando porque listener é passive)
     };
 
+    // Lock de navegação programática: um clique de menu/dots/teclado é dono da
+    // viagem até assentar — um tick de wheel perdido não sobrescreve mais o destino.
+    // Um gesto forte deliberado (≥ LOCK_CANCEL_PX) devolve o controle ao usuário;
+    // o failsafe temporal garante que o lock nunca prende o funil.
+    const LOCK_CANCEL_PX = 160;
+    let navLock = false;
+    let navLockUntil = 0;
+    let lockAccum = 0;
+    const guardNavLock = (dy: number): boolean => {
+      if (!navLock) return false;
+      lockAccum += dy;
+      if (Math.abs(lockAccum) < LOCK_CANCEL_PX && performance.now() < navLockUntil) return true;
+      navLock = false;
+      return false;
+    };
+
     const goToChapter = (idx: number) => {
-      if (idx >= 0 && idx < chapterTargets.length) target = chapterTargets[idx];
+      if (idx < 0 || idx >= chapterTargets.length) return;
+      target = chapterTargets[idx];
+      lastInput = 0;
+      lastDir = 0;
+      gestureAccum = 0;
+      gestureFrom = -1;
+      navLock = true;
+      lockAccum = 0;
+      navLockUntil = performance.now() + 1600;
     };
     const handleGoto = (e: Event) => goToChapter((e as CustomEvent).detail.index);
 
@@ -534,6 +561,11 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
 
     let raf: number;
     const animate = () => {
+      // Libera o lock de navegação programática ao chegar (ou no failsafe temporal).
+      if (navLock && (Math.abs(current - target) < 0.005 || performance.now() > navLockUntil)) {
+        navLock = false;
+      }
+
       // Idle snap — DIRECTIONAL: after the user stops scrolling, settle onto the next
       // chapter in the direction of the gesture (never bounce back). A first-time
       // mobile visitor's short swipe always advances instead of feeling "stuck".
