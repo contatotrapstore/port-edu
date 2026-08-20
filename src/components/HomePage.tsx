@@ -125,9 +125,10 @@ export default function HomePage({ locale }: { locale: Locale }) {
         )}
       </AnimatePresence>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — decorativo: pointer-events-none evita que ele intercepte
+          cliques/wheel na região bottom-center depois de sumir (opacity 0 ainda faz hit-test) */}
       <m.div
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
+        className="scroll-indicator pointer-events-none fixed bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
         animate={{ opacity: progress < 0.08 ? 1 : 0 }}
       >
         <div className="font-[family-name:var(--font-jetbrains-mono)] text-xs text-[#4ade80]">

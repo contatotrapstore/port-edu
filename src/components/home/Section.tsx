@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 // --- Section wrapper ---
 export default function Section({
   id,
@@ -41,11 +43,21 @@ export default function Section({
     }
   }
 
+  // Ao esconder, zera o scroll interno residual — revisitar uma seção rolada até o
+  // fim não trava mais o avanço de capítulo (entra sempre pelo topo). No mobile as
+  // seções são estáticas (scrollTop é 0), a atribuição é no-op.
+  const ref = useRef<HTMLElement>(null);
+  const hidden = opacity === 0;
+  useEffect(() => {
+    if (hidden && ref.current && ref.current.scrollTop !== 0) ref.current.scrollTop = 0;
+  }, [hidden]);
+
   // Mobile (<md): plain document flow — always visible, no fade/drift, natural scroll
   // like any landing page. The max-md:! overrides beat the desktop inline styles.
   // Desktop (md+): fixed chapter driven by scroll progress.
   return (
     <section
+      ref={ref}
       id={id}
       className={`max-md:!static max-md:!opacity-100 max-md:!visible max-md:!pointer-events-auto max-md:!z-auto md:fixed md:inset-0 md:overflow-y-auto overflow-x-hidden scrollbar-none ${className}`}
       style={{
