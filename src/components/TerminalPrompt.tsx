@@ -48,11 +48,11 @@ export default function TerminalPrompt() {
         out = en
           ? [
               "Eduardo Gouveia — Senior Full Stack",
-              `Top ${workanaStats.rankITBrazil} Brazil · ${workanaStats.level} level · ${workanaStats.rating}★`,
+              `${workanaStats.level} level · peak: Top ${workanaStats.peakRankITBrazil} Brazil · ${workanaStats.rating}★`,
             ]
           : [
               "Eduardo Gouveia — Full Stack Sênior",
-              `Top ${workanaStats.rankITBrazil} Brasil · nível ${workanaStats.level} · ${workanaStats.rating}★`,
+              `nível ${workanaStats.level} · pico: Top ${workanaStats.peakRankITBrazil} Brasil · ${workanaStats.rating}★`,
             ];
         break;
       case "projects":

@@ -66,18 +66,18 @@ export default function AboutSection({
                 <div className="text-white/55 text-xs">Full Stack Senior · HERO</div>
               </div>
               <div className="text-right">
-                <div className="flex items-center gap-1">
-                  <span className="text-[#fbbf24] text-sm">★★★★★</span>
+                <div className="text-[#fbbf24] text-sm font-bold">
+                  ★ {workanaStats.rating}<span className="text-white/40 font-normal">/{workanaStats.ratingMax}</span>
                 </div>
                 <div className="text-[9px] text-white/30 font-[family-name:var(--font-jetbrains-mono)]">
-                  {workanaStats.rating} · {workanaStats.clientReviews}
+                  {t(locale, "about.reviewsCount", { count: workanaStats.clientReviews })}
                 </div>
               </div>
             </div>
             {/* Stats grid with accent borders */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-[family-name:var(--font-jetbrains-mono)]">
               <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
-                <div className="text-gradient-silver text-xl font-bold">{workanaStats.projectsCompleted}+</div>
+                <div className="text-gradient-silver text-xl font-bold">{workanaStats.projectsCompleted}</div>
                 <div className="text-white/55 mt-0.5">{t(locale, "about.delivered")}</div>
               </div>
               <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
@@ -85,12 +85,12 @@ export default function AboutSection({
                 <div className="text-white/55 mt-0.5">{t(locale, "about.recurringClients")}</div>
               </div>
               <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-[#4ade80]/30">
-                <div className="text-[#4ade80] text-xl font-bold">#{workanaStats.rankITBrazil}</div>
-                <div className="text-white/55 mt-0.5">{t(locale, "about.rankBrazil")}</div>
+                <div className="text-[#4ade80] text-xl font-bold">Top {workanaStats.peakRankITBrazil}</div>
+                <div className="text-white/55 mt-0.5">{t(locale, "about.peakBrazil")}</div>
               </div>
               <div className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-[#60a5fa]/30">
-                <div className="text-[#60a5fa] text-xl font-bold">#{workanaStats.rankITGlobal}</div>
-                <div className="text-white/55 mt-0.5">{t(locale, "about.rankGlobal")}</div>
+                <div className="text-[#60a5fa] text-xl font-bold">Top {workanaStats.peakRankITGlobal}</div>
+                <div className="text-white/55 mt-0.5">{t(locale, "about.peakGlobal")}</div>
               </div>
             </div>
           </div>

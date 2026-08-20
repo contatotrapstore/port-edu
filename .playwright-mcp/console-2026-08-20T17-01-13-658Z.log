@@ -1,0 +1,11 @@
+[    1011ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6:0
+[    1483ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6:491
+[    1483ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6:491
+[    1626ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://www.workana.com/cdn-cgi/challenge-platform/scripts/jsd/main.js:0
+[    1627ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://www.workana.com/cdn-cgi/challenge-platform/scripts/jsd/main.js:0
+[    3665ms] [WARNING] [Meta Pixel] - Invalid parameter format for currency. Please refer https://developers.facebook.com/docs/meta-pixel/reference/ for valid parameter specifications. @ https://cf.wkncdn.com/static/assets/build/bundle.vendors.c651fa52b.js:8
+[    3670ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://connect.facebook.net/en_US/fbevents.js:295
+[    3671ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://connect.facebook.net/en_US/fbevents.js:295
+[    3933ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://script.hotjar.com/modules.75bf3488a101739acfe9.js:1
+[    3934ms] [ERROR] The Content Security Policy directive 'upgrade-insecure-requests' is ignored when delivered in a report-only policy. @ https://script.hotjar.com/modules.75bf3488a101739acfe9.js:1
+[    4588ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6:0

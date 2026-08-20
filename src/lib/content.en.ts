@@ -18,7 +18,7 @@ export const siteConfigEN: SiteConfig = {
   ...siteConfig,
   title: "SENIOR FULL STACK | SAAS & SYSTEMS",
   subtitle: "Building the future, one commit at a time.",
-  bio: "Senior Full Stack Developer. I turn ideas into real products — from architecture to deployment — focused on SaaS, dashboards and AI-powered systems. 165+ projects delivered and 28 returning clients: clear communication, deadlines met and code that scales. #1 in IT in Brazil on Workana, HERO level.",
+  bio: "Senior Full Stack Developer. I turn ideas into real products — from architecture to deployment — focused on SaaS, dashboards and AI-powered systems. 175 projects delivered and 37 returning clients: clear communication, deadlines met and code that scales. I've reached #1 in Brazil and Top 3 worldwide in IT on Workana — HERO level.",
 };
 
 const projectOverridesEN: Record<string, Partial<Project>> = {

@@ -45,7 +45,7 @@ export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
   title: "FULL STACK SENIOR | SAAS & SISTEMAS",
   subtitle: "Construindo o futuro, um commit por vez.",
-  bio: "Desenvolvedor Full Stack Sênior. Transformo ideias em produtos reais — da arquitetura ao deploy — com foco em SaaS, dashboards e sistemas com IA. 165+ projetos entregues e 28 clientes que voltam: comunicação clara, prazos cumpridos e código que escala. Top 1 Brasil em TI na Workana, nível HERO.",
+  bio: "Desenvolvedor Full Stack Sênior. Transformo ideias em produtos reais — da arquitetura ao deploy — com foco em SaaS, dashboards e sistemas com IA. 175 projetos entregues e 37 clientes que voltam: comunicação clara, prazos cumpridos e código que escala. Já cheguei ao Top 1 do Brasil e ao Top 3 Global em TI na Workana — nível HERO.",
   social: {
     github: "https://github.com/GouveiaZx",
     linkedin: "",
@@ -54,20 +54,21 @@ export const siteConfig: SiteConfig = {
 };
 
 export const workanaStats = {
-  projectsCompleted: 165,
-  projectsRunning: 13,
-  clientReviews: 201,
-  recurringClients: 28,
-  rating: 4.72,
+  projectsCompleted: 175,
+  projectsRunning: 11,
+  clientReviews: 176,
+  recurringClients: 37,
+  rating: 4.74,
   ratingMax: 5,
   certifications: 7,
   hourlyRate: 200,
-  rankGlobal: 10,
-  rankTotalProfessionals: "14.5M",
-  rankITGlobal: 8,
-  rankITBrazil: 1,
+  // Ranking de TI é volátil — exibir sempre como pico de carreira, nunca como posição atual
+  peakRankITBrazil: 1,
+  peakRankITGlobal: 3,
+  overallRank: 27,
+  totalProfessionals: "14.78M",
   level: "HERO",
-  yearsOnPlatform: 3,
+  memberSince: "Fev/2023",
   workanaProfileUrl: "https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6",
 };
 

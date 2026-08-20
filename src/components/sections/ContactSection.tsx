@@ -43,7 +43,7 @@ export default function ContactSection({ progress }: { progress: number }) {
             <div className="text-[#fbbf24] text-xs font-bold mb-0.5">{t(locale, "contact.card1Title")}</div>
             <div className="text-[10px] text-white/55">
               {t(locale, "contact.card1Sub", {
-                rank: workanaStats.rankITBrazil,
+                rank: workanaStats.peakRankITBrazil,
                 level: workanaStats.level,
               })}
             </div>
@@ -77,7 +77,7 @@ export default function ContactSection({ progress }: { progress: number }) {
             <div className="flex-1 min-w-0">
               <div className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] text-[#fbbf24]/50 uppercase tracking-[2px] mb-1">
                 {t(locale, "contact.hireEyebrow", {
-                  rank: workanaStats.rankITBrazil,
+                  rank: workanaStats.peakRankITBrazil,
                   rating: workanaStats.rating,
                 })}
               </div>

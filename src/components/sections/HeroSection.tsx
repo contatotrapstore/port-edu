@@ -109,7 +109,7 @@ export default function HeroSection({
           {/* TOP BR — único badge com o acento herói (verde) */}
           <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-[#4ade80] px-3.5 py-1.5 rounded-full border border-[#4ade80]/40 bg-[#4ade80]/[0.1] backdrop-blur-sm flex items-center gap-2 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
             <BrazilFlag className="shrink-0" />
-            <span>TOP <span className="text-white">#{workanaStats.rankITBrazil}</span> {t(locale, "hero.brazil")}</span>
+            <span>{t(locale, "hero.peakPrefix")} TOP <span className="text-white">{workanaStats.peakRankITBrazil}</span> {t(locale, "hero.brazil")}</span>
           </span>
           {/* Rating — sempre visível, pill neutro */}
           <span className="text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/70 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm flex items-center gap-1">
@@ -125,10 +125,10 @@ export default function HeroSection({
               <ellipse cx="7" cy="7" rx="3" ry="6.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
               <line x1="0.5" y1="7" x2="13.5" y2="7" stroke="currentColor" strokeWidth="1.2" />
             </svg>
-            <span>TOP <span className="text-white font-bold">#{workanaStats.rankITGlobal}</span> GLOBAL</span>
+            <span>{t(locale, "hero.peakPrefix")} TOP <span className="text-white font-bold">{workanaStats.peakRankITGlobal}</span> GLOBAL</span>
           </span>
           <span className="hidden sm:flex text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/70 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm">
-            <span className="text-white font-bold">{workanaStats.projectsCompleted}+</span>&nbsp;{t(locale, "hero.projectsPill")}
+            <span className="text-white font-bold">{workanaStats.projectsCompleted}</span>&nbsp;{t(locale, "hero.projectsPill")}
           </span>
           <span className="hidden sm:flex text-[10px] md:text-[11px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-white/80 px-3.5 py-1.5 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-sm items-center gap-1.5">
             <span>🏆</span>
