@@ -1,11 +1,11 @@
 # EDevsHub Portfolio
 
 [![Live](https://img.shields.io/badge/live-edevshub.com-4ade80?style=flat-square)](https://edevshub.com)
-[![Workana](https://img.shields.io/badge/Workana-Top%20%231%20Brasil-22d3ee?style=flat-square)](https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6)
+[![Workana](https://img.shields.io/badge/Workana-HERO%20%C2%B7%20pico%20Top%201%20BR-22d3ee?style=flat-square)](https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square)](https://nextjs.org)
 [![License](https://img.shields.io/badge/license-personal-lightgrey?style=flat-square)](#)
 
-Portfolio pessoal de **Eduardo Gouveia** — Full Stack Senior, Top 1 Brasil em TI na Workana. Background 3D em Three.js, overlays HTML cyberpunk e scroll-jacking entre 5 capítulos (Hero, About, Projects, Skills, Contact).
+Portfolio pessoal de **Eduardo Gouveia** — Full Stack Sênior, nível HERO na Workana (já Top 1 Brasil e Top 3 Global em TI). Background 3D em Three.js, overlays HTML cyberpunk e scroll-jacking entre 5 capítulos (Hero, About, Projects, Skills, Contact).
 
 ## Stack
 
@@ -18,10 +18,10 @@ Portfolio pessoal de **Eduardo Gouveia** — Full Stack Senior, Top 1 Brasil em 
 
 ## Workana social proof
 
-- Top **#1 Brasil** em TI e Programação
-- Top **#10 Global** em TI e Programação
+- Já alcançou **Top 1 Brasil** e **Top 3 Global** em TI e Programação (pico)
+- **Top 27** no ranking geral entre **14,78M** de profissionais
 - Nível **HERO** (mais alto da plataforma)
-- **165+** projetos entregues · **4.72★** · **201** avaliações verificadas
+- **175** projetos entregues · **4.74★** · **176** avaliações verificadas · **37** clientes recorrentes
 
 ## Setup local
 

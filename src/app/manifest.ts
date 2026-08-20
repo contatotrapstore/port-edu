@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "EDevsHub — Eduardo Gouveia",
     short_name: "EDevsHub",
     description:
-      "Eduardo Gouveia — Full Stack Senior, Top 1 Brasil em TI na Workana. SaaS, Dashboards e Sistemas.",
+      "Eduardo Gouveia — Full Stack Sênior, nível HERO na Workana. SaaS, Dashboards e Sistemas.",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0a",

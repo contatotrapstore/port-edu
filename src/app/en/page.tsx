@@ -4,14 +4,13 @@ import HomePage from "@/components/HomePage";
 const siteUrl = "https://edevshub.com";
 
 export const metadata: Metadata = {
-  title: "EDevsHub | Eduardo Gouveia — #1 Full Stack Developer in Brazil (Workana)",
+  title: "EDevsHub | Eduardo Gouveia — Senior Full Stack · Workana HERO",
   description:
-    "Eduardo Gouveia — Senior Full Stack Developer, ranked #1 in IT in Brazil on Workana. 165+ projects delivered, 4.72/5 ⭐, HERO level. Specialist in SaaS, dashboards and AI systems.",
+    "Eduardo Gouveia — Senior Full Stack Developer, HERO level on Workana: 175 projects delivered, 4.74/5 ⭐ across 176 reviews, reached #1 in IT in Brazil. Specialist in SaaS, dashboards and AI systems.",
   keywords: [
     "Eduardo Gouveia",
     "EDevsHub",
     "Full Stack Developer",
-    "Top 1 Brazil Workana",
     "Workana HERO",
     "SaaS developer",
     "dashboard developer",
@@ -33,23 +32,23 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: `${siteUrl}/en`,
     siteName: "EDevsHub — Eduardo Gouveia",
-    title: "EDevsHub | #1 Full Stack Developer in Brazil on Workana",
+    title: "EDevsHub | Eduardo Gouveia — Senior Full Stack · Workana HERO",
     description:
-      "165+ projects delivered · 4.72/5 ⭐ · HERO level · #1 in IT in Brazil. Specialist in SaaS, dashboards and systems.",
+      "175 projects delivered · 4.74/5 ⭐ (176 reviews) · HERO level · reached #1 in IT in Brazil. Specialist in SaaS, dashboards and systems.",
     images: [
       {
         url: "/og-cover.jpg",
         width: 1200,
         height: 630,
-        alt: "Eduardo Gouveia — Senior Full Stack · #1 in Brazil · Workana HERO",
+        alt: "Eduardo Gouveia — Senior Full Stack · Workana HERO · reached #1 in Brazil",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "EDevsHub | #1 Full Stack Developer in Brazil",
+    title: "EDevsHub | Eduardo Gouveia — Senior Full Stack",
     description:
-      "165+ projects · 4.72/5 ⭐ · Workana HERO. SaaS & systems specialist.",
+      "175 projects · 4.74/5 ⭐ · Workana HERO. SaaS & systems specialist.",
     images: ["/og-cover.jpg"],
   },
 };
