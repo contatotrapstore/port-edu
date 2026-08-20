@@ -424,8 +424,9 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
           if (wantsInnerScroll) {
             // Cursor dentro da section → scroll nativo cuida. Fora dela (navbar,
             // dots, chrome fixo) não há ancestral rolável — roteia manualmente
-            // para nunca deixar o wheel cair no vazio.
-            if (section.contains(e.target as Node)) return;
+            // para nunca deixar o wheel cair no vazio. e.target pode ser window
+            // (eventos sintéticos) — window não é Node, daí o instanceof.
+            if (e.target instanceof Node && section.contains(e.target)) return;
             e.preventDefault();
             section.scrollTop += dy;
             return;
