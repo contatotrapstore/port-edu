@@ -19,9 +19,9 @@ Portfolio pessoal de **Eduardo Gouveia** — Full Stack Sênior, nível HERO na 
 ## Workana social proof
 
 - Já alcançou **Top 1 Brasil** e **Top 3 Global** em TI e Programação (pico)
-- **Top 27** no ranking geral entre **14,78M** de profissionais
+- **Top 6** no ranking geral entre **14,78M** de profissionais
 - Nível **HERO** (mais alto da plataforma)
-- **175** projetos entregues · **4.74★** · **176** avaliações verificadas · **37** clientes recorrentes
+- **176** projetos entregues · **4.74★** · **179** avaliações verificadas · **37** clientes recorrentes
 
 ## Setup local
 

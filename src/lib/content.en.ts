@@ -18,7 +18,7 @@ export const siteConfigEN: SiteConfig = {
   ...siteConfig,
   title: "SENIOR FULL STACK | SAAS & SYSTEMS",
   subtitle: "Building the future, one commit at a time.",
-  bio: "Senior Full Stack Developer. I turn ideas into real products — from architecture to deployment — focused on SaaS, dashboards and AI-powered systems. 175 projects delivered and 37 returning clients: clear communication, deadlines met and code that scales. I've reached #1 in Brazil and Top 3 worldwide in IT on Workana — HERO level.",
+  bio: "Senior Full Stack Developer. I turn ideas into real products — from architecture to deployment — focused on SaaS, dashboards and AI-powered systems. 176 projects delivered and 37 returning clients: clear communication, deadlines met and code that scales. I've reached #1 in Brazil and Top 3 worldwide in IT on Workana — HERO level.",
 };
 
 const projectOverridesEN: Record<string, Partial<Project>> = {
@@ -194,6 +194,325 @@ const projectOverridesEN: Record<string, Partial<Project>> = {
       "multi-system integration",
     ],
   },
+  blackinbot: {
+    description:
+      "Full SaaS to build, automate and manage Telegram monetization bots: sell access to VIP groups with integrated payments and subscription control.",
+    overview:
+      "SaaS platform for creating, automating and managing Telegram monetization bots, letting content creators sell access to VIP groups and channels with integrated payments, subscription control and centralized management.",
+    problem:
+      "Creators manually handled selling and granting access to VIP groups — a flow that did not scale and ate up daily operations.",
+    approach:
+      "Decoupled frontend/backend architecture with a web dashboard to configure bots and plans, fully automated Telegram bots, payments via Pix/bank slip/card and webhooks for instant confirmation.",
+    features: [
+      "Bot creation and configuration from the dashboard",
+      "Customizable subscription plans",
+      "Automatic entry and removal from VIP groups",
+      "Payments via Pix, bank slip and card with webhooks",
+      "Expiry and renewal notifications",
+      "Real-time reports and analytics",
+      "Supabase Auth + JWT with Row Level Security",
+    ],
+    output: [
+      "selling and access delivery fully automated",
+      "manual operations all but eliminated",
+      "scalable, production-ready architecture",
+    ],
+  },
+  clubeazul: {
+    description:
+      "Benefits-club management SaaS: policyholders, contracts, plans, commissions and automated billing — replacing legacy systems.",
+    overview:
+      "Complete web platform to centralize and modernize a benefits club's operation, replacing legacy systems and bringing separate administrative processes into a single environment, built as SaaS with multiple entities and access levels.",
+    problem:
+      "The operation ran on old systems and fragmented processes, with no single environment to manage policyholders, contracts, commissions and billing.",
+    approach:
+      "Multi-entity SaaS covering policyholders, sub-policyholders, client companies, insured members and brokers, configurable commission rules, Iugu integration for bank slips and payment updates, plus data import/export.",
+    features: [
+      "Management of policyholders, sub-policyholders, clients, insured members and brokers",
+      "Contracts, terms, coverage and plans",
+      "Configurable price tables and commission rules",
+      "Iugu integration for billing and bank slips",
+      "Excel import and report export",
+      "Certificate and document generation",
+      "Portal to browse, simulate and sign up for plans",
+    ],
+    output: [
+      "legacy systems replaced",
+      "financial process automated",
+      "centralized, scalable operation",
+    ],
+  },
+  corpxbank: {
+    description:
+      "Mobile banking app (iOS and Android) wrapping an internet banking platform in a native experience, with QR code and bank slip scanning.",
+    overview:
+      "Cross-platform mobile app built to wrap an internet banking platform in a native experience, delivering more performance, security and device integration. Built with React Native + Expo, with full access to the banking system through a secure WebView.",
+    problem:
+      "Internet banking existed only on the web: no store presence, no access to device features and none of the fluidity customers expect on mobile.",
+    approach:
+      "React Native + Expo app with a secure WebView preserving the original visual identity, persistent sessions, native camera/storage/audio permissions and full publication to Android and iOS.",
+    features: [
+      "Full internet banking integration via WebView",
+      "Secure login with persistent session",
+      "QR code and bank slip scanning via camera",
+      "Native permission management",
+      "Cookie and authentication handling",
+      "Custom splash screen and native alerts",
+      "Published to Android and iOS (TestFlight / App Store)",
+    ],
+    output: [
+      "app published on both stores",
+      "stable builds after environment standardization",
+      "native features without losing the original identity",
+    ],
+  },
+  rei: {
+    description:
+      "Management system for telecom infrastructure civil works: stages, tasks, owners, SLAs and dependencies in a single panel.",
+    overview:
+      "Web platform to centralize the management of telecom infrastructure civil works, with control of stages, tasks, owners, SLAs, dependencies, reminders, internal notifications and an admin panel.",
+    problem:
+      "Tracking works relied on manual controls, with no visibility into progress and no standardization of internal processes.",
+    approach:
+      "Web system replacing manual controls, allowing each project to be tracked by stage, internal processes to be organized and tasks configured straight from the admin.",
+    features: [
+      "Control of stages, tasks and owners",
+      "SLAs and dependencies between activities",
+      "Reminders and internal notifications",
+      "Admin panel with task configuration",
+      "Visibility into each project's progress",
+    ],
+    output: [
+      "manual controls replaced",
+      "real-time visibility into operations",
+      "standardized internal processes",
+    ],
+  },
+  passagenseuropa: {
+    description:
+      "Custom CRM centralizing the whole commercial operation: leads, pipeline, WhatsApp, quotes, finance, commissions and automations with AI support.",
+    overview:
+      "CRM built to centralize Passagens Europa's entire commercial operation, bringing lead management, sales pipeline, WhatsApp support, quotes, sales, finance, reports, commissions and automations into a single platform.",
+    problem:
+      "The commercial operation was spread across separate tools, with no single pipeline and no consolidated history per client.",
+    approach:
+      "One platform integrating support, pipeline and finance, with AI features to assist customer service, client analysis and the team's decision-making.",
+    features: [
+      "Lead management and sales pipeline",
+      "Integrated WhatsApp support",
+      "Quotes, sales and finance",
+      "Reports and commission management",
+      "Commercial automations",
+      "AI for client analysis and decision support",
+    ],
+    output: [
+      "centralized commercial operation",
+      "support and pipeline in one place",
+      "AI-assisted decision-making",
+    ],
+  },
+  ciliosclick: {
+    description:
+      "AI platform for lash extension professionals: visual simulation, scheduling, digital intake forms and admin management in one place.",
+    overview:
+      "Digital platform built for lash extension professionals, combining artificial intelligence, visual simulation, scheduling, digital intake forms and administrative management into a single solution to make service more visual, modern and professional.",
+    problem:
+      "Professionals relied on scattered tools for scheduling, intake forms and showing clients what the result would look like.",
+    approach:
+      "A single solution pairing AI-driven visual simulation of the result with service management — scheduling, digital intake and running the business.",
+    features: [
+      "AI-powered visual simulation of the result",
+      "Appointment scheduling",
+      "Digital intake forms",
+      "Administrative management",
+    ],
+    output: [
+      "a more visual experience for the client",
+      "scheduling and intake forms digitized",
+      "business management in one place",
+    ],
+  },
+  revix: {
+    description:
+      "Automotive social network with an interactive event map, feed, communities and meetup management — connecting enthusiasts and clubs nearby.",
+    overview:
+      "Automotive social platform built to connect enthusiasts, clubs and meetups in a modern, intuitive digital experience, combining an interactive map of nearby events, a social feed, meetup creation and management, communities, notifications and custom profiles.",
+    problem:
+      "Car culture was organized across scattered groups, with no single place to discover nearby meetups and bring the community together.",
+    approach:
+      "Scalable product designed around performance, mobile experience and a strong visual identity, bringing users closer to their local scene through an event map and communities.",
+    features: [
+      "Interactive map with nearby events",
+      "Social feed",
+      "Meetup creation and management",
+      "Communities and custom profiles",
+      "Notifications",
+    ],
+    output: [
+      "the car community gathered in one app",
+      "event discovery by proximity",
+      "scalable, mobile-focused product",
+    ],
+  },
+  focus: {
+    description:
+      "Web productivity platform that turns goals into routine: organization by area, multiple progress metrics and an integrated calendar.",
+    overview:
+      "Web productivity platform built to organize goals, track progress and turn objectives into a practical execution routine, combining goal creation, organization by area, different measurement types and an integrated calendar.",
+    problem:
+      "Planning, tasks and progress tracking lived in separate tools, so goals got lost in day-to-day work.",
+    approach:
+      "A single environment connecting planning, tasks and progress, with goals organized by area and different ways to measure how they advance.",
+    features: [
+      "Goal creation and organization by area",
+      "Different progress measurement types",
+      "Integrated calendar",
+      "Progress tracking",
+    ],
+    output: [
+      "planning and execution in one environment",
+      "measurable progress per goal",
+      "an organized daily routine",
+    ],
+  },
+  woodsuperfoods: {
+    description:
+      "Superfoods and wellness e-commerce: a simple, responsive buying journey connecting product, purpose and content.",
+    overview:
+      "Complete online store for Wood Superfoods, a brand focused on healthy eating and natural products, built with a visual identity aligned to the brand's positioning and prioritizing a simple, modern and responsive shopping experience.",
+    problem:
+      "The brand needed a digital presence that conveyed trust and connected product to purpose — not just a shelf of items.",
+    approach:
+      "A structure combining product presentation, brand benefits and differentiators, institutional content, a blog and conversion calls to action, creating a journey that links product, purpose and lifestyle.",
+    features: [
+      "Catalog presenting products and benefits",
+      "Institutional content and blog",
+      "Conversion calls to action throughout the journey",
+      "Responsive design aligned to the brand identity",
+    ],
+    output: [
+      "store live and selling",
+      "stronger digital presence",
+      "a journey connecting product and purpose",
+    ],
+  },
+  mudapaisagens: {
+    description:
+      "AI-powered commercial pre-sales automation on WhatsApp: answers leads, qualifies them with structured questions and logs everything to Pipefy.",
+    overview:
+      "AI-powered commercial pre-sales automation over WhatsApp Business, focused on answering new leads, running initial qualification through structured questions and automatically recording the information in Pipefy, using Make as the integration platform.",
+    problem:
+      "New leads arrived over WhatsApp and depended on manual replies, delaying qualification and leaving information unrecorded.",
+    approach:
+      "Automated AI flow on WhatsApp Business that answers and qualifies the lead with structured questions, integrating with Pipefy via Make for automatic recording.",
+    features: [
+      "Automatic replies to new WhatsApp Business leads",
+      "Qualification through structured questions",
+      "Automatic recording of information in Pipefy",
+      "Integration via Make",
+    ],
+    output: [
+      "pre-sales with no manual intervention",
+      "leads qualified automatically",
+      "information recorded in the CRM",
+    ],
+  },
+  paylink: {
+    description:
+      "Institutional site for a remote payments and online billing fintech, communicating the solution's differentiators to the market.",
+    overview:
+      "PayLink is a fintech specialized in remote payments and online billing. The institutional site was built to present the company in a more modern, clear and professional way, transparently communicating the solution's main differentiators to the market.",
+    problem:
+      "The fintech needed an institutional showcase worthy of the product, explaining the solution clearly to the market.",
+    approach:
+      "Responsive institutional site with a modern, direct presentation of the company and the payment solution's differentiators.",
+    features: [
+      "Institutional presentation of the fintech",
+      "Clear communication of the solution's differentiators",
+      "Responsive design",
+    ],
+    output: [
+      "clearer institutional positioning",
+      "modern, responsive site",
+    ],
+  },
+  tap: {
+    description:
+      "Institutional site for executive air taxi: aircraft, services, facilities and contact channels in modern, responsive navigation.",
+    overview:
+      "Development of TAP Aviation's institutional site, a company in the executive aviation sector, presenting its aircraft, services, facilities and contact channels clearly and professionally, with modern, intuitive navigation adapted for desktop and mobile.",
+    problem:
+      "The company needed to present its fleet, services and facilities professionally and accessibly on mobile too.",
+    approach:
+      "Institutional site with intuitive navigation and responsive layout, organizing aircraft, services, facilities and contact.",
+    features: [
+      "Presentation of aircraft and services",
+      "Company facilities and contact channels",
+      "Responsive navigation for desktop and mobile",
+    ],
+    output: [
+      "fleet and services well presented",
+      "navigation adapted to mobile",
+    ],
+  },
+  direcao: {
+    description:
+      "Redesign of an air taxi institutional site: fleet, operational safety and flight requests in a more modern experience.",
+    overview:
+      "Redesign and development of a new version of Direção Táxi Aéreo's institutional site, presenting the company, its services, aircraft fleet, facilities, operational safety and contact channels in a more modern, professional and intuitive experience.",
+    problem:
+      "The previous site did not reflect the brand's credibility nor make it easy to request flights.",
+    approach:
+      "Full redesign reinforcing credibility and highlighting fleet, facilities and operational safety, with a more direct path to requesting a flight.",
+    features: [
+      "Presentation of the company, services and fleet",
+      "Facilities and operational safety",
+      "Contact channels and flight requests",
+      "Responsive experience",
+    ],
+    output: [
+      "brand credibility reinforced",
+      "flight requests made easier",
+    ],
+  },
+  wesleymods: {
+    description:
+      "Custom online store with dashboards and a member area where customers access the keys they purchased.",
+    overview:
+      "Store selling digital gaming products, with dashboards and a member area where the customer accesses purchased keys.",
+    problem:
+      "Sales depended on delivering keys by hand, with no area where customers could check what they had bought.",
+    approach:
+      "WordPress/WooCommerce store with a member panel and dashboards, automating customer access to purchased keys.",
+    features: [
+      "Custom online store",
+      "Member area with purchased keys",
+      "Tracking dashboards",
+      "Responsive layout",
+    ],
+    output: [
+      "key delivery automated",
+      "self-service customer area",
+    ],
+  },
+  kdelojab: {
+    description:
+      "Valorant elojob site built to order for a TikTok streamer, following the client's specification.",
+    overview:
+      "Elojob site for the game Valorant, built to order for a TikTok streamer according to the client's specification.",
+    problem:
+      "The streamer needed their own site to offer the service to their audience instead of negotiating each order by hand.",
+    approach:
+      "Institutional and commercial site built to the client's specification, presenting the service and a channel to hire it.",
+    features: [
+      "Commercial presentation of the service",
+      "Hiring flow",
+      "Responsive layout",
+    ],
+    output: [
+      "a sales channel of their own for the audience",
+    ],
+  },
 };
 
 export const projectsEN: Project[] = projects.map((p) => ({
@@ -202,9 +521,9 @@ export const projectsEN: Project[] = projects.map((p) => ({
 }));
 
 export const resultMetricsEN: typeof resultMetrics = [
-  { value: "175", label: "projects delivered", description: "in 3.5 years on Workana" },
+  { value: "176", label: "projects delivered", description: "in 3.5 years on Workana" },
   { value: "37", label: "clients rehired", description: "and they keep coming back" },
-  { value: "4.74/5", label: "average rating", description: "176 verified reviews" },
+  { value: "4.74/5", label: "average rating", description: "179 verified reviews" },
 ];
 
 // Testimonials: quote text/author stay verbatim (real reviews) — only the

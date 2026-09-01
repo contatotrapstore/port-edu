@@ -28,7 +28,11 @@ export default function ProjectsSection({
   onChapterClick: (i: number) => void;
 }) {
   const locale = useLocale();
-  const { projects } = getContent(locale);
+  const { projects: allProjects } = getContent(locale);
+  // Lista editorial mostra os destaques; o restante do portfólio vai para a
+  // grade de arquivo logo abaixo (carouselIdx indexa apenas os destaques).
+  const projects = allProjects.filter((p) => p.featured);
+  const archive = allProjects.filter((p) => !p.featured);
   return (
     <Section id="projects" progress={progress} range={rangeOf("projects")}>
       <div>
@@ -44,7 +48,7 @@ export default function ProjectsSection({
             className="font-[family-name:var(--font-jetbrains-mono)] text-[11px] text-white/50 hover:text-[#4ade80] transition-colors pb-1"
           >
             {t(locale, "projects.allLink", {
-              count: projects.length,
+              count: allProjects.length,
               total: workanaStats.projectsCompleted,
             })}
           </a>
@@ -261,6 +265,67 @@ export default function ProjectsSection({
             </div>
           </div>
         </div>
+
+        {/* Arquivo — restante do portfólio Workana, em grade compacta */}
+        {archive.length > 0 && (
+          <div className="mt-10 md:mt-14">
+            <div className="flex items-baseline justify-between gap-3 mb-4">
+              <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40">
+                {t(locale, "projects.archiveHeading", { count: archive.length })}
+              </p>
+              <span className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+            </div>
+            <ul className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+              {archive.map((p) => (
+                <li key={p.id}>
+                  <button
+                    onClick={() => openCase(p)}
+                    className="group w-full text-left terminal-window overflow-hidden hover:border-white/20 transition-colors"
+                  >
+                    <div className="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
+                      <img
+                        src={p.cover ?? p.image}
+                        alt={p.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 w-full h-full object-cover object-center opacity-80 group-hover:opacity-100 group-hover:scale-[1.03] transition-all duration-500"
+                      />
+                      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+                      {/* base escura: os mockups variam entre fundo claro e escuro */}
+                      <span
+                        className="absolute top-2 right-2 text-[7px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-1.5 py-0.5 rounded border font-bold bg-black/70 backdrop-blur-sm"
+                        style={{
+                          color: projectColors[p.category],
+                          borderColor: `${projectColors[p.category]}55`,
+                        }}
+                      >
+                        {categoryLabel(locale, p.category)}
+                      </span>
+                    </div>
+                    <div className="p-3">
+                      <div className="font-display text-sm font-bold text-white/85 group-hover:text-white transition-colors truncate">
+                        {p.title}
+                      </div>
+                      <p className="mt-1 text-[10px] text-white/45 leading-relaxed line-clamp-2">
+                        {p.description}
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {p.tech.slice(0, 3).map((tech) => (
+                          <span
+                            key={tech}
+                            className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] px-1.5 py-0.5 rounded bg-white/[0.04] text-white/45 border border-white/[0.06]"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     <SectionNext index={1} onChapterClick={onChapterClick} />
     </Section>

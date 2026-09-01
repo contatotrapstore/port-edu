@@ -15,7 +15,7 @@ import WorkanaCtaButton from "@/components/workana/WorkanaCtaButton";
 export const metadata: Metadata = {
   title: "Eduardo Gouveia — Full Stack Sênior | Workana",
   description:
-    "175 projetos entregues · 4.74/5 em 176 avaliações · nível HERO na Workana. Cases, avaliações e como funciona trabalhar comigo.",
+    "176 projetos entregues · 4.74/5 em 179 avaliações · nível HERO na Workana. Cases, avaliações e como funciona trabalhar comigo.",
   robots: { index: false, follow: false },
 };
 

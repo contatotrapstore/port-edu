@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "EDevsHub | Eduardo Gouveia — Full Stack Sênior · Workana HERO",
   description:
-    "Eduardo Gouveia — Full Stack Sênior, nível HERO na Workana: 175 projetos entregues, 4.74/5 ⭐ em 176 avaliações, já Top 1 Brasil em TI. Especialista em SaaS, Dashboards e Sistemas.",
+    "Eduardo Gouveia — Full Stack Sênior, nível HERO na Workana: 176 projetos entregues, 4.74/5 ⭐ em 179 avaliações, já Top 1 Brasil em TI. Especialista em SaaS, Dashboards e Sistemas.",
   keywords: [
     "Eduardo Gouveia",
     "EDevsHub",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     siteName: "EDevsHub — Eduardo Gouveia",
     title: "EDevsHub | Eduardo Gouveia — Full Stack Sênior · Workana HERO",
     description:
-      "175 projetos entregues · 4.74/5 ⭐ (176 avaliações) · Nível HERO · já Top 1 Brasil em TI. Especialista em SaaS, Dashboards e Sistemas.",
+      "176 projetos entregues · 4.74/5 ⭐ (179 avaliações) · Nível HERO · já Top 1 Brasil em TI. Especialista em SaaS, Dashboards e Sistemas.",
     images: [
       {
         url: "/og-cover.jpg",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "EDevsHub | Eduardo Gouveia — Full Stack Sênior",
     description:
-      "175 projetos · 4.74/5 ⭐ · Workana HERO. Especialista SaaS & Sistemas.",
+      "176 projetos · 4.74/5 ⭐ · Workana HERO. Especialista SaaS & Sistemas.",
     images: ["/og-cover.jpg"],
   },
   alternates: {
@@ -140,7 +140,7 @@ const structuredData = {
       aggregateRating: {
         "@type": "AggregateRating",
         ratingValue: "4.74",
-        reviewCount: "176",
+        reviewCount: "179",
         bestRating: "5",
         worstRating: "1",
       },

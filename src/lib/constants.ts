@@ -19,6 +19,8 @@ export interface Project {
   features?: string[];
   role?: string;
   year?: string;
+  /** Destaque na lista editorial da home; os demais entram na grade de arquivo. */
+  featured?: boolean;
 }
 
 export interface Skill {
@@ -45,7 +47,7 @@ export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
   title: "FULL STACK SENIOR | SAAS & SISTEMAS",
   subtitle: "Construindo o futuro, um commit por vez.",
-  bio: "Desenvolvedor Full Stack Sênior. Transformo ideias em produtos reais — da arquitetura ao deploy — com foco em SaaS, dashboards e sistemas com IA. 175 projetos entregues e 37 clientes que voltam: comunicação clara, prazos cumpridos e código que escala. Já cheguei ao Top 1 do Brasil e ao Top 3 Global em TI na Workana — nível HERO.",
+  bio: "Desenvolvedor Full Stack Sênior. Transformo ideias em produtos reais — da arquitetura ao deploy — com foco em SaaS, dashboards e sistemas com IA. 176 projetos entregues e 37 clientes que voltam: comunicação clara, prazos cumpridos e código que escala. Já cheguei ao Top 1 do Brasil e ao Top 3 Global em TI na Workana — nível HERO.",
   social: {
     github: "https://github.com/GouveiaZx",
     linkedin: "",
@@ -54,9 +56,9 @@ export const siteConfig: SiteConfig = {
 };
 
 export const workanaStats = {
-  projectsCompleted: 175,
+  projectsCompleted: 176,
   projectsRunning: 11,
-  clientReviews: 176,
+  clientReviews: 179,
   recurringClients: 37,
   rating: 4.74,
   ratingMax: 5,
@@ -65,7 +67,7 @@ export const workanaStats = {
   // Ranking de TI é volátil — exibir sempre como pico de carreira, nunca como posição atual
   peakRankITBrazil: 1,
   peakRankITGlobal: 3,
-  overallRank: 27,
+  overallRank: 6,
   totalProfessionals: "14.78M",
   level: "HERO",
   memberSince: "Fev/2023",
@@ -74,9 +76,9 @@ export const workanaStats = {
 
 // Metrics de resultado para clientes — todas verificáveis no perfil Workana
 export const resultMetrics = [
-  { value: "175", label: "projetos entregues", description: "em 3 anos e meio de Workana" },
+  { value: "176", label: "projetos entregues", description: "em 3 anos e meio de Workana" },
   { value: "37", label: "clientes recontrataram", description: "e seguem voltando" },
-  { value: "4.74/5", label: "nota média", description: "176 avaliações verificadas" },
+  { value: "4.74/5", label: "nota média", description: "179 avaliações verificadas" },
 ];
 
 // Avaliações reais verificadas (Workana) — texto verbatim do perfil
@@ -186,6 +188,7 @@ export const testimonials = [
 export const projects: Project[] = [
   {
     id: "pace",
+    featured: true,
     title: "PACE",
     description:
       "Sistema clínico de neurofeedback para psicólogos: sessões guiadas com jogos 3D controlados por ondas cerebrais (EEG) e gestão completa do consultório.",
@@ -218,6 +221,7 @@ export const projects: Project[] = [
   },
   {
     id: "neuroone",
+    featured: true,
     title: "NeuroOne",
     description:
       "Plataforma web de neurofeedback com jogos 3D (Three.js) controlados por EEG, com módulos para empresas, escolas e clínicas.",
@@ -250,6 +254,7 @@ export const projects: Project[] = [
   },
   {
     id: "neuroialab",
+    featured: true,
     title: "NeuroIA Lab",
     description:
       "SaaS de saúde mental com 19 assistentes de IA especializados para psicólogos, fonoaudiólogos e terapeutas.",
@@ -282,6 +287,7 @@ export const projects: Project[] = [
   },
   {
     id: "anamex",
+    featured: true,
     title: "AnamNex",
     description:
       "SaaS médico para plantonistas com IA: leitura automatizada de ECG e análise de imagens clínicas, com laudos gerados automaticamente.",
@@ -313,6 +319,7 @@ export const projects: Project[] = [
   },
   {
     id: "connote",
+    featured: true,
     title: "ConNote",
     description:
       "App nativo (Windows/macOS) de produtividade com IA: notas inteligentes, chat multi-modelo e copiloto flutuante com transcrição em tempo real.",
@@ -343,6 +350,7 @@ export const projects: Project[] = [
   },
   {
     id: "clinafy",
+    featured: true,
     title: "Clinafy",
     description:
       "Sistema para profissionais de saúde mental: prontuário eletrônico com IA, agenda inteligente, teleconsulta e gestão financeira — tudo em um só lugar.",
@@ -374,6 +382,7 @@ export const projects: Project[] = [
   },
   {
     id: "cacaostore",
+    featured: true,
     title: "Cacao Store",
     description:
       "Loja virtual completa em Shopify, responsiva, desenvolvida sob medida para o cliente.",
@@ -404,6 +413,7 @@ export const projects: Project[] = [
   {
     // Projeto interno (não público) — sem case/página, fica por último.
     id: "click",
+    featured: true,
     title: "Click",
     description:
       "Sistema Interno com Dashboard Mobile. Aplicativo de gestão interna com dashboard responsivo e notificações em tempo real.",
@@ -419,6 +429,435 @@ export const projects: Project[] = [
       "notificações em tempo real",
       "dashboard mobile-first",
       "integração multi-sistema",
+    ],
+  },
+  // ---- Portfólio completo (Workana) — mockups e descrições do perfil ----
+  {
+    id: "blackinbot",
+    title: "BlackinBot",
+    description:
+      "SaaS completo para criar, automatizar e gerir bots de monetização no Telegram: venda de acesso a grupos VIP com pagamento integrado e controle de assinaturas.",
+    overview:
+      "Plataforma SaaS para criação, automação e gestão de bots de monetização no Telegram, permitindo que criadores de conteúdo vendam acesso a grupos e canais VIP com pagamentos integrados, controle de assinaturas e gestão centralizada.",
+    problem:
+      "Criadores de conteúdo controlavam manualmente a venda e a liberação de acesso a grupos VIP, um fluxo que não escalava e consumia operação todo dia.",
+    approach:
+      "Arquitetura desacoplada entre frontend e backend, com dashboard web para configurar bots e planos, bots do Telegram 100% automatizados, pagamentos via Pix/boleto/cartão e webhooks para confirmação instantânea.",
+    features: [
+      "Criação e configuração de bots pelo painel",
+      "Planos de assinatura personalizáveis",
+      "Controle automático de entrada e saída em grupos VIP",
+      "Pagamentos via Pix, boleto e cartão com webhooks",
+      "Notificações de vencimento e renovação",
+      "Relatórios e analytics em tempo real",
+      "Autenticação com Supabase Auth + JWT e Row Level Security",
+    ],
+    tech: ["Next.js", "TypeScript", "Python", "Supabase"],
+    image: "/images/projects/blackinbot.webp",
+    cover: "/images/projects/covers/blackinbot.webp",
+    year: "2026",
+    category: "saas",
+    output: [
+      "venda e liberação de acesso automatizadas",
+      "operação manual praticamente eliminada",
+      "estrutura escalável pronta para produção",
+    ],
+  },
+  {
+    id: "clubeazul",
+    title: "Clube Azul",
+    description:
+      "SaaS de gestão para clube de benefícios: estipulantes, contratos, planos, comissões e cobranças automatizadas — substituindo sistemas legados.",
+    overview:
+      "Plataforma web completa para centralizar e modernizar a operação de um clube de benefícios, substituindo sistemas legados e reunindo diferentes processos administrativos em um único ambiente, em modelo SaaS com múltiplas entidades e níveis de acesso.",
+    problem:
+      "A operação rodava sobre sistemas antigos e processos fragmentados, sem um ambiente único para administrar estipulantes, contratos, comissões e cobranças.",
+    approach:
+      "SaaS multi-entidade com gestão de estipulantes, subestipulantes, empresas clientes, segurados e corretores, regras configuráveis de comissionamento, integração com a Iugu para boletos e atualização de pagamentos, e importação/exportação de dados.",
+    features: [
+      "Gestão de estipulantes, subestipulantes, clientes, segurados e corretores",
+      "Contratos, condições, coberturas e planos",
+      "Tabelas de preços configuráveis e regras de comissionamento",
+      "Integração com a Iugu para cobranças e boletos",
+      "Importação via Excel e exportação de relatórios",
+      "Emissão de certificados e documentos",
+      "Portal para consulta, simulação e contratação de planos",
+    ],
+    tech: ["PHP", "Laravel", "MySQL", "API"],
+    image: "/images/projects/clubeazul.webp",
+    cover: "/images/projects/covers/clubeazul.webp",
+    year: "2026",
+    category: "saas",
+    output: [
+      "sistemas legados substituídos",
+      "processo financeiro automatizado",
+      "operação centralizada e escalável",
+    ],
+  },
+  {
+    id: "corpxbank",
+    title: "CorpxBank",
+    description:
+      "App bancário mobile (iOS e Android) que encapsula a plataforma de internet banking em experiência nativa, com leitura de QR Code e boletos pela câmera.",
+    overview:
+      "Aplicativo mobile multiplataforma desenvolvido para encapsular uma plataforma de internet banking em uma experiência nativa, garantindo mais performance, segurança e integração com recursos do dispositivo. Construído com React Native + Expo, com acesso completo ao sistema bancário via WebView segura.",
+    problem:
+      "O internet banking existia apenas na web: faltava presença nas lojas, acesso aos recursos do aparelho e a fluidez que o cliente espera no celular.",
+    approach:
+      "App React Native + Expo com WebView segura mantendo a identidade visual original, sessão persistente, permissões nativas de câmera/armazenamento/áudio e publicação completa para Android e iOS.",
+    features: [
+      "Integração completa do internet banking via WebView",
+      "Login seguro com persistência de sessão",
+      "Leitura de QR Code e boletos pela câmera",
+      "Gerenciamento de permissões nativas",
+      "Tratamento de cookies e autenticação",
+      "Splash screen personalizada e alertas nativos",
+      "Publicação para Android e iOS (TestFlight / App Store)",
+    ],
+    tech: ["React Native", "TypeScript", "Expo", "Kotlin"],
+    image: "/images/projects/corpxbank.webp",
+    cover: "/images/projects/covers/corpxbank.webp",
+    year: "2026",
+    category: "mobile",
+    output: [
+      "app publicado nas duas lojas",
+      "builds estáveis após padronização de ambiente",
+      "recursos nativos sem perder a identidade original",
+    ],
+  },
+  {
+    id: "rei",
+    title: "Rei",
+    description:
+      "Sistema de gestão de obras civis de infraestrutura telecom: etapas, tarefas, responsáveis, SLAs e dependências num painel único.",
+    overview:
+      "Plataforma web para centralizar a gestão de obras civis de infraestrutura de telecomunicações, com controle de etapas, tarefas, responsáveis, SLAs, dependências, lembretes, notificações internas e painel administrativo.",
+    problem:
+      "O acompanhamento das obras dependia de controles manuais, sem visibilidade do andamento nem padronização dos processos internos.",
+    approach:
+      "Sistema web que substitui os controles manuais, permitindo acompanhar cada obra por etapas, organizar processos internos e configurar tarefas diretamente pelo admin.",
+    features: [
+      "Controle de etapas, tarefas e responsáveis",
+      "SLAs e dependências entre atividades",
+      "Lembretes e notificações internas",
+      "Painel administrativo com configuração de tarefas",
+      "Visibilidade do andamento de cada obra",
+    ],
+    tech: ["Next.js", "Node.js", "PostgreSQL", "React Native"],
+    image: "/images/projects/rei.webp",
+    cover: "/images/projects/covers/rei.webp",
+    year: "2026",
+    category: "sistema",
+    output: [
+      "controles manuais substituídos",
+      "visibilidade da operação em tempo real",
+      "processos internos padronizados",
+    ],
+  },
+  {
+    id: "passagenseuropa",
+    title: "Passagens Europa",
+    description:
+      "CRM sob medida que centraliza a operação comercial: leads, funil, WhatsApp, cotações, financeiro, comissões e automações com apoio de IA.",
+    overview:
+      "CRM desenvolvido sob medida para centralizar toda a operação comercial da Passagens Europa, reunindo gestão de leads, funil de vendas, atendimento via WhatsApp, cotações, vendas, financeiro, relatórios, comissões e automações em uma única plataforma.",
+    problem:
+      "A operação comercial estava espalhada por ferramentas separadas, sem um funil único nem histórico consolidado por cliente.",
+    approach:
+      "Plataforma única integrando atendimento, funil e financeiro, com recursos de inteligência artificial para apoiar o atendimento, a análise de clientes e a tomada de decisão da equipe.",
+    features: [
+      "Gestão de leads e funil de vendas",
+      "Atendimento integrado via WhatsApp",
+      "Cotações, vendas e financeiro",
+      "Relatórios e gestão de comissões",
+      "Automações comerciais",
+      "IA para análise de clientes e apoio à decisão",
+    ],
+    tech: ["React.js", "REST API", "SQL", "IA"],
+    image: "/images/projects/passagenseuropa.webp",
+    cover: "/images/projects/covers/passagenseuropa.webp",
+    year: "2026",
+    category: "saas",
+    output: [
+      "operação comercial centralizada",
+      "atendimento e funil no mesmo lugar",
+      "decisão apoiada por IA",
+    ],
+  },
+  {
+    id: "ciliosclick",
+    title: "Cilios Click",
+    description:
+      "Plataforma com IA para profissionais de extensão de cílios: simulação visual, agenda, anamnese digital e gestão administrativa num só lugar.",
+    overview:
+      "Plataforma digital desenvolvida para profissionais da área de extensão de cílios, reunindo inteligência artificial, simulação visual, agenda, anamnese digital e gestão administrativa em uma única solução, com o objetivo de tornar o atendimento mais visual, moderno e profissional.",
+    problem:
+      "As profissionais dependiam de ferramentas soltas para agenda, ficha de anamnese e comunicação visual do resultado com a cliente.",
+    approach:
+      "Solução única que junta IA e simulação visual do resultado à gestão do atendimento — agenda, anamnese digital e administração do negócio.",
+    features: [
+      "Simulação visual do resultado com IA",
+      "Agenda de atendimentos",
+      "Anamnese digital",
+      "Gestão administrativa do negócio",
+    ],
+    tech: ["Next.js", "React.js", "Node.js", "IA"],
+    image: "/images/projects/ciliosclick.webp",
+    cover: "/images/projects/covers/ciliosclick.webp",
+    year: "2026",
+    category: "saas",
+    output: [
+      "atendimento mais visual para a cliente",
+      "agenda e anamnese digitalizadas",
+      "gestão do negócio num só lugar",
+    ],
+  },
+  {
+    id: "revix",
+    title: "Revix",
+    description:
+      "Rede social automotiva com mapa interativo de eventos, feed, comunidades e gestão de encontros — conectando entusiastas e clubes da região.",
+    overview:
+      "Plataforma social automotiva desenvolvida para conectar entusiastas, clubes e encontros em uma experiência digital moderna e intuitiva, reunindo mapa interativo com eventos próximos, feed social, criação e gerenciamento de encontros, comunidades, notificações e perfis personalizados.",
+    problem:
+      "A cultura automotiva se organizava em grupos dispersos, sem um lugar único para descobrir encontros próximos e reunir a comunidade.",
+    approach:
+      "Produto escalável pensado com foco em performance, experiência mobile e identidade visual forte, aproximando usuários da sua região por meio de mapa de eventos e comunidades.",
+    features: [
+      "Mapa interativo com eventos próximos",
+      "Feed social",
+      "Criação e gerenciamento de encontros",
+      "Comunidades e perfis personalizados",
+      "Notificações",
+    ],
+    tech: ["React.js", "Next.js", "PHP", "iOS", "Android"],
+    image: "/images/projects/revix.webp",
+    cover: "/images/projects/covers/revix.webp",
+    url: "https://revix.app.br/",
+    year: "2026",
+    category: "mobile",
+    output: [
+      "comunidade automotiva reunida num app",
+      "descoberta de eventos por proximidade",
+      "produto escalável com foco em mobile",
+    ],
+  },
+  {
+    id: "focus",
+    title: "Focus",
+    description:
+      "Plataforma web de produtividade que transforma metas em rotina: organização por áreas, tipos de medição e agenda integrada.",
+    overview:
+      "Plataforma web de produtividade desenvolvida para organizar metas, acompanhar progresso e transformar objetivos em uma rotina prática de execução, reunindo criação de metas, organização por áreas, diferentes tipos de medição e uma agenda integrada.",
+    problem:
+      "Planejamento, tarefas e acompanhamento de progresso viviam em ferramentas separadas, o que fazia as metas se perderem no dia a dia.",
+    approach:
+      "Ambiente único que conecta planejamento, tarefas e evolução, com metas organizadas por área e diferentes formas de medir progresso.",
+    features: [
+      "Criação de metas e organização por áreas",
+      "Diferentes tipos de medição de progresso",
+      "Agenda integrada",
+      "Acompanhamento da evolução",
+    ],
+    tech: ["React.js", "Node.js", "Responsive Web Design"],
+    image: "/images/projects/focus.webp",
+    cover: "/images/projects/covers/focus.webp",
+    year: "2026",
+    category: "saas",
+    output: [
+      "planejamento e execução no mesmo ambiente",
+      "progresso mensurável por meta",
+      "rotina diária organizada",
+    ],
+  },
+  {
+    id: "woodsuperfoods",
+    title: "Wood Superfoods",
+    description:
+      "E-commerce de superalimentos e bem-estar: jornada de compra simples e responsiva conectando produto, propósito e conteúdo.",
+    overview:
+      "Loja virtual completa para a Wood Superfoods, marca focada em alimentação saudável e produtos naturais, construída com identidade visual alinhada ao posicionamento da marca e priorizando uma experiência de compra simples, moderna e responsiva.",
+    problem:
+      "A marca precisava de uma presença digital que transmitisse confiança e conectasse produto e propósito, não apenas uma vitrine de itens.",
+    approach:
+      "Estrutura que combina apresentação de produtos, benefícios e diferenciais da marca, conteúdo institucional, blog e chamadas para conversão, criando uma jornada que liga produto, propósito e estilo de vida.",
+    features: [
+      "Catálogo com apresentação de produtos e benefícios",
+      "Conteúdo institucional e blog",
+      "Chamadas para conversão ao longo da jornada",
+      "Design responsivo alinhado à identidade da marca",
+    ],
+    tech: ["Web Design", "E-commerce", "Responsive Web Design"],
+    image: "/images/projects/woodsuperfoods.webp",
+    cover: "/images/projects/covers/woodsuperfoods.webp",
+    url: "https://woodsuperfoods.com.br/",
+    year: "2026",
+    category: "ecommerce",
+    output: [
+      "loja no ar e vendendo",
+      "presença digital fortalecida",
+      "jornada que conecta produto e propósito",
+    ],
+  },
+  {
+    id: "mudapaisagens",
+    title: "Muda Paisagens",
+    description:
+      "Automação de pré-atendimento comercial com IA no WhatsApp: responde leads, qualifica por perguntas estruturadas e registra tudo no Pipefy.",
+    overview:
+      "Automação de pré-atendimento comercial com IA via WhatsApp Business, com foco em responder novos leads, conduzir a qualificação inicial por meio de perguntas estruturadas e registrar automaticamente as informações no Pipefy, utilizando o Make como plataforma integradora.",
+    problem:
+      "Novos leads chegavam pelo WhatsApp e dependiam de resposta manual, atrasando a qualificação e deixando informação sem registro.",
+    approach:
+      "Fluxo automatizado com IA no WhatsApp Business que responde e qualifica o lead com perguntas estruturadas, integrando ao Pipefy via Make para registro automático.",
+    features: [
+      "Resposta automática a novos leads no WhatsApp Business",
+      "Qualificação por perguntas estruturadas",
+      "Registro automático das informações no Pipefy",
+      "Integração via Make",
+    ],
+    tech: ["IA", "API", "JSON", "Next.js"],
+    image: "/images/projects/mudapaisagens.webp",
+    cover: "/images/projects/covers/mudapaisagens.webp",
+    year: "2026",
+    category: "sistema",
+    output: [
+      "pré-atendimento sem intervenção manual",
+      "leads qualificados automaticamente",
+      "informações registradas no CRM",
+    ],
+  },
+  {
+    id: "paylink",
+    title: "PayLink",
+    description:
+      "Site institucional para fintech de pagamentos remotos e cobranças online, comunicando os diferenciais da solução ao mercado.",
+    overview:
+      "A PayLink é uma fintech especializada em pagamentos remotos e cobranças online. O site institucional foi desenvolvido para apresentar a empresa de forma mais moderna, clara e profissional, comunicando com transparência os principais diferenciais da solução ao mercado.",
+    problem:
+      "A fintech precisava de uma vitrine institucional à altura do produto, que explicasse a solução com clareza para o mercado.",
+    approach:
+      "Site institucional responsivo com apresentação moderna e direta da empresa e dos diferenciais da solução de pagamentos.",
+    features: [
+      "Apresentação institucional da fintech",
+      "Comunicação clara dos diferenciais da solução",
+      "Design responsivo",
+    ],
+    tech: ["React.js", "Next.js", "JavaScript", "CSS"],
+    image: "/images/projects/paylink.webp",
+    cover: "/images/projects/covers/paylink.webp",
+    year: "2026",
+    category: "web",
+    output: [
+      "posicionamento institucional mais claro",
+      "site moderno e responsivo",
+    ],
+  },
+  {
+    id: "tap",
+    title: "Tap Aviation",
+    description:
+      "Site institucional de táxi aéreo executivo: aeronaves, serviços, estrutura e canais de contato em navegação moderna e responsiva.",
+    overview:
+      "Desenvolvimento do site institucional da TAP Aviation, empresa do setor de aviação executiva, apresentando de forma clara e profissional suas aeronaves, serviços, estrutura e canais de contato, com navegação moderna, intuitiva e adaptada para computadores e dispositivos móveis.",
+    problem:
+      "A empresa precisava apresentar frota, serviços e estrutura de forma profissional e acessível também no celular.",
+    approach:
+      "Site institucional com navegação intuitiva e layout responsivo, organizando aeronaves, serviços, estrutura e contato.",
+    features: [
+      "Apresentação das aeronaves e serviços",
+      "Estrutura da empresa e canais de contato",
+      "Navegação responsiva para desktop e mobile",
+    ],
+    tech: ["React.js", "Next.js", "JavaScript", "Web Design"],
+    image: "/images/projects/tap.webp",
+    cover: "/images/projects/covers/tap.webp",
+    year: "2026",
+    category: "web",
+    output: [
+      "frota e serviços bem apresentados",
+      "navegação adaptada a mobile",
+    ],
+  },
+  {
+    id: "direcao",
+    title: "Direção Táxi Aéreo",
+    description:
+      "Redesign do site institucional de táxi aéreo: frota, segurança operacional e solicitação de voos numa experiência mais moderna.",
+    overview:
+      "Redesign e desenvolvimento de uma nova versão do site institucional da Direção Táxi Aéreo, apresentando a empresa, seus serviços, frota de aeronaves, estrutura, segurança operacional e canais de contato em uma experiência mais moderna, profissional e intuitiva.",
+    problem:
+      "A versão anterior do site não refletia a credibilidade da marca nem facilitava a solicitação de voos.",
+    approach:
+      "Redesign completo reforçando credibilidade e destacando frota, estrutura e segurança operacional, com caminho mais direto para solicitar voos.",
+    features: [
+      "Apresentação da empresa, serviços e frota",
+      "Estrutura e segurança operacional",
+      "Canais de contato e solicitação de voos",
+      "Experiência responsiva",
+    ],
+    tech: ["React.js", "Next.js", "Responsive Web Design", "Web Design"],
+    image: "/images/projects/direcao.webp",
+    cover: "/images/projects/covers/direcao.webp",
+    year: "2026",
+    category: "web",
+    output: [
+      "credibilidade da marca reforçada",
+      "solicitação de voos facilitada",
+    ],
+  },
+  {
+    id: "wesleymods",
+    title: "Wesley Mods",
+    description:
+      "Loja virtual personalizada com dashboard e painel de membro para o cliente acessar as keys que comprou.",
+    overview:
+      "Site de venda de produtos digitais para jogos, com dashboards e painel de membro onde o cliente acessa as keys compradas.",
+    problem:
+      "A venda dependia de entrega manual das chaves, sem uma área onde o cliente pudesse consultar o que comprou.",
+    approach:
+      "Loja em WordPress/WooCommerce com painel de membro e dashboards, automatizando o acesso do cliente às chaves adquiridas.",
+    features: [
+      "Loja virtual personalizada",
+      "Painel de membro com as keys compradas",
+      "Dashboards de acompanhamento",
+      "Layout responsivo",
+    ],
+    tech: ["WordPress", "PHP", "WooCommerce", "JavaScript"],
+    image: "/images/projects/wesleymods.webp",
+    cover: "/images/projects/covers/wesleymods.webp",
+    url: "https://wesleymodstore.com/",
+    year: "2025",
+    category: "ecommerce",
+    output: [
+      "entrega das chaves automatizada",
+      "área do cliente self-service",
+    ],
+  },
+  {
+    id: "kdelojab",
+    title: "KDElojob",
+    description:
+      "Site de elojob para Valorant desenvolvido sob medida para um streamer do TikTok, conforme o pedido do cliente.",
+    overview:
+      "Site de elojob para o jogo Valorant, desenvolvido sob medida para um streamer do TikTok de acordo com o pedido do cliente.",
+    problem:
+      "O streamer precisava de um site próprio para oferecer o serviço à audiência, em vez de negociar cada pedido manualmente.",
+    approach:
+      "Site institucional e comercial construído conforme a especificação do cliente, com apresentação do serviço e canal de contratação.",
+    features: [
+      "Apresentação comercial do serviço",
+      "Fluxo de contratação",
+      "Layout responsivo",
+    ],
+    tech: ["PHP", "JavaScript", "React.js", "CSS"],
+    image: "/images/projects/kdelojab.webp",
+    cover: "/images/projects/covers/kdelojab.webp",
+    url: "https://kdelojob.com",
+    year: "2025",
+    category: "web",
+    output: [
+      "canal próprio de vendas para a audiência",
     ],
   },
 ];
