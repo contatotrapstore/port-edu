@@ -8,8 +8,8 @@ import { categoryLabel } from "@/lib/i18n";
 import { LocaleProvider } from "@/lib/locale";
 import CaseStudyContent from "@/components/CaseStudyContent";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
+import { siteUrl } from "@/lib/site";
 
-const siteUrl = "https://edevshub.com";
 const { projects } = getContent("en");
 
 // Only projects with real case-study content get a page; others (e.g. Click) 404.

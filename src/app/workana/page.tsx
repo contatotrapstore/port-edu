@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
 import { projects, testimonials, workanaStats } from "@/lib/constants";
 import TerminalHeader from "@/components/TerminalHeader";
 import WorkanaCtaButton from "@/components/workana/WorkanaCtaButton";
+import WorkanaLink from "@/components/workana/WorkanaLink";
 
 /**
- * Landing de conversão para o link enviado em propostas Workana.
- * Sem boot screen, sem scroll-jack, sem canvas 3D — server component estático
- * que carrega instantâneo e responde à única pergunta do cliente:
- * "esse cara resolve o meu problema e dá pra confiar?"
+ * ZONA WORKANA — página de credenciais anexada/enviada dentro da plataforma.
+ *
+ * REGRA INEGOCIÁVEL: esta página é um beco sem saída. Zero canal de contato
+ * (WhatsApp, e-mail, telefone, formulário, redes) e zero link interno — nem
+ * para a home, nem para os cases. A política da Workana lista "página na
+ * internet" como dado de contato proibido em proposta, e a escala é de dois
+ * degraus: alerta + suspensão de propostas, depois encerramento incontestável.
+ *
+ * O canal direto vive SÓ em /contratar e /solucoes/*. `scripts/check-workana-
+ * isolation.mjs` roda no build e quebra o deploy se algo vazar para cá.
  */
 
 export const metadata: Metadata = {
@@ -17,15 +23,30 @@ export const metadata: Metadata = {
   description:
     "176 projetos entregues · 4.74/5 em 179 avaliações · nível HERO na Workana. Cases, avaliações e como funciona trabalhar comigo.",
   robots: { index: false, follow: false },
+  // Canonical própria e sem hreflang: o layout raiz injetaria links absolutos
+  // para o domínio, e esta página não aponta para lugar nenhum.
+  alternates: { canonical: "/workana", languages: {} },
 };
 
-// Cases com resultado afirmável — dados existentes em constants.ts, curados aqui.
+// Cases com resultado afirmável — dados de constants.ts, curados aqui.
 const featuredCases: Array<{ id: string; tagline: string; result: string }> = [
   {
     id: "clinafy",
     tagline:
       "Prontuário eletrônico com IA, agenda inteligente, teleconsulta e financeiro para saúde mental — tudo em um só sistema.",
     result: "+500 profissionais ativos · +50.000 consultas · 4.9/5",
+  },
+  {
+    id: "mudapaisagens",
+    tagline:
+      "Atendimento comercial com IA no WhatsApp: qualificação por perguntas estruturadas e registro automático no Pipefy via Make.",
+    result: "pré-atendimento sem intervenção manual · leads registrados no CRM",
+  },
+  {
+    id: "passagenseuropa",
+    tagline:
+      "CRM sob medida: leads, funil, atendimento, cotações, financeiro e comissões numa plataforma só, com IA de apoio.",
+    result: "operação comercial centralizada",
   },
   {
     id: "neuroialab",
@@ -42,13 +63,27 @@ const featuredCases: Array<{ id: string; tagline: string; result: string }> = [
 ];
 
 // Avaliações mais fortes/específicas das 10 verbatim — aqui o campo `project` aparece.
-const featuredReviewAuthors = ["Fernando Esteves", "Useconvoo", "José Ricardo Silva de Sousa"];
+const featuredReviewAuthors = [
+  "Fernando Esteves",
+  "Useconvoo",
+  "Arthur Versolato",
+  "José Ricardo Silva de Sousa",
+  "Leonardo Flores",
+];
 
 const processSteps: Array<{ n: string; title: string; desc: string }> = [
-  { n: "01", title: "Briefing", desc: "respondo em até 2h úteis com as perguntas certas sobre o seu projeto" },
+  { n: "01", title: "Briefing", desc: "respondo no mesmo dia útil com as perguntas certas sobre o seu projeto" },
   { n: "02", title: "Proposta fechada", desc: "escopo, prazo e marcos definidos direto na Workana" },
   { n: "03", title: "Desenvolvimento", desc: "updates constantes — você acompanha cada entrega" },
   { n: "04", title: "Entrega + suporte", desc: "documentação, ajustes e código que escala" },
+];
+
+// Como o escopo é fechado — o que protege os dois lados numa disputa.
+const scopeRules: string[] = [
+  "escopo, entregáveis, prazo e critério de aceite escritos aqui no chat antes do depósito em garantia",
+  "marcos com liberação parcial: você libera conforme recebe, não tudo no fim",
+  "resumo de toda conversa postado no chat no mesmo dia — nada fica só no verbal",
+  "mudança de escopo vira extensão formal com prazo e valor, nunca ajuste silencioso",
 ];
 
 export default function WorkanaLandingPage() {
@@ -64,12 +99,12 @@ export default function WorkanaLandingPage() {
       {/* Backdrop estático (zero JS, zero vídeo) — só a textura de grid */}
       <div
         aria-hidden
-        className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center mix-blend-screen opacity-20"
+        className="wk-backdrop fixed inset-0 z-0 pointer-events-none bg-cover bg-center mix-blend-screen opacity-20"
         style={{ backgroundImage: "url(/textures/hero-grid.webp)" }}
       />
 
       {/* html/body são overflow:hidden no desktop — mesmo shell das páginas de case */}
-      <main className="fixed inset-0 z-10 overflow-y-auto scrollbar-none">
+      <main className="wk-main fixed inset-0 z-10 overflow-y-auto scrollbar-none">
         <div className="mx-auto max-w-3xl min-h-full px-5 md:px-8 py-10 md:py-14">
           {/* Eyebrow terminal */}
           <p className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]">
@@ -98,7 +133,7 @@ export default function WorkanaLandingPage() {
                     <span className="text-white/40"> · {workanaStats.clientReviews} avaliações verificadas</span>
                   </p>
                 </div>
-                <div className="shrink-0">
+                <div className="wk-cta shrink-0">
                   <WorkanaCtaButton location="workana_lp_top" label="CONTRATAR VIA WORKANA" />
                 </div>
               </div>
@@ -113,7 +148,7 @@ export default function WorkanaLandingPage() {
                 { v: String(workanaStats.projectsCompleted), l: "projetos entregues" },
                 { v: String(workanaStats.recurringClients), l: "clientes recontrataram" },
                 { v: `${workanaStats.rating}/5`, l: `${workanaStats.clientReviews} avaliações` },
-                { v: `Top ${workanaStats.overallRank}`, l: "geral entre 14,78M" },
+                { v: `Top ${workanaStats.overallRank}`, l: `geral entre ${workanaStats.totalProfessionals}` },
                 { v: `Top ${workanaStats.peakRankITBrazil} BR · ${workanaStats.peakRankITGlobal} Global`, l: "pico em TI e Programação" },
                 { v: workanaStats.level, l: `desde ${workanaStats.memberSince}` },
               ].map((s) => (
@@ -125,16 +160,15 @@ export default function WorkanaLandingPage() {
             </div>
           </div>
 
-          {/* 3. Cases com resultado */}
+          {/* 3. Cases com resultado — cards SEM link (beco sem saída) */}
           <p className="mt-10 mb-4 text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40">
             // cases com resultado
           </p>
           <div className="space-y-3">
             {cases.map(({ id, tagline, result, project }) => (
-              <Link
+              <div
                 key={id}
-                href={`/projetos/${id}`}
-                className="group flex flex-col sm:flex-row gap-4 terminal-window p-4 md:p-5 hover:border-white/20 transition-colors"
+                className="flex flex-col sm:flex-row gap-4 terminal-window p-4 md:p-5"
               >
                 <span className="relative h-28 sm:h-20 sm:w-32 shrink-0 overflow-hidden rounded border border-white/[0.08]">
                   <Image
@@ -142,11 +176,11 @@ export default function WorkanaLandingPage() {
                     alt=""
                     fill
                     sizes="(max-width: 640px) 92vw, 128px"
-                    className="object-cover object-center opacity-80 group-hover:opacity-100 transition-opacity"
+                    className="object-cover object-center opacity-85"
                   />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-display font-bold text-white text-sm group-hover:text-[#4ade80] transition-colors">
+                  <span className="block font-display font-bold text-white text-sm">
                     {project!.title}
                   </span>
                   <span className="block text-[11px] text-white/50 mt-1 leading-relaxed">{tagline}</span>
@@ -154,10 +188,7 @@ export default function WorkanaLandingPage() {
                     → {result}
                   </span>
                 </span>
-                <span className="hidden sm:flex items-center text-white/25 group-hover:text-white/60 group-hover:translate-x-1 transition-all">
-                  →
-                </span>
-              </Link>
+              </div>
             ))}
           </div>
 
@@ -189,15 +220,13 @@ export default function WorkanaLandingPage() {
               </div>
             ))}
           </div>
-          <div className="mt-4 text-center">
-            <a
-              href={workanaStats.workanaProfileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+          <div className="wk-cta mt-4 text-center">
+            <WorkanaLink
+              location="workana_lp_reviews"
               className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 hover:text-[#fbbf24] transition-colors"
             >
               ver todas as {workanaStats.clientReviews} avaliações →
-            </a>
+            </WorkanaLink>
           </div>
 
           {/* 5. Como funciona */}
@@ -218,23 +247,33 @@ export default function WorkanaLandingPage() {
             </div>
           </div>
 
-          {/* 6. CTA final */}
-          <div className="mt-10 text-center">
+          {/* 6. Como fechamos — o que protege os dois lados */}
+          <div className="mt-4 terminal-window">
+            <TerminalHeader title="escopo.md — como fechamos" />
+            <div className="p-5 md:p-6">
+              <ul className="space-y-2.5">
+                {scopeRules.map((r) => (
+                  <li key={r} className="flex items-start gap-2 text-[12px] leading-relaxed text-white/60">
+                    <span className="text-[#4ade80] shrink-0">▹</span>
+                    <span>{r}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* 7. CTA final */}
+          <div className="wk-cta mt-10 text-center">
             <WorkanaCtaButton
               location="workana_lp_bottom"
               label="CONTRATAR VIA WORKANA"
-              sub="resposta em até 2h úteis · pagamento protegido pela Workana"
+              sub="resposta no mesmo dia útil · pagamento protegido pela Workana"
             />
           </div>
 
-          {/* 7. Rodapé */}
-          <div className="mt-12 pb-4 text-center">
-            <Link
-              href="/"
-              className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/40 hover:text-white transition-colors"
-            >
-              ver portfólio completo →
-            </Link>
+          <div className="mt-12 pb-4 text-center text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/25">
+            Eduardo Gouveia · {workanaStats.projectsCompleted} projetos entregues na Workana ·{" "}
+            {workanaStats.rating}/5 em {workanaStats.clientReviews} avaliações · nível {workanaStats.level}
           </div>
         </div>
       </main>

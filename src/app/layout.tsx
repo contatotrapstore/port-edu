@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+import { siteUrl } from "@/lib/site";
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0a",
@@ -25,8 +26,6 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "700"],
 });
-
-const siteUrl = "https://edevshub.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -87,6 +86,7 @@ export const metadata: Metadata = {
     languages: {
       "pt-BR": "/",
       en: "/en",
+      "x-default": "/",
     },
   },
 };
@@ -136,14 +136,7 @@ const structuredData = {
       image: `${siteUrl}/og-cover.jpg`,
       provider: { "@id": `${siteUrl}/#person` },
       areaServed: "Global",
-      priceRange: "$$",
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.74",
-        reviewCount: "179",
-        bestRating: "5",
-        worstRating: "1",
-      },
+      priceRange: "$",
     },
   ],
 };

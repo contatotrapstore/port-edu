@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
 import { chapters, projectColors, workanaStats } from "@/lib/constants";
 import type { Project } from "@/lib/constants";
@@ -11,6 +12,7 @@ import SectionNext from "@/components/home/SectionNext";
 import { useLocale } from "@/lib/locale";
 import { t, categoryLabel } from "@/lib/i18n";
 import { getContent } from "@/lib/content.en";
+import WorkanaLink from "@/components/workana/WorkanaLink";
 
 const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
 
@@ -40,18 +42,12 @@ export default function ProjectsSection({
           <h2 className="font-display text-2xl md:text-4xl font-bold text-white">
             {t(locale, "projects.title")}<span className="text-white/20">.</span>
           </h2>
-          <a
-            href={workanaStats.workanaProfileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => track("workana_cta", { location: "projects_all" })}
-            className="font-[family-name:var(--font-jetbrains-mono)] text-[11px] text-white/50 hover:text-[#4ade80] transition-colors pb-1"
-          >
+          <WorkanaLink location="projects_all" className={"font-[family-name:var(--font-jetbrains-mono)] text-[11px] text-white/50 hover:text-[#4ade80] transition-colors pb-1"}>
             {t(locale, "projects.allLink", {
               count: allProjects.length,
               total: workanaStats.projectsCompleted,
             })}
-          </a>
+          </WorkanaLink>
         </div>
         <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
 
@@ -61,10 +57,16 @@ export default function ProjectsSection({
           <ul className="flex flex-col">
             {projects.map((p, i) => (
               <li key={p.id}>
-                <button
+                <Link
+                  href={p.overview ? `/projetos/${p.id}` : "#projects"}
                   onMouseEnter={() => setCarouselIdx(i)}
                   onFocus={() => setCarouselIdx(i)}
-                  onClick={() => (p.overview ? openCase(p) : setCarouselIdx(i))}
+                  onClick={(e) => {
+                    // O href existe para o crawler e para abrir em nova aba;
+                    // o clique normal continua abrindo o modal, como antes.
+                    e.preventDefault();
+                    if (p.overview) openCase(p); else setCarouselIdx(i);
+                  }}
                   aria-current={carouselIdx === i}
                   className={`group w-full flex items-baseline gap-4 py-3 border-b text-left transition-colors ${
                     carouselIdx === i ? "border-white/25" : "border-white/[0.06] hover:border-white/15"
@@ -94,7 +96,7 @@ export default function ProjectsSection({
                   >
                     {categoryLabel(locale, p.category)}
                   </span>
-                </button>
+                </Link>
               </li>
             ))}
           </ul>
@@ -278,9 +280,10 @@ export default function ProjectsSection({
             <ul className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {archive.map((p) => (
                 <li key={p.id}>
-                  <button
-                    onClick={() => openCase(p)}
-                    className="group w-full text-left terminal-window overflow-hidden hover:border-white/20 transition-colors"
+                  <Link
+                    href={`/projetos/${p.id}`}
+                    onClick={(e) => { e.preventDefault(); openCase(p); }}
+                    className="group block w-full text-left terminal-window overflow-hidden hover:border-white/20 transition-colors"
                   >
                     <div className="relative aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
                       <img
@@ -320,7 +323,7 @@ export default function ProjectsSection({
                         ))}
                       </div>
                     </div>
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>

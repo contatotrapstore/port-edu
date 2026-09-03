@@ -21,6 +21,10 @@ export interface Project {
   year?: string;
   /** Destaque na lista editorial da home; os demais entram na grade de arquivo. */
   featured?: boolean;
+  /** O que o sistema faz, em ≤60 chars — vai no <title> e nos cards (SEO). */
+  headline?: string;
+  /** Agrupamento do índice /projetos. */
+  vertical?: "automacao-ia" | "sistemas" | "saude" | "apps" | "web";
 }
 
 export interface Skill {
@@ -40,6 +44,8 @@ export interface SiteConfig {
     github: string;
     linkedin: string;
     email: string;
+    /** E.164 sem símbolos, ex.: 5511999999999. Vazio = a /contratar esconde o botão. */
+    whatsapp: string;
   };
 }
 
@@ -52,6 +58,7 @@ export const siteConfig: SiteConfig = {
     github: "https://github.com/GouveiaZx",
     linkedin: "",
     email: "",
+    whatsapp: "",
   },
 };
 
@@ -185,9 +192,74 @@ export const testimonials = [
   },
 ];
 
+/**
+ * Ofertas produtizadas.
+ *
+ * Preços são FAIXAS a confirmar com dados reais (horas gastas em Muda
+ * Paisagens e Passagens Europa; maior contrato já fechado). Enquanto
+ * `priceConfirmed` for false, a /contratar não renderiza a âncora de preço —
+ * publicar número que a prova não sustenta é pior do que não publicar.
+ */
+export const pricingConfirmed = false;
+
+export const offers = [
+  {
+    id: "automacao-ia",
+    name: "Atendimento e qualificação com IA",
+    promise:
+      "Seu WhatsApp responde, qualifica e registra o lead no CRM que você já usa — sem depender de alguém online.",
+    scope: [
+      "Integração pela API oficial (Cloud API da Meta ou Evolution API)",
+      "Agente de IA com a base de conhecimento do seu negócio",
+      "Qualificação por perguntas estruturadas e handoff para humano",
+      "Registro automático no CRM (Pipefy, RD, HubSpot ou planilha)",
+      "Painel de acompanhamento das conversas",
+    ],
+    notFor:
+      "quem cabe numa plataforma pronta de R$ 300–900/mês e não precisa integrar com sistema próprio",
+    range: "a partir de R$ 12 mil",
+    term: "2 a 4 semanas",
+    cases: ["mudapaisagens", "passagenseuropa"],
+  },
+  {
+    id: "integracoes",
+    name: "Integração e painel sob medida",
+    promise:
+      "Os sistemas que você já usa passam a conversar entre si, com um painel que mostra a operação inteira num lugar só.",
+    scope: [
+      "Integração entre ERP, CRM, marketplace, agenda, pagamento e fiscal",
+      "Painel com as métricas e os controles que a operação precisa",
+      "Regras de negócio, permissões e perfis de acesso",
+      "Importação e exportação de dados, relatórios e documentos",
+    ],
+    notFor: "quem precisa de site institucional, landing page ou loja de prateleira",
+    range: "a partir de R$ 6 mil",
+    term: "2 a 6 semanas",
+    cases: ["rei", "clubeazul", "blackinbot"],
+  },
+  {
+    id: "saas-mvp",
+    name: "MVP de SaaS com escopo congelado",
+    promise:
+      "Da ideia validada ao produto no ar, com escopo fechado por escrito antes de começar — sem surpresa de prazo nem de preço.",
+    scope: [
+      "Discovery de 3 dias com escopo congelado por escrito",
+      "Autenticação, multi-tenant e painel",
+      "Fluxo principal do produto e pagamento (Pix ou cartão)",
+      "Deploy, documentação e vídeo de handover",
+    ],
+    notFor: "quem ainda está validando a ideia e não tem o problema definido",
+    range: "a partir de R$ 28 mil",
+    term: "6 semanas para a fase 1",
+    cases: ["blackinbot", "focus", "clinafy"],
+  },
+] as const;
+
 export const projects: Project[] = [
   {
     id: "pace",
+    headline: "neurofeedback com EEG e gestão de consultório",
+    vertical: "saude",
     featured: true,
     title: "PACE",
     description:
@@ -221,6 +293,8 @@ export const projects: Project[] = [
   },
   {
     id: "revix",
+    headline: "rede social automotiva com mapa de eventos",
+    vertical: "apps",
     featured: true,
     title: "Revix",
     description:
@@ -252,6 +326,8 @@ export const projects: Project[] = [
   },
   {
     id: "neuroialab",
+    headline: "SaaS de saúde mental com 19 assistentes de IA",
+    vertical: "saude",
     featured: true,
     title: "NeuroIA Lab",
     description:
@@ -285,6 +361,8 @@ export const projects: Project[] = [
   },
   {
     id: "anamex",
+    headline: "leitura de ECG e análise de imagens clínicas com IA",
+    vertical: "saude",
     featured: true,
     title: "AnamNex",
     description:
@@ -317,6 +395,8 @@ export const projects: Project[] = [
   },
   {
     id: "connote",
+    headline: "app desktop de produtividade com IA",
+    vertical: "automacao-ia",
     featured: true,
     title: "ConNote",
     description:
@@ -348,6 +428,8 @@ export const projects: Project[] = [
   },
   {
     id: "clinafy",
+    headline: "prontuário, agenda e teleconsulta com IA",
+    vertical: "saude",
     featured: true,
     title: "Clinafy",
     description:
@@ -380,6 +462,8 @@ export const projects: Project[] = [
   },
   {
     id: "cacaostore",
+    headline: "loja Shopify sob medida e responsiva",
+    vertical: "web",
     featured: true,
     title: "Cacao Store",
     description:
@@ -411,6 +495,8 @@ export const projects: Project[] = [
   {
     // Projeto interno (não público) — sem case/página, fica por último.
     id: "click",
+    headline: "dashboard mobile com notificações em tempo real",
+    vertical: "sistemas",
     featured: true,
     title: "Click",
     description:
@@ -432,6 +518,8 @@ export const projects: Project[] = [
   // ---- Portfólio completo (Workana) — mockups e descrições do perfil ----
   {
     id: "blackinbot",
+    headline: "SaaS de bots de monetização no Telegram",
+    vertical: "sistemas",
     title: "BlackinBot",
     description:
       "SaaS completo para criar, automatizar e gerir bots de monetização no Telegram: venda de acesso a grupos VIP com pagamento integrado e controle de assinaturas.",
@@ -463,6 +551,8 @@ export const projects: Project[] = [
   },
   {
     id: "clubeazul",
+    headline: "SaaS de clube de benefícios e comissões",
+    vertical: "sistemas",
     title: "Clube Azul",
     description:
       "SaaS de gestão para clube de benefícios: estipulantes, contratos, planos, comissões e cobranças automatizadas — substituindo sistemas legados.",
@@ -494,6 +584,8 @@ export const projects: Project[] = [
   },
   {
     id: "corpxbank",
+    headline: "app bancário mobile nas duas lojas",
+    vertical: "apps",
     title: "CorpxBank",
     description:
       "App bancário mobile (iOS e Android) que encapsula a plataforma de internet banking em experiência nativa, com leitura de QR Code e boletos pela câmera.",
@@ -525,6 +617,8 @@ export const projects: Project[] = [
   },
   {
     id: "rei",
+    headline: "gestão de obras telecom com etapas e SLAs",
+    vertical: "sistemas",
     title: "Rei",
     description:
       "Sistema de gestão de obras civis de infraestrutura telecom: etapas, tarefas, responsáveis, SLAs e dependências num painel único.",
@@ -554,6 +648,8 @@ export const projects: Project[] = [
   },
   {
     id: "passagenseuropa",
+    headline: "CRM sob medida com atendimento e IA",
+    vertical: "automacao-ia",
     title: "Passagens Europa",
     description:
       "CRM sob medida que centraliza a operação comercial: leads, funil, WhatsApp, cotações, financeiro, comissões e automações com apoio de IA.",
@@ -584,6 +680,8 @@ export const projects: Project[] = [
   },
   {
     id: "ciliosclick",
+    headline: "plataforma com IA e agenda para cílios",
+    vertical: "automacao-ia",
     title: "Cilios Click",
     description:
       "Plataforma com IA para profissionais de extensão de cílios: simulação visual, agenda, anamnese digital e gestão administrativa num só lugar.",
@@ -612,6 +710,8 @@ export const projects: Project[] = [
   },
   {
     id: "neuroone",
+    headline: "neurofeedback web com jogos 3D via EEG",
+    vertical: "saude",
     title: "NeuroOne",
     description:
       "Plataforma web de neurofeedback com jogos 3D (Three.js) controlados por EEG, com módulos para empresas, escolas e clínicas.",
@@ -644,6 +744,8 @@ export const projects: Project[] = [
   },
   {
     id: "focus",
+    headline: "plataforma de metas com progresso e agenda",
+    vertical: "sistemas",
     title: "Focus",
     description:
       "Plataforma web de produtividade que transforma metas em rotina: organização por áreas, tipos de medição e agenda integrada.",
@@ -672,6 +774,8 @@ export const projects: Project[] = [
   },
   {
     id: "woodsuperfoods",
+    headline: "e-commerce de superalimentos e bem-estar",
+    vertical: "web",
     title: "Wood Superfoods",
     description:
       "E-commerce de superalimentos e bem-estar: jornada de compra simples e responsiva conectando produto, propósito e conteúdo.",
@@ -701,6 +805,8 @@ export const projects: Project[] = [
   },
   {
     id: "mudapaisagens",
+    headline: "atendimento com IA no WhatsApp e Pipefy",
+    vertical: "automacao-ia",
     title: "Muda Paisagens",
     description:
       "Automação de pré-atendimento comercial com IA no WhatsApp: responde leads, qualifica por perguntas estruturadas e registra tudo no Pipefy.",
@@ -729,6 +835,8 @@ export const projects: Project[] = [
   },
   {
     id: "paylink",
+    headline: "site institucional para fintech de pagamentos",
+    vertical: "web",
     title: "PayLink",
     description:
       "Site institucional para fintech de pagamentos remotos e cobranças online, comunicando os diferenciais da solução ao mercado.",
@@ -755,6 +863,8 @@ export const projects: Project[] = [
   },
   {
     id: "tap",
+    headline: "site institucional de táxi aéreo executivo",
+    vertical: "web",
     title: "Tap Aviation",
     description:
       "Site institucional de táxi aéreo executivo: aeronaves, serviços, estrutura e canais de contato em navegação moderna e responsiva.",
@@ -781,6 +891,8 @@ export const projects: Project[] = [
   },
   {
     id: "direcao",
+    headline: "redesign de site de táxi aéreo",
+    vertical: "web",
     title: "Direção Táxi Aéreo",
     description:
       "Redesign do site institucional de táxi aéreo: frota, segurança operacional e solicitação de voos numa experiência mais moderna.",
@@ -808,6 +920,8 @@ export const projects: Project[] = [
   },
   {
     id: "wesleymods",
+    headline: "loja virtual com painel de membro",
+    vertical: "web",
     title: "Wesley Mods",
     description:
       "Loja virtual personalizada com dashboard e painel de membro para o cliente acessar as keys que comprou.",
@@ -836,6 +950,8 @@ export const projects: Project[] = [
   },
   {
     id: "kdelojab",
+    headline: "site de elojob para Valorant sob medida",
+    vertical: "web",
     title: "KDElojob",
     description:
       "Site de elojob para Valorant desenvolvido sob medida para um streamer do TikTok, conforme o pedido do cliente.",

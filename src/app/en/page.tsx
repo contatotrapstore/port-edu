@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import HomePage from "@/components/HomePage";
-
-const siteUrl = "https://edevshub.com";
+import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "EDevsHub | Eduardo Gouveia — Senior Full Stack · Workana HERO",

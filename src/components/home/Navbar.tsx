@@ -9,6 +9,7 @@ import { chapters, workanaStats } from "@/lib/constants";
 import { track } from "@vercel/analytics";
 import { useLocale } from "@/lib/locale";
 import { t, chaptersLabels } from "@/lib/i18n";
+import WorkanaLink from "@/components/workana/WorkanaLink";
 
 /** PT | EN switch — links to the same pathname with/without the /en prefix. */
 function LocaleToggle({ className = "" }: { className?: string }) {
@@ -90,29 +91,17 @@ export default function Navbar({
         {/* Persistent hire CTA + locale toggle */}
         <div className="hidden md:flex items-center gap-2 ml-4">
           <LocaleToggle />
-          <a
-            href={workanaStats.workanaProfileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => track("workana_cta", { location: "navbar" })}
-            className="inline-flex items-center gap-1.5 h-8 px-4 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1.5px] hover:bg-[#fcd34d] transition-colors shrink-0"
-          >
+          <WorkanaLink location="navbar" className={"inline-flex items-center gap-1.5 h-8 px-4 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1.5px] hover:bg-[#fcd34d] transition-colors shrink-0"}>
             ★ {t(locale, "nav.hire")}
-          </a>
+          </WorkanaLink>
         </div>
 
         {/* Mobile: locale toggle + compact CTA + hamburger */}
         <div className="md:hidden flex items-center gap-2">
           <LocaleToggle />
-          <a
-            href={workanaStats.workanaProfileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => track("workana_cta", { location: "navbar" })}
-            className="inline-flex items-center h-8 px-3 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1px]"
-          >
+          <WorkanaLink location="navbar_mobile" className={"inline-flex items-center h-8 px-3 rounded-md bg-[#fbbf24] text-black text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold uppercase tracking-[1px]"}>
             {t(locale, "nav.hire")}
-          </a>
+          </WorkanaLink>
         <button
           className="flex flex-col gap-1.5 p-2"
           onClick={() => setMenuOpen(!menuOpen)}

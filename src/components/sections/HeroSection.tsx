@@ -9,6 +9,7 @@ import { BrazilFlag } from "@/components/home/icons";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
 import { getContent } from "@/lib/content.en";
+import WorkanaLink from "@/components/workana/WorkanaLink";
 
 const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
 
@@ -143,17 +144,11 @@ export default function HeroSection({
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 10 }}
           transition={{ duration: 0.6, delay: 0.55 }}
         >
-          <a
-            href={workanaStats.workanaProfileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => track("workana_cta", { location: "hero" })}
-            className="group relative h-11 text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-6 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-all cursor-pointer shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] flex items-center justify-center gap-2"
-          >
+          <WorkanaLink location="hero" className={"group relative h-11 text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-6 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-all cursor-pointer shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_30px_rgba(251,191,36,0.5)] flex items-center justify-center gap-2"}>
             <span className="text-[10px]">★</span>
             {t(locale, "hero.hireCta")}
             <span className="group-hover:translate-x-1 transition-transform">→</span>
-          </a>
+          </WorkanaLink>
           <button
             onClick={() => onChapterClick(1)}
             className="h-11 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] px-5 rounded-lg border border-[#4ade80]/20 bg-[#4ade80]/[0.05] hover:bg-[#4ade80]/10 hover:border-[#4ade80]/40 transition-all cursor-pointer flex items-center justify-center"

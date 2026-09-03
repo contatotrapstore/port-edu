@@ -315,3 +315,42 @@ html.webgl-failed body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   PDF de credenciais — /workana impressa como anexo de proposta.
+   Sem isto o Chrome imprime só a primeira tela: o shell usa
+   `position: fixed` + `overflow: hidden`, que o motor de impressão não rola.
+   Marque "Salvar como PDF" e DESMARQUE "Cabeçalhos e rodapés" (a URL não pode
+   aparecer no anexo).
+   ========================================================================== */
+@media print {
+  html,
+  body {
+    overflow: visible !important;
+    height: auto !important;
+    background: #0a0a0a !important;
+  }
+
+  .wk-main {
+    position: static !important;
+    overflow: visible !important;
+    inset: auto !important;
+  }
+
+  /* Backdrop e CTAs não vão para o papel */
+  .wk-backdrop,
+  .wk-cta {
+    display: none !important;
+  }
+
+  /* O tema é claro-sobre-escuro: sem isto o Chrome descarta os fundos */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .terminal-window {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

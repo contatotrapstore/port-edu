@@ -4,9 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { projects, projectColors, siteConfig } from "@/lib/constants";
 import CaseStudyContent from "@/components/CaseStudyContent";
+import CaseHeader from "@/components/CaseHeader";
+import AuthorCard from "@/components/AuthorCard";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
-
-const siteUrl = "https://edevshub.com";
+import { siteUrl } from "@/lib/site";
 
 // Only projects with real case-study content get a page; others (e.g. Click) 404.
 export const dynamicParams = false;
@@ -23,10 +24,10 @@ export async function generateMetadata({
   const { id } = await params;
   const p = projects.find((x) => x.id === id);
   if (!p) return {};
-  const description = p.overview || p.description;
+  const description = (p.overview || p.description).slice(0, 155);
   const url = `${siteUrl}/projetos/${p.id}`;
   return {
-    title: `${p.title} — Case | Eduardo Gouveia`,
+    title: p.headline ? `${p.title} — ${p.headline}` : `${p.title} — Case | Eduardo Gouveia`,
     description,
     alternates: {
       canonical: url,
@@ -38,7 +39,7 @@ export async function generateMetadata({
     openGraph: {
       type: "article",
       url,
-      title: `${p.title} — Case · Eduardo Gouveia`,
+      title: p.headline ? `${p.title} — ${p.headline}` : `${p.title} — Case · Eduardo Gouveia`,
       description,
       images: [{ url: p.image, width: 1280, height: 800, alt: p.title }],
     },
@@ -72,7 +73,7 @@ export default async function ProjectPage({
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Início", item: siteUrl },
-          { "@type": "ListItem", position: 2, name: "Projetos", item: `${siteUrl}/#projects` },
+          { "@type": "ListItem", position: 2, name: "Projetos", item: `${siteUrl}/projetos` },
           {
             "@type": "ListItem",
             position: 3,
@@ -93,7 +94,9 @@ export default async function ProjectPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="fixed inset-0 z-10 overflow-y-auto scrollbar-none">
+      <CaseHeader source={`case_${project.id}`} />
+
+      <main className="fixed inset-0 top-14 z-10 overflow-y-auto scrollbar-none">
         <div className="mx-auto max-w-3xl min-h-full px-5 md:px-8 py-10 md:py-16">
           <nav
             aria-label="Breadcrumb"
@@ -103,7 +106,7 @@ export default async function ProjectPage({
               início
             </Link>
             <span aria-hidden className="text-white/25">/</span>
-            <Link href="/#projects" className="hover:text-white transition-colors">
+            <Link href="/projetos" className="hover:text-white transition-colors">
               projetos
             </Link>
             <span aria-hidden className="text-white/25">/</span>
@@ -145,6 +148,10 @@ export default async function ProjectPage({
 
           <div className="mt-8 rounded-xl border border-white/[0.06] bg-[#0a0a0a]/60 backdrop-blur-sm p-5 md:p-7">
             <CaseStudyContent project={project} />
+          </div>
+
+          <div className="mt-6">
+            <AuthorCard source={`case_${project.id}`} />
           </div>
 
           {/* Prev / next case — no dead ends */}

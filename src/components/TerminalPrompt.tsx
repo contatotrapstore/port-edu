@@ -5,6 +5,7 @@ import { workanaStats } from "@/lib/constants";
 import { track } from "@vercel/analytics";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
+import { getAttribution } from "@/lib/attribution";
 
 const HELP: Record<"pt" | "en", string[]> = {
   pt: [
@@ -63,6 +64,8 @@ export default function TerminalPrompt() {
       case "hire":
       case "contratar":
         out = en ? ["→ opening Workana..."] : ["→ abrindo Workana..."];
+        { const { src, ref } = getAttribution();
+          track("workana_cta", { location: "terminal_hire", ...(src ? { src } : ref ? { ref } : {}) }); }
         window.open(workanaStats.workanaProfileUrl, "_blank", "noopener,noreferrer");
         break;
       case "clear":

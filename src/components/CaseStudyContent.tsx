@@ -1,19 +1,20 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { projectColors, workanaStats, type Project } from "@/lib/constants";
+import { projectColors, type Project } from "@/lib/constants";
+import WorkanaLink from "@/components/workana/WorkanaLink";
 import CaseGallery from "@/components/CaseGallery";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
 
 function Label({ children, color }: { children: ReactNode; color: string }) {
   return (
-    <div
-      className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] mb-2"
+    <h2
+      className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] mb-2 font-normal"
       style={{ color }}
     >
       &gt; {children}:
-    </div>
+    </h2>
   );
 }
 
@@ -99,14 +100,9 @@ export default function CaseStudyContent({ project }: { project: Project }) {
             {t(locale, "case.viewLive")} <span aria-hidden>↗</span>
           </a>
         )}
-        <a
-          href={workanaStats.workanaProfileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-5 h-10 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-colors"
-        >
+        <WorkanaLink location={`case_${project.id}`} className={"inline-flex items-center gap-2 text-[12px] font-[family-name:var(--font-jetbrains-mono)] font-bold text-black px-5 h-10 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-colors"}>
           <span className="text-[10px]">★</span> {t(locale, "case.discuss")} <span aria-hidden>→</span>
-        </a>
+        </WorkanaLink>
       </div>
     </div>
   );

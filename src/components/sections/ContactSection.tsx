@@ -1,13 +1,13 @@
 "use client";
 
 import { siteConfig, chapters, workanaStats } from "@/lib/constants";
-import { track } from "@vercel/analytics";
 import TerminalHeader from "@/components/TerminalHeader";
 import TerminalPrompt from "@/components/TerminalPrompt";
 import Section from "@/components/home/Section";
 import { GithubIcon } from "@/components/home/icons";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
+import WorkanaLink from "@/components/workana/WorkanaLink";
 
 const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
 
@@ -61,17 +61,7 @@ export default function ContactSection({ progress }: { progress: number }) {
         </div>
 
         {/* CTA Principal Workana */}
-        <a
-          href={workanaStats.workanaProfileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => track("workana_cta", { location: "contact" })}
-          className="group block mb-5 terminal-window border-[#fbbf24]/30 hover:border-[#fbbf24]/60 transition-all cursor-pointer"
-          style={{
-            borderWidth: "1px",
-            boxShadow: "0 0 20px rgba(251, 191, 36, 0.08)",
-          }}
-        >
+        <WorkanaLink location="contact" className={"group block mb-5 terminal-window border-[#fbbf24]/30 hover:border-[#fbbf24]/60 transition-all cursor-pointer" + " border-[1px] shadow-[0_0_20px_rgba(251,191,36,0.08)]"}>
           <TerminalHeader tone="gold" title="hire.sh — executable" />
           <div className="p-5 md:p-6 flex items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
@@ -95,7 +85,7 @@ export default function ContactSection({ progress }: { progress: number }) {
               →
             </div>
           </div>
-        </a>
+        </WorkanaLink>
 
         {/* Terminal secondary links */}
         <div className="terminal-window">
@@ -122,17 +112,12 @@ export default function ContactSection({ progress }: { progress: number }) {
                 <span>github</span>
                 <span className="text-white/15">--profile</span>
               </a>
-              <a
-                href={workanaStats.workanaProfileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1 cursor-pointer"
-              >
+              <WorkanaLink location="contact_terminal" className={"flex items-center gap-2 text-white/40 hover:text-white transition-colors py-1 cursor-pointer"}>
                 <span className="text-[#4ade80]">$</span>
                 <span>open</span>
                 <span>workana</span>
                 <span className="text-white/15">--hire</span>
-              </a>
+              </WorkanaLink>
             </div>
 
             <div className="pt-2 border-t border-white/[0.06]">

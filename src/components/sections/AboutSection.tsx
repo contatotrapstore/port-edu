@@ -8,6 +8,7 @@ import SectionNext from "@/components/home/SectionNext";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
 import { getContent } from "@/lib/content.en";
+import WorkanaLink from "@/components/workana/WorkanaLink";
 
 const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
 
@@ -172,15 +173,13 @@ export default function AboutSection({
 
       {/* Link to all reviews */}
       <div className="mt-5 text-center">
-        <a
-          href={workanaStats.workanaProfileUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        <WorkanaLink
+          location="about_reviews"
           className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 hover:text-[#fbbf24] transition-colors inline-flex items-center gap-2"
         >
           {t(locale, "about.allReviews", { count: workanaStats.clientReviews })}
           <span>→</span>
-        </a>
+        </WorkanaLink>
       </div>
     <SectionNext index={2} onChapterClick={onChapterClick} />
     </Section>
