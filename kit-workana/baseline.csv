@@ -1,0 +1,11 @@
+metrica,valor,data_da_leitura,fonte
+propostas_enviadas_ultimos_90d,,,painel Workana
+propostas_lidas_ultimos_90d,,,painel Workana (Explorer mostra)
+propostas_respondidas_ultimos_90d,,,painel Workana
+contratos_criados_ultimos_90d,,,painel Workana
+valor_total_ultimos_90d,,,painel Workana
+visitas_ao_perfil_7d,,,painel Workana
+convites_recebidos_30d,,,painel Workana
+horas_trabalhadas_semana,,,autodeclarado
+plano_vercel,,,painel Vercel (Hobby nao grava custom events)
+eventos_custom_visiveis,,,Vercel > Analytics > Custom Events

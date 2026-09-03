@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Playwright MCP session artifacts
 .playwright-mcp/
+
+# Artefatos gerados fora do build
+eduardo-gouveia-credenciais.pdf
