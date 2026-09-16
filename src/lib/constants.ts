@@ -93,7 +93,7 @@ export const testimonials = [
   {
     text: "Tive o prazer de trabalhar com o Eduardo recentemente no desenvolvimento da Useconvoo e o impacto foi imediato. Ele demonstrou domínio total de infraestrutura e agilidade para resolver problemas complexos de sincronia de ambientes e performance. Um profissional extremamente assertivo, organizado e que cumpre prazos. Recomendo muito!",
     author: "Useconvoo",
-    project: "Sênior Fullstack — SaaS de Saneamento (Next.js 14 + Evolution API)",
+    project: "Sênior Fullstack · SaaS de Saneamento (Next.js 14 + Evolution API)",
     projectType: "SaaS",
     date: "Abr/2026",
     verified: true,
@@ -207,7 +207,7 @@ export const offers = [
     id: "automacao-ia",
     name: "Atendimento e qualificação com IA",
     promise:
-      "Seu WhatsApp responde, qualifica e registra o lead no CRM que você já usa — sem depender de alguém online.",
+      "Seu WhatsApp responde, qualifica e registra o lead no CRM que você já usa, sem depender de alguém online.",
     scope: [
       "Integração pela API oficial (Cloud API da Meta ou Evolution API)",
       "Agente de IA com a base de conhecimento do seu negócio",
@@ -216,16 +216,17 @@ export const offers = [
       "Painel de acompanhamento das conversas",
     ],
     notFor:
-      "quem cabe numa plataforma pronta de R$ 300–900/mês e não precisa integrar com sistema próprio",
+      "quem cabe numa plataforma pronta de R$ 300 a 900 por mês e não precisa integrar com sistema próprio",
     range: "a partir de R$ 12 mil",
     term: "2 a 4 semanas",
     cases: ["mudapaisagens", "passagenseuropa"],
   },
   {
     id: "integracoes",
-    name: "Integração e painel sob medida",
+    // "Sob medida" sozinho não é verificável: o nome diz o que acontece.
+    name: "Integração entre os sistemas que você já usa",
     promise:
-      "Os sistemas que você já usa passam a conversar entre si, com um painel que mostra a operação inteira num lugar só.",
+      "ERP, CRM, agenda e pagamento param de viver em abas separadas, e um painel só passa a mostrar a operação inteira.",
     scope: [
       "Integração entre ERP, CRM, marketplace, agenda, pagamento e fiscal",
       "Painel com as métricas e os controles que a operação precisa",
@@ -241,7 +242,7 @@ export const offers = [
     id: "saas-mvp",
     name: "MVP de SaaS com escopo congelado",
     promise:
-      "Da ideia validada ao produto no ar, com escopo fechado por escrito antes de começar — sem surpresa de prazo nem de preço.",
+      "Da ideia validada ao produto no ar, com escopo fechado por escrito antes de começar: sem surpresa de prazo nem de preço.",
     scope: [
       "Discovery de 3 dias com escopo congelado por escrito",
       "Autenticação, multi-tenant e painel",

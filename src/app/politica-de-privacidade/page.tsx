@@ -20,7 +20,7 @@ export default function PoliticaPage() {
   const contato = siteConfig.social.email || "pelo canal indicado na página de contratação";
 
   return (
-    <div className="min-h-screen">
+    <div data-scroll-page className="min-h-screen">
       <CaseHeader source="politica" />
       <main className="mx-auto max-w-3xl px-5 md:px-8 py-10 md:py-14">
         <h1 className="font-display text-3xl font-bold text-white tracking-tight">

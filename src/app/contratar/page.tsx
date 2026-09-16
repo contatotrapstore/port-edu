@@ -1,78 +1,110 @@
 import type { Metadata } from "next";
+import "./landing.css";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  offers,
-  pricingConfirmed,
-  projects,
-  testimonials,
-  workanaStats,
-} from "@/lib/constants";
+import { offers, projects, testimonials, workanaStats } from "@/lib/constants";
 import { siteUrl } from "@/lib/site";
-import TerminalHeader from "@/components/TerminalHeader";
-import CaseHeader from "@/components/CaseHeader";
+import LandingNav from "@/components/contratar/LandingNav";
 import DirectContact from "@/components/contact/DirectContact";
 
 /**
- * Página comercial — a ÚNICA com canal de contato direto (junto de /solucoes/*).
+ * Landing de conversão para tráfego pago (Google Ads e Meta Ads).
  *
- * Nunca é enviada dentro de uma proposta da Workana: é o destino de quem chega
- * por busca, LinkedIn, indicação ou (no futuro) anúncio. O fluxo permitido é de
- * fora para dentro — daqui o cliente pode ser convidado a fechar na Workana.
+ * É a ÚNICA superfície do site com canal de contato direto, junto de
+ * /solucoes/*. Nunca circula dentro de propostas da Workana — aquela zona é a
+ * /workana, e o script de build impede que as duas se misturem.
+ *
+ * Decisões de design: um acento só (verde = canal direto; o dourado continua
+ * sendo a cor da Workana no resto do site), motion contido porque Core Web
+ * Vitals viram Quality Score, e prova visual com os mockups reais dos cases.
  */
 
-const title = "Contratar desenvolvedor full stack sênior — SaaS, sistemas e automação com IA";
-
 export const metadata: Metadata = {
-  title,
+  title: "Desenvolvedor full stack sênior: sistemas sob medida e automação com IA",
   description:
-    `Desenvolvedor full stack sênior com ${workanaStats.projectsCompleted} projetos entregues e ${workanaStats.rating}/5 em ${workanaStats.clientReviews} avaliações. Automação com IA, integrações e painéis sob medida, SaaS e MVPs.`,
+    `Automação de atendimento com IA, integração entre os sistemas que você já usa e SaaS sob medida. Escopo fechado por escrito antes de começar. ${workanaStats.projectsCompleted} entregas, nota ${workanaStats.rating} em ${workanaStats.clientReviews} avaliações.`,
   alternates: { canonical: "/contratar" },
 };
 
-const faq: Array<{ q: string; a: string }> = [
+/** Sintomas que o comprador reconhece antes de saber o nome da solução. */
+const sintomas = [
+  {
+    t: "O lead chega às 22h e responde ninguém",
+    d: "No dia seguinte ele já falou com outro. Você só descobre quando olha o relatório do mês.",
+  },
+  {
+    t: "Dois sistemas guardam a mesma informação",
+    d: "E alguém passa a manhã reconciliando os dois na mão, todo dia, sem nunca terminar.",
+  },
+  {
+    t: "A regra do negócio mora na cabeça de uma pessoa",
+    d: "Quando ela tira férias, a operação trava. Quando ela sai, some junto.",
+  },
+];
+
+const faq = [
   {
     q: "Quanto custa?",
-    a: "Depende do escopo, mas trabalho com faixas conhecidas antes de começar: integração e painel a partir de R$ 6 mil, automação com IA integrada a partir de R$ 12 mil, MVP de SaaS a partir de R$ 28 mil. Na primeira conversa eu já digo em qual faixa o seu caso cai — e se não couber, eu falo na hora.",
+    a: "Integração e painel começam em R$ 6 mil. Automação de atendimento com IA, em R$ 12 mil. SaaS do zero, em R$ 28 mil. Na primeira conversa eu digo em qual faixa o seu caso cai, e falo na hora se ele não couber.",
   },
   {
     q: "Quanto tempo leva?",
-    a: "Automação de atendimento: 2 a 4 semanas. Integração e painel: 2 a 6 semanas. MVP de SaaS: 6 semanas para a primeira fase utilizável. Projetos maiores são divididos em fases com entrega a cada uma.",
+    a: "Automação de atendimento: 2 a 4 semanas. Integração e painel: 2 a 6 semanas. SaaS: 6 semanas até a primeira versão que você já usa de verdade. Projetos maiores viram fases, com entrega ao fim de cada uma.",
   },
   {
     q: "Como funciona o pagamento?",
-    a: "Dois caminhos. Contrato direto com nota fiscal, dividido em marcos (entrada, meio, entrega). Ou pela Workana, onde o valor fica em garantia e é liberado conforme cada etapa é entregue — nesse caso a plataforma cobra a própria taxa, já embutida no preço que eu passo.",
+    a: "Contrato direto com nota fiscal, dividido em marcos: entrada, meio e entrega. Ou pela Workana, onde o valor fica retido e é liberado conforme cada etapa é aceita. A taxa da plataforma já entra no preço que eu passo.",
+  },
+  {
+    q: "E se o escopo mudar no meio?",
+    a: "Escopo, prazo e critério de aceite ficam escritos antes de eu começar. Mudança vira extensão com prazo e valor combinados, nunca um ajuste silencioso que estoura a entrega.",
   },
   {
     q: "O que eu preciso ter pronto para começar?",
-    a: "O problema descrito em uma frase e a resposta para duas perguntas: qual volume (usuários, conversas, pedidos por mês) e quais sistemas já existem. Escopo, telas e regras a gente fecha juntos no briefing — é parte do trabalho, não pré-requisito.",
+    a: "O problema em uma frase e duas respostas: qual o volume (conversas, pedidos ou usuários por mês) e quais sistemas já existem. Telas e regras a gente fecha junto, isso é parte do trabalho.",
   },
   {
-    q: "Você dá manutenção depois?",
-    a: `Sim. Entrego com documentação e handover, e sigo disponível para evolução e suporte — ${workanaStats.recurringClients} clientes já me contrataram mais de uma vez, quase sempre para a fase seguinte do mesmo sistema.`,
+    q: "Você some depois de entregar?",
+    a: `Entrego com documentação e handover gravado. ${workanaStats.recurringClients} clientes já me contrataram de novo, quase sempre para a fase seguinte do mesmo sistema.`,
   },
 ];
 
-const notFor = [
-  "site institucional simples, landing page ou loja de prateleira",
+const naoServe = [
+  "site institucional, landing page ou loja de prateleira",
   "orçamento abaixo de R$ 5 mil",
-  "quem quer no-code, template pronto ou \"um app igual ao iFood\"",
-  "prazo menor que duas semanas para sistema do zero",
+  "template pronto ou no-code montado às pressas",
+  "sistema do zero para entregar em menos de duas semanas",
 ];
 
-const featuredReviewAuthors = ["Fernando Esteves", "Useconvoo", "Arthur Versolato"];
-
 export default function ContratarPage() {
-  const reviews = featuredReviewAuthors
+  // Trecho, nao resumo: cada recorte sai palavra por palavra da avaliacao
+  // original, que segue integral na /workana e no perfil da plataforma.
+  const recortes: Record<string, string> = {
+    "Fernando Esteves":
+      "Tenho mais de 20 anos trabalhando com projetos web e poucas vezes encontrei profissionais como Eduardo.",
+    Useconvoo:
+      "Demonstrou domínio total de infraestrutura e agilidade para resolver problemas complexos de sincronia de ambientes e performance.",
+    "Arthur Versolato":
+      "Entendeu rápido o que estávamos precisando e propôs boas melhorias ao projeto.",
+  };
+  const reviews = Object.keys(recortes)
     .map((a) => testimonials.find((tm) => tm.author === a))
     .filter(Boolean) as typeof testimonials;
+
+  // No hero entra a tela que o comprador consegue LER (o fluxo de qualificação
+  // rodando), não a capa mais bonita. Clinafy carrega o número maior e por isso
+  // abre a fileira de cases logo abaixo.
+  const heroCase = projects.find((p) => p.id === "mudapaisagens")!;
+  const cases = ["clinafy", "blackinbot", "rei"]
+    .map((id) => projects.find((p) => p.id === id)!)
+    .filter(Boolean);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "ProfessionalService",
-        name: "Eduardo Gouveia — Desenvolvimento full stack sob medida",
+        name: "Eduardo Gouveia — desenvolvimento de software sob medida",
         url: `${siteUrl}/contratar`,
         areaServed: "BR",
         priceRange: "$$",
@@ -95,225 +127,246 @@ export default function ContratarPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen">
-        <CaseHeader source="contratar_header" />
-        <main className="mx-auto max-w-3xl px-5 md:px-8 py-10 md:py-14">
-          <p className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]">
-            $ contratar --dev fullstack-senior
-          </p>
 
-          <h1 className="mt-4 font-display text-3xl md:text-[42px] font-bold text-white leading-[1.1] tracking-tight text-balance">
-            Contratar desenvolvedor full stack sênior
-          </h1>
-          <p className="mt-4 text-white/65 text-lg leading-relaxed max-w-[62ch]">
-            Automação com IA, integrações e painéis sob medida, SaaS e MVPs — para
-            empresas que já passaram da fase de ideia e precisam de software que
-            aguente uso real.
-          </p>
+      <div data-scroll-page className="lp">
+        <LandingNav />
 
-          {/* Prova, acima da dobra */}
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] font-[family-name:var(--font-jetbrains-mono)] text-white/55">
-            <span>
-              <b className="text-white">{workanaStats.projectsCompleted}</b> projetos entregues
-            </span>
-            <span>
-              <b className="text-[#fbbf24]">★ {workanaStats.rating}/5</b> em{" "}
-              {workanaStats.clientReviews} avaliações
-            </span>
-            <span>
-              <b className="text-white">{workanaStats.recurringClients}</b> clientes recontrataram
-            </span>
-            <span>
-              nível <b className="text-[#fbbf24]">{workanaStats.level}</b> na Workana
-            </span>
-          </div>
+        {/* ───────── HERO: split assimétrico, dor + promessa ───────── */}
+        <header className="lp-hero">
+          <div className="lp-wrap lp-hero-grid">
+            <div className="lp-hero-copy">
+              <h1>
+                Sua operação cresceu.
+                <br />
+                <span className="lp-hl">Seus sistemas, não.</span>
+              </h1>
+              <p className="lp-lede">
+                Atendimento com IA que responde sozinho, integração entre o que você já
+                usa, ou o SaaS que falta lançar. Escopo e prazo fechados por escrito
+                antes de começar.
+              </p>
 
-          <div className="mt-7">
-            <DirectContact page="contratar_topo" compact />
-          </div>
+              <div className="lp-hero-cta">
+                <DirectContact page="contratar_topo" variant="hero" />
+              </div>
 
-          {/* Ofertas */}
-          <h2 className="mt-14 font-display text-2xl font-bold text-white">
-            O que eu construo
-          </h2>
-          <div className="mt-5 grid grid-cols-1 gap-3">
-            {offers.map((o) => (
-              <article key={o.id} className="terminal-window p-5 md:p-6">
-                <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <h3 className="font-display text-lg font-bold text-white">{o.name}</h3>
-                  <span className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/45">
-                    {pricingConfirmed ? `${o.range} · ${o.term}` : o.term}
+              <div className="lp-hero-proof">
+                <Image
+                  src="/images/profile.webp"
+                  alt=""
+                  width={44}
+                  height={44}
+                  className="lp-avatar"
+                  priority
+                />
+                <p>
+                  <strong>Eduardo Gouveia</strong>
+                  <span>
+                    {workanaStats.projectsCompleted} sistemas entregues · nota{" "}
+                    {workanaStats.rating} em {workanaStats.clientReviews} avaliações
+                    verificadas
                   </span>
-                </div>
-                <p className="mt-2 text-[14px] leading-relaxed text-white/60">{o.promise}</p>
-                <ul className="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-1.5">
-                  {o.scope.map((item) => (
-                    <li
-                      key={item}
-                      className="text-[12.5px] leading-relaxed text-white/55 flex items-start gap-2"
-                    >
-                      <span className="text-[#4ade80] shrink-0">▹</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {o.cases
-                    .map((id) => projects.find((p) => p.id === id))
-                    .filter(Boolean)
-                    .map((p) => (
-                      <Link
-                        key={p!.id}
-                        href={`/projetos/${p!.id}`}
-                        className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] px-2.5 py-1 rounded border border-white/10 text-white/55 hover:text-white hover:border-white/25 transition-colors"
-                      >
-                        {p!.title} ↗
-                      </Link>
-                    ))}
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {/* Desqualificação — filtro mais barato que existe */}
-          <div className="mt-10 rounded-lg border border-white/[0.08] bg-white/[0.02] p-5">
-            <h2 className="font-[family-name:var(--font-jetbrains-mono)] text-[11px] uppercase tracking-[2px] text-white/40">
-              // não é pra você se
-            </h2>
-            <ul className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-1.5">
-              {notFor.map((n) => (
-                <li key={n} className="text-[13px] text-white/50 flex items-start gap-2">
-                  <span className="text-white/25 shrink-0">×</span>
-                  <span>{n}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Cases */}
-          <h2 className="mt-14 font-display text-2xl font-bold text-white">
-            Cases com resultado
-          </h2>
-          <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {["clinafy", "mudapaisagens", "blackinbot"]
-              .map((id) => projects.find((p) => p.id === id))
-              .filter(Boolean)
-              .map((p) => (
-                <Link
-                  key={p!.id}
-                  href={`/projetos/${p!.id}`}
-                  className="group block terminal-window overflow-hidden hover:border-white/20 transition-colors"
-                >
-                  <span className="relative block aspect-[16/10] overflow-hidden bg-[#0d0d0d]">
-                    <Image
-                      src={p!.cover ?? p!.image}
-                      alt=""
-                      fill
-                      sizes="(max-width: 640px) 92vw, 220px"
-                      className="object-cover object-center opacity-80 group-hover:opacity-100 transition-opacity"
-                    />
-                  </span>
-                  <span className="block p-3.5">
-                    <span className="block font-display text-sm font-bold text-white/85 group-hover:text-white transition-colors">
-                      {p!.title}
-                    </span>
-                    <span className="block mt-1 text-[11px] text-white/45 leading-relaxed">
-                      {p!.headline}
-                    </span>
-                    {p!.output?.[0] && (
-                      <span className="block mt-2 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]">
-                        → {p!.output[0]}
-                      </span>
-                    )}
-                  </span>
-                </Link>
-              ))}
-          </div>
-          <div className="mt-4">
-            <Link
-              href="/projetos"
-              className="text-[12px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 hover:text-[#4ade80] transition-colors"
-            >
-              ver todos os cases →
-            </Link>
-          </div>
-
-          {/* Avaliações */}
-          <h2 className="mt-14 font-display text-2xl font-bold text-white">
-            O que os clientes dizem
-          </h2>
-          <div className="mt-5 space-y-3">
-            {reviews.map((tm) => (
-              <blockquote key={tm.author} className="terminal-window p-5">
-                <div className="text-[#fbbf24] text-[11px]">{"★".repeat(tm.rating)}</div>
-                <p className="mt-2 text-white/60 text-[13px] leading-relaxed italic">
-                  &ldquo;{tm.text}&rdquo;
                 </p>
-                <footer className="mt-3 pt-3 border-t border-white/[0.06] text-[11px] font-[family-name:var(--font-jetbrains-mono)]">
-                  <span className="text-white/55">— {tm.author}</span>
-                  <span className="text-white/15"> · </span>
-                  <span className="text-white/40">{tm.date}</span>
-                  <span className="block text-[#60a5fa]/70 mt-1">{tm.project}</span>
-                </footer>
-              </blockquote>
-            ))}
-          </div>
+              </div>
+            </div>
 
-          {/* Processo */}
-          <div className="mt-14 terminal-window">
-            <TerminalHeader title="process.sh — como funciona" />
-            <div className="p-5 md:p-6 space-y-4">
-              {[
-                { n: "01", t: "Briefing", d: "respondo no mesmo dia útil com as perguntas certas sobre o seu projeto" },
-                { n: "02", t: "Proposta fechada", d: "escopo, prazo e marcos por escrito — contrato direto com nota fiscal ou via Workana com pagamento protegido" },
-                { n: "03", t: "Desenvolvimento", d: "updates constantes; você acompanha cada entrega, não só o resultado final" },
-                { n: "04", t: "Entrega e suporte", d: "documentação, handover e evolução depois que entra no ar" },
-              ].map((s) => (
-                <div key={s.n} className="flex gap-4 items-start">
-                  <span className="text-[#4ade80] font-[family-name:var(--font-jetbrains-mono)] text-xs font-bold pt-0.5 shrink-0">
-                    {s.n}
+            <figure className="lp-hero-art">
+              {/* O mockup vem com muita moldura preta: fora do enquadramento a
+                  tela some e sobra estúdio. O corte é no CSS, não no arquivo. */}
+              <span className="lp-hero-shot">
+                <Image
+                  src={heroCase.cover ?? heroCase.image}
+                  alt={`${heroCase.title}: ${heroCase.headline}`}
+                  width={1280}
+                  height={800}
+                  priority
+                  sizes="(max-width: 900px) 92vw, 460px"
+                />
+              </span>
+              <figcaption>
+                Muda Paisagens: o lead chega no WhatsApp, a IA qualifica pelas perguntas
+                que a equipe fazia na mão e o Pipefy recebe tudo registrado.
+              </figcaption>
+            </figure>
+          </div>
+        </header>
+
+        {/* ───────── SINTOMAS: três colunas de texto puro, sem card ───────── */}
+        <section className="lp-band">
+          <div className="lp-wrap">
+            <h2 className="lp-h2">Se algum destes acontece toda semana, é software faltando</h2>
+            <div className="lp-sintomas">
+              {sintomas.map((s, i) => (
+                <article key={s.t}>
+                  <span className="lp-num" aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                  <div>
-                    <div className="text-white text-sm font-bold">{s.t}</div>
-                    <div className="text-white/50 text-[12px] mt-0.5 leading-relaxed">{s.d}</div>
-                  </div>
-                </div>
+                  <h3>{s.t}</h3>
+                  <p>{s.d}</p>
+                </article>
               ))}
             </div>
           </div>
+        </section>
 
-          {/* FAQ */}
-          <h2 className="mt-14 font-display text-2xl font-bold text-white">
-            Perguntas frequentes
-          </h2>
-          <dl className="mt-5 space-y-4">
-            {faq.map((f) => (
-              <div key={f.q} className="border-b border-white/[0.06] pb-4">
-                <dt className="text-white font-semibold text-[15px]">{f.q}</dt>
-                <dd className="mt-1.5 text-white/55 text-[13.5px] leading-relaxed max-w-[68ch]">
-                  {f.a}
-                </dd>
-              </div>
-            ))}
-          </dl>
-
-          {/* CTA final */}
-          <div className="mt-12">
-            <DirectContact page="contratar_rodape" />
+        {/* ───────── OFERTAS: linhas largas, não cards iguais ───────── */}
+        <section id="solucoes" className="lp-band lp-band-alt">
+          <div className="lp-wrap">
+            <h2 className="lp-h2">Três formas de resolver, com prazo e faixa desde a primeira conversa</h2>
+            <div className="lp-offers">
+              {offers.map((o) => (
+                <article key={o.id} className="lp-offer">
+                  <div className="lp-offer-head">
+                    <h3>{o.name}</h3>
+                    <p className="lp-offer-meta">
+                      <span className="lp-price">{o.range}</span>
+                      <span className="lp-sep" aria-hidden="true" />
+                      <span>{o.term}</span>
+                    </p>
+                  </div>
+                  <p className="lp-offer-promise">{o.promise}</p>
+                  <ul className="lp-offer-scope">
+                    {o.scope.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  <p className="lp-offer-not">Não serve para {o.notFor}.</p>
+                </article>
+              ))}
+            </div>
           </div>
+        </section>
 
-          <footer className="mt-12 pb-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/30">
-            <Link href="/" className="hover:text-white/60 transition-colors">
-              portfólio
-            </Link>
-            <Link href="/projetos" className="hover:text-white/60 transition-colors">
-              cases
-            </Link>
-            <Link href="/politica-de-privacidade" className="hover:text-white/60 transition-colors">
-              política de privacidade
-            </Link>
-          </footer>
-        </main>
+        {/* ───────── CASES: grid com imagem grande + resultado ───────── */}
+        <section className="lp-band">
+          <div className="lp-wrap">
+            <h2 className="lp-h2">Sistemas que já estão rodando</h2>
+            <div className="lp-cases">
+              {cases.map((p) => (
+                <Link key={p.id} href={`/projetos/${p.id}`} className="lp-case">
+                  <span className="lp-case-img">
+                    <Image
+                      src={p.cover ?? p.image}
+                      alt=""
+                      width={640}
+                      height={400}
+                      sizes="(max-width: 900px) 92vw, 380px"
+                      loading="lazy"
+                    />
+                  </span>
+                  <span className="lp-case-body">
+                    <strong>{p.title}</strong>
+                    <span className="lp-case-head">{p.headline}</span>
+                    {p.output?.[0] && <span className="lp-case-out">{p.output[0]}</span>}
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <p className="lp-more">
+              <Link href="/projetos">
+                Ver os {projects.filter((p) => p.overview).length} cases documentados
+              </Link>
+            </p>
+          </div>
+        </section>
+
+        {/* ───────── DEPOIMENTOS: citação larga, ritmo diferente ───────── */}
+        <section className="lp-band lp-band-alt">
+          <div className="lp-wrap">
+            <h2 className="lp-h2">O que dizem os clientes que já pagaram por isso</h2>
+            <div className="lp-quotes">
+              {reviews.map((tm) => (
+                <blockquote key={tm.author}>
+                  <p>{recortes[tm.author] ?? tm.text}</p>
+                  <footer>
+                    <strong>{tm.author}</strong>
+                    <span>
+                      {tm.project} · {tm.date}
+                    </span>
+                  </footer>
+                </blockquote>
+              ))}
+            </div>
+            <p className="lp-more">
+              Avaliações verificadas na Workana, onde o cliente só avalia depois de pagar.
+            </p>
+          </div>
+        </section>
+
+        {/* ───────── PROCESSO: timeline horizontal ───────── */}
+        <section className="lp-band">
+          <div className="lp-wrap">
+            <h2 className="lp-h2">Do primeiro contato até o sistema no ar</h2>
+            <ol className="lp-steps">
+              <li>
+                <h3>Você descreve o problema</h3>
+                <p>Respondo no mesmo dia útil com as perguntas que definem o escopo.</p>
+              </li>
+              <li>
+                <h3>Recebe escopo, prazo e valor por escrito</h3>
+                <p>Com os marcos de pagamento e o critério de aceite de cada entrega.</p>
+              </li>
+              <li>
+                <h3>Acompanha a construção</h3>
+                <p>Updates constantes: você vê cada etapa, não só o resultado final.</p>
+              </li>
+              <li>
+                <h3>Recebe com documentação e suporte</h3>
+                <p>Handover gravado, e eu continuo por perto para a fase seguinte.</p>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        {/* ───────── DESQUALIFICAÇÃO + FAQ: duas colunas ───────── */}
+        <section className="lp-band lp-band-alt">
+          <div className="lp-wrap lp-faq-grid">
+            <div className="lp-nao">
+              <h2 className="lp-h2">Quando eu digo não</h2>
+              <ul>
+                {naoServe.map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
+              </ul>
+              <p>
+                Prefiro dizer isso na primeira mensagem a descobrir no meio do projeto.
+              </p>
+            </div>
+
+            <div className="lp-faq">
+              {faq.map((f) => (
+                <details key={f.q} name="faq">
+                  <summary>{f.q}</summary>
+                  <p>{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ───────── CTA FINAL ───────── */}
+        <section className="lp-final">
+          <div className="lp-wrap">
+            <h2>Me conte o que está travando a sua operação</h2>
+            <p>
+              Você recebe uma resposta no mesmo dia útil, com as perguntas certas e a
+              faixa de preço do seu caso. Sem proposta genérica e sem reunião para
+              descobrir o óbvio.
+            </p>
+            <DirectContact page="contratar_final" variant="final" />
+          </div>
+        </section>
+
+        <footer className="lp-footer">
+          <div className="lp-wrap">
+            <span>© {new Date().getFullYear()} Eduardo Gouveia</span>
+            <nav>
+              <Link href="/">Portfólio</Link>
+              <Link href="/projetos">Cases</Link>
+              <Link href="/politica-de-privacidade">Privacidade</Link>
+            </nav>
+          </div>
+        </footer>
       </div>
     </>
   );

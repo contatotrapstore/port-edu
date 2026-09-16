@@ -47,6 +47,16 @@ html, body {
   }
 }
 
+/* Paginas de documento (contratar, projetos, cases, politica) rolam como
+   qualquer site. O overflow:hidden acima existe so para o scroll-jack da home;
+   sem esta regra, essas rotas ficam presas na primeira tela no desktop.
+   :has() e Baseline desde 2023 e evita precisar de JS so para isto. */
+html:has([data-scroll-page]),
+html:has([data-scroll-page]) body {
+  height: auto;
+  overflow-y: auto;
+}
+
 /* WebGL indisponível: os listeners de capítulo morrem com o canvas, então o
    desktop volta ao fluxo natural de documento — o funil nunca fica sem saída.
    !important vence os estilos inline do Section (mesmo padrão dos max-md:!). */

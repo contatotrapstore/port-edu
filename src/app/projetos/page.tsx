@@ -68,7 +68,10 @@ export default function ProjetosIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="min-h-screen">
+      {/* data-scroll-page libera o scroll do documento: sem ele, o
+          overflow:hidden do globals.css (que existe para a home 3D) corta esta
+          página em 900px e os cases abaixo ficam inalcançáveis. */}
+      <div data-scroll-page className="min-h-screen">
         <CaseHeader source="projetos_index" />
         <main className="mx-auto max-w-3xl px-5 md:px-8 py-10 md:py-14">
           <p className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]">
