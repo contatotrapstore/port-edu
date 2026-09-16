@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { track } from "@vercel/analytics";
 import { siteConfig } from "@/lib/constants";
 import { getAttribution } from "@/lib/attribution";
@@ -43,7 +44,12 @@ export default function DirectContact({
     });
   };
 
-  const attr = typeof window === "undefined" ? undefined : getAttribution().src;
+  // Lido depois da hidratação, de propósito. Se fosse durante o render, o
+  // servidor renderizaria sem atribuição, o cliente teria que bater com esse
+  // HTML e a origem nunca chegaria ao link: a conversa do WhatsApp é onde o
+  // lead é lido de verdade, e ela não carrega UTM nenhuma.
+  const [attr, setAttr] = useState<string | undefined>(undefined);
+  useEffect(() => setAttr(getAttribution().src), []);
 
   return (
     <div className={variant === "hero" ? "lp-cta lp-cta-hero" : "lp-cta lp-cta-final"}>

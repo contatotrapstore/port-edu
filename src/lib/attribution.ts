@@ -22,10 +22,14 @@ export function getAttribution(): Attribution {
     if (saved) return JSON.parse(saved) as Attribution;
 
     const params = new URLSearchParams(window.location.search);
+    // gclid e fbclid vêm antes: são os únicos parâmetros que o Google e a Meta
+    // colam sozinhos no clique do anúncio, mesmo quando a UTM não foi montada.
     const src =
       params.get("utm_source") ||
       params.get("src") ||
       params.get("ref") ||
+      (params.get("gclid") ? "google-ads" : undefined) ||
+      (params.get("fbclid") ? "meta-ads" : undefined) ||
       undefined;
     let ref: string | undefined;
     try {
