@@ -9,17 +9,16 @@ Situação em 17/09/2026. Só Meta Ads por enquanto; Google fica para depois.
 | Landing de conversão em `/contratar` | no ar, rola, hero acima da dobra no celular |
 | Canal direto | WhatsApp com mensagem pré-preenchida, resposta no mesmo dia útil |
 | Origem do clique na mensagem | `fbclid` vira `meta-ads` dentro do texto que chega no seu WhatsApp |
-| Código do Pixel | instalado, inerte até o Dataset ID existir |
+| Código do Pixel | **no ar**, dataset `2514954938991781` |
 | Evento de conversão | `Contact` dispara no clique do WhatsApp |
 | PageView em navegação interna | redisparado (o App Router não recarrega a página) |
 | `/workana` fora do pixel | garantido pelo guard do build, testado por sabotagem |
 | Tag de verificação de domínio | **publicada no ar**, token `d6m9smjz...` |
 | Política de privacidade | descreve o pixel, o remarketing e como recusar |
 
-O pixel não dispara requisição nenhuma para a Meta enquanto o Dataset ID não
-existir: o site roda hoje exatamente como antes. A meta-tag de verificação já
-está publicada, porque ela é inofensiva e destrava a verificação do domínio
-sem depender de mais nada.
+O pixel dispara **só em www.edevshub.com**: localhost e preview da Vercel não
+poluem o dataset. Verificado em produção: `Contact` chega com a origem do
+anúncio, e a /workana continua com zero requisição para a Meta.
 
 ## Levantamento feito em 17/09 — o que a extensão achou
 
@@ -55,11 +54,24 @@ campanha ativa, não há histórico a perder: trocar agora é de graça, daqui a
 três meses não é. O dataset antigo nunca recebeu evento e não tem site
 vinculado, então também não há nada para reaproveitar.
 
-## Falta — eu faço, quando você me passar os dados
+## Estrutura da Meta (17/09, feita pela extensão)
 
-1. Colocar o Dataset ID no site e publicar.
-2. Verificar no ar que o evento `Contact` chega no Gerenciador de Eventos.
-3. Aí roda o prompt 2, que prioriza `Contact` na frente do `PageView`.
+| O quê | Valor |
+|---|---|
+| Portfólio | Eduardo Gouveia · 287611329178059 · **não verificado** |
+| Conta de anúncios | EDevsHub - BR · `act_2196483267931657` · BRL · Brasília |
+| Dataset | edevshub.com · `2514954938991781` · ligado só à conta nova |
+| Domínio | edevshub.com · **verificado** por meta-tag |
+| Forma de pagamento | **não existe** na conta nova |
+
+A conta antiga (Dudu, USD/Nova York), o dataset "Clinafy One miliiasss" e o
+rascunho não publicado seguem parados e intocados.
+
+## Próximo passo
+
+Rodar o **prompt 2** de `prompt-extensao-2-configurar.md`, que prioriza
+`Contact` na frente do `PageView`. Já existe evento no dataset para priorizar:
+a verificação em produção gerou alguns `PageView` e um `Contact` de teste.
 
 ## Ainda não existe, e é decisão sua
 
