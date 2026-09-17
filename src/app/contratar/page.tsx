@@ -171,9 +171,10 @@ export default function ContratarPage() {
             </div>
 
             <figure className="lp-hero-art">
-              {/* Recorte da tela feito no arquivo, na resolução de origem: no
-                  mockup inteiro a interface ocupava um terço do quadro e não
-                  dava para ler nada do que o sistema faz. */}
+              {/* Recorte da tela, feito uma vez no arquivo. Numa coluna de 400px
+                  nenhuma captura de desktop é legível palavra por palavra: o que
+                  precisa ler de longe é a estrutura (menu, linhas, status
+                  coloridos), e para isso contraste vale mais que resolução. */}
               <span className="lp-hero-shot">
                 <Image
                   src="/images/lp/rei-painel.webp"
@@ -181,7 +182,7 @@ export default function ContratarPage() {
                   width={830}
                   height={517}
                   priority
-                  sizes="(max-width: 900px) 92vw, 600px"
+                  sizes="(max-width: 900px) 92vw, 480px"
                 />
               </span>
               <figcaption>

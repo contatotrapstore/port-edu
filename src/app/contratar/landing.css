@@ -56,7 +56,9 @@
 .lp h1 {
   font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
   font-weight: 700;
-  font-size: clamp(2rem, 4.4vw, 3.1rem);
+  /* O mínimo cai até 1.75rem para "Sua operação cresceu." caber numa linha em
+     telas de 360px: título de hero em três linhas deixa de ser título. */
+  font-size: clamp(1.75rem, 4.4vw, 3.1rem);
   line-height: 1.06;
   letter-spacing: -0.025em;
   text-wrap: balance;
@@ -166,13 +168,19 @@
   display: block;
 }
 
-/* A arte sangra até a borda direita da janela em vez de ser ampliada: a origem
-   tem 1280px e esticá-la para caber numa coluna estreita é o que embaçava.
-   Assim ela ganha pixel de verdade, e a assimetria fica proposital. */
-@media (min-width: 1100px) {
-  .lp-hero-art {
-    margin-right: calc(-1 * max(0px, 50vw - 528px));
-  }
+/* Teto de largura, não sangramento. A versão anterior crescia com `50vw`, então
+   num monitor grande a arte chegava a 829px com um arquivo de 830px: 1:1, e
+   qualquer zoom do sistema já embaçava. Presa a 480px, a origem de 1280px
+   entrega mais de 2 pixels por pixel de tela em qualquer monitor. */
+.lp-hero-art {
+  /* 420px é o teto que mantém ~2 pixels de origem por pixel de tela com o
+     recorte de 830px, inclusive em tablet com tela retina. */
+  max-width: 420px;
+}
+/* Empilhada, a arte começa na mesma margem do texto: centralizá-la enquanto a
+   copy é alinhada à esquerda cria duas margens concorrentes na mesma tela. */
+@media (min-width: 900px) {
+  .lp-hero-art { justify-self: end; }
 }
 .lp-hero-art figcaption {
   margin-top: 0.85rem;
