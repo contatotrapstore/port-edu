@@ -51,7 +51,25 @@ export default function PoliticaPage() {
             <p className="mt-3">
               <b className="text-white/85">Dados de navegação.</b> O site usa o Vercel Analytics,
               que mede páginas vistas e cliques sem cookies e sem identificar visitantes
-              individualmente. Não há remarketing nem perfilamento.
+              individualmente.
+            </p>
+            <p className="mt-3">
+              <b className="text-white/85">Meta Pixel.</b> A página{" "}
+              <Link href="/contratar" className="text-white/85 underline underline-offset-4">
+                /contratar
+              </Link>{" "}
+              e as páginas de portfólio carregam o Meta Pixel, da Meta Platforms, usado para
+              medir quantas pessoas que vieram de um anúncio no Facebook ou no Instagram
+              chegaram até aqui e iniciaram uma conversa. Ele grava cookies no seu navegador e
+              envia à Meta o endereço da página visitada e o clique no botão de contato. Isso
+              permite remarketing, ou seja, você pode voltar a ver um anúncio meu depois de
+              visitar o site. A página{" "}
+              <b className="text-white/85">/workana não carrega esse pixel</b>.
+            </p>
+            <p className="mt-3">
+              Para recusar: as configurações de anúncios da sua conta na Meta permitem desativar
+              a publicidade baseada em dados de parceiros, e bloquear cookies de terceiros no
+              navegador impede o envio. Nenhuma das duas coisas muda o funcionamento do site.
             </p>
           </section>
 
@@ -67,10 +85,12 @@ export default function PoliticaPage() {
           <section>
             <h2 className="font-display text-lg font-bold text-white mb-2">Com quem compartilho</h2>
             <p>
-              Com ninguém para fins comerciais. Os dados ficam nas ferramentas usadas para
-              atender você — WhatsApp, provedor de e-mail e, quando a contratação acontece pela
-              plataforma, a própria Workana, cada um sob a política do respectivo serviço. Não
-              vendo nem cedo dados a terceiros.
+              O que você me escreve fica nas ferramentas usadas para atender você: WhatsApp,
+              provedor de e-mail e, quando a contratação acontece pela plataforma, a própria
+              Workana, cada um sob a política do respectivo serviço. Os dados de navegação
+              descritos acima vão para a Vercel e, nas páginas com pixel, para a Meta. Não vendo
+              dados, e não envio o conteúdo das suas mensagens para nenhuma plataforma de
+              anúncio.
             </p>
           </section>
 
