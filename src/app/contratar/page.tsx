@@ -95,9 +95,16 @@ export default function ContratarPage() {
   // grande, status em português e a operação sob controle. Nada de zoom por
   // CSS aqui — ampliar 1280px de origem é o que deixava a arte borrada.
   const heroCase = projects.find((p) => p.id === "rei")!;
-  const cases = ["clinafy", "mudapaisagens", "blackinbot"]
+  const cases = ["clinafy", "mudapaisagens", "clubeazul"]
     .map((id) => projects.find((p) => p.id === id)!)
     .filter(Boolean);
+
+  // Algumas capas da vitrine da Workana são mockup de estúdio com a marca
+  // d'água por cima: bonitas em miniatura, ilegíveis no celular, onde o card
+  // ocupa a largura toda. Quando existe captura direta do sistema, ela ganha.
+  const capaLegivel: Record<string, string> = {
+    clinafy: "/images/projects/clinafy.webp",
+  };
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -248,7 +255,7 @@ export default function ContratarPage() {
                 <Link key={p.id} href={`/projetos/${p.id}`} className="lp-case">
                   <span className="lp-case-img">
                     <Image
-                      src={p.cover ?? p.image}
+                      src={capaLegivel[p.id] ?? p.cover ?? p.image}
                       alt=""
                       width={640}
                       height={400}

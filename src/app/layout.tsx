@@ -91,18 +91,17 @@ export const metadata: Metadata = {
     },
   },
   // A Meta só libera a configuração de eventos priorizados (AEM) depois que o
-  // domínio está verificado, e sem isso o anúncio roda cego no iOS. A tag só
-  // aparece quando a variável existe: token de verificação não fica no repo.
-  ...(process.env.NEXT_PUBLIC_FB_DOMAIN_VERIFICATION
-    ? {
-        verification: {
-          other: {
-            "facebook-domain-verification":
-              process.env.NEXT_PUBLIC_FB_DOMAIN_VERIFICATION,
-          },
-        },
-      }
-    : {}),
+  // domínio está verificado, e sem isso o anúncio roda cego no iOS.
+  //
+  // O token fica literal aqui de propósito: ele existe para ser publicado no
+  // HTML e qualquer visitante o lê no "ver código-fonte". Guardá-lo numa
+  // variável de ambiente não esconderia nada e adicionaria um passo manual
+  // entre o deploy e o clique em "Verificar domínio".
+  verification: {
+    other: {
+      "facebook-domain-verification": "d6m9smjz7t6b3iwy0s844t2rl1xhw9",
+    },
+  },
 };
 
 const workanaUrl =

@@ -148,9 +148,11 @@
 }
 .lp-hero-proof p { margin: 0; display: flex; flex-direction: column; gap: 2px; }
 .lp-hero-proof strong { font-size: 0.875rem; font-weight: 600; }
+/* "176 sistemas entregues · nota 4.74 em 179 avaliações" é a prova que segura
+   o hero. Mono a 12px no celular é exatamente onde ela deixa de ser lida. */
 .lp-hero-proof span {
   font-family: var(--font-jetbrains-mono), monospace;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--ink-3);
   line-height: 1.5;
 }
@@ -336,8 +338,11 @@
   display: block;
   margin-top: 0.75rem;
   font-family: var(--font-jetbrains-mono), monospace;
-  font-size: 0.75rem;
+  /* Mono a 12px encolhe mais que uma sans no mesmo corpo: no celular é o
+     resultado do case que fica ilegível, e é ele que convence. */
+  font-size: 0.8125rem;
   color: var(--acc-ink);
+  line-height: 1.5;
 }
 
 .lp-more { margin: 2rem 0 0; font-size: 0.875rem; color: var(--ink-3); }
@@ -375,9 +380,11 @@
   border-top: 1px solid var(--line);
 }
 .lp-quotes footer strong { font-size: 0.875rem; font-weight: 600; }
+/* Quem assinou o depoimento e em que projeto É a prova. Em --ink-4 a 12px isso
+   some no celular, justo a linha que sustenta a citação de cima. */
 .lp-quotes footer span {
-  font-size: 0.75rem;
-  color: var(--ink-4);
+  font-size: 0.8125rem;
+  color: var(--ink-3);
   line-height: 1.5;
 }
 
@@ -415,6 +422,24 @@
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 0.75rem;
 }
+/* Empilhado, o número vira o marcador e a linha desce pela vertical: sem ela
+   os quatro passos leem como quatro avisos soltos, não como uma sequência. */
+@media (max-width: 767px) {
+  .lp-steps { gap: 1.75rem; }
+  .lp-steps li { padding-top: 0; padding-left: 2.75rem; }
+  .lp-steps li::before { top: 0.1rem; }
+  .lp-steps li::after {
+    content: "";
+    position: absolute;
+    left: 0.85rem;
+    top: 2.1rem;
+    bottom: -1.75rem;
+    width: 1px;
+    background: var(--line-2);
+  }
+  .lp-steps li:last-child::after { display: none; }
+}
+
 /* linha ligando as etapas, só no desktop */
 @media (min-width: 768px) {
   .lp-steps li::after {
@@ -540,6 +565,32 @@
 .lp-footer nav { display: flex; gap: 1.25rem; }
 .lp-footer a { color: var(--ink-3); text-decoration: none; }
 .lp-footer a:hover { color: var(--ink); }
+
+/* ── Alvos de toque ──────────────────────────────────────────────────────── */
+
+/* No celular o dedo acerta o que tem pelo menos 44px de altura. Links de texto
+   corrido nascem com 16 a 20px: em vez de aumentar a fonte e estragar a
+   hierarquia, o alvo cresce com padding e uma margem negativa que devolve o
+   espaço ao layout, então nada se move visualmente. */
+@media (max-width: 899px) {
+  .lp-nav-link,
+  .lp-more a,
+  .lp-cta-alt,
+  .lp-footer a {
+    display: inline-block;
+    padding-block: 0.8rem;
+    margin-block: -0.8rem;
+  }
+  /* A logo é link para a home: o alvo é a área, não o desenho. */
+  .lp-nav .lp-wrap > a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  /* O rodapé recupera o respiro que as margens negativas comeriam. */
+  .lp-footer nav { gap: 1.5rem; row-gap: 0.5rem; flex-wrap: wrap; }
+  .lp-footer .lp-wrap { gap: 1.25rem 1.5rem; }
+}
 
 /* ── Acessibilidade ──────────────────────────────────────────────────────── */
 
