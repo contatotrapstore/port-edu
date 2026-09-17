@@ -91,11 +91,11 @@ export default function ContratarPage() {
     .map((a) => testimonials.find((tm) => tm.author === a))
     .filter(Boolean) as typeof testimonials;
 
-  // No hero entra a tela que o comprador consegue LER (o fluxo de qualificação
-  // rodando), não a capa mais bonita. Clinafy carrega o número maior e por isso
-  // abre a fileira de cases logo abaixo.
-  const heroCase = projects.find((p) => p.id === "mudapaisagens")!;
-  const cases = ["clinafy", "blackinbot", "rei"]
+  // No hero entra a tela que o comprador consegue LER de relance: tipografia
+  // grande, status em português e a operação sob controle. Nada de zoom por
+  // CSS aqui — ampliar 1280px de origem é o que deixava a arte borrada.
+  const heroCase = projects.find((p) => p.id === "rei")!;
+  const cases = ["clinafy", "mudapaisagens", "blackinbot"]
     .map((id) => projects.find((p) => p.id === id)!)
     .filter(Boolean);
 
@@ -171,21 +171,22 @@ export default function ContratarPage() {
             </div>
 
             <figure className="lp-hero-art">
-              {/* O mockup vem com muita moldura preta: fora do enquadramento a
-                  tela some e sobra estúdio. O corte é no CSS, não no arquivo. */}
+              {/* Recorte da tela feito no arquivo, na resolução de origem: no
+                  mockup inteiro a interface ocupava um terço do quadro e não
+                  dava para ler nada do que o sistema faz. */}
               <span className="lp-hero-shot">
                 <Image
-                  src={heroCase.cover ?? heroCase.image}
+                  src="/images/lp/rei-painel.webp"
                   alt={`${heroCase.title}: ${heroCase.headline}`}
-                  width={1280}
-                  height={800}
+                  width={830}
+                  height={517}
                   priority
-                  sizes="(max-width: 900px) 92vw, 460px"
+                  sizes="(max-width: 900px) 92vw, 600px"
                 />
               </span>
               <figcaption>
-                Muda Paisagens: o lead chega no WhatsApp, a IA qualifica pelas perguntas
-                que a equipe fazia na mão e o Pipefy recebe tudo registrado.
+                Rei Sol Infraestrutura: cada obra com etapa, responsável, SLA e o que
+                está atrasado, no lugar da planilha que ninguém atualizava.
               </figcaption>
             </figure>
           </div>
