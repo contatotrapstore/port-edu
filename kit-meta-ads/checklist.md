@@ -59,19 +59,31 @@ vinculado, então também não há nada para reaproveitar.
 | O quê | Valor |
 |---|---|
 | Portfólio | Eduardo Gouveia · 287611329178059 · **não verificado** |
-| Conta de anúncios | EDevsHub - BR · `act_2196483267931657` · BRL · Brasília |
-| Dataset | edevshub.com · `2514954938991781` · ligado só à conta nova |
+| Conta de anúncios | **Dudu** · `act_1515926913536871` · USD · Nova York · tem cartão |
+| Conta reserva | EDevsHub - BR · `act_2196483267931657` · BRL · Brasília · sem cartão |
+| Dataset | edevshub.com · `2514954938991781` · vai para a conta Dudu |
 | Domínio | edevshub.com · **verificado** por meta-tag |
-| Forma de pagamento | **não existe** na conta nova |
+| Forma de pagamento | cartão já existe na Dudu · saldo a recarregar |
 
 A conta antiga (Dudu, USD/Nova York), o dataset "Clinafy One miliiasss" e o
 rascunho não publicado seguem parados e intocados.
 
 ## Próximo passo
 
-Rodar o **prompt 2** de `prompt-extensao-2-configurar.md`, que prioriza
-`Contact` na frente do `PageView`. Já existe evento no dataset para priorizar:
-a verificação em produção gerou alguns `PageView` e um `Contact` de teste.
+Rodar `prompt-extensao-3-usar-conta-dudu.md`. Ele religa o dataset para a conta
+Dudu, desconecta a EDevsHub - BR e termina a priorização de eventos (`Contact`
+na frente do `PageView`). Substitui o prompt 2, que ficou obsoleto com a
+mudança de conta.
+
+**O site não muda com essa troca**: o que está instalado no código é o dataset,
+não a conta de anúncios. Já existe evento para priorizar — a verificação em
+produção gerou alguns `PageView` e um `Contact` de teste, que não são leads.
+
+### Custo de usar a conta em dólar
+
+A cobrança vira compra internacional (IOF mais spread do cartão, cotação do dia)
+e o dia do orçamento fecha à meia-noite de Nova York, 1h ou 2h da manhã aqui.
+Decisão tomada com isso na mesa: a Dudu já tem pagamento configurado.
 
 ## Ainda não existe, e é decisão sua
 
