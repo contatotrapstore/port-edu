@@ -100,4 +100,38 @@ if (offenders.length) {
   );
 }
 
-console.log("✓ zona Workana isolada (sem canal de contato nem link interno na /workana)");
+// --- Checagem 3: a /workana continua fora do pixel de anúncio ------------
+// O pixel é injetado pelo next/script no cliente, então ele NÃO aparece no
+// HTML pré-renderizado: a checagem 1 jamais o veria. A verificação possível
+// em tempo de build é sobre a fonte da lista de bloqueio.
+const blocklistPath = path.join(ROOT, "src", "lib", "pixel-blocklist.ts");
+if (!fs.existsSync(blocklistPath)) {
+  fail(
+    "src/lib/pixel-blocklist.ts não existe.\n\n" +
+      "É esse arquivo que mantém a /workana fora do pixel de anúncio."
+  );
+}
+const blocklist = fs.readFileSync(blocklistPath, "utf8");
+if (!/PIXEL_BLOCKED_PREFIXES\s*=\s*\[[^\]]*["']\/workana["']/s.test(blocklist)) {
+  fail(
+    'A rota "/workana" saiu de PIXEL_BLOCKED_PREFIXES em src/lib/pixel-blocklist.ts.\n\n' +
+      "A /workana é aberta por quem chegou pela plataforma: pixel ali suja o\n" +
+      "público do anúncio e coloca tracking de terceiro numa página que a\n" +
+      "Workana enxerga. O pixel vive só na superfície de tráfego pago."
+  );
+}
+
+const pixelComp = path.join(ROOT, "src", "components", "analytics", "MetaPixel.tsx");
+if (fs.existsSync(pixelComp)) {
+  const src = fs.readFileSync(pixelComp, "utf8");
+  if (!/isPixelBlocked/.test(src)) {
+    fail(
+      "MetaPixel.tsx não usa isPixelBlocked(): a lista de bloqueio virou\n" +
+        "decorativa e a /workana passaria a carregar pixel."
+    );
+  }
+}
+
+console.log(
+  "✓ zona Workana isolada (sem canal de contato, link interno nem pixel na /workana)"
+);

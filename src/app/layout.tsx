@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import MetaPixel from "@/components/analytics/MetaPixel";
 import "./globals.css";
 import { siteUrl } from "@/lib/site";
 
@@ -89,6 +90,19 @@ export const metadata: Metadata = {
       "x-default": "/",
     },
   },
+  // A Meta só libera a configuração de eventos priorizados (AEM) depois que o
+  // domínio está verificado, e sem isso o anúncio roda cego no iOS. A tag só
+  // aparece quando a variável existe: token de verificação não fica no repo.
+  ...(process.env.NEXT_PUBLIC_FB_DOMAIN_VERIFICATION
+    ? {
+        verification: {
+          other: {
+            "facebook-domain-verification":
+              process.env.NEXT_PUBLIC_FB_DOMAIN_VERIFICATION,
+          },
+        },
+      }
+    : {}),
 };
 
 const workanaUrl =
@@ -160,6 +174,7 @@ export default function RootLayout({
       <body>
         {children}
         <Analytics />
+        <MetaPixel />
       </body>
     </html>
   );

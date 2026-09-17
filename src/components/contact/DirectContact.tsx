@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { track } from "@vercel/analytics";
 import { siteConfig } from "@/lib/constants";
 import { getAttribution } from "@/lib/attribution";
+import { metaTrack } from "@/components/analytics/MetaPixel";
 import WorkanaLink from "@/components/workana/WorkanaLink";
 
 /**
@@ -42,6 +43,10 @@ export default function DirectContact({
       channel,
       ...(src ? { src } : ref ? { ref } : { page }),
     });
+    // "Contact" é o evento padrão da Meta para "alguém iniciou conversa com o
+    // negócio". Padrão, e não custom, porque só os padrão entram na lista de
+    // eventos priorizados que o iOS exige e servem de objetivo de campanha.
+    metaTrack("Contact", { content_name: page, channel });
   };
 
   // Lido depois da hidratação, de propósito. Se fosse durante o render, o
