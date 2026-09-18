@@ -26,8 +26,12 @@ responde 200 para qualquer requisição bem formada, mas descarta no servidor o
 que identifica como tráfego automatizado. Ou seja: eu provei que *o site envia
 certo*, mas não provo que *a Meta aceita e registra*.
 
-Só um navegador real resolve isso. É o teste abaixo, e ele é manual de
-propósito — a extensão também roda dentro de automação.
+Só um navegador real resolve isso, e "real" aqui quer dizer sem automação
+nenhuma dirigindo. A extensão roda no Chrome do Eduardo, com perfil, cookies e
+IP dele, mas dirige por CDP, o que marca `navigator.webdriver` — exatamente a
+variável que este teste existe para eliminar. Se ela clicasse e não aparecesse
+nada, não daria para saber se foi a Meta descartando ou a automação de novo.
+Por isso o clique é manual.
 
 A segunda hipótese é simples atraso: o dataset foi criado hoje, e o gráfico de
 "Visão geral" agrega com alguns minutos de defasagem. A aba **Testar eventos**
@@ -67,7 +71,12 @@ Me diga qual dos dois aconteceu.
 A descrição da extensão (redireciona para `eventsmanager.facebook.com`, título
 nunca é definido, nada é pintado, 40 segundos) é o sintoma clássico de
 **extensão do navegador bloqueando o domínio**, não de conta sem permissão.
-No print da sessão dá para ver bastante extensão instalada.
+
+E isso pesa mais do que parecia: a extensão não abre um navegador separado, ela
+dirige o Chrome do Eduardo, com o perfil e as extensões dele. Ou seja, a tela em
+branco aconteceu no navegador real, com os bloqueadores reais carregados. Um
+uBlock ou Privacy Badger no perfil explicaria o AEM em branco E o pixel não
+saindo quando ele navega à mão.
 
 Ordem de tentativa, da mais barata para a mais cara:
 
