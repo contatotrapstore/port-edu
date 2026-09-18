@@ -1,2 +1,30 @@
-Saida dos criativos gerados pelo Codex + Higgsfield.
-Especificacao em ../criativos.md
+Estáticos EDevsHub — segunda rodada aprovada
+
+Entregas: c1-operacao-cresceu-{4x5,1x1,9x16}.png e c2-prova-{4x5,1x1,9x16}.png.
+A versão antiga foi preservada em c1-operacao-cresceu-4x5-higgsfield.png.
+Copy atual e conferências: VEREDITO.md, seção 8 e Segunda rodada.
+Não usar o Higgsfield para reproduzir estes estáticos. Custo de créditos: zero.
+
+RENDERIZAR OS SEIS (PowerShell, de qualquer diretório):
+node 'C:/Users/GouveiaRx/Downloads/Port Edu/kit-meta-ads/criativos/render-estaticos.cjs'
+
+Se o runtime temporário tiver sido removido, reinstalar fora do site:
+New-Item -ItemType Directory -Force -Path C:/Users/GouveiaRx/AppData/Local/Temp/edevshub-ads-render
+Set-Location C:/Users/GouveiaRx/AppData/Local/Temp/edevshub-ads-render
+npm.cmd install --prefix C:/Users/GouveiaRx/AppData/Local/Temp/edevshub-ads-render --no-audit --no-fund playwright
+
+O script usa o Chrome instalado, sem baixar navegador e sem alterar package.json do site.
+Overrides opcionais: ADS_RENDER_RUNTIME (diretório contendo node_modules/playwright) e ADS_CHROME_PATH.
+Sharp vem do node_modules existente do projeto.
+
+EDITAR:
+Texto e proporções no template-estatico.html. Parâmetros da prévia:
+template-estatico.html?concept=c2&ratio=9x16
+Fontes locais Space Grotesk e Inter copiadas do build da landing; nenhuma dependência de Google Fonts online.
+
+VERIFICAR:
+O script interrompe em erro de dimensão, fundo, fonte, texto, quebra, overflow ou diferença no bloco comum.
+qa/verificacao.json registra as medições; qa/*-360.png são prévias para abrir e avaliar visualmente.
+Uma nova execução redefine mobileVisualReview para pending. Só aprovar depois de abrir as seis prévias.
+A renderização sobrescreve os seis PNGs finais e o relatório, mas não toca no original Higgsfield.
+Não publicar nem enviar anúncios automaticamente.

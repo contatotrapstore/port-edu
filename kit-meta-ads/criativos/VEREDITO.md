@@ -1,6 +1,6 @@
 # Veredito — primeira campanha EDevsHub
 
-Análise em 17/09/2026, horário de Brasília. Fase 1 concluída; fase 2 autorizada somente para uma peça, em seu formato principal. A fase 3 depende da aprovação de Eduardo.
+Análise inicial em 17/09/2026, horário de Brasília. **Segunda rodada concluída após aprovação de Eduardo: seis estáticos renderizados por código, sem créditos.** As seções de análise da primeira rodada estão preservadas como histórico; a seção 8 contém a copy vigente e a seção “Segunda rodada” registra a entrega atual. As estimativas de Higgsfield ao final da primeira rodada foram substituídas pela produção local gratuita.
 
 ## 1. Quantos criativos a verba sustenta
 
@@ -80,43 +80,47 @@ Consulta externa: tentei conferir as páginas oficiais de [atributos pessoais](h
 
 ## 8. Lista final e copy
 
-**Mudança:** de três conceitos (dois vídeos e um estático) para dois estáticos. Mesma oferta nos dois, sem áudio, sem interface, sem pessoas. As versões 1:1 e 9:16 serão adaptações após aprovação. Duração: não se aplica.
+**Decisão aprovada e executada:** dois estáticos, dor contra prova. Mesma oferta nos dois, sem áudio, sem interface, sem pessoas. Versões 4:5, 1:1 e 9:16 produzidas por código. Duração: não se aplica. A linha de oferta vigente é “Integração entre os sistemas que você já usa”.
 
 ### C1 — operação cresceu (primeira peça; aposta inicial)
 
 - Formato principal: 4:5. Nome: c1-operacao-cresceu-4x5.png.
-- Ordem de leitura: “Sua operação cresceu.” em branco; “Seus sistemas, não.” em verde; “Integração sob medida”; “A partir de R$ 6 mil”; assinatura discreta “Eduardo Gouveia · EDevsHub”. Sem botões fictícios, números adicionais ou marcas de clientes.
-- Texto principal: **Sua operação cresceu. Seus sistemas, não. Integração sob medida a partir de R$ 6 mil.**
+- Ordem de leitura: “Sua operação cresceu.” em branco; “Seus sistemas, não.” em verde; “Integração entre os sistemas que você já usa”; “A partir de R$ 6 mil”; assinatura discreta “Eduardo Gouveia · EDevsHub”. Sem botões fictícios, números adicionais ou marcas de clientes.
+- Texto principal: **Sua operação cresceu. Seus sistemas, não.**
 
-  Eu conecto os sistemas que você já usa e desenvolvo um painel para acompanhar a operação. Escopo, prazo e valor por escrito antes de começar. Prazo de referência: 2 a 6 semanas, conforme o escopo combinado.
-- Título: **Integração sob medida**
+  Integração entre os sistemas que você já usa. A partir de R$ 6 mil.
+
+  Eu conecto seus sistemas e desenvolvo um painel para acompanhar a operação. Escopo, prazo e valor por escrito antes de começar.
+- Título: **Integre os sistemas que você já usa**
 - Descrição: **Escopo, prazo e valor por escrito**
 - Botão da plataforma: **Saiba mais**
 - Destino: https://www.edevshub.com/contratar
 - Por que aposto nela: reconhece a dor, filtra pelo investimento e repete exatamente a promessa do hero. Não é uma previsão de desempenho.
 
-### C2 — prova (somente depois da aprovação)
+### C2 — prova
 
-- Formato principal: 4:5. Nome planejado: c2-prova-integracao-4x5.png.
-- Ordem de leitura: “176 sistemas entregues”; “37 clientes voltaram a me contratar”; mesma oferta e preço de C1; mesma assinatura. Hierarquia enxuta, sem empilhar também a nota na arte.
-- Texto principal: **176 sistemas entregues. 37 clientes voltaram a me contratar. Integração sob medida a partir de R$ 6 mil.**
+- Formato principal: 4:5. Nome: c2-prova-4x5.png.
+- Ordem de leitura: “176 sistemas entregues.”; “37 clientes voltaram a me contratar.”; mesma oferta e preço de C1; mesma assinatura. Hierarquia enxuta, sem empilhar também a nota na arte.
+- Texto principal: **176 sistemas entregues. 37 clientes voltaram a me contratar.**
 
-  Eu conecto os sistemas que você já usa e desenvolvo um painel para acompanhar a operação. Escopo, prazo e valor por escrito antes de começar. Prazo de referência: 2 a 6 semanas, conforme o escopo combinado.
-- Título: **Integração sob medida**
+  Integração entre os sistemas que você já usa. A partir de R$ 6 mil.
+
+  Eu conecto seus sistemas e desenvolvo um painel para acompanhar a operação. Escopo, prazo e valor por escrito antes de começar.
+- Título: **Integre os sistemas que você já usa**
 - Descrição: **Escopo, prazo e valor por escrito**
 - Botão e destino: iguais a C1.
 
 Os números de reputação foram conferidos em workanaStats; preços e prazos em offers. Não foram auditados diretamente na Workana. Não usar os demais números existentes no repositório nas peças.
 
-## Produção e custo — antes de gerar
+## Histórico da primeira rodada — produção e custo antes de gerar
 
 Higgsfield: saldo consultado **827,56 créditos**, plano Plus. Modelo gpt_image_2_5. Estimativas somente de leitura retornaram **1 crédito por imagem** em 4:5, 1:1 e 9:16. Dois conceitos × três proporções = **6 créditos**, sem refações; saldo projetado 821,56. Fase 2: **1 crédito**, uma imagem 4:5; saldo projetado 826,56. Créditos não são reais; não foi obtida conversão monetária verificável. Não contratar plano ou recarga.
 
 As gerações gratuitas listadas são de Genjutsu/Viral e não cobrem esta imagem. Não usá-las para desviar o formato escolhido. Novas versões, cortes e refações aguardam aprovação.
 
-## Entrega e limitações
+## Histórico da primeira rodada — entrega e limitações
 
-**Fase 2 concluída. Aguardando aprovação; fase 3 não iniciada.**
+**Estado ao encerrar a primeira rodada:** fase 2 concluída, aguardava aprovação. Esse estado foi superado pela aprovação e entrega da segunda rodada abaixo.
 
 | Arquivo entregue | Formato | Dimensões | Duração |
 |---|---|---|---|
@@ -130,3 +134,74 @@ Conferência visual do PNG: texto integral correto, incluindo acentos, preço in
 **Limitações honestas:** o modelo entregou 896 × 1120, abaixo do alvo usual de trabalho de 1080 × 1350; não foi ampliado artificialmente. A paleta é visualmente próxima, mas não respeita os hexadecimais de forma exata: um pixel de fundo medido foi #070808, em vez de #0a0c0b, e há variação sutil na superfície das letras. Portanto, é uma primeira peça para aprovação de direção, não um arquivo certificado de identidade cromática. Não houve uma segunda geração para corrigir isso. A assinatura é secundária e menor; a legibilidade em aparelho físico e a prévia no Gerenciador ainda precisam ser conferidas. A peça 4:5 não está aprovada para recorte automático em Stories/Reels.
 
 RTK.md e CODEX.md não foram encontrados na raiz, em Downloads, .codex ou .agents; não presumir instruções que não puderam ser lidas. Não foram alterados campanha.md, criativos.md, o prompt ou a landing. Nenhum anúncio foi publicado.
+
+## Segunda rodada — entrega aprovada, produzida por código
+
+Aprovação recebida com duas mudanças: oferta explícita e renderização local. As seis peças abaixo substituem o plano de produção pelo Higgsfield. **Zero crédito utilizado nesta rodada.** Nenhuma ferramenta Higgsfield foi chamada. Nenhum anúncio foi publicado.
+
+### Texto e composição
+
+A seção 8 acima contém a copy atual para copiar no Gerenciador. Depois da primeira frase de gancho, todo o texto principal é igual nos dois anúncios. O título comum é “Integre os sistemas que você já usa”; a descrição é “Escopo, prazo e valor por escrito”. Não acrescentei nota, avaliações ou outros resultados. O preço de R$ 6 mil foi mantido conforme os textos explicitamente pedidos nesta rodada.
+
+C1 tem quatro linhas fixas: “Sua operação” / “cresceu.” / “Seus sistemas,” / “não.”. C2 também tem quatro linhas: “176 sistemas” / “entregues.” / “37 clientes voltaram” / “a me contratar.”. Assim, as duas frases de prova usam duas linhas cada, sem quebra de palavras. A frase verde de C2 usa corpo menor para preservar a leitura e a largura; só o bloco de gancho varia.
+
+O template usa Space Grotesk real para título/oferta e Inter real para preço/assinatura, copiadas do build local da landing e carregadas sem rede. O navegador confirmou via CDP que as fontes desenhadas são essas fontes web, sem fallback. As três cores sólidas são #0a0c0b, #e8efec e #3fcf7f; tons intermediários de antialiasing nas bordas das letras são normais. Retirei os cinzas extras do template fornecido no preço e na assinatura.
+
+### Conferências de cada arquivo
+
+Medições por sharp e pelo navegador. Fundo amostrado em (10,10); limites também verificados por varredura de todos os pixels não pertencentes ao fundo. “4 (2+2)” significa duas linhas brancas e duas verdes do C2. Todos os textos foram comparados com a sequência exata solicitada. As seis prévias reais reduzidas a 360 px foram abertas e examinadas visualmente.
+
+| Arquivo | Dimensões exatas | Fundo | Sem transbordamento / área ocupada | Linhas do título | Legibilidade a 360 px |
+|---|---|---|---|---|---|
+| c1-operacao-cresceu-4x5.png | 1080 × 1350 | #0a0c0b — passou | Passou; x=92–987, y=235–1138 | 4 — passou | Passou; oferta 19,3 px, preço 15,3 px |
+| c2-prova-4x5.png | 1080 × 1350 | #0a0c0b — passou | Passou; x=92–987, y=235–1138 | 4 (2+2) — passou | Passou; oferta 19,3 px, preço 15,3 px |
+| c1-operacao-cresceu-1x1.png | 1080 × 1080 | #0a0c0b — passou | Passou; x=92–987, y=104–896 | 4 — passou | Passou; oferta 18 px, preço 15,3 px |
+| c2-prova-1x1.png | 1080 × 1080 | #0a0c0b — passou | Passou; x=92–987, y=104–896 | 4 (2+2) — passou | Passou; oferta 18 px, preço 15,3 px |
+| c1-operacao-cresceu-9x16.png | 1080 × 1920 | #0a0c0b — passou | Passou; x=92–987, y=304–1118, inteiramente na área segura | 4 — passou | Passou; oferta 18,7 px, preço 15,3 px |
+| c2-prova-9x16.png | 1080 × 1920 | #0a0c0b — passou | Passou; x=92–987, y=304–1118, inteiramente na área segura | 4 (2+2) — passou | Passou; oferta 18,7 px, preço 15,3 px |
+
+As medidas de tamanho a 360 px são equivalentes ao corpo tipográfico na escala 1/3. A avaliação visual complementa essas medidas; não é um teste com participantes ou em todos os aparelhos. A assinatura é secundária, com corpo equivalente a 10 px; a oferta e o preço são maiores e legíveis.
+
+Nos verticais, os primeiros 269 px e a região a partir de y=1248 têm apenas o fundo; as laterais excedem os 65 px mínimos. O espaço vazio maior na base é intencional para os controles de Stories/Reels. Não aproximar a assinatura do rodapé ao subir o arquivo.
+
+### Bloco comum: posições e tamanhos idênticos entre C1 e C2
+
+Todos usam x=92 e largura de bloco 896 px. Além da igualdade de coordenadas e fonte no DOM, o SHA-256 da região de pixels desde a oferta até o fim do canvas é idêntico no par de cada proporção.
+
+| Proporção | Oferta: y / corpo / entrelinha | Preço: y / corpo | Filete: y / altura | Assinatura: y / corpo |
+|---|---|---|---|---|
+| 4:5 | 788 / 58 / 63 px | 935 / 46 px | 1070 / 4 px | 1108 / 30 px |
+| 1:1 | 550 / 54 / 59 px | 692 / 46 px | 828 / 4 px | 866 / 30 px |
+| 9:16 | 770 / 56 / 61 px | 918 / 46 px | 1050 / 4 px | 1088 / 30 px |
+
+O quadrado recebeu título menor e espaçamento mais compacto, mantendo as margens laterais e as quatro linhas. Preço e assinatura conservaram tamanho para não perder leitura. O vertical recebeu composição própria dentro da faixa segura, em vez de apenas ganhar altura de canvas.
+
+### Comparação com o Higgsfield
+
+O original foi preservado como **c1-operacao-cresceu-4x5-higgsfield.png**, sem alteração do conteúdo. O novo c1-operacao-cresceu-4x5.png tem resolução nativa de 1080 × 1350, fundo exato, tipografia real, linha de oferta correta e layout reproduzível. Melhoraram controle, fidelidade à landing e consistência entre peças; custo adicional de créditos: zero.
+
+Tradeoff: a oferta nova é mais longa e ocupa duas linhas; exige um pouco mais de leitura que “Integração sob medida”. O desenho ficou mais sóbrio, e o gancho ocupa menos largura que na versão gerada. Isso é consistente com o template aprovado, mas não há evidência de que aumente o CTR. No 9:16, preservar área segura reduz a ocupação visual da tela. A nova produção resolve as limitações técnicas registradas na primeira rodada; não resolve por si a incerteza de desempenho.
+
+### Reproduzir e conferir
+
+- template-estatico.html: fonte única parametrizada por concept=c1|c2 e ratio=4x5|1x1|9x16; abre como C1 4:5 por padrão.
+- render-estaticos.cjs: gera os seis arquivos, aguarda document.fonts.ready, verifica fontes reais, texto, linhas, geometria, paleta e pixels; captura somente #art.
+- fonts/: cópias das fontes latinas já presentes no build local da landing.
+- qa/verificacao.json: medições completas, fontes efetivas, hashes do bloco comum e resultado da revisão visual.
+- qa/*-360.png: prévias para a conferência de leitura. São arquivos de QA, não anúncios adicionais.
+- LEIA-ME.txt: comando de reprodução e instalação isolada do Playwright.
+
+Playwright foi instalado em diretório temporário sem espaços. package.json e o lockfile do site não foram alterados. O gerador marca a revisão visual como pendente a cada nova execução; novas renderizações precisam ser abertas e revistas. Nesta entrega, os seis resultados foram aprovados nessa revisão.
+
+Antes de subir: usar o arquivo correspondente ao posicionamento, sem corte automático que desloque textos, e conferir a prévia do Gerenciador. Essa conferência na conta não foi executada, pois a tarefa termina nos arquivos. A análise da primeira rodada permanece acima para consulta; seus estados de aprovação e custos são históricos.
+
+## Revisão visual (18/09) — o que as asserções não pegavam
+
+O script de renderização mede dimensão, cor, fonte, quebra, overflow, área segura e bloco comum idêntico, e todas passaram. Duas falhas eram de desenho, e só aparecem olhando a peça:
+
+1. **C2, vão entre as linhas verdes.** "37 clientes voltaram" e "a me contratar." usavam corpo de 80 px (`--proof`) mas herdavam a altura de linha do título grande (`--step`, 116 px). Resultado: um vão maior que o próprio texto entre as duas linhas, que liam como itens separados. Corrigido com altura de linha proporcional ao próprio corpo e 18 px de respiro antes do bloco verde.
+2. **9:16 com título encolhido sem motivo.** A largura útil é a mesma do 4:5, mas o título tinha caído de 116 para 100 px. No posicionamento que costuma ter o inventário mais barato, é impacto perdido de graça. Agora usa a mesma escala do 4:5, deslocada para ficar centralizada na área que o Stories e o Reels não cobrem (y 269 a 1248).
+
+Script rodado de novo depois das correções: as seis peças passaram em todas as asserções, inclusive a de bloco comum idêntico pixel a pixel entre C1 e C2. Revisão visual das seis feita: **aprovadas para subir**.
+
+O vazio abaixo do conteúdo no 9:16 é intencional: é a faixa que a interface do Stories cobre com o campo de resposta e o botão.

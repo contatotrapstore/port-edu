@@ -1,53 +1,36 @@
 <!doctype html>
-<!--
-  Template dos estáticos do Meta Ads, renderizado por código e não por IA.
-
-  Por que código: estático tipográfico não precisa de gerador de imagem. Aqui a
-  cor é exata (#0a0c0b, a IA entregou #060909), a resolução é a que o Meta pede
-  (1080x1350, a IA entregou 896x1120), a fonte é a Space Grotesk de verdade (a
-  mesma da landing, não "parecida"), os acentos nunca erram e cada variação
-  custa zero crédito.
-
-  Para gerar: abrir num navegador com viewport 1080x1350, esperar
-  document.fonts.ready e tirar screenshot do #art. Para 1:1 trocar a altura
-  para 1080; para 9:16, 1080x1920 respeitando a área segura do Stories.
--->
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&display=block" rel="stylesheet">
+<!-- Parâmetros: ?concept=c1|c2&ratio=4x5|1x1|9x16. Fontes locais da landing. -->
+<html lang="pt-BR"><head><meta charset="utf-8"><title>EDevsHub — estático</title>
 <style>
-  :root { --bg:#0a0c0b; --ink:#e8efec; --acc:#3fcf7f; }
-  html,body { margin:0; background:var(--bg); }
-  .art {
-    width:1080px; height:1350px; box-sizing:border-box;
-    padding:118px 92px 96px;
-    background:var(--bg); color:var(--ink);
-    display:flex; flex-direction:column; justify-content:center;
-    font-family:'Space Grotesk', sans-serif;
-  }
-  h1 {
-    margin:0; font-weight:700;
-    font-size:116px; line-height:1.0; letter-spacing:-0.035em; white-space:nowrap;
-  }
-  h1 .a { color:var(--acc); }
-  .offer { margin-top:104px; }
-  .offer p { margin:0; }
-  .o1 { font-weight:700; font-size:58px; line-height:1.08; letter-spacing:-0.02em; }
-  .o2 { font-family:'Inter',sans-serif; font-weight:400; font-size:46px; margin-top:22px !important; color:#c9d3cf; }
-  .rule { height:4px; background:var(--acc); margin:80px 0 34px; }
-  .sig { font-family:'Inter',sans-serif; font-weight:600; font-size:30px; color:#aab6b2; letter-spacing:0.01em; }
-</style>
-</head>
-<body>
-  <div class="art" id="art">
-    <h1>Sua operação<br>cresceu.<br><span class="a">Seus sistemas,<br>não.</span></h1>
-    <div class="offer">
-      <p class="o1">Integração entre os sistemas<br>que você já usa</p>
-      <p class="o2">A partir de R$ 6 mil</p>
-    </div>
-    <div class="rule"></div>
-    <div class="sig">Eduardo Gouveia · EDevsHub</div>
-  </div>
-</body>
-</html>
+@font-face{font-family:'Space Grotesk';src:url('./fonts/space-grotesk-latin.woff2');font-weight:300 700;font-display:block}
+@font-face{font-family:Inter;src:url('./fonts/inter-latin.woff2');font-weight:100 900;font-display:block}
+:root{--bg:#0a0c0b;--ink:#e8efec;--acc:#3fcf7f}*{box-sizing:border-box}html,body{margin:0;background:var(--bg)}
+#art{position:relative;width:1080px;height:1350px;background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;font-size-adjust:from-font;--top:220px;--title:116px;--step:116px;--proof:80px;--offer-y:788px;--offer:58px;--offer-line:63px;--price-y:935px;--rule-y:1070px;--sig-y:1108px}
+#art[data-ratio="1x1"]{height:1080px;--top:90px;--title:96px;--step:100px;--proof:68px;--offer-y:550px;--offer:54px;--offer-line:59px;--price-y:692px;--rule-y:828px;--sig-y:866px}
+/* 9:16: a largura util e a mesma do 4:5, entao o titulo nao tinha motivo para
+   encolher. Mesma escala do 4:5, deslocada para ficar centralizada na area
+   que o Stories e o Reels nao cobrem (y 269 a 1248). */
+#art[data-ratio="9x16"]{height:1920px;--top:292px;--title:116px;--step:116px;--proof:80px;--offer-y:860px;--offer:58px;--offer-line:63px;--price-y:1007px;--rule-y:1142px;--sig-y:1180px}
+h1,p{margin:0}h1{position:absolute;left:92px;top:var(--top);width:896px;font-size:var(--title);font-weight:700;line-height:var(--step);letter-spacing:-.035em}
+.line{display:block;white-space:nowrap;overflow-wrap:normal;word-break:normal}.accent{color:var(--acc)}
+/* C2: as linhas verdes usam corpo menor (--proof). Herdando a altura de linha do
+   titulo grande (--step), texto de 80px ficava em linha de 116px e abria um vao
+   entre "voltaram" e "a me contratar". A altura acompanha o proprio corpo. */
+#art[data-concept="c2"] h1 .accent{font-size:var(--proof);line-height:calc(var(--proof) * 1.12);letter-spacing:-.025em}
+#art[data-concept="c2"] h1 .accent:nth-child(3){margin-top:18px}
+.offer,.price,.rule,.sig{position:absolute;left:92px;width:896px}
+.offer{top:var(--offer-y);font-size:var(--offer);line-height:var(--offer-line);font-weight:700;letter-spacing:-.02em}
+.price{top:var(--price-y);font:400 46px/1.25 Inter,sans-serif}
+.rule{top:var(--rule-y);height:4px;background:var(--acc)}
+.sig{top:var(--sig-y);font:600 30px/1.3 Inter,sans-serif;letter-spacing:.01em}
+</style></head><body>
+<main id="art" data-concept="c1" data-ratio="4x5">
+<h1><span class="line">Sua operação</span><span class="line">cresceu.</span><span class="line accent">Seus sistemas,</span><span class="line accent">não.</span></h1>
+<p class="offer"><span class="line">Integração entre os sistemas</span><span class="line">que você já usa</span></p>
+<p class="price">A partir de R$ 6 mil</p><div class="rule" aria-hidden="true"></div><p class="sig">Eduardo Gouveia · EDevsHub</p>
+</main><script>
+const params=new URLSearchParams(location.search),concept=params.get('concept')||'c1',ratio=params.get('ratio')||'4x5';
+if(!['c1','c2'].includes(concept)||!['4x5','1x1','9x16'].includes(ratio))throw new Error('Parâmetros inválidos');
+const art=document.querySelector('#art');art.dataset.concept=concept;art.dataset.ratio=ratio;
+if(concept==='c2'){const lines=['176 sistemas','entregues.','37 clientes voltaram','a me contratar.'];document.querySelectorAll('h1 .line').forEach((el,i)=>el.textContent=lines[i]);}
+</script></body></html>
