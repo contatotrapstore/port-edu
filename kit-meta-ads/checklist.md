@@ -54,19 +54,31 @@ campanha ativa, não há histórico a perder: trocar agora é de graça, daqui a
 três meses não é. O dataset antigo nunca recebeu evento e não tem site
 vinculado, então também não há nada para reaproveitar.
 
-## Estrutura da Meta (17/09, feita pela extensão)
+## Estrutura da Meta (estado final, 18/09, antes de publicar)
 
 | O quê | Valor |
 |---|---|
-| Portfólio | Eduardo Gouveia · 287611329178059 · **não verificado** |
-| Conta de anúncios | **Dudu** · `act_1515926913536871` · USD · Nova York · tem cartão · dataset ligado |
-| Conta reserva | EDevsHub - BR · `act_2196483267931657` · BRL · Brasília · sem cartão |
+| Portfólio | Eduardo Gouveia · 287611329178059 · não verificado |
+| Conta de anúncios | **Dudu** · `act_1515926913536871` · USD · fuso de Nova York · cartão · limite **US$ 95, reinício manual** |
+| Conta reserva | EDevsHub - BR · `act_2196483267931657` · BRL · sem cartão · parada |
 | Dataset | edevshub.com · `2514954938991781` · ligado só à Dudu |
-| Domínio | edevshub.com · **verificado** por meta-tag |
-| Forma de pagamento | cartão já existe na Dudu · saldo a recarregar |
+| Domínio | edevshub.com · verificado por meta-tag |
+| Página | **EDevsHub** · 1296763533524155 · Empresa de software · foto e capa ok · usuário `edevshub` (pendente de senha) |
+| Campanha | `EDH · Tráfego · Integração · Teste 1` · Tráfego · sem categoria especial |
+| Conjunto | `BR · 25-60 · aberto` · visualização da página de destino · US$ 6,50/dia · 14 dias a partir da publicação |
+| Público | Brasil · 25-60 (sugestão, Advantage+) · todos os gêneros · sem segmentação detalhada |
+| Posicionamentos | Feeds, Stories, Reels e busca de Facebook, Instagram, Messenger e Threads |
+| Excluídos | Status do WhatsApp, in-stream de Reels, Audience Network. "Gasto limitado em excluídos" desmarcado |
+| C1 | `c1-operacao-cresceu` · 4:5 Feeds, 9:16 Stories/Reels, 1:1 busca · `utm_source=meta-c1` |
+| C2 | `c2-prova` · mesma distribuição · `utm_source=meta-c2` |
+| IA da Meta | as 5 melhorias desligadas nos dois, versões automáticas de proporção removidas, 0 imagens geradas |
 
-A conta antiga (Dudu, USD/Nova York), o dataset "Clinafy One miliiasss" e o
-rascunho não publicado seguem parados e intocados.
+Rascunho antigo ("Novo anúncio de Tráfego", com erro) segue intocado e deve ficar
+**desmarcado** na hora de publicar.
+
+**Atenção depois de publicar:** a Meta religou sozinha, mais de uma vez, a música
+e o "gasto limitado em excluídos", e sugere reativar posicionamentos Advantage+
+para subir a pontuação. Nenhuma sugestão deve ser aceita durante o teste.
 
 ## Pixel confirmado em 17/09, 21:09
 
