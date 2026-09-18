@@ -59,9 +59,9 @@ vinculado, então também não há nada para reaproveitar.
 | O quê | Valor |
 |---|---|
 | Portfólio | Eduardo Gouveia · 287611329178059 · **não verificado** |
-| Conta de anúncios | **Dudu** · `act_1515926913536871` · USD · Nova York · tem cartão |
+| Conta de anúncios | **Dudu** · `act_1515926913536871` · USD · Nova York · tem cartão · dataset ligado |
 | Conta reserva | EDevsHub - BR · `act_2196483267931657` · BRL · Brasília · sem cartão |
-| Dataset | edevshub.com · `2514954938991781` · vai para a conta Dudu |
+| Dataset | edevshub.com · `2514954938991781` · ligado só à Dudu |
 | Domínio | edevshub.com · **verificado** por meta-tag |
 | Forma de pagamento | cartão já existe na Dudu · saldo a recarregar |
 
@@ -70,20 +70,15 @@ rascunho não publicado seguem parados e intocados.
 
 ## Próximo passo
 
-Rodar `prompt-extensao-3-usar-conta-dudu.md`. Ele religa o dataset para a conta
-Dudu, desconecta a EDevsHub - BR e termina a priorização de eventos (`Contact`
-na frente do `PageView`). Substitui o prompt 2, que ficou obsoleto com a
-mudança de conta.
+`prompt-extensao-4-diagnostico.md`. O dataset ainda marca "nenhum evento
+recebido", mas a requisição sai correta de produção (ID novo, `ev=Contact`,
+resposta 200): o mais provável é que a Meta descarte meu tráfego por ser
+navegador automatizado. O teste da aba **Testar eventos**, feito à mão num
+navegador de verdade, decide isso em três minutos.
 
-**O site não muda com essa troca**: o que está instalado no código é o dataset,
-não a conta de anúncios. Já existe evento para priorizar — a verificação em
-produção gerou alguns `PageView` e um `Contact` de teste, que não são leads.
-
-### Custo de usar a conta em dólar
-
-A cobrança vira compra internacional (IOF mais spread do cartão, cotação do dia)
-e o dia do orçamento fecha à meia-noite de Nova York, 1h ou 2h da manhã aqui.
-Decisão tomada com isso na mesa: a Dudu já tem pagamento configurado.
+A tela do AEM em branco tem cara de extensão do navegador bloqueando
+`eventsmanager.facebook.com`. Janela anônima resolve na maioria das vezes, e
+de todo modo ela só é útil depois que houver evento registrado.
 
 ## Ainda não existe, e é decisão sua
 
