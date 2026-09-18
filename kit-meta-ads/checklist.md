@@ -68,17 +68,29 @@ vinculado, então também não há nada para reaproveitar.
 A conta antiga (Dudu, USD/Nova York), o dataset "Clinafy One miliiasss" e o
 rascunho não publicado seguem parados e intocados.
 
+## Pixel confirmado em 17/09, 21:09
+
+Teste manual no navegador real, aba Eventos de teste do dataset:
+
+| Evento | Estado | Hora |
+|---|---|---|
+| `PageView` | Processado | 21:09:17 |
+| `Contact` | Processado | 21:09:18 |
+| `SubscribedButtonClick` | Processado | 21:09:18 |
+
+Painel marcando "Recebendo atividade" de www.edevshub.com, e a mensagem chegou
+no WhatsApp com `contratar_topo · meta-ads`. Cadeia inteira fechada: clique de
+anúncio, página, evento na Meta, conversa identificada.
+
+O "nenhum evento" anterior era atraso do painel somado ao meu tráfego de
+navegador automatizado sendo descartado pela Meta.
+
 ## Próximo passo
 
-`prompt-extensao-4-diagnostico.md`. O dataset ainda marca "nenhum evento
-recebido", mas a requisição sai correta de produção (ID novo, `ev=Contact`,
-resposta 200): o mais provável é que a Meta descarte meu tráfego por ser
-navegador automatizado. O teste da aba **Testar eventos**, feito à mão num
-navegador de verdade, decide isso em três minutos.
+`campanha.md` tem criativo, público e estrutura prontos para copiar.
 
-A tela do AEM em branco tem cara de extensão do navegador bloqueando
-`eventsmanager.facebook.com`. Janela anônima resolve na maioria das vezes, e
-de todo modo ela só é útil depois que houver evento registrado.
+Antes de publicar, três coisas suas: priorizar os eventos no AEM (`Contact` em
+primeiro), verificar o negócio com CNPJ e recarregar a conta.
 
 ## Ainda não existe, e é decisão sua
 
