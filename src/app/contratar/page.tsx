@@ -71,7 +71,9 @@ const faq = [
 
 const naoServe = [
   "site institucional, landing page ou loja de prateleira",
-  "orçamento abaixo de R$ 5 mil",
+  // Alinhado com a menor oferta publicada (integração, a partir de R$ 6 mil):
+  // com R$ 5 mil aqui, um orçamento de R$ 5,5 mil não cabia em lugar nenhum.
+  "orçamento abaixo de R$ 6 mil",
   "template pronto ou no-code montado às pressas",
   "sistema do zero para entregar em menos de duas semanas",
 ];
@@ -193,8 +195,8 @@ export default function ContratarPage() {
                 />
               </span>
               <figcaption>
-                Rei Sol Infraestrutura: cada obra com etapa, responsável, SLA e o que
-                está atrasado, no lugar da planilha que ninguém atualizava.
+                Rei Sol Infraestrutura: cada obra com etapa, responsável e SLA, no
+                lugar dos controles manuais que não mostravam o andamento.
               </figcaption>
             </figure>
           </div>

@@ -112,15 +112,15 @@ Botão em todos: **Saiba mais**.
 > **Título:** Seus sistemas param de brigar
 > **Descrição:** Integração e painel sob medida
 
-### Anúncio C — a planilha que ninguém atualiza
+### Anúncio C — controle manual
 
 > **Texto principal**
 > Quando a pessoa que sabe tira férias, a operação trava. Quando ela sai, a
 > regra do negócio some junto.
 >
-> Coloquei a Rei Sol Infraestrutura num painel onde cada obra tem etapa,
-> responsável, SLA e o que está atrasado, no lugar da planilha que ninguém
-> atualizava.
+> Na Rei Sol Infraestrutura, desenvolvi um painel de obras com etapas,
+> responsáveis e prazos, substituindo os controles manuais que não mostravam o
+> andamento.
 >
 > 176 sistemas entregues, nota 4,74 em 179 avaliações.
 >

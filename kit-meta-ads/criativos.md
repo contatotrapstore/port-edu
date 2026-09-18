@@ -49,7 +49,7 @@ qualifica e registra no CRM que você já usa."
 
 ---
 
-## Criativo 2 — "A planilha"
+## Criativo 2 — "Controle manual"
 
 Fonte visual: `public/images/lp/rei-painel.webp`.
 
@@ -58,7 +58,7 @@ Fonte visual: `public/images/lp/rei-painel.webp`.
 | 0,0 a 2,0s | Fundo escuro | **A pessoa que sabe tirou férias.** |
 | 2,0 a 4,0s | Mesmo fundo | A operação travou. |
 | 4,0 a 9,0s | Painel da Rei Sol entrando, aproximação lenta nos status | Obra, responsável, SLA, o que está atrasado. |
-| 9,0 a 12,5s | Destaque nas etiquetas "1 atrasada" e "No prazo" | Tudo num painel. No lugar da planilha. |
+| 9,0 a 12,5s | Destaque nas etiquetas "1 atrasada" e "No prazo" | Tudo num painel. No lugar do controle manual. |
 | 12,5 a 15,0s | Fundo liso | 176 sistemas entregues · 4,74 em 179 avaliações |
 
 **Locução:** "Quando a pessoa que sabe tira férias, a operação trava. Quando ela
