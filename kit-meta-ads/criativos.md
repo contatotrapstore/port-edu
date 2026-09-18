@@ -1,4 +1,4 @@
-# Criativos — especificação e prompt para o Codex
+# Criativos — especificação inicial
 
 Três peças, e só três. Com R$ 35 por dia a Meta precisa concentrar entrega:
 mais criativo com a mesma verba é menos aprendizado em cada um.
@@ -83,53 +83,9 @@ Uma arte, dois cortes (4:5 e 1:1).
 
 ## Prompt para o Codex
 
-## Cole a partir daqui
-
-Preciso produzir 3 criativos de anúncio para Meta Ads usando o MCP do
-Higgsfield. O projeto está em `C:\Users\GouveiaRx\Downloads\Port Edu` e a
-especificação completa em `kit-meta-ads/criativos.md`. Leia esse arquivo antes
-de começar.
-
-**Contexto:** anúncio de software sob medida para donos de PME brasileiros.
-Marca EDevsHub. Tom seco e direto, sem entusiasmo de vendedor, sem promessa de
-enriquecimento.
-
-**Restrições que não se negociam:**
-
-1. **Nenhuma pessoa nas peças.** Sem apresentador, sem avatar, sem rosto
-   gerado por IA. O produto é a prova.
-2. **Não gere interface de software.** As telas são prints reais de sistemas
-   entregues e estão no repositório. Gerar uma tela falsa seria fabricar prova.
-   Use os arquivos:
-   - `public/images/lp/rei-painel.webp` (painel de gestão de obras)
-   - `public/images/projects/covers/mudapaisagens.webp` (fluxo de qualificação)
-3. **Não invente número nenhum.** Os únicos números permitidos são os que estão
-   na especificação.
-4. **Paleta:** fundo `#0a0c0b`, texto `#e8efec`, destaque único `#3fcf7f`.
-   Nenhuma outra cor de destaque.
-
-**O que gerar:**
-
-- **Vídeos 1 e 2:** 15 segundos, 9:16, a partir dos prints reais. O movimento
-  deve ser contido: aproximação lenta, entrada suave, destaque em região da
-  tela. Nada de transição chamativa, partícula, brilho pulsante ou zoom
-  agressivo. Texto queimado na tela seguindo o roteiro tempo a tempo da
-  especificação, fonte pesada e alto contraste, legível em tela de celular.
-- **Locução:** voz feminina ou masculina em PT-BR, tom informativo, ritmo
-  calmo. O texto está na especificação. O vídeo tem que funcionar mudo mesmo
-  assim.
-- **Estático 3:** uma arte, exportada em 4:5 e 1:1.
-- Exporte também os vídeos em 4:5, porque nem todo posicionamento aceita 9:16.
-
-**Entrega:** salve tudo em `kit-meta-ads/criativos/` com nomes claros
-(`c1-lead-22h-9x16.mp4`, `c1-lead-22h-4x5.mp4`, `c3-prova-4x5.png` e assim por
-diante). Me diga o que foi gerado e o que não deu certo.
-
-**Antes de gerar em lote:** faça só o criativo 1 em 9:16, me mostre, e espere
-eu aprovar. Errar o tom em três peças custa três vezes mais caro que errar em
-uma.
-
-## Cole até aqui
+Está em **`prompt-codex-criativos.md`**. Ele trata esta especificação como ponto
+de partida, não como ordem: o Codex analisa, pode discordar da quantidade, do
+formato, dos ganchos e da copy, e escreve o veredito antes de gerar.
 
 ---
 
