@@ -1,7 +1,7 @@
 # Criativos — especificação e prompt para o Codex
 
-Três peças, e só três. Com cerca de R$ 17 por dia a Meta precisa concentrar
-entrega: mais criativo com a mesma verba é menos aprendizado em cada um.
+Três peças, e só três. Com R$ 35 por dia a Meta precisa concentrar entrega:
+mais criativo com a mesma verba é menos aprendizado em cada um.
 
 | # | Tipo | Formato | Duração | Ângulo |
 |---|---|---|---|---|

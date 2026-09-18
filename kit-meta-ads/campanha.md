@@ -20,15 +20,39 @@ junto.
 | Destino | `https://www.edevshub.com/contratar` | A página filtra quem não tem orçamento |
 | Posicionamentos | Automáticos (Advantage+) | Com verba pequena, restringir posicionamento encarece o clique |
 | Público | Brasil, 25 a 60 anos, todos os gêneros | Detalhe no item 3 |
-| Orçamento | Diário, no nível do conjunto | Mais estável que orçamento total |
+| Orçamento | **R$ 35/dia (≈ US$ 6,50) por 14 dias** | Ver item 1.1 |
 | Evento medido | `Contact` | Medido, não otimizado, por enquanto |
+
+### 1.1 Verba: comprimir, não espalhar
+
+Decisão de 18/09: os mesmos R$ 500, mas em **14 dias a R$ 35/dia** em vez de
+30 dias a R$ 17/dia.
+
+| Verba diária | Por criativo/dia | Dias até 50 cliques cada |
+|---|---|---|
+| R$ 17 | ~R$ 6 | ~17 dias |
+| R$ 35 | ~R$ 12 | ~8 dias |
+
+(Clique estimado em R$ 2. É estimativa, não número da conta.)
+
+Mesmo dinheiro, resposta duas vezes mais rápida. **Não comprimir abaixo de 7
+dias:** os 2 primeiros dias de campanha nova entregam mal enquanto a Meta
+calibra, e com menos de uma semana a amostra pega só dia útil ou só fim de
+semana.
+
+**O que R$ 500 responde:** se funciona, não quanto custa. Estimativa de 1 a 13
+conversas, provável em torno de 4. Com R$ 1.000 (R$ 70/dia) a leitura fica
+duas vezes mais confiável, mas R$ 500 comprimido já vale mais que R$ 500
+espalhado.
+
+Orçamento é digitado em **dólar** (conta Dudu). IOF e spread entram por cima.
 
 ### Por que Tráfego e não Conversões
 
 Conversões é o objetivo certo, mas não com esta verba. A Meta precisa de cerca
 de **50 conversões por semana por conjunto** para sair da fase de aprendizado.
-Com R$ 500 por mês, algo em torno de R$ 17 por dia, você vai gerar uma ou duas
-conversas por dia no melhor cenário. O algoritmo nunca calibra, e cada mudança
+Mesmo a R$ 35 por dia, a estimativa é de algumas conversas por semana, não
+cinquenta. O algoritmo nunca calibra, e cada mudança
 reinicia o aprendizado do zero.
 
 Otimizando por visualização de página, a Meta tem sinal de sobra para trabalhar,
@@ -139,7 +163,7 @@ e vale manter assim ao criar variações.
 | Segmentação detalhada | **vazia** |
 | Advantage+ público | ligado |
 
-Parece contraintuitivo, mas com R$ 17 por dia o público aberto costuma ganhar:
+Parece contraintuitivo, mas com verba pequena o público aberto costuma ganhar:
 segmentação detalhada encarece o leilão e, num orçamento pequeno, restringir
 demais faz a entrega travar antes de aprender qualquer coisa. O criativo é que
 faz a filtragem, e os textos acima falam explicitamente de faixa de preço.
@@ -154,9 +178,9 @@ Mesmo local e idade, com segmentação detalhada por interesse:
 
 E, em comportamentos: `Administradores de Página do Facebook`.
 
-Rode este **depois** que o aberto tiver 2 semanas de dados, nunca ao mesmo
-tempo com a verba atual: dois conjuntos dividindo R$ 17 por dia é ter dois
-conjuntos ruins em vez de um decente.
+Rode este **depois** do teste de 14 dias, nunca ao mesmo tempo: dois
+conjuntos dividindo R$ 35 por dia é ter dois conjuntos ruins em vez de um
+decente.
 
 ### Públicos para configurar agora e usar depois
 
@@ -225,10 +249,16 @@ Métrica que importa, na ordem:
 3. Custo por visualização de página, só para diagnosticar se o problema é o
    anúncio (ninguém clica) ou a página (clicam e não falam).
 
-**Parada dura:** R$ 800 gastos sem nenhuma conversa iniciada. Não é "sem
-conversa qualificada", é sem conversa nenhuma. Se chegar nesse ponto, o
-problema não é ajuste fino, e continuar gastando só compra a mesma resposta
-mais caro.
+### Pontos de decisão
+
+| Quando | Gasto | O que olhar |
+|---|---|---|
+| Dia 3 | ~R$ 105 | Só se está entregando. Não julgar conversa ainda. |
+| **Dia 7** | ~R$ 245 | **Parada dura.** Taxa de clique no link abaixo de 0,5% em todos os criativos → o problema é o criativo: parar e refazer, não gastar os outros R$ 250 no mesmo erro. Clicam mas ninguém chama no WhatsApp → o problema é a página. |
+| Dia 14 | ~R$ 490 | Decidir se continua, e com qual criativo. |
+
+A parada antiga, de R$ 800 sem conversa, foi aposentada: com R$ 500 no total
+ela nunca seria atingida.
 
 Lembre que o relatório da conta Dudu sai em dólar e o dia fecha às 21h de
 Brasília.
