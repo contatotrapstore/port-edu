@@ -1,0 +1,2 @@
+Saida dos criativos gerados pelo Codex + Higgsfield.
+Especificacao em ../criativos.md
