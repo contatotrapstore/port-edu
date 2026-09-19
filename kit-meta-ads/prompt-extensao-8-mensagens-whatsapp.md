@@ -39,7 +39,7 @@ Anúncio de clique para WhatsApp exige o número vinculado à Página.
 
 1. Página EDevsHub → Configurações → **WhatsApp** (ou "Contas vinculadas" →
    WhatsApp).
-2. Número: **+55 41 99611-1900**.
+2. Número: **+55 41 98897-0309** (WhatsApp Business da EDevsHub).
 3. A Meta vai mandar um **código de verificação para esse WhatsApp**. Você não
    tem acesso ao celular: **pare e me peça o código**. Não tente outro método de
    verificação sem me perguntar.
@@ -69,7 +69,7 @@ Gerenciador de Anúncios → conta Dudu → Criar.
 | Nome | `BR · 25-60 · WhatsApp` |
 | Local da conversão | **Apps de mensagens** |
 | App de mensagens | **Somente WhatsApp**. Desmarque Messenger e Instagram Direct se vierem marcados |
-| Número | +55 41 99611-1900 (o vinculado na etapa 0) |
+| Número | +55 41 98897-0309 (o vinculado na etapa 0) |
 | Meta de desempenho | **Maximizar o número de conversas** |
 | Orçamento | **Diário, US$ 6,50** |
 | Início | hoje, horário atual |

@@ -61,7 +61,7 @@ export const siteConfig: SiteConfig = {
     // Só a /contratar e /solucoes leem isto, via DirectContact. A zona Workana
     // (/workana, home, cases) nunca renderiza contato: scripts/check-workana-
     // isolation.mjs quebra o build se um wa.me aparecer lá.
-    whatsapp: "5541996111900",
+    whatsapp: "5541988970309",
   },
 };
 

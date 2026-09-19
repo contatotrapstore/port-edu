@@ -41,7 +41,7 @@ anúncio, e a /workana continua com zero requisição para a Meta.
    cartão, de propósito.
 3. **Verificar o negócio com o CNPJ.** Não impede anunciar, mas limita gasto e
    trava recursos justamente quando a campanha começa a funcionar.
-4. **Decidir o número de WhatsApp da campanha.** Hoje é o `41 99611-1900`. Se
+4. ~~Decidir o número de WhatsApp da campanha.~~ Resolvido em 19/09: **41 98897-0309**, WhatsApp Business dedicado da EDevsHub. Antes era o `41 99611-1900`, pessoal. Se
    for o seu pessoal, vale abrir um WhatsApp Business dedicado ANTES de ligar
    verba: trocar depois significa perder as conversas de quem já te chamou.
 
