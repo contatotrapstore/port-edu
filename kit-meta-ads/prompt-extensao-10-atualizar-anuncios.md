@@ -1,14 +1,15 @@
-# Prompt 10 — subir C4 e C5, pausar C1 e C2
+# Prompt 10 — subir C4 e C6, pausar C1 e C2
 
-**Substitui o prompt 9.** Aquele mandava subir C3 e C4. Depois dele veio o C5,
-que nomeia o comprador, e a verba não sustenta três anúncios: US$ 6,50 por dia
-divididos por três dá US$ 2,17 para cada, e nenhum aprende.
+**Substitui o prompt 9.** Aquele mandava subir C3 e C4, e a verba não sustenta
+três anúncios: US$ 6,50 por dia divididos por três dá US$ 2,17 para cada, e
+nenhum aprende.
 
 Vão dois:
 
-- **C5 (quem é)** — "Dono ou gestor de PME? Sua equipe controla pedidos na
-  planilha?" É o que ataca o problema do teste anterior, em que as 4 conversas
-  vieram de gente aleatória.
+- **C6 (situação)** — "Sua equipe ainda usa planilha? Dá para ter um sistema só
+  de vocês." Substitui o C5: "PME" é rótulo de banco e de edital, e dono de
+  oficina ou de clínica não se chama assim. A peça agora descreve a situação,
+  que é o que a pessoa reconhece.
 - **C4 (prova)** — "176 sistemas entregues. 37 clientes voltaram a me
   contratar." A Meta já tinha dado 90% da entrega ao gancho de prova, e foi
   dele que saíram as 4 conversas.
@@ -43,9 +44,9 @@ Precisam estar em "Imagens da conta", com estes nomes e tamanhos:
 c4-sistema-prova-4x5     1080 × 1350
 c4-sistema-prova-1x1     1080 × 1080
 c4-sistema-prova-9x16    1080 × 1920
-c5-sistema-pme-4x5       1080 × 1350
-c5-sistema-pme-1x1       1080 × 1080
-c5-sistema-pme-9x16      1080 × 1920
+c6-planilha-4x5          1080 × 1350
+c6-planilha-1x1          1080 × 1080
+c6-planilha-9x16         1080 × 1920
 ```
 
 Se faltar alguma, **pare e me avise**. Nunca use as antigas
@@ -53,14 +54,14 @@ Se faltar alguma, **pare e me avise**. Nunca use as antigas
 "Integração · A partir de R$ 6 mil". Também não use `c3-sistema-dor-*` nesta
 rodada.
 
-### Etapa 2 — anúncio C5
+### Etapa 2 — anúncio C6
 
 Duplique o **C2 · prova · WhatsApp** dentro do mesmo conjunto e troque:
 
 | Campo | Valor |
 |---|---|
-| Nome | `C5 · PME · sistema sob medida` |
-| Mídia | `c5-sistema-pme-4x5` → só Feeds · `c5-sistema-pme-9x16` → só Stories, Status e Reels · `c5-sistema-pme-1x1` → só Resultados de pesquisa |
+| Nome | `C6 · planilha · sistema sob medida` |
+| Mídia | `c6-planilha-4x5` → só Feeds · `c6-planilha-9x16` → só Stories, Status e Reels · `c6-planilha-1x1` → só Resultados de pesquisa |
 | Título | `Sistema sob medida, a partir de R$ 5 mil` |
 | Descrição | `Escopo, prazo e valor por escrito` |
 | Chamada para ação | **Enviar mensagem pelo WhatsApp** |
@@ -68,16 +69,16 @@ Duplique o **C2 · prova · WhatsApp** dentro do mesmo conjunto e troque:
 **Texto principal:**
 
 ```
-Dono ou gestor de PME com equipe e pedidos na planilha? Sistema sob medida a partir de R$ 5 mil.
+Sua equipe ainda controla pedidos na planilha? Dá para ter um sistema feito para a operação de vocês, a partir de R$ 5 mil.
 
 Desenvolvo um sistema ou app para a operação que sua empresa já tem, com telas, acessos e regras definidos pelo processo. Prazo de 2 a 4 semanas, conforme o escopo.
 
-Me conte no WhatsApp o que sua empresa faz e como a equipe controla os pedidos hoje. Diga também se o investimento a partir de R$ 5 mil cabe no planejamento.
+Me conte no WhatsApp o que a sua empresa faz e como a equipe controla os pedidos hoje. Diga também se o investimento a partir de R$ 5 mil cabe no planejamento.
 
 Respondo com faixa de preço e prazo, por escrito, antes de começar.
 ```
 
-**Modelo de mensagem:** crie um novo, `EDH · C5`.
+**Modelo de mensagem:** crie um novo, `EDH · C6`.
 
 - **Tipo: Perguntas frequentes** (perguntas de escolha), **não** mensagem
   pronta. Se a Meta obrigar a escolher um dos dois, escolha Perguntas
@@ -96,13 +97,13 @@ que a música está desligada e que "vários anunciantes" está desmarcado.
 
 ### Etapa 3 — anúncio C4
 
-Duplique o C5 e troque só:
+Duplique o C6 e troque só:
 
 | Campo | Valor |
 |---|---|
 | Nome | `C4 · prova · sistema sob medida` |
 | Mídia | as três `c4-sistema-prova-*`, mesma distribuição por posicionamento |
-| Modelo | novo, `EDH · C4`, idêntico ao `EDH · C5` |
+| Modelo | novo, `EDH · C4`, idêntico ao `EDH · C6` |
 
 **Texto principal:**
 
@@ -114,7 +115,7 @@ Sistema ou app sob medida para o jeito que a sua empresa já trabalha. A partir 
 Me chama no WhatsApp contando o que a sua equipe faz hoje na mão ou na planilha. Respondo com faixa de preço e prazo, por escrito.
 ```
 
-Título, descrição e CTA iguais aos do C5.
+Título, descrição e CTA iguais aos do C6.
 
 ### Etapa 4 — prévia e parada
 
@@ -125,7 +126,7 @@ saudação com as três perguntas de escolha, sem mensagem pronta.
 Pare **sem publicar** e me mande:
 
 ```
-1. C5: mídia por posicionamento ok? · melhorias IA e essenciais desligadas? · modelo EDH · C5 com perguntas de escolha?
+1. C6: mídia por posicionamento ok? · melhorias IA e essenciais desligadas? · modelo EDH · C6 com perguntas de escolha?
 2. C4: idem, com EDH · C4
 3. Prévias: <problemas ou "nenhum">
 4. Avisos ou erros na revisão: <texto exato>
@@ -135,15 +136,15 @@ Pare **sem publicar** e me mande:
 
 ### Etapa 5 — só quando eu escrever PUBLICAR
 
-1. Publique **só** o C5 e o C4. O rascunho antigo fica desmarcado.
+1. Publique **só** o C6 e o C4. O rascunho antigo fica desmarcado.
 2. **Depois de publicados**, pause o `C1 · dor · WhatsApp` e o
    `C2 · prova · WhatsApp` no interruptor de cada anúncio. Não exclua.
 3. Me diga o status de cada anúncio novo, confirme que os dois antigos ficaram
    pausados e que o conjunto não mudou.
 
-### Se a Meta reprovar o C5
+### Se a Meta reprovar o C6
 
-O gancho é uma pergunta dirigida a quem vê ("Dono ou gestor de PME?"). A
+O gancho é uma pergunta dirigida a quem vê ("Sua equipe ainda usa planilha?"). A
 política de atributos pessoais da Meta proíbe **afirmar** que se conhece uma
 característica da pessoa. Perguntar costuma passar, mas se vier reprovação,
 **não edite nada**: me mande o motivo exato. A correção é transformar a

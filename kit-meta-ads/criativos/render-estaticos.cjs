@@ -15,10 +15,13 @@ const concepts = {
   c3:{prefix:'c3-sistema-dor',title:['Sua operação','cresceu.','Seus sistemas,','não.']},
   c4:{prefix:'c4-sistema-prova',title:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.']},
   c5:{prefix:'c5-sistema-pme',title:['Dono ou gestor','de PME?','Sua equipe controla','pedidos na planilha?']},
+  // "PME" e rotulo de banco e de edital: dono de oficina ou de clinica nao se
+  // chama assim. O c6 descreve a situacao no lugar da categoria.
+  c6:{prefix:'c6-planilha',title:['Sua equipe ainda','usa planilha?','Dá para ter um','sistema só de vocês.']},
 };
 // Passe c5 para produzir só os três novos arquivos e preservar o QA anterior.
 const selected = process.argv.length>2 ? [...new Set(process.argv.slice(2))] : Object.keys(concepts);
-for(const concept of selected)assert(concepts[concept],`Conceito inválido: ${concept}. Use c3, c4 ou c5.`);
+for(const concept of selected)assert(concepts[concept],`Conceito inválido: ${concept}. Use c3, c4, c5 ou c6.`);
 const priorReportPath=path.join(__dirname,'qa/verificacao.json');
 const priorReport=fs.existsSync(priorReportPath)?JSON.parse(fs.readFileSync(priorReportPath,'utf8')):[];
 (async () => {
@@ -60,7 +63,7 @@ const priorReport=fs.existsSync(priorReportPath)?JSON.parse(fs.readFileSync(prio
       ]);
       assert.deepEqual(geometry.paintedColors,['rgb(10, 12, 11)','rgb(232, 239, 236)','rgb(63, 207, 127)'],`${name}: cor fora da paleta`);
       // C5 não pode herdar o corpo/entrelinha do título grande nas linhas verdes.
-      if(concept==='c5'){
+      if(concept==='c5'||concept==='c6'){
         const accentSize=ratio==='1x1'?68:80;
         assert.equal(parseFloat(geometry.accentStyle.font),accentSize,`${name}: corpo verde incorreto`);
         assert(Math.abs(parseFloat(geometry.accentStyle.lineHeight)-accentSize*1.12)<.01,`${name}: entrelinha verde incorreta`);

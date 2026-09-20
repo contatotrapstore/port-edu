@@ -1,0 +1,662 @@
+[
+  {
+    "file": "c6-planilha-4x5.png",
+    "concept": "c6",
+    "ratio": "4x5",
+    "width": 1080,
+    "height": 1350,
+    "bytes": 104323,
+    "sha256": "95b13205c4efbba01382d949e86a6ed1d2e6e35639d81a3f33420661fa80cbd1",
+    "background": "#0a0c0b",
+    "paletteCounts": {
+      "#e8efec": 72369,
+      "#3fcf7f": 26509
+    },
+    "titleLines": 4,
+    "titleBreaks": "2 + 2",
+    "noOverflow": true,
+    "noBlockOverlap": true,
+    "safePixels": {
+      "left": 92,
+      "top": 235,
+      "right": 991,
+      "bottom": 1138
+    },
+    "sharedHash": "f69aa3f0d873dbd435688022257b22deadab31c91fc53b56c86b5c49f82cf716",
+    "sharedComparedTo": null,
+    "geometry": {
+      "elements": [
+        {
+          "text": "Sua equipe ainda",
+          "rect": {
+            "x": 92,
+            "y": 204,
+            "width": 897.390625,
+            "height": 148,
+            "right": 989.390625,
+            "bottom": 352
+          },
+          "lines": 1,
+          "font": "116px"
+        },
+        {
+          "text": "usa planilha?",
+          "rect": {
+            "x": 92,
+            "y": 320,
+            "width": 683.359375,
+            "height": 148,
+            "right": 775.359375,
+            "bottom": 468
+          },
+          "lines": 1,
+          "font": "116px"
+        },
+        {
+          "text": "Dá para ter um",
+          "rect": {
+            "x": 92,
+            "y": 463,
+            "width": 537.203125,
+            "height": 102,
+            "right": 629.203125,
+            "bottom": 565
+          },
+          "lines": 1,
+          "font": "80px"
+        },
+        {
+          "text": "sistema só de vocês.",
+          "rect": {
+            "x": 92,
+            "y": 552.59375,
+            "width": 759.609375,
+            "height": 102,
+            "right": 851.609375,
+            "bottom": 654.59375
+          },
+          "lines": 1,
+          "font": "80px"
+        },
+        {
+          "text": "Sistema ou app sob medida",
+          "rect": {
+            "x": 92,
+            "y": 782,
+            "width": 739.859375,
+            "height": 74,
+            "right": 831.859375,
+            "bottom": 856
+          },
+          "lines": 1,
+          "font": "58px"
+        },
+        {
+          "text": "para o jeito que você trabalha",
+          "rect": {
+            "x": 92,
+            "y": 845,
+            "width": 803.59375,
+            "height": 74,
+            "right": 895.59375,
+            "bottom": 919
+          },
+          "lines": 1,
+          "font": "58px"
+        },
+        {
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
+          "rect": {
+            "x": 92,
+            "y": 935,
+            "width": 772.4375,
+            "height": 56,
+            "right": 864.4375,
+            "bottom": 991
+          },
+          "lines": 1,
+          "font": "46px"
+        },
+        {
+          "text": "Eduardo Gouveia · EDevsHub",
+          "rect": {
+            "x": 92,
+            "y": 1109,
+            "width": 430.3125,
+            "height": 36,
+            "right": 522.3125,
+            "bottom": 1145
+          },
+          "lines": 1,
+          "font": "30px"
+        }
+      ],
+      "shared": {
+        ".offer": {
+          "x": 92,
+          "y": 788,
+          "width": 896,
+          "height": 126,
+          "right": 988,
+          "bottom": 914,
+          "font": "58px"
+        },
+        ".price": {
+          "x": 92,
+          "y": 935,
+          "width": 896,
+          "height": 57.5,
+          "right": 988,
+          "bottom": 992.5,
+          "font": "46px"
+        },
+        ".rule": {
+          "x": 92,
+          "y": 1070,
+          "width": 896,
+          "height": 4,
+          "right": 988,
+          "bottom": 1074,
+          "font": "16px"
+        },
+        ".sig": {
+          "x": 92,
+          "y": 1108,
+          "width": 896,
+          "height": 39,
+          "right": 988,
+          "bottom": 1147,
+          "font": "30px"
+        }
+      },
+      "titleLines": 4,
+      "paintedColors": [
+        "rgb(10, 12, 11)",
+        "rgb(232, 239, 236)",
+        "rgb(63, 207, 127)"
+      ],
+      "accentStyle": {
+        "font": "80px",
+        "lineHeight": "89.6px"
+      }
+    },
+    "actualFonts": {
+      "h1": [
+        {
+          "familyName": "Space Grotesk Light",
+          "postScriptName": "Space-Grotesk-Light-Bold",
+          "isCustomFont": true,
+          "glyphCount": 63
+        }
+      ],
+      ".offer": [
+        {
+          "familyName": "Space Grotesk Light",
+          "postScriptName": "Space-Grotesk-Light-Bold",
+          "isCustomFont": true,
+          "glyphCount": 55
+        }
+      ],
+      ".price": [
+        {
+          "familyName": "Inter",
+          "postScriptName": "Inter",
+          "isCustomFont": true,
+          "glyphCount": 36
+        }
+      ],
+      ".sig": [
+        {
+          "familyName": "Inter",
+          "postScriptName": "Inter-SemiBold",
+          "isCustomFont": true,
+          "glyphCount": 26
+        }
+      ]
+    },
+    "mobilePreview": "qa\\c6-planilha-4x5-360.png",
+    "mobileOfferPx": 19.333333333333332,
+    "mobilePricePx": 15.333333333333334,
+    "mobileVisualReview": "pending"
+  },
+  {
+    "file": "c6-planilha-1x1.png",
+    "concept": "c6",
+    "ratio": "1x1",
+    "width": 1080,
+    "height": 1080,
+    "bytes": 89236,
+    "sha256": "8897d917f99a37a1978f901a0d14da97cc315868bd62b655921cac2877ce91fe",
+    "background": "#0a0c0b",
+    "paletteCounts": {
+      "#e8efec": 54274,
+      "#3fcf7f": 19545
+    },
+    "titleLines": 4,
+    "titleBreaks": "2 + 2",
+    "noOverflow": true,
+    "noBlockOverlap": true,
+    "safePixels": {
+      "left": 92,
+      "top": 104,
+      "right": 987,
+      "bottom": 896
+    },
+    "sharedHash": "73b85262005396ceb16cb8d19f8630d4cb22272c9402082fb6a8e899ab610968",
+    "sharedComparedTo": null,
+    "geometry": {
+      "elements": [
+        {
+          "text": "Sua equipe ainda",
+          "rect": {
+            "x": 92,
+            "y": 79,
+            "width": 742.65625,
+            "height": 122,
+            "right": 834.65625,
+            "bottom": 201
+          },
+          "lines": 1,
+          "font": "96px"
+        },
+        {
+          "text": "usa planilha?",
+          "rect": {
+            "x": 92,
+            "y": 179,
+            "width": 565.546875,
+            "height": 122,
+            "right": 657.546875,
+            "bottom": 301
+          },
+          "lines": 1,
+          "font": "96px"
+        },
+        {
+          "text": "Dá para ter um",
+          "rect": {
+            "x": 92,
+            "y": 302,
+            "width": 456.625,
+            "height": 87,
+            "right": 548.625,
+            "bottom": 389
+          },
+          "lines": 1,
+          "font": "68px"
+        },
+        {
+          "text": "sistema só de vocês.",
+          "rect": {
+            "x": 92,
+            "y": 378.15625,
+            "width": 645.671875,
+            "height": 87,
+            "right": 737.671875,
+            "bottom": 465.15625
+          },
+          "lines": 1,
+          "font": "68px"
+        },
+        {
+          "text": "Sistema ou app sob medida",
+          "rect": {
+            "x": 92,
+            "y": 545,
+            "width": 688.828125,
+            "height": 69,
+            "right": 780.828125,
+            "bottom": 614
+          },
+          "lines": 1,
+          "font": "54px"
+        },
+        {
+          "text": "para o jeito que você trabalha",
+          "rect": {
+            "x": 92,
+            "y": 604,
+            "width": 748.171875,
+            "height": 69,
+            "right": 840.171875,
+            "bottom": 673
+          },
+          "lines": 1,
+          "font": "54px"
+        },
+        {
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
+          "rect": {
+            "x": 92,
+            "y": 692,
+            "width": 772.4375,
+            "height": 56,
+            "right": 864.4375,
+            "bottom": 748
+          },
+          "lines": 1,
+          "font": "46px"
+        },
+        {
+          "text": "Eduardo Gouveia · EDevsHub",
+          "rect": {
+            "x": 92,
+            "y": 867,
+            "width": 430.3125,
+            "height": 36,
+            "right": 522.3125,
+            "bottom": 903
+          },
+          "lines": 1,
+          "font": "30px"
+        }
+      ],
+      "shared": {
+        ".offer": {
+          "x": 92,
+          "y": 550,
+          "width": 896,
+          "height": 118,
+          "right": 988,
+          "bottom": 668,
+          "font": "54px"
+        },
+        ".price": {
+          "x": 92,
+          "y": 692,
+          "width": 896,
+          "height": 57.5,
+          "right": 988,
+          "bottom": 749.5,
+          "font": "46px"
+        },
+        ".rule": {
+          "x": 92,
+          "y": 828,
+          "width": 896,
+          "height": 4,
+          "right": 988,
+          "bottom": 832,
+          "font": "16px"
+        },
+        ".sig": {
+          "x": 92,
+          "y": 866,
+          "width": 896,
+          "height": 39,
+          "right": 988,
+          "bottom": 905,
+          "font": "30px"
+        }
+      },
+      "titleLines": 4,
+      "paintedColors": [
+        "rgb(10, 12, 11)",
+        "rgb(232, 239, 236)",
+        "rgb(63, 207, 127)"
+      ],
+      "accentStyle": {
+        "font": "68px",
+        "lineHeight": "76.16px"
+      }
+    },
+    "actualFonts": {
+      "h1": [
+        {
+          "familyName": "Space Grotesk Light",
+          "postScriptName": "Space-Grotesk-Light-Bold",
+          "isCustomFont": true,
+          "glyphCount": 63
+        }
+      ],
+      ".offer": [
+        {
+          "familyName": "Space Grotesk Light",
+          "postScriptName": "Space-Grotesk-Light-Bold",
+          "isCustomFont": true,
+          "glyphCount": 55
+        }
+      ],
+      ".price": [
+        {
+          "familyName": "Inter",
+          "postScriptName": "Inter",
+          "isCustomFont": true,
+          "glyphCount": 36
+        }
+      ],
+      ".sig": [
+        {
+          "familyName": "Inter",
+          "postScriptName": "Inter-SemiBold",
+          "isCustomFont": true,
+          "glyphCount": 26
+        }
+      ]
+    },
+    "mobilePreview": "qa\\c6-planilha-1x1-360.png",
+    "mobileOfferPx": 18,
+    "mobilePricePx": 15.333333333333334,
+    "mobileVisualReview": "pending"
+  },
+  {
+    "file": "c6-planilha-9x16.png",
+    "concept": "c6",
+    "ratio": "9x16",
+    "width": 1080,
+    "height": 1920,
+    "bytes": 107873,
+    "sha256": "e341ac00c140c6b3c543409ae525e452f8360e45234c85d377d615c7d467cae8",
+    "background": "#0a0c0b",
+    "paletteCounts": {
+      "#e8efec": 72369,
+      "#3fcf7f": 26509
+    },
+    "titleLines": 4,
+    "titleBreaks": "2 + 2",
+    "noOverflow": true,
+    "noBlockOverlap": true,
+    "safePixels": {
+      "left": 92,
+      "top": 307,
+      "right": 991,
+      "bottom": 1210
+    },
+    "sharedHash": "8a90c1d85dc0555e92ff010f9db150f184b097ead7783e6d5a024526c7d87437",
+    "sharedComparedTo": null,
+    "geometry": {
+      "elements": [
+        {
+          "text": "Sua equipe ainda",
+          "rect": {
+            "x": 92,
+            "y": 276,
+            "width": 897.390625,
+            "height": 148,
+            "right": 989.390625,
+            "bottom": 424
+          },
+          "lines": 1,
+          "font": "116px"
+        },
+        {
+          "text": "usa planilha?",
+          "rect": {
+            "x": 92,
+            "y": 392,
+            "width": 683.359375,
+            "height": 148,
+            "right": 775.359375,
+            "bottom": 540
+          },
+          "lines": 1,
+          "font": "116px"
+        },
+        {
+          "text": "Dá para ter um",
+          "rect": {
+            "x": 92,
+            "y": 535,
+            "width": 537.203125,
+            "height": 102,
+            "right": 629.203125,
+            "bottom": 637
+          },
+          "lines": 1,
+          "font": "80px"
+        },
+        {
+          "text": "sistema só de vocês.",
+          "rect": {
+            "x": 92,
+            "y": 624.59375,
+            "width": 759.609375,
+            "height": 102,
+            "right": 851.609375,
+            "bottom": 726.59375
+          },
+          "lines": 1,
+          "font": "80px"
+        },
+        {
+          "text": "Sistema ou app sob medida",
+          "rect": {
+            "x": 92,
+            "y": 854,
+            "width": 739.859375,
+            "height": 74,
+            "right": 831.859375,
+            "bottom": 928
+          },
+          "lines": 1,
+          "font": "58px"
+        },
+        {
+          "text": "para o jeito que você trabalha",
+          "rect": {
+            "x": 92,
+            "y": 917,
+            "width": 803.59375,
+            "height": 74,
+            "right": 895.59375,
+            "bottom": 991
+          },
+          "lines": 1,
+          "font": "58px"
+        },
+        {
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
+          "rect": {
+            "x": 92,
+            "y": 1007,
+            "width": 772.4375,
+            "height": 56,
+            "right": 864.4375,
+            "bottom": 1063
+          },
+          "lines": 1,
+          "font": "46px"
+        },
+        {
+          "text": "Eduardo Gouveia · EDevsHub",
+          "rect": {
+            "x": 92,
+            "y": 1181,
+            "width": 430.3125,
+            "height": 36,
+            "right": 522.3125,
+            "bottom": 1217
+          },
+          "lines": 1,
+          "font": "30px"
+        }
+      ],
+      "shared": {
+        ".offer": {
+          "x": 92,
+          "y": 860,
+          "width": 896,
+          "height": 126,
+          "right": 988,
+          "bottom": 986,
+          "font": "58px"
+        },
+        ".price": {
+          "x": 92,
+          "y": 1007,
+          "width": 896,
+          "height": 57.5,
+          "right": 988,
+          "bottom": 1064.5,
+          "font": "46px"
+        },
+        ".rule": {
+          "x": 92,
+          "y": 1142,
+          "width": 896,
+          "height": 4,
+          "right": 988,
+          "bottom": 1146,
+          "font": "16px"
+        },
+        ".sig": {
+          "x": 92,
+          "y": 1180,
+          "width": 896,
+          "height": 39,
+          "right": 988,
+          "bottom": 1219,
+          "font": "30px"
+        }
+      },
+      "titleLines": 4,
+      "paintedColors": [
+        "rgb(10, 12, 11)",
+        "rgb(232, 239, 236)",
+        "rgb(63, 207, 127)"
+      ],
+      "accentStyle": {
+        "font": "80px",
+        "lineHeight": "89.6px"
+      }
+    },
+    "actualFonts": {
+      "h1": [
+        {
+          "familyName": "Space Grotesk Light",
+          "postScriptName": "Space-Grotesk-Light-Bold",
+          "isCustomFont": true,
+          "glyphCount": 63
+        }
+      ],
+      ".offer": [
+        {
+          "familyName": "Space Grotesk Light",
+          "postScriptName": "Space-Grotesk-Light-Bold",
+          "isCustomFont": true,
+          "glyphCount": 55
+        }
+      ],
+      ".price": [
+        {
+          "familyName": "Inter",
+          "postScriptName": "Inter",
+          "isCustomFont": true,
+          "glyphCount": 36
+        }
+      ],
+      ".sig": [
+        {
+          "familyName": "Inter",
+          "postScriptName": "Inter-SemiBold",
+          "isCustomFont": true,
+          "glyphCount": 26
+        }
+      ]
+    },
+    "mobilePreview": "qa\\c6-planilha-9x16-360.png",
+    "mobileOfferPx": 19.333333333333332,
+    "mobilePricePx": 15.333333333333334,
+    "mobileVisualReview": "pending"
+  }
+]
