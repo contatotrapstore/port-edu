@@ -1,5 +1,10 @@
 # Prompt 9 — trocar a oferta e cortar o toque sem intenção
 
+> **Substituído pelo `prompt-extensao-10-atualizar-anuncios.md`.** Depois deste
+> veio o criativo C5, que nomeia o comprador, e a verba não sustenta três
+> anúncios. O prompt 10 sobe C4 e C5 e deixa o C3 de reserva. O raciocínio
+> abaixo continua valendo; só a seleção de criativos mudou.
+
 Leitura de 20/09: 4 conversas por R$ 25, mas o Eduardo avaliou as quatro como
 irrelevantes, de gente aleatória. Duas causas, e as duas são corrigíveis:
 

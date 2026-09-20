@@ -1,12 +1,22 @@
-Estáticos EDevsHub — segunda rodada aprovada
+Estáticos EDevsHub — C3/C4 e C5 (20/09/2026)
 
-Entregas: c1-operacao-cresceu-{4x5,1x1,9x16}.png e c2-prova-{4x5,1x1,9x16}.png.
-A versão antiga foi preservada em c1-operacao-cresceu-4x5-higgsfield.png.
-Copy atual e conferências: VEREDITO.md, seção 8 e Segunda rodada.
+Oferta vigente: sistema ou app sob medida, a partir de R$ 5 mil, 2 a 4 semanas.
+Entregas: c3-sistema-dor, c4-sistema-prova e c5-sistema-pme, cada um em 4x5, 1x1 e 9x16.
+C1/C2 e a versão Higgsfield são históricos com oferta antiga; não são gerados pelo script atual.
+Copy do C5, revisão de C3/C4 e conferências: VEREDITO.md, seção Terceira rodada.
 Não usar o Higgsfield para reproduzir estes estáticos. Custo de créditos: zero.
 
-RENDERIZAR OS SEIS (PowerShell, de qualquer diretório):
+RENDERIZAR SÓ C5 (PowerShell, de qualquer diretório):
+node 'C:/Users/GouveiaRx/Downloads/Port Edu/kit-meta-ads/criativos/render-estaticos.cjs' c5
+
+Gera três PNGs e três prévias; escreve qa/verificacao-c5.json e preserva o QA anterior.
+Compara o bloco comum do C5 com as medições existentes de C3 em qa/verificacao.json.
+
+RENDERIZAR OS NOVE (C3, C4 E C5):
 node 'C:/Users/GouveiaRx/Downloads/Port Edu/kit-meta-ads/criativos/render-estaticos.cjs'
+
+Também aceita c3, c4 ou uma lista: render-estaticos.cjs c3 c4.
+Um único conceito grava qa/verificacao-<conceito>.json; múltiplos gravam qa/verificacao.json.
 
 Se o runtime temporário tiver sido removido, reinstalar fora do site:
 New-Item -ItemType Directory -Force -Path C:/Users/GouveiaRx/AppData/Local/Temp/edevshub-ads-render
@@ -19,12 +29,15 @@ Sharp vem do node_modules existente do projeto.
 
 EDITAR:
 Texto e proporções no template-estatico.html. Parâmetros da prévia:
-template-estatico.html?concept=c2&ratio=9x16
+template-estatico.html?concept=c5&ratio=9x16
 Fontes locais Space Grotesk e Inter copiadas do build da landing; nenhuma dependência de Google Fonts online.
 
 VERIFICAR:
-O script interrompe em erro de dimensão, fundo, fonte, texto, quebra, overflow ou diferença no bloco comum.
-qa/verificacao.json registra as medições; qa/*-360.png são prévias para abrir e avaliar visualmente.
-Uma nova execução redefine mobileVisualReview para pending. Só aprovar depois de abrir as seis prévias.
-A renderização sobrescreve os seis PNGs finais e o relatório, mas não toca no original Higgsfield.
+O script interrompe em erro de dimensão, fundo, paleta, fonte, texto, quebra, overflow,
+sobreposição entre blocos ou diferença no bloco comum. C5 verifica corpo e entrelinha verdes.
+qa/verificacao*.json registra as medições; qa/*-360.png são prévias para abrir e avaliar visualmente.
+Uma nova execução redefine mobileVisualReview para pending. Só aprovar depois de abrir todos
+os PNGs e prévias gerados, conferindo texto, hierarquia, espaçamento e legibilidade.
+A renderização sobrescreve somente os PNGs e prévias dos conceitos selecionados e seu relatório.
+As cores sólidas são #0a0c0b, #e8efec e #3fcf7f; antialiasing cria tons de borda intermediários.
 Não publicar nem enviar anúncios automaticamente.

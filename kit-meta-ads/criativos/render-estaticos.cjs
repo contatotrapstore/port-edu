@@ -11,13 +11,23 @@ const sharp = require(path.resolve(__dirname, '../../node_modules/sharp'));
 const chrome = process.env.ADS_CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const heights = {'4x5':1350,'1x1':1080,'9x16':1920};
 const bg = [10,12,11];
+const concepts = {
+  c3:{prefix:'c3-sistema-dor',title:['Sua operação','cresceu.','Seus sistemas,','não.']},
+  c4:{prefix:'c4-sistema-prova',title:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.']},
+  c5:{prefix:'c5-sistema-pme',title:['Dono ou gestor','de PME?','Sua equipe controla','pedidos na planilha?']},
+};
+// Passe c5 para produzir só os três novos arquivos e preservar o QA anterior.
+const selected = process.argv.length>2 ? [...new Set(process.argv.slice(2))] : Object.keys(concepts);
+for(const concept of selected)assert(concepts[concept],`Conceito inválido: ${concept}. Use c3, c4 ou c5.`);
+const priorReportPath=path.join(__dirname,'qa/verificacao.json');
+const priorReport=fs.existsSync(priorReportPath)?JSON.parse(fs.readFileSync(priorReportPath,'utf8')):[];
 (async () => {
   fs.mkdirSync(path.join(__dirname,'qa'),{recursive:true});
   const browser = await chromium.launch({executablePath:chrome,headless:true});
   const report = [];
   try {
-    for (const [ratio,height] of Object.entries(heights)) for (const concept of ['c3','c4']) {
-      const name = `${concept==='c3'?'c3-sistema-dor':'c4-sistema-prova'}-${ratio}.png`;
+    for (const [ratio,height] of Object.entries(heights)) for (const concept of selected) {
+      const name = `${concepts[concept].prefix}-${ratio}.png`;
       const page = await browser.newPage({viewport:{width:1080,height},deviceScaleFactor:1});
       const url = pathToFileURL(path.join(__dirname,'template-estatico.html'));
       url.searchParams.set('concept',concept); url.searchParams.set('ratio',ratio);
@@ -35,18 +45,35 @@ const bg = [10,12,11];
           return {text:el.textContent,rect:rect(range.getBoundingClientRect()),lines:range.getClientRects().length,font:getComputedStyle(el).fontSize};
         });
         const shared=Object.fromEntries(['.offer','.price','.rule','.sig'].map(sel=>[sel,{...rect(document.querySelector(sel).getBoundingClientRect()),font:getComputedStyle(document.querySelector(sel)).fontSize}]));
-        return {elements,shared,titleLines:document.querySelectorAll('h1 .line').length};
+        const paintedColors=[...new Set([
+          getComputedStyle(document.querySelector('#art')).backgroundColor,
+          getComputedStyle(document.querySelector('.rule')).backgroundColor,
+          ...[...document.querySelectorAll('h1 .line,.offer .line,.price,.sig')].map(el=>getComputedStyle(el).color),
+        ])].sort();
+        const titleStyle=getComputedStyle(document.querySelector('h1 .accent'));
+        return {elements,shared,titleLines:document.querySelectorAll('h1 .line').length,paintedColors,accentStyle:{font:titleStyle.fontSize,lineHeight:titleStyle.lineHeight}};
       });
       assert.equal(geometry.titleLines,4);
       assert.deepEqual(geometry.elements.map(e=>e.text),[
-        ...(concept==='c3'?['Sua operação','cresceu.','Seus sistemas,','não.']:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.']),
+        ...concepts[concept].title,
         'Sistema ou app sob medida','para o jeito que você trabalha','A partir de R$ 5 mil · 2 a 4 semanas','Eduardo Gouveia · EDevsHub'
       ]);
+      assert.deepEqual(geometry.paintedColors,['rgb(10, 12, 11)','rgb(232, 239, 236)','rgb(63, 207, 127)'],`${name}: cor fora da paleta`);
+      // C5 não pode herdar o corpo/entrelinha do título grande nas linhas verdes.
+      if(concept==='c5'){
+        const accentSize=ratio==='1x1'?68:80;
+        assert.equal(parseFloat(geometry.accentStyle.font),accentSize,`${name}: corpo verde incorreto`);
+        assert(Math.abs(parseFloat(geometry.accentStyle.lineHeight)-accentSize*1.12)<.01,`${name}: entrelinha verde incorreta`);
+      }
       for(const e of geometry.elements){
         assert.equal(e.lines,1,`${name}: linha quebrada ${e.text}`);
         assert(e.rect.x>=65&&e.rect.right<=1015,`${name}: transbordamento horizontal ${e.text}`);
         assert(e.rect.y>=(ratio==='9x16'?269:0)&&e.rect.bottom<=(ratio==='9x16'?1248:height),`${name}: transbordamento vertical ${e.text}`);
       }
+      assert(geometry.elements[3].rect.bottom<geometry.elements[4].rect.y,`${name}: título sobrepõe a oferta`);
+      assert(geometry.elements[5].rect.bottom<geometry.elements[6].rect.y,`${name}: oferta sobrepõe o preço`);
+      assert(geometry.elements[6].rect.bottom<geometry.shared['.rule'].y,`${name}: preço sobrepõe o filete`);
+      assert(geometry.shared['.rule'].bottom<geometry.elements[7].rect.y,`${name}: filete sobrepõe a assinatura`);
       const session=await page.context().newCDPSession(page);
       await session.send('DOM.enable');
       await session.send('CSS.enable');
@@ -79,7 +106,7 @@ const bg = [10,12,11];
       assert(paletteCounts['#e8efec']>0&&paletteCounts['#3fcf7f']>0,`${name}: cor principal ausente`);
       assert(bounds.left>0&&bounds.right<1079&&bounds.top>0&&bounds.bottom<height-1,`${name}: conteúdo encostado no limite`);
       if(ratio==='9x16')assert(bounds.left>=65&&bounds.right<1015&&bounds.top>=269&&bounds.bottom<1248,`${name}: pixel fora da área segura`);
-      const partner=report.find(r=>r.ratio===ratio);
+      const partner=report.find(r=>r.ratio===ratio)||(concept==='c5'?priorReport.find(r=>r.ratio===ratio&&r.concept==='c3'):undefined);
       const sharedStart=Math.floor(geometry.shared['.offer'].y);
       const sharedHash=createHash('sha256').update(data.subarray(sharedStart*1080*info.channels)).digest('hex');
       if(partner)assert.deepEqual(geometry.shared,partner.geometry.shared,`${name}: bloco comum mudou de posição/tamanho`);
@@ -87,10 +114,11 @@ const bg = [10,12,11];
       const mobile=path.join(__dirname,'qa',name.replace('.png','-360.png'));
       await sharp(buffer).resize({width:360}).png().toFile(mobile);
       fs.writeFileSync(path.join(__dirname,name),buffer);
-      report.push({file:name,concept,ratio,width:metadata.width,height:metadata.height,background:'#0a0c0b',paletteCounts,titleLines:4,titleBreaks:concept==='c1'?'4':'2 + 2',noOverflow:true,safePixels:bounds,sharedHash,geometry,actualFonts,mobilePreview:path.relative(__dirname,mobile),mobileOfferPx:parseFloat(geometry.elements[4].font)/3,mobilePricePx:parseFloat(geometry.elements[6].font)/3,mobileVisualReview:'pending'});
+      report.push({file:name,concept,ratio,width:metadata.width,height:metadata.height,bytes:buffer.length,sha256:createHash('sha256').update(buffer).digest('hex'),background:'#0a0c0b',paletteCounts,titleLines:4,titleBreaks:'2 + 2',noOverflow:true,noBlockOverlap:true,safePixels:bounds,sharedHash,sharedComparedTo:partner?.file||null,geometry,actualFonts,mobilePreview:path.relative(__dirname,mobile),mobileOfferPx:parseFloat(geometry.elements[4].font)/3,mobilePricePx:parseFloat(geometry.elements[6].font)/3,mobileVisualReview:'pending'});
       await page.close();
       console.log(`${name}: ${metadata.width}x${height}, fundo exato, 4 linhas, sem overflow; oferta/preço a 360px: ${report.at(-1).mobileOfferPx.toFixed(1)}/${report.at(-1).mobilePricePx.toFixed(1)}px`);
     }
-    fs.writeFileSync(path.join(__dirname,'qa/verificacao.json'),JSON.stringify(report,null,2)+'\n');
+    const reportName=selected.length===1?`verificacao-${selected[0]}.json`:'verificacao.json';
+    fs.writeFileSync(path.join(__dirname,'qa',reportName),JSON.stringify(report,null,2)+'\n');
   }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

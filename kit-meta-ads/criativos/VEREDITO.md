@@ -205,3 +205,137 @@ O script de renderização mede dimensão, cor, fonte, quebra, overflow, área s
 Script rodado de novo depois das correções: as seis peças passaram em todas as asserções, inclusive a de bloco comum idêntico pixel a pixel entre C1 e C2. Revisão visual das seis feita: **aprovadas para subir**.
 
 O vazio abaixo do conteúdo no 9:16 é intencional: é a faixa que a interface do Stories cobre com o campo de resposta e o botão.
+
+## Terceira rodada — revisão de C3/C4 e conceito C5 (20/09/2026)
+
+Esta seção é a análise vigente para a oferta de **sistema ou app sob medida**. O histórico acima foi preservado, inclusive preços, recomendações e aprovações que pertencem às rodadas antigas. Produção autorizada neste pedido: três estáticos C5 por código, sem envio à Meta.
+
+### Base da análise e limites do diagnóstico
+
+Li o template, o renderizador, `campanha.md`, `/contratar` e `offers` em `src/lib/constants.ts`. Li também `prompt-extensao-9-trocar-oferta.md`, que contém os textos completos e o modelo de conversa planejado para C3/C4. Abri os seis PNGs originais de C3 e C4: 4:5, quadrado e vertical de cada conceito.
+
+Os resultados de mídia são **relato do Eduardo neste pedido**, não uma consulta nova à conta: Tráfego gastou R$ 56 sem conversa; Mensagens trouxe quatro conversas por R$ 25 em 21 horas, todas consideradas irrelevantes. Isso dá R$ 6,25 por conversa bruta e nenhuma conversa qualificada observada. Com zero qualificada, não há custo por qualificada finito a reportar. Não recebi as conversas, a distribuição por anúncio nem o detalhamento atual dos posicionamentos.
+
+**Não atribuo esse resultado ao C3/C4.** Eles são peças novas com oferta corrigida; os dados fornecidos não mostram desempenho individual deles. Também corrijo uma certeza excessiva do histórico: CTR de 6,7% e concentração em Reels são compatíveis com cliques sem intenção, mas não demonstram toque acidental. Android, idade ou clique barato não identificam intenção de compra. A mensagem pronta é uma hipótese plausível para reduzir o esforço de iniciar contato, não uma causa isolada demonstrada por quatro conversas.
+
+### 1. C3 e C4 resistem ao diagnóstico?
+
+**Resistem como peças legíveis; não resolvem a falta de qualificação na primeira leitura.** Não encontrei corte, palavra quebrada ou preço ilegível nas seis artes abertas. O problema principal é o significado da abertura e a ordem da informação.
+
+| Trecho observado | Quem pode se interessar sem ser o comprador pretendido | O que falta |
+|---|---|---|
+| C3: “Sua operação cresceu.” | Autônomo, pessoa organizando trabalho próprio ou alguém que apenas deseja crescer. “Operação” não especifica equipe, empresa em funcionamento ou poder de contratar. | Nomear dono/gestor e uma rotina de equipe. |
+| C3: “Seus sistemas, não.” | Quem busca dica de ferramenta, planilha melhor ou software pronto. A frase descreve insatisfação ampla. | Uma situação que peça avaliação de desenvolvimento sob medida, sem afirmar que toda planilha exige um sistema. |
+| C4: “176 sistemas entregues.” | Curioso por tecnologia, portfólio ou desenvolvimento de aplicativos. O número prova experiência do fornecedor, mas não que ele resolve o caso daquela empresa. | Dar contexto de aplicação à prova. |
+| C4: “37 clientes voltaram a me contratar.” | Quem quer saber mais sobre o profissional, sem ter projeto ou orçamento. É confiança, não seleção de comprador. | Explicar para quem o trabalho serve antes de apresentar a reputação. |
+| Ambos: “Sistema ou app sob medida” | Quem tem apenas uma ideia de app também pode se reconhecer. “App” amplia as interpretações possíveis. | Ancorar a oferta em uma operação que já existe. |
+| Ambos: “para o jeito que você trabalha” e “2 a 4 semanas” | Promessa ampla de adaptação e rapidez, inclusive para trabalho individual; pode soar como qualquer app entregue nesse prazo. | Empresa/equipe na abertura; escopo combinado na copy. |
+
+A copy completa de C3/C4 já diz **“sua empresa”** no segundo parágrafo e **“sua equipe faz hoje na mão ou na planilha”** no último. Portanto, não é ausência total de contexto empresarial: ele chega tarde, depois do gancho genérico. “Me chama no WhatsApp” facilita o contato, mas não exige que a pessoa explique uma necessidade. C3 é a referência mais próxima para comparar com C5; C4 continua disponível como hipótese de prova, sem declaração de vencedor ou perdedor.
+
+### 2. Dizer para quem é: criativo e conversa, além do público
+
+É corrigível no criativo. **“Dono ou gestor de PME”** nomeia a responsabilidade de decisão; **“sua equipe”** exclui parte das interpretações individuais; **“controla pedidos na planilha”** torna a situação reconhecível. Esse é o gancho do C5. Não escolhi só “empresário”: a palavra seria ampla e não mostraria o trabalho a resolver.
+
+Escolhi pedidos como um recorte concreto, não como diagnóstico de todas as PMEs. O custo dessa escolha é deixar de chamar empresas cuja dor principal são obras, agenda ou atendimento. É uma hipótese deliberadamente mais estreita; não uma promessa de que toda empresa com pedidos precisa de software próprio. “PME” também pode não ser a palavra que todo dono usa para se descrever: é uma limitação da abertura compacta, a observar nas respostas.
+
+Alterar interesses ou cargos não garante empresa ativa, autoridade de compra nem orçamento. A recomendação é primeiro comparar a mensagem mantendo público, oferta e destino comparáveis; segmentação é outra hipótese. Não fiz alteração na conta.
+
+Há uma fragilidade no Prompt 9: **trocar texto pronto por perguntas de escolha não garante intenção**. “Quero um app para a minha empresa” ainda pode ser enviada com pouco esforço, sem explicar processo ou investimento. Na futura conversa, pedir o ramo/empresa, o controle atual e compatibilidade com o preço; considerar qualificada somente depois de uma resposta com conteúdo. A avaliação humana do Eduardo vale mais que o contador de conversas iniciadas. Isso é recomendação para o fluxo, não uma configuração executada aqui.
+
+### 3. O preço filtra o suficiente?
+
+**Não sozinho; e não há dados para afirmar que o preço corrigido de C3/C4 já falhou.** Na arte, R$ 5 mil é legível, mas está depois de quatro linhas de gancho e duas de oferta. A 360 px, seu corpo equivale a 15,3 px, contra até 38,7 px na abertura de C3/C4. É informação disponível, não garantia de que foi lida antes do toque. Na copy anterior, o preço também vinha após o primeiro parágrafo.
+
+“A partir de” é o piso do projeto, não seu orçamento final. Ler esse piso não comprova disponibilidade para pagar; uma mensagem enviada não confirma que a pessoa o aceitou. O C5 mantém o preço visível na arte, coloca-o já na abertura do texto principal e pede explicitamente que a pessoa diga se esse investimento cabe no planejamento. Não aumentei preço artificialmente para repelir contatos.
+
+Fonte de preço/pré-prazo: `offers` registra sistema/app a partir de **R$ 5 mil, 2 a 4 semanas**; IA no WhatsApp, R$ 12 mil, 2 a 4 semanas; integração, R$ 3 mil, 2 a 6 semanas. O piso geral de R$ 3 mil não vira preço deste anúncio, que vende sistema/app. A faixa de R$ 5 a 12 mil está no FAQ de `/contratar` e no relato do Eduardo, não no campo `range` de `offers`; por isso a peça usa só o piso e prazo de `offers`.
+
+O comentário e a flag `pricingConfirmed = false` permanecem em `constants.ts`, mas a página lida renderiza `o.range` e `o.term` diretamente, sem essa condição. Não usei o comentário antigo para negar o preço confirmado pelo usuário. Registrei a divergência sem alterar o site.
+
+### 4. Vídeo agora vale?
+
+**A prioridade não muda: produzir C5 estático primeiro, especialmente o 4:5.** O problema relatado passou a ser qualidade da conversa, e não falta de clique. Animar um texto que não nomeia o comprador pode atrair mais atenção sem melhorar essa qualidade. Se a entrega está migrando para o Feed do Facebook, como informado, há ainda menos motivo para produzir vídeo apenas para ocupar Reels; não recebi uma quebra atual para quantificar essa migração.
+
+A mudança de objetivo não torna vídeo obrigatório. A documentação oficial de [anúncios que abrem o WhatsApp](https://whatsappbusiness.com/products/ads-that-click-to-whatsapp/) apresenta imagem e vídeo e recomenda medir resultados além da conversa. Ela não demonstra superioridade de vídeo para esta conta.
+
+Vídeo passa a valer como próximo teste se houver uma demonstração que uma imagem não explica: uma sequência curta de recortes reais mostrando pedido, responsável e andamento, desde que o repositório de fato contenha esse fluxo e os prints obedeçam à paleta e aos números permitidos. Outra opção é animar o mesmo C5 por código, preservando comprador e preço desde a abertura, para testar formato. Nenhuma exige pessoa, avatar ou interface gerada. Não produziria simultaneamente nova promessa, novo público e vídeo: faltaria saber qual mudança ajudou. Os problemas anteriores de print ilegível e excesso de texto continuam relevantes; trocar objetivo não os resolveu.
+
+### 5. Veredito de produção e de teste
+
+**Produzir somente C5 em três proporções**, mantendo C3/C4 como arquivos de referência. É a lacuna mais direta: comprador + equipe + rotina concreta antes da oferta. Não refiz C3/C4, não acrescentei números de reputação ao C5 e não criei vídeo nesta rodada. O novo conceito continua tipográfico, com as fontes e três cores aprovadas.
+
+Ter três conceitos disponíveis não obriga rodar três ao mesmo tempo. Com a verba pequena de `campanha.md`, minha recomendação para uma futura comparação é C5 e C3 como referência, com a mesma qualificação no WhatsApp e sem mudança simultânea de público. A copy completa também muda, portanto a comparação avalia a **mensagem do anúncio como um conjunto**, não só uma palavra do título. Verba desigual entre anúncios impede declarar perdedor quem quase não recebeu entrega.
+
+Registrar por anúncio: gasto, conversas recebidas, respostas que descrevem a operação, compatibilidade com investimento e oportunidades que avançaram para escopo. Se ninguém responder com contexto, revisar a passagem anúncio → WhatsApp; se houver contexto mas o orçamento não couber, revisar expectativa/preço. Não usar CTR isolado ou custo por conversa bruta como sinal de sucesso. Uma conversa qualificada é um indício comercial, não prova estatística nem venda.
+
+`campanha.md` ainda descreve Tráfego, integração a R$ 6 mil e regras antigas de decisão. Usei sua verba e a preocupação em não espalhar o teste como histórico, não como configuração atual. Também não repito a regra antiga “clicam mas não falam = problema da página”: no destino WhatsApp, a pessoa não passa pela landing. O arquivo de campanha não foi modificado.
+
+### C5 — arte e copy pronta para o Gerenciador
+
+Nome sugerido: **C5 · PME · pedidos na planilha**.
+
+Texto da arte, com quatro linhas de gancho:
+
+```text
+Dono ou gestor
+de PME?
+Sua equipe controla
+pedidos na planilha?
+
+Sistema ou app sob medida
+para o jeito que você trabalha
+A partir de R$ 5 mil · 2 a 4 semanas
+
+Eduardo Gouveia · EDevsHub
+```
+
+As duas primeiras linhas são claras; as duas da situação são verdes. Mantive “para o jeito que você trabalha” no bloco comum para preservar oferta e geometria de C3/C4; agora o gancho define quem é esse “você”.
+
+**Texto principal — copiar integralmente:**
+
+```text
+Dono ou gestor de PME com equipe e pedidos na planilha? Sistema sob medida a partir de R$ 5 mil.
+
+Desenvolvo um sistema ou app para a operação que sua empresa já tem, com telas, acessos e regras definidos pelo processo. Prazo de 2 a 4 semanas, conforme o escopo.
+
+Me conte no WhatsApp o que sua empresa faz e como a equipe controla os pedidos hoje. Diga também se o investimento a partir de R$ 5 mil cabe no planejamento.
+
+Respondo com faixa de preço e prazo, por escrito, antes de começar.
+```
+
+**Título:** `Sistema sob medida, a partir de R$ 5 mil`
+
+**Descrição opcional:** `Escopo, prazo e valor por escrito`
+
+**CTA da plataforma:** `Enviar mensagem pelo WhatsApp` (ou o equivalente disponível). O botão não está desenhado na imagem. A copy chama a pessoa a escrever o contexto; não propõe voltar à mensagem genérica pré-preenchida.
+
+### Produção, medições e revisão visual
+
+Execução: `node kit-meta-ads/criativos/render-estaticos.cjs c5`. Renderização local com Chrome headless, fontes locais Space Grotesk e Inter, PNGs nativos de 1080 px de largura. Nenhuma ferramenta Higgsfield foi chamada: **zero crédito**. Os arquivos de C3/C4 e o relatório anterior não foram sobrescritos nesta execução.
+
+| Arquivo | Dimensões | Bytes | Pixels de conteúdo: x / y, inclusivos | Corpo a 360 px: comprador / situação / oferta / preço | Revisão visual |
+|---|---|---:|---|---|---|
+| `c5-sistema-pme-4x5.png` | 1080 × 1350 | 98.518 | 92–987 / 239–1138 | 36 / 26,7 / 19,3 / 15,3 px | Aprovada |
+| `c5-sistema-pme-1x1.png` | 1080 × 1080 | 88.429 | 92–987 / 106–896 | 31,3 / 22,7 / 18 / 15,3 px | Aprovada |
+| `c5-sistema-pme-9x16.png` | 1080 × 1920 | 101.683 | 92–987 / 311–1210 | 36 / 26,7 / 19,3 / 15,3 px | Aprovada |
+
+Abri os três PNGs finais e suas três prévias de 360 px. Comprador e situação são lidos como dois blocos ligados; as linhas verdes não têm o vão herdado do título grande. A interrogação final, os acentos, “R$ 5 mil” e o prazo estão inteiros. No quadrado, as linhas longas continuam dentro da margem; no vertical, o espaço inferior é intencional. A assinatura é secundária, equivalente a 10 px a 360; não carrega o argumento de venda. Não há pessoas, telas, logotipos de terceiros nem números adicionais.
+
+Conferências automáticas passaram nas três proporções: texto exato, quatro linhas de título, ausência de quebra e transbordamento, separação entre os blocos, dimensões, fundo exato, as três cores computadas, presença das cores nos pixels e famílias de fonte efetivamente desenhadas via CDP, sem fallback. Os tons de borda das letras são antialiasing das cores aprovadas, não novas cores de design.
+
+No 9:16, o conteúdo fica dentro da faixa interna de projeto x ≥ 65, x < 1015, y ≥ 269, y < 1248; os pixels efetivos vão de y=311 a 1210. Essa é a área conservadora herdada do template, **não certificação da interface atual de todos os posicionamentos**. Os três recortes devem continuar sendo usados individualmente.
+
+Oferta, preço, filete e assinatura mantêm x=92 e largura de bloco 896 px. Posições por proporção, respectivamente: 4:5, y=788/935/1070/1108; 1:1, y=550/692/828/866; 9:16, y=860/1007/1142/1180. O hash da região a partir da oferta é idêntico ao C3 da mesma proporção em todos os arquivos; medições e hashes completos estão em `qa/verificacao-c5.json`.
+
+Correção preventiva solicitada: `[data-concept="c5"]` entrou **nas duas listas CSS** das linhas verdes, tanto corpo/entrelinha quanto margem antes do bloco. Corpo verde de 80 px e entrelinha de 89,6 px no 4:5/9:16; 68 px e 76,16 px no quadrado. O script agora verifica explicitamente essas medidas, além do transbordamento. O título branco usa 108 px no 4:5/9:16 e 94 px no quadrado, para acomodar “Dono ou gestor” sem aperto.
+
+O renderizador aceita `c3`, `c4` e `c5` como argumentos; sem argumento, produz os nove arquivos. Executar só `c5` preserva os outros conceitos e escreve `qa/verificacao-c5.json`. Toda nova execução volta a revisão visual para `pending`; o status só foi aprovado depois de abrir as imagens desta rodada. Consulte o `LEIA-ME.txt` atualizado para reproduzir.
+
+### O que não foi feito ou não pôde ser confirmado
+
+- Nenhum upload, edição de anúncio, publicação ou alteração de orçamento/público/modelo de WhatsApp. Nenhum acesso novo à conta Meta nesta rodada.
+- Não auditei as quatro conversas nem confirmei quais criativos estavam ativos, sua exposição ao preço ou a participação atual do Feed. Não demonstrei melhora de qualificação ou conversão do C5.
+- Não houve teste com donos de PME, aparelho físico ou prévia do Gerenciador. A revisão local aprova os arquivos tecnicamente e visualmente; não garante aprovação da Meta nem cobertura da interface em cada posicionamento.
+- As páginas oficiais do Ads Guide de Feed e de anúncios de mensagem redirecionaram para login/bloqueio na consulta pública. Não declaro verificação integral das especificações atuais. Mantive as dimensões explicitamente pedidas; a página oficial de WhatsApp citada acima estava acessível.
+- `RTK.md` e `CODEX.md` continuam não localizados nos caminhos de instrução procurados. Nenhuma instrução foi presumida. O site, os preços e os anúncios anteriores não foram alterados.

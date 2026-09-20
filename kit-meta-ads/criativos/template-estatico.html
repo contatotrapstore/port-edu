@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Parâmetros: ?concept=c1|c2&ratio=4x5|1x1|9x16. Fontes locais da landing. -->
+<!-- Parâmetros: ?concept=c1|c2|c3|c4|c5&ratio=4x5|1x1|9x16. Fontes locais da landing. -->
 <html lang="pt-BR"><head><meta charset="utf-8"><title>EDevsHub — estático</title>
 <style>
 @font-face{font-family:'Space Grotesk';src:url('./fonts/space-grotesk-latin.woff2');font-weight:300 700;font-display:block}
@@ -17,9 +17,15 @@ h1,p{margin:0}h1{position:absolute;left:92px;top:var(--top);width:896px;font-siz
    titulo grande (--step), texto de 80px ficava em linha de 116px e abria um vao
    entre "voltaram" e "a me contratar". A altura acompanha o proprio corpo. */
 #art[data-concept="c2"] h1 .accent,
-#art[data-concept="c4"] h1 .accent{font-size:var(--proof);line-height:calc(var(--proof) * 1.12);letter-spacing:-.025em}
+#art[data-concept="c4"] h1 .accent,
+#art[data-concept="c5"] h1 .accent{font-size:var(--proof);line-height:calc(var(--proof) * 1.12);letter-spacing:-.025em}
 #art[data-concept="c2"] h1 .accent:nth-child(3),
-#art[data-concept="c4"] h1 .accent:nth-child(3){margin-top:18px}
+#art[data-concept="c4"] h1 .accent:nth-child(3),
+#art[data-concept="c5"] h1 .accent:nth-child(3){margin-top:18px}
+/* C5 nomeia o comprador antes da situação. Só o gancho muda: oferta, preço,
+   prazo e assinatura preservam a geometria e os pixels de C3/C4. */
+#art[data-concept="c5"]{--title:108px}
+#art[data-concept="c5"][data-ratio="1x1"]{--title:94px}
 .offer,.price,.rule,.sig{position:absolute;left:92px;width:896px}
 .offer{top:var(--offer-y);font-size:var(--offer);line-height:var(--offer-line);font-weight:700;letter-spacing:-.02em}
 .price{top:var(--price-y);font:400 46px/1.25 Inter,sans-serif}
@@ -32,10 +38,10 @@ h1,p{margin:0}h1{position:absolute;left:92px;top:var(--top);width:896px;font-siz
 <p class="price">A partir de R$ 6 mil</p><div class="rule" aria-hidden="true"></div><p class="sig">Eduardo Gouveia · EDevsHub</p>
 </main><script>
 const params=new URLSearchParams(location.search),concept=params.get('concept')||'c1',ratio=params.get('ratio')||'4x5';
-if(!['c1','c2','c3','c4'].includes(concept)||!['4x5','1x1','9x16'].includes(ratio))throw new Error('Parâmetros inválidos');
+if(!['c1','c2','c3','c4','c5'].includes(concept)||!['4x5','1x1','9x16'].includes(ratio))throw new Error('Parâmetros inválidos');
 const art=document.querySelector('#art');art.dataset.concept=concept;art.dataset.ratio=ratio;
-const titulos={c2:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.'],c3:['Sua operação','cresceu.','Seus sistemas,','não.'],c4:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.']};if(titulos[concept]){document.querySelectorAll('h1 .line').forEach((el,i)=>el.textContent=titulos[concept][i]);}
+const titulos={c2:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.'],c3:['Sua operação','cresceu.','Seus sistemas,','não.'],c4:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.'],c5:['Dono ou gestor','de PME?','Sua equipe controla','pedidos na planilha?']};if(titulos[concept]){document.querySelectorAll('h1 .line').forEach((el,i)=>el.textContent=titulos[concept][i]);}
 /* c3 e c4 vendem sistema sob medida a partir de R$ 5 mil, com prazo. A oferta
    antiga (integração a partir de R$ 6 mil) não era o que o Eduardo cobra. */
-if(concept==='c3'||concept==='c4'){const o=document.querySelectorAll('.offer .line');o[0].textContent='Sistema ou app sob medida';o[1].textContent='para o jeito que você trabalha';document.querySelector('.price').textContent='A partir de R$ 5 mil · 2 a 4 semanas';}
+if(['c3','c4','c5'].includes(concept)){const o=document.querySelectorAll('.offer .line');o[0].textContent='Sistema ou app sob medida';o[1].textContent='para o jeito que você trabalha';document.querySelector('.price').textContent='A partir de R$ 5 mil · 2 a 4 semanas';}
 </script></body></html>
