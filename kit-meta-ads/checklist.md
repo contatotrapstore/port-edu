@@ -129,3 +129,30 @@ significa pagar para descobrir uma coisa que o tráfego que você já tem
 responderia de graça. Não é motivo para parar: é motivo para deixar a
 instrumentação pronta (feito), mandar o link para quem já te procura e ver a
 primeira conversa acontecer antes do primeiro real gasto.
+
+## Armadilha do in-stream (20/09)
+
+Desde que a Meta tirou a exclusão de posicionamentos no conjunto, **todo
+posicionamento ativo precisa de uma mídia em cada anúncio**. Como a peça 9:16 é
+a única vertical, ela fica obrigada a cobrir in-stream de Reels, e aí a
+publicação falha:
+
+> "Esta imagem não pode ser usada para o posicionamento in-stream. Carregue um
+> vídeo que tenha entre 5 e 15 segundos para veicular um anúncio in-stream."
+
+Tentar desmarcar o in-stream dentro do anúncio também falha:
+
+> "Essa mídia é a última mídia para veicular um posicionamento no grupo."
+
+A regra é **por anúncio**: outro anúncio do conjunto já cobrir aquele
+posicionamento não resolve. Foi assim que o C4 ficou travado em rascunho
+enquanto o C6, publicado antes, passou.
+
+**Saídas, quando isso voltar:** produzir um vídeo de 5 a 15 segundos para o
+9:16, ou aceitar rodar um anúncio só. Com verba pequena, rodar um só costuma
+ser melhor: dois anúncios dividem a verba e nenhum junta conversa suficiente
+para comparar.
+
+O rascunho do C4 fica parado na conta. Ele aparece na fila "Conferir e
+publicar" junto com o rascunho antigo de Tráfego: **nunca usar o botão que
+publica tudo de uma vez**.
