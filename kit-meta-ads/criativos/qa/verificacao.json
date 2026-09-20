@@ -1,17 +1,17 @@
 [
   {
-    "file": "c1-operacao-cresceu-4x5.png",
-    "concept": "c1",
+    "file": "c3-sistema-dor-4x5.png",
+    "concept": "c3",
     "ratio": "4x5",
     "width": 1080,
     "height": 1350,
     "background": "#0a0c0b",
     "paletteCounts": {
-      "#e8efec": 52866,
+      "#e8efec": 59118,
       "#3fcf7f": 32231
     },
     "titleLines": 4,
-    "titleBreaks": "4",
+    "titleBreaks": "2 + 2",
     "noOverflow": true,
     "safePixels": {
       "left": 92,
@@ -19,7 +19,7 @@
       "right": 987,
       "bottom": 1138
     },
-    "sharedHash": "7e2cea532a067e3cf469ecd31747686e3e021c68172486fe60f4375294c23c0e",
+    "sharedHash": "f69aa3f0d873dbd435688022257b22deadab31c91fc53b56c86b5c49f82cf716",
     "geometry": {
       "elements": [
         {
@@ -75,39 +75,39 @@
           "font": "116px"
         },
         {
-          "text": "Integração entre os sistemas",
+          "text": "Sistema ou app sob medida",
           "rect": {
             "x": 92,
             "y": 782,
-            "width": 779.296875,
+            "width": 739.859375,
             "height": 74,
-            "right": 871.296875,
+            "right": 831.859375,
             "bottom": 856
           },
           "lines": 1,
           "font": "58px"
         },
         {
-          "text": "que você já usa",
+          "text": "para o jeito que você trabalha",
           "rect": {
             "x": 92,
             "y": 845,
-            "width": 415.40625,
+            "width": 803.59375,
             "height": 74,
-            "right": 507.40625,
+            "right": 895.59375,
             "bottom": 919
           },
           "lines": 1,
           "font": "58px"
         },
         {
-          "text": "A partir de R$ 6 mil",
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
           "rect": {
             "x": 92,
             "y": 935,
-            "width": 417.625,
+            "width": 772.4375,
             "height": 56,
-            "right": 509.625,
+            "right": 864.4375,
             "bottom": 991
           },
           "lines": 1,
@@ -181,7 +181,7 @@
           "familyName": "Space Grotesk Light",
           "postScriptName": "Space-Grotesk-Light-Bold",
           "isCustomFont": true,
-          "glyphCount": 43
+          "glyphCount": 55
         }
       ],
       ".price": [
@@ -189,7 +189,7 @@
           "familyName": "Inter",
           "postScriptName": "Inter",
           "isCustomFont": true,
-          "glyphCount": 20
+          "glyphCount": 36
         }
       ],
       ".sig": [
@@ -201,20 +201,20 @@
         }
       ]
     },
-    "mobilePreview": "qa\\c1-operacao-cresceu-4x5-360.png",
+    "mobilePreview": "qa\\c3-sistema-dor-4x5-360.png",
     "mobileOfferPx": 19.333333333333332,
     "mobilePricePx": 15.333333333333334,
     "mobileVisualReview": "pending"
   },
   {
-    "file": "c2-prova-4x5.png",
-    "concept": "c2",
+    "file": "c4-sistema-prova-4x5.png",
+    "concept": "c4",
     "ratio": "4x5",
     "width": 1080,
     "height": 1350,
     "background": "#0a0c0b",
     "paletteCounts": {
-      "#e8efec": 55647,
+      "#e8efec": 61899,
       "#3fcf7f": 26566
     },
     "titleLines": 4,
@@ -226,7 +226,7 @@
       "right": 987,
       "bottom": 1138
     },
-    "sharedHash": "7e2cea532a067e3cf469ecd31747686e3e021c68172486fe60f4375294c23c0e",
+    "sharedHash": "f69aa3f0d873dbd435688022257b22deadab31c91fc53b56c86b5c49f82cf716",
     "geometry": {
       "elements": [
         {
@@ -282,39 +282,39 @@
           "font": "80px"
         },
         {
-          "text": "Integração entre os sistemas",
+          "text": "Sistema ou app sob medida",
           "rect": {
             "x": 92,
             "y": 782,
-            "width": 779.296875,
+            "width": 739.859375,
             "height": 74,
-            "right": 871.296875,
+            "right": 831.859375,
             "bottom": 856
           },
           "lines": 1,
           "font": "58px"
         },
         {
-          "text": "que você já usa",
+          "text": "para o jeito que você trabalha",
           "rect": {
             "x": 92,
             "y": 845,
-            "width": 415.40625,
+            "width": 803.59375,
             "height": 74,
-            "right": 507.40625,
+            "right": 895.59375,
             "bottom": 919
           },
           "lines": 1,
           "font": "58px"
         },
         {
-          "text": "A partir de R$ 6 mil",
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
           "rect": {
             "x": 92,
             "y": 935,
-            "width": 417.625,
+            "width": 772.4375,
             "height": 56,
-            "right": 509.625,
+            "right": 864.4375,
             "bottom": 991
           },
           "lines": 1,
@@ -388,7 +388,7 @@
           "familyName": "Space Grotesk Light",
           "postScriptName": "Space-Grotesk-Light-Bold",
           "isCustomFont": true,
-          "glyphCount": 43
+          "glyphCount": 55
         }
       ],
       ".price": [
@@ -396,7 +396,7 @@
           "familyName": "Inter",
           "postScriptName": "Inter",
           "isCustomFont": true,
-          "glyphCount": 20
+          "glyphCount": 36
         }
       ],
       ".sig": [
@@ -408,24 +408,24 @@
         }
       ]
     },
-    "mobilePreview": "qa\\c2-prova-4x5-360.png",
+    "mobilePreview": "qa\\c4-sistema-prova-4x5-360.png",
     "mobileOfferPx": 19.333333333333332,
     "mobilePricePx": 15.333333333333334,
     "mobileVisualReview": "pending"
   },
   {
-    "file": "c1-operacao-cresceu-1x1.png",
-    "concept": "c1",
+    "file": "c3-sistema-dor-1x1.png",
+    "concept": "c3",
     "ratio": "1x1",
     "width": 1080,
     "height": 1080,
     "background": "#0a0c0b",
     "paletteCounts": {
-      "#e8efec": 39474,
+      "#e8efec": 45059,
       "#3fcf7f": 22775
     },
     "titleLines": 4,
-    "titleBreaks": "4",
+    "titleBreaks": "2 + 2",
     "noOverflow": true,
     "safePixels": {
       "left": 92,
@@ -433,7 +433,7 @@
       "right": 987,
       "bottom": 896
     },
-    "sharedHash": "c1a7555abb6cc177d44411f3868081fcf89d4882f5016d971e5df1f3f5702e54",
+    "sharedHash": "73b85262005396ceb16cb8d19f8630d4cb22272c9402082fb6a8e899ab610968",
     "geometry": {
       "elements": [
         {
@@ -489,39 +489,39 @@
           "font": "96px"
         },
         {
-          "text": "Integração entre os sistemas",
+          "text": "Sistema ou app sob medida",
           "rect": {
             "x": 92,
             "y": 545,
-            "width": 725.546875,
+            "width": 688.828125,
             "height": 69,
-            "right": 817.546875,
+            "right": 780.828125,
             "bottom": 614
           },
           "lines": 1,
           "font": "54px"
         },
         {
-          "text": "que você já usa",
+          "text": "para o jeito que você trabalha",
           "rect": {
             "x": 92,
             "y": 604,
-            "width": 386.75,
+            "width": 748.171875,
             "height": 69,
-            "right": 478.75,
+            "right": 840.171875,
             "bottom": 673
           },
           "lines": 1,
           "font": "54px"
         },
         {
-          "text": "A partir de R$ 6 mil",
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
           "rect": {
             "x": 92,
             "y": 692,
-            "width": 417.625,
+            "width": 772.4375,
             "height": 56,
-            "right": 509.625,
+            "right": 864.4375,
             "bottom": 748
           },
           "lines": 1,
@@ -595,7 +595,7 @@
           "familyName": "Space Grotesk Light",
           "postScriptName": "Space-Grotesk-Light-Bold",
           "isCustomFont": true,
-          "glyphCount": 43
+          "glyphCount": 55
         }
       ],
       ".price": [
@@ -603,7 +603,7 @@
           "familyName": "Inter",
           "postScriptName": "Inter",
           "isCustomFont": true,
-          "glyphCount": 20
+          "glyphCount": 36
         }
       ],
       ".sig": [
@@ -615,20 +615,20 @@
         }
       ]
     },
-    "mobilePreview": "qa\\c1-operacao-cresceu-1x1-360.png",
+    "mobilePreview": "qa\\c3-sistema-dor-1x1-360.png",
     "mobileOfferPx": 18,
     "mobilePricePx": 15.333333333333334,
     "mobileVisualReview": "pending"
   },
   {
-    "file": "c2-prova-1x1.png",
-    "concept": "c2",
+    "file": "c4-sistema-prova-1x1.png",
+    "concept": "c4",
     "ratio": "1x1",
     "width": 1080,
     "height": 1080,
     "background": "#0a0c0b",
     "paletteCounts": {
-      "#e8efec": 41239,
+      "#e8efec": 46824,
       "#3fcf7f": 19652
     },
     "titleLines": 4,
@@ -640,7 +640,7 @@
       "right": 987,
       "bottom": 896
     },
-    "sharedHash": "c1a7555abb6cc177d44411f3868081fcf89d4882f5016d971e5df1f3f5702e54",
+    "sharedHash": "73b85262005396ceb16cb8d19f8630d4cb22272c9402082fb6a8e899ab610968",
     "geometry": {
       "elements": [
         {
@@ -696,39 +696,39 @@
           "font": "68px"
         },
         {
-          "text": "Integração entre os sistemas",
+          "text": "Sistema ou app sob medida",
           "rect": {
             "x": 92,
             "y": 545,
-            "width": 725.546875,
+            "width": 688.828125,
             "height": 69,
-            "right": 817.546875,
+            "right": 780.828125,
             "bottom": 614
           },
           "lines": 1,
           "font": "54px"
         },
         {
-          "text": "que você já usa",
+          "text": "para o jeito que você trabalha",
           "rect": {
             "x": 92,
             "y": 604,
-            "width": 386.75,
+            "width": 748.171875,
             "height": 69,
-            "right": 478.75,
+            "right": 840.171875,
             "bottom": 673
           },
           "lines": 1,
           "font": "54px"
         },
         {
-          "text": "A partir de R$ 6 mil",
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
           "rect": {
             "x": 92,
             "y": 692,
-            "width": 417.625,
+            "width": 772.4375,
             "height": 56,
-            "right": 509.625,
+            "right": 864.4375,
             "bottom": 748
           },
           "lines": 1,
@@ -802,7 +802,7 @@
           "familyName": "Space Grotesk Light",
           "postScriptName": "Space-Grotesk-Light-Bold",
           "isCustomFont": true,
-          "glyphCount": 43
+          "glyphCount": 55
         }
       ],
       ".price": [
@@ -810,7 +810,7 @@
           "familyName": "Inter",
           "postScriptName": "Inter",
           "isCustomFont": true,
-          "glyphCount": 20
+          "glyphCount": 36
         }
       ],
       ".sig": [
@@ -822,24 +822,24 @@
         }
       ]
     },
-    "mobilePreview": "qa\\c2-prova-1x1-360.png",
+    "mobilePreview": "qa\\c4-sistema-prova-1x1-360.png",
     "mobileOfferPx": 18,
     "mobilePricePx": 15.333333333333334,
     "mobileVisualReview": "pending"
   },
   {
-    "file": "c1-operacao-cresceu-9x16.png",
-    "concept": "c1",
+    "file": "c3-sistema-dor-9x16.png",
+    "concept": "c3",
     "ratio": "9x16",
     "width": 1080,
     "height": 1920,
     "background": "#0a0c0b",
     "paletteCounts": {
-      "#e8efec": 52866,
+      "#e8efec": 59118,
       "#3fcf7f": 32231
     },
     "titleLines": 4,
-    "titleBreaks": "4",
+    "titleBreaks": "2 + 2",
     "noOverflow": true,
     "safePixels": {
       "left": 92,
@@ -847,7 +847,7 @@
       "right": 987,
       "bottom": 1210
     },
-    "sharedHash": "ed4735c9f574c371d593b3afab48bab006ff460a2c9f72bcd992e0e66c1f05a6",
+    "sharedHash": "8a90c1d85dc0555e92ff010f9db150f184b097ead7783e6d5a024526c7d87437",
     "geometry": {
       "elements": [
         {
@@ -903,39 +903,39 @@
           "font": "116px"
         },
         {
-          "text": "Integração entre os sistemas",
+          "text": "Sistema ou app sob medida",
           "rect": {
             "x": 92,
             "y": 854,
-            "width": 779.296875,
+            "width": 739.859375,
             "height": 74,
-            "right": 871.296875,
+            "right": 831.859375,
             "bottom": 928
           },
           "lines": 1,
           "font": "58px"
         },
         {
-          "text": "que você já usa",
+          "text": "para o jeito que você trabalha",
           "rect": {
             "x": 92,
             "y": 917,
-            "width": 415.40625,
+            "width": 803.59375,
             "height": 74,
-            "right": 507.40625,
+            "right": 895.59375,
             "bottom": 991
           },
           "lines": 1,
           "font": "58px"
         },
         {
-          "text": "A partir de R$ 6 mil",
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
           "rect": {
             "x": 92,
             "y": 1007,
-            "width": 417.625,
+            "width": 772.4375,
             "height": 56,
-            "right": 509.625,
+            "right": 864.4375,
             "bottom": 1063
           },
           "lines": 1,
@@ -1009,7 +1009,7 @@
           "familyName": "Space Grotesk Light",
           "postScriptName": "Space-Grotesk-Light-Bold",
           "isCustomFont": true,
-          "glyphCount": 43
+          "glyphCount": 55
         }
       ],
       ".price": [
@@ -1017,7 +1017,7 @@
           "familyName": "Inter",
           "postScriptName": "Inter",
           "isCustomFont": true,
-          "glyphCount": 20
+          "glyphCount": 36
         }
       ],
       ".sig": [
@@ -1029,20 +1029,20 @@
         }
       ]
     },
-    "mobilePreview": "qa\\c1-operacao-cresceu-9x16-360.png",
+    "mobilePreview": "qa\\c3-sistema-dor-9x16-360.png",
     "mobileOfferPx": 19.333333333333332,
     "mobilePricePx": 15.333333333333334,
     "mobileVisualReview": "pending"
   },
   {
-    "file": "c2-prova-9x16.png",
-    "concept": "c2",
+    "file": "c4-sistema-prova-9x16.png",
+    "concept": "c4",
     "ratio": "9x16",
     "width": 1080,
     "height": 1920,
     "background": "#0a0c0b",
     "paletteCounts": {
-      "#e8efec": 55647,
+      "#e8efec": 61899,
       "#3fcf7f": 26566
     },
     "titleLines": 4,
@@ -1054,7 +1054,7 @@
       "right": 987,
       "bottom": 1210
     },
-    "sharedHash": "ed4735c9f574c371d593b3afab48bab006ff460a2c9f72bcd992e0e66c1f05a6",
+    "sharedHash": "8a90c1d85dc0555e92ff010f9db150f184b097ead7783e6d5a024526c7d87437",
     "geometry": {
       "elements": [
         {
@@ -1110,39 +1110,39 @@
           "font": "80px"
         },
         {
-          "text": "Integração entre os sistemas",
+          "text": "Sistema ou app sob medida",
           "rect": {
             "x": 92,
             "y": 854,
-            "width": 779.296875,
+            "width": 739.859375,
             "height": 74,
-            "right": 871.296875,
+            "right": 831.859375,
             "bottom": 928
           },
           "lines": 1,
           "font": "58px"
         },
         {
-          "text": "que você já usa",
+          "text": "para o jeito que você trabalha",
           "rect": {
             "x": 92,
             "y": 917,
-            "width": 415.40625,
+            "width": 803.59375,
             "height": 74,
-            "right": 507.40625,
+            "right": 895.59375,
             "bottom": 991
           },
           "lines": 1,
           "font": "58px"
         },
         {
-          "text": "A partir de R$ 6 mil",
+          "text": "A partir de R$ 5 mil · 2 a 4 semanas",
           "rect": {
             "x": 92,
             "y": 1007,
-            "width": 417.625,
+            "width": 772.4375,
             "height": 56,
-            "right": 509.625,
+            "right": 864.4375,
             "bottom": 1063
           },
           "lines": 1,
@@ -1216,7 +1216,7 @@
           "familyName": "Space Grotesk Light",
           "postScriptName": "Space-Grotesk-Light-Bold",
           "isCustomFont": true,
-          "glyphCount": 43
+          "glyphCount": 55
         }
       ],
       ".price": [
@@ -1224,7 +1224,7 @@
           "familyName": "Inter",
           "postScriptName": "Inter",
           "isCustomFont": true,
-          "glyphCount": 20
+          "glyphCount": 36
         }
       ],
       ".sig": [
@@ -1236,7 +1236,7 @@
         }
       ]
     },
-    "mobilePreview": "qa\\c2-prova-9x16-360.png",
+    "mobilePreview": "qa\\c4-sistema-prova-9x16-360.png",
     "mobileOfferPx": 19.333333333333332,
     "mobilePricePx": 15.333333333333334,
     "mobileVisualReview": "pending"

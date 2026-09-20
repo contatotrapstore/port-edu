@@ -16,8 +16,8 @@ const bg = [10,12,11];
   const browser = await chromium.launch({executablePath:chrome,headless:true});
   const report = [];
   try {
-    for (const [ratio,height] of Object.entries(heights)) for (const concept of ['c1','c2']) {
-      const name = `${concept==='c1'?'c1-operacao-cresceu':'c2-prova'}-${ratio}.png`;
+    for (const [ratio,height] of Object.entries(heights)) for (const concept of ['c3','c4']) {
+      const name = `${concept==='c3'?'c3-sistema-dor':'c4-sistema-prova'}-${ratio}.png`;
       const page = await browser.newPage({viewport:{width:1080,height},deviceScaleFactor:1});
       const url = pathToFileURL(path.join(__dirname,'template-estatico.html'));
       url.searchParams.set('concept',concept); url.searchParams.set('ratio',ratio);
@@ -39,8 +39,8 @@ const bg = [10,12,11];
       });
       assert.equal(geometry.titleLines,4);
       assert.deepEqual(geometry.elements.map(e=>e.text),[
-        ...(concept==='c1'?['Sua operação','cresceu.','Seus sistemas,','não.']:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.']),
-        'Integração entre os sistemas','que você já usa','A partir de R$ 6 mil','Eduardo Gouveia · EDevsHub'
+        ...(concept==='c3'?['Sua operação','cresceu.','Seus sistemas,','não.']:['176 sistemas','entregues.','37 clientes voltaram','a me contratar.']),
+        'Sistema ou app sob medida','para o jeito que você trabalha','A partir de R$ 5 mil · 2 a 4 semanas','Eduardo Gouveia · EDevsHub'
       ]);
       for(const e of geometry.elements){
         assert.equal(e.lines,1,`${name}: linha quebrada ${e.text}`);

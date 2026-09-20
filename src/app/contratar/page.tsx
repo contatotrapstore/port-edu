@@ -22,7 +22,7 @@ import DirectContact from "@/components/contact/DirectContact";
 export const metadata: Metadata = {
   title: "Desenvolvedor full stack sênior: sistemas sob medida e automação com IA",
   description:
-    `Automação de atendimento com IA, integração entre os sistemas que você já usa e SaaS sob medida. Escopo fechado por escrito antes de começar. ${workanaStats.projectsCompleted} entregas, nota ${workanaStats.rating} em ${workanaStats.clientReviews} avaliações.`,
+    `Sistemas e apps sob medida, integração entre os sistemas que você já usa e automação de atendimento com IA. Escopo fechado por escrito antes de começar. ${workanaStats.projectsCompleted} entregas, nota ${workanaStats.rating} em ${workanaStats.clientReviews} avaliações.`,
   alternates: { canonical: "/contratar" },
 };
 
@@ -45,11 +45,11 @@ const sintomas = [
 const faq = [
   {
     q: "Quanto custa?",
-    a: "Integração e painel começam em R$ 6 mil. Automação de atendimento com IA, em R$ 12 mil. SaaS do zero, em R$ 28 mil. Na primeira conversa eu digo em qual faixa o seu caso cai, e falo na hora se ele não couber.",
+    a: "Sistema ou app sob medida começa em R$ 5 mil, e a maioria fica entre R$ 5 e 12 mil. Integração entre sistemas que já existem começa em R$ 3 mil. Atendimento com IA no WhatsApp, em R$ 12 mil. Na primeira conversa eu digo em qual faixa o seu caso cai, e falo na hora se ele não couber.",
   },
   {
     q: "Quanto tempo leva?",
-    a: "Automação de atendimento: 2 a 4 semanas. Integração e painel: 2 a 6 semanas. SaaS: 6 semanas até a primeira versão que você já usa de verdade. Projetos maiores viram fases, com entrega ao fim de cada uma.",
+    a: "Sistema ou app sob medida: 2 a 4 semanas. Atendimento com IA: 2 a 4 semanas. Integração entre sistemas: 2 a 6 semanas. Projetos maiores viram fases, com entrega ao fim de cada uma.",
   },
   {
     q: "Como funciona o pagamento?",
@@ -71,9 +71,10 @@ const faq = [
 
 const naoServe = [
   "site institucional, landing page ou loja de prateleira",
-  // Alinhado com a menor oferta publicada (integração, a partir de R$ 6 mil):
-  // com R$ 5 mil aqui, um orçamento de R$ 5,5 mil não cabia em lugar nenhum.
-  "orçamento abaixo de R$ 6 mil",
+  // Piso real do Eduardo, confirmado em 20/09. Tem que bater com a menor
+  // oferta publicada (integração, a partir de R$ 3 mil): se o corte for maior
+  // que ela, existe faixa de orçamento que não cabe em lugar nenhum.
+  "orçamento abaixo de R$ 3 mil",
   "template pronto ou no-code montado às pressas",
   "sistema do zero para entregar em menos de duas semanas",
 ];
@@ -150,9 +151,9 @@ export default function ContratarPage() {
                 <span className="lp-hl">Seus sistemas, não.</span>
               </h1>
               <p className="lp-lede">
-                Atendimento com IA que responde sozinho, integração entre o que você já
-                usa, ou o SaaS que falta lançar. Escopo e prazo fechados por escrito
-                antes de começar.
+                O sistema que a sua operação precisa e nenhuma ferramenta de prateleira
+                faz direito, integração entre o que você já usa, ou atendimento com IA no
+                WhatsApp. Escopo e prazo fechados por escrito antes de começar.
               </p>
 
               <div className="lp-hero-cta">

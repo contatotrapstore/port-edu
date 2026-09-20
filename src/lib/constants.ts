@@ -207,6 +207,23 @@ export const pricingConfirmed = false;
 
 export const offers = [
   {
+    id: "sistema-sob-medida",
+    name: "Sistema ou app sob medida",
+    promise:
+      "O sistema que a sua operação precisa e nenhuma ferramenta de prateleira faz do jeito certo, com escopo fechado por escrito antes de começar.",
+    scope: [
+      "Telas e fluxos desenhados a partir do jeito que a operação já funciona",
+      "Autenticação, perfis de acesso e regras de negócio",
+      "Painel com as métricas e os controles do dia a dia",
+      "Pagamento (Pix ou cartão) quando o produto precisa cobrar",
+      "Deploy, documentação e vídeo de handover",
+    ],
+    notFor: "quem ainda está validando a ideia e não tem o problema definido",
+    range: "a partir de R$ 5 mil",
+    term: "2 a 4 semanas",
+    cases: ["blackinbot", "focus", "clinafy"],
+  },
+  {
     id: "automacao-ia",
     name: "Atendimento e qualificação com IA",
     promise:
@@ -237,25 +254,9 @@ export const offers = [
       "Importação e exportação de dados, relatórios e documentos",
     ],
     notFor: "quem precisa de site institucional, landing page ou loja de prateleira",
-    range: "a partir de R$ 6 mil",
+    range: "a partir de R$ 3 mil",
     term: "2 a 6 semanas",
     cases: ["rei", "clubeazul", "blackinbot"],
-  },
-  {
-    id: "saas-mvp",
-    name: "MVP de SaaS com escopo congelado",
-    promise:
-      "Da ideia validada ao produto no ar, com escopo fechado por escrito antes de começar: sem surpresa de prazo nem de preço.",
-    scope: [
-      "Discovery de 3 dias com escopo congelado por escrito",
-      "Autenticação, multi-tenant e painel",
-      "Fluxo principal do produto e pagamento (Pix ou cartão)",
-      "Deploy, documentação e vídeo de handover",
-    ],
-    notFor: "quem ainda está validando a ideia e não tem o problema definido",
-    range: "a partir de R$ 28 mil",
-    term: "6 semanas para a fase 1",
-    cases: ["blackinbot", "focus", "clinafy"],
   },
 ] as const;
 
