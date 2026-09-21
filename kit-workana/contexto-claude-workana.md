@@ -14,6 +14,8 @@ A plataforma já mostra minha reputação. Não repetir todos esses números, st
 
 ## Minha seleção de projetos
 
+Antes de uma nova rodada de candidaturas, conferir as pendências visíveis de clientes que já responderam. Quando houver pergunta, proposta de próxima etapa ou bloqueio concreto aguardando meu retorno, registrar a conversa, a data e a ação necessária. O rótulo de um filtro não comprova quem precisa responder: ler a última troca. Preparar a resposta pertinente e priorizá-la no resumo da rodada; o envio segue a autorização da sessão, e um lote de novas propostas não autoriza retomar conversas antigas.
+
 Estas são **minhas regras comerciais**, não uma fórmula comprovada de conversão:
 
 - Valor de projeto a partir de **R$ 2.000**. O mínimo não é um preço automático: o escopo pode exigir uma proposta maior.

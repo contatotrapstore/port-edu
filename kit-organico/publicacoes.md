@@ -2,7 +2,7 @@
 
 Textos preparados em 21/09/2026. Não publicados nem agendados: o perfil/canal de destino e o calendário ainda não foram definidos. O piloto visual está em `midia/piloto-muda-paisagens.png`. As descrições usam fatos já presentes no portfólio, sem atribuir resultados comerciais ou autoria integral de módulos.
 
-Os links estão preparados para LinkedIn, que foi o canal sugerido no plano. Se escolher outro canal, trocar `utm_source`; manter `utm_campaign` e o identificador da peça. As novas páginas de serviço precisam estar publicadas antes de usar seus links.
+Os links estão preparados para LinkedIn, que foi o canal sugerido no plano. Se escolher outro canal, trocar `utm_source`; manter `utm_campaign` e o identificador da peça. As novas páginas de serviço foram publicadas e verificadas em 21/09/2026; conferir novamente os destinos no momento do agendamento.
 
 ## 1. Integração: o atendimento e o CRM
 

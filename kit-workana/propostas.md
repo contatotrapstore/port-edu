@@ -4,6 +4,7 @@ Revisão de 21/09/2026. Nenhum destes textos foi enviado. Os campos entre colche
 
 ## Antes de escrever
 
+- Conferir se clientes que já responderam aguardam uma ação concreta. Ler a última troca e preparar o retorno específico; priorizar essas pendências no resumo da rodada. Enviar somente quando a retomada estiver autorizada.
 - Responder às perguntas do cliente e demonstrar leitura do briefing com um detalhe concreto.
 - Explicar a primeira entrega útil, limites do escopo e próximo passo. O tamanho depende do pedido; não sacrificar respostas necessárias por uma contagem arbitrária.
 - Selecionar um case pertinente e descrever sua participação comprovada. Não copiar a bio nem atribuir a esse case o depoimento de outro projeto.
