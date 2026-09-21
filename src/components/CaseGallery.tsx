@@ -12,11 +12,12 @@ import { t } from "@/lib/i18n";
  * fullscreen lightbox (Esc / arrows / click-outside; focus returned on close).
  * Shared by the case modal and the /projetos/[id] page.
  */
-export default function CaseGallery({ images, title }: { images: string[]; title: string }) {
+export default function CaseGallery({ images, title, caption }: { images: string[]; title: string; caption?: string | readonly string[] }) {
   const [idx, setIdx] = useState(0);
   const [open, setOpen] = useState(false);
   const openerRef = useRef<HTMLButtonElement>(null);
   const locale = useLocale();
+  const currentCaption = typeof caption === "string" ? caption : caption?.[idx];
 
   const next = useCallback(() => setIdx((i) => (i + 1) % images.length), [images.length]);
   const prev = useCallback(
@@ -44,10 +45,10 @@ export default function CaseGallery({ images, title }: { images: string[]; title
 
   return (
     <LazyMotion features={domAnimation} strict>
-    <div>
-      <div className="text-[12px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[1.5px] mb-2 text-[#c0c0c0]">
-        &gt; {t(locale, "gallery.screens")}:
-      </div>
+    <figure>
+      <h2 className="mb-3 font-display text-lg font-semibold leading-snug text-[#c0c0c0]">
+        {t(locale, "gallery.screens")}
+      </h2>
 
       {/* Main image */}
       <button
@@ -152,7 +153,8 @@ export default function CaseGallery({ images, title }: { images: string[]; title
           </m.div>
         )}
       </AnimatePresence>
-    </div>
+      {currentCaption && <figcaption className="mt-3 text-[15px] leading-relaxed text-white/65">{currentCaption}</figcaption>}
+    </figure>
     </LazyMotion>
   );
 }

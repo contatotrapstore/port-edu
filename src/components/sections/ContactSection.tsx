@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { chapters, portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 import Section from "@/components/home/Section";
 import { useLocale } from "@/lib/locale";
@@ -26,8 +27,14 @@ export default function ContactSection({ progress }: { progress: number }) {
           {t(locale, "hero.hireCta")} <span aria-hidden="true">↗</span>
         </WorkanaLink>
         <p className="mt-4 text-sm text-white/60">{t(locale, "contact.proof", { projects: workanaStats.projectsCompleted, reviews: workanaStats.clientReviews })}</p>
-        <p className="mt-2 text-xs text-white/45">{t(locale, "proof.checked", { date: workanaStats.verifiedAtLabel })}</p>
-        <footer className="mt-12 text-sm text-white/45">© {new Date().getFullYear()} Eduardo Gouveia · EDevsHub</footer>
+        <p className="mt-2 text-xs text-white/60">{t(locale, "proof.checked", { date: workanaStats.verifiedAtLabel })}</p>
+        <footer className="mt-10 text-sm text-white/55">
+          <nav aria-label={locale === "pt" ? "Informações do site" : "Site information"} className="mb-3 flex flex-wrap gap-x-5">
+            <Link href="/servicos" className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-[#4ade80]">{locale === "pt" ? "Serviços" : "Services (Portuguese)"}</Link>
+            <Link href="/politica-de-privacidade" className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-[#4ade80]">{locale === "pt" ? "Privacidade" : "Privacy (Portuguese)"}</Link>
+          </nav>
+          © {new Date().getFullYear()} Eduardo Gouveia · EDevsHub
+        </footer>
       </div>
     </Section>
   );

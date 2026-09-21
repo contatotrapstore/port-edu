@@ -4,16 +4,18 @@ import type { ReactNode } from "react";
 import { projectColors, type Project } from "@/lib/constants";
 import WorkanaLink from "@/components/workana/WorkanaLink";
 import CaseGallery from "@/components/CaseGallery";
+import CaseInsights from "@/components/CaseInsights";
+import { getCaseInsights } from "@/lib/case-insights";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
 
 function Label({ children, color }: { children: ReactNode; color: string }) {
   return (
     <h2
-      className="text-[12px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[1.5px] mb-2 font-normal"
+      className="mb-3 font-display text-lg font-semibold leading-snug"
       style={{ color }}
     >
-      &gt; {children}:
+      {children}
     </h2>
   );
 }
@@ -23,20 +25,18 @@ export default function CaseStudyContent({ project }: { project: Project }) {
   const locale = useLocale();
   const color = projectColors[project.category];
   const capabilities = project.portfolioOutput ?? project.output;
+  const insights = getCaseInsights(project.id, locale);
+  const galleryImages = project.gallery?.length
+    ? project.gallery
+    : insights?.useProjectImage && project.image
+      ? [project.image]
+      : [];
 
   return (
     <div className="space-y-6">
       <p className="text-[15px] md:text-base leading-relaxed text-white/75">
         {project.overview || project.description}
       </p>
-
-      {project.id === "clinafy" && (
-        <p className="border-l-2 border-white/20 pl-4 text-sm leading-relaxed text-white/60">
-          {locale === "en"
-            ? "The screens show the Clinafy product. Metrics and offers displayed in the interface are product information and do not represent measured results of this delivery."
-            : "As telas mostram o produto Clinafy. Indicadores e ofertas exibidos na interface são informações do produto e não representam resultados medidos desta entrega."}
-        </p>
-      )}
 
       {project.role && (
         <div className="border-l-2 border-[#4ade80]/50 pl-4">
@@ -45,8 +45,8 @@ export default function CaseStudyContent({ project }: { project: Project }) {
         </div>
       )}
 
-      {project.gallery && project.gallery.length > 0 && (
-        <CaseGallery images={project.gallery} title={project.title} />
+      {galleryImages.length > 0 && (
+        <CaseGallery key={project.id} images={galleryImages} title={project.title} caption={insights?.galleryCaptions} />
       )}
 
       {project.problem && (
@@ -104,6 +104,8 @@ export default function CaseStudyContent({ project }: { project: Project }) {
           ))}
         </div>
       </div>
+
+      {insights && <CaseInsights content={insights} locale={locale} />}
 
       <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 pt-1">
         <WorkanaLink location={`case_${project.id}`} className="inline-flex items-center justify-center gap-2 text-[14px] font-bold text-black px-5 min-h-12 py-3 rounded-lg bg-[#fbbf24] hover:bg-[#fcd34d] transition-colors text-center">

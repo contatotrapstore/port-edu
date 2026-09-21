@@ -74,21 +74,21 @@ export default function ProjectsSection({
                 >
                   <span
                     className={`font-[family-name:var(--font-jetbrains-mono)] text-[11px] transition-colors ${
-                      carouselIdx === i ? "text-[#4ade80]" : "text-white/35"
+                      carouselIdx === i ? "text-[#4ade80]" : "text-white/65"
                     }`}
                   >
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span
                     className={`font-display text-2xl lg:text-3xl font-bold tracking-tight transition-colors ${
-                      carouselIdx === i ? "text-white" : "text-white/45 group-hover:text-white/75"
+                      carouselIdx === i ? "text-white" : "text-white/65 group-hover:text-white/85"
                     }`}
                   >
                     {p.title}
                     <span className="mt-1 block text-sm font-normal tracking-normal text-white/60 leading-relaxed">{p.headline}</span>
                   </span>
                   <span
-                    className="ml-auto text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-0.5 rounded border shrink-0"
+                    className="ml-auto text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-0.5 rounded border shrink-0"
                     style={{
                       color: projectColors[p.category],
                       borderColor: `${projectColors[p.category]}30`,
@@ -133,7 +133,7 @@ export default function ProjectsSection({
                   {projects[carouselIdx].tech.map((t) => (
                     <span
                       key={t}
-                      className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/55 border border-white/[0.06]"
+                      className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/65 border border-white/[0.06]"
                     >
                       &lt;{t} /&gt;
                     </span>
@@ -192,12 +192,12 @@ export default function ProjectsSection({
               </div>
             )}
             <div className="p-5">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <h3 className="text-lg font-semibold text-white font-[family-name:var(--font-jetbrains-mono)]">
                   {projects[carouselIdx].title}
                 </h3>
                 <span
-                  className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-1 rounded border font-bold"
+                  className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-1 rounded border font-bold"
                   style={{
                     color: projectColors[projects[carouselIdx].category],
                     borderColor: `${projectColors[projects[carouselIdx].category]}30`,
@@ -214,7 +214,7 @@ export default function ProjectsSection({
                 {projects[carouselIdx].tech.map((t) => (
                   <span
                     key={t}
-                    className="text-[9px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/55 border border-white/[0.06]"
+                    className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] px-2 py-0.5 rounded bg-white/[0.04] text-white/65 border border-white/[0.06]"
                   >
                     &lt;{t} /&gt;
                   </span>
@@ -233,24 +233,26 @@ export default function ProjectsSection({
           </m.div>
 
           {/* Controls */}
-          <div className="flex items-center justify-between mt-5">
-            <div className="flex gap-1.5">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 mt-5">
+            <div className="flex">
               {projects.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCarouselIdx(i)}
                   aria-label={t(locale, "projects.nth", { n: i + 1 })}
-                  className="py-3 px-0.5 -my-3 flex items-center"
+                  aria-pressed={carouselIdx === i}
+                  className="w-8 h-11 shrink-0 flex items-center justify-center rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4ade80]"
                 >
                   <span
+                    aria-hidden="true"
                     className={`block h-2 rounded-full transition-all duration-300 ${
-                      carouselIdx === i ? "bg-white w-6" : "bg-white/15 w-2 hover:bg-white/30"
+                      carouselIdx === i ? "bg-white w-6" : "bg-white/55 w-2"
                     }`}
                   />
                 </button>
               ))}
             </div>
-            <div className="flex gap-2">
+            <div className="ml-auto flex gap-2">
               <button
                 onClick={() => setCarouselIdx((carouselIdx - 1 + projects.length) % projects.length)}
                 aria-label={t(locale, "projects.prev")}
@@ -273,7 +275,7 @@ export default function ProjectsSection({
         {archive.length > 0 && (
           <div className="mt-10 md:mt-14">
             <div className="flex items-baseline justify-between gap-3 mb-4">
-              <p className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40">
+              <p className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/65">
                 {t(locale, "projects.archiveHeading", { count: archive.length })}
               </p>
               <span className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
@@ -297,7 +299,7 @@ export default function ProjectsSection({
                       <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#111] via-transparent to-transparent" />
                       {/* base escura: os mockups variam entre fundo claro e escuro */}
                       <span
-                        className="absolute top-2 right-2 text-[7px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-1.5 py-0.5 rounded border font-bold bg-black/70 backdrop-blur-sm"
+                        className="absolute top-2 right-2 text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[1px] px-1.5 py-0.5 rounded border font-bold bg-black/80 backdrop-blur-sm"
                         style={{
                           color: projectColors[p.category],
                           borderColor: `${projectColors[p.category]}55`,
@@ -310,14 +312,14 @@ export default function ProjectsSection({
                       <div className="font-display text-sm font-bold text-white/85 group-hover:text-white transition-colors truncate">
                         {p.title}
                       </div>
-                      <p className="mt-1 text-[10px] text-white/45 leading-relaxed line-clamp-2">
+                      <p className="mt-1 text-xs text-white/65 leading-relaxed line-clamp-2">
                         {p.description}
                       </p>
                       <div className="mt-2 flex flex-wrap gap-1">
                         {p.tech.slice(0, 3).map((tech) => (
                           <span
                             key={tech}
-                            className="text-[8px] font-[family-name:var(--font-jetbrains-mono)] px-1.5 py-0.5 rounded bg-white/[0.04] text-white/45 border border-white/[0.06]"
+                            className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] break-all px-1.5 py-0.5 rounded bg-white/[0.04] text-white/65 border border-white/[0.06]"
                           >
                             {tech}
                           </span>

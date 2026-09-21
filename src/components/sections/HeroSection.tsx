@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { chapters, portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 import Section from "@/components/home/Section";
 import { useLocale } from "@/lib/locale";
@@ -40,6 +41,9 @@ export default function HeroSection({ progress, onChapterClick }: {
           </button>
         </div>
         <p className="mt-4 text-xs text-white/50">{t(locale, "proof.checked", { date: workanaStats.verifiedAtLabel })}</p>
+        <Link href="/servicos" className="mt-2 inline-flex min-h-11 items-center text-sm text-white/70 underline underline-offset-4 transition-colors hover:text-[#4ade80]">
+          {locale === "pt" ? "Conheça os serviços e como definir seu projeto" : "Explore services and project scope (in Portuguese)"} <span aria-hidden className="ml-2">↗</span>
+        </Link>
       </div>
     </Section>
   );

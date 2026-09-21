@@ -5,7 +5,7 @@ import { portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 import { track } from "@vercel/analytics";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
-import { getAttribution } from "@/lib/attribution";
+import { compactAttribution, getAttribution } from "@/lib/attribution";
 
 const HELP: Record<"pt" | "en", string[]> = {
   pt: [
@@ -64,8 +64,13 @@ export default function TerminalPrompt() {
       case "hire":
       case "contratar":
         out = en ? ["→ opening Workana..."] : ["→ abrindo Workana..."];
-        { const { src, ref } = getAttribution();
-          track("workana_cta", { location: "terminal_hire", ...(src ? { src } : ref ? { ref } : {}) }); }
+        {
+          const attribution = getAttribution();
+          const { src, ref } = attribution;
+          track("workana_cta", { location: "terminal_hire", ...(src ? { src } : ref ? { ref } : {}) });
+          // Complementa o clique acima; não representa outra conversão.
+          track("workana_attribution", { location: "terminal_hire", attribution: compactAttribution(attribution) });
+        }
         window.open(workanaStats.workanaProfileUrl, "_blank", "noopener,noreferrer");
         break;
       case "clear":

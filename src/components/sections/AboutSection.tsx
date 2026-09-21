@@ -52,7 +52,7 @@ export default function AboutSection({ progress, onChapterClick }: {
               <figcaption className="mt-5 border-t border-white/10 pt-4 text-sm">
                 <span className="font-semibold text-white">{review.author}</span>
                 <span className="block mt-1 text-white/60 leading-relaxed">{review.project}</span>
-                <span className="block mt-2 text-xs text-white/45">{review.date}</span>
+                <span className="block mt-2 text-xs text-white/60">{review.date}</span>
               </figcaption>
             </figure>
           ))}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { m } from "framer-motion";
-import { chapters, portfolioWorkanaStats as workanaStats } from "@/lib/constants";
+import { chapters } from "@/lib/constants";
 import { track } from "@vercel/analytics";
 import { useLocale } from "@/lib/locale";
 import { t, chaptersLabels } from "@/lib/i18n";
@@ -25,13 +25,13 @@ function LocaleToggle({ className = "" }: { className?: string }) {
   return (
     <Link
       href={otherHref}
-      aria-label={locale === "en" ? "Ver em português" : "View in English"}
+      aria-label={locale === "en" ? "PT | EN — Ver em português" : "PT | EN — View in English"}
       onClick={() => track("locale_toggle", { to: locale === "en" ? "pt" : "en" })}
       className={`inline-flex items-center gap-1 h-8 px-2.5 rounded-md border border-white/10 hover:border-white/25 transition-colors text-[10px] font-[family-name:var(--font-jetbrains-mono)] font-bold tracking-[1px] ${className}`}
     >
-      <span className={locale === "pt" ? "text-[#4ade80]" : "text-white/40"}>PT</span>
-      <span className="text-white/20">|</span>
-      <span className={locale === "en" ? "text-[#4ade80]" : "text-white/40"}>EN</span>
+      <span className={locale === "pt" ? "text-[#4ade80]" : "text-white/65"}>PT</span>
+      <span className="text-white/65">|</span>
+      <span className={locale === "en" ? "text-[#4ade80]" : "text-white/65"}>EN</span>
     </Link>
   );
 }

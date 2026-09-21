@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { projectColors, siteConfig } from "@/lib/constants";
+import { projectColors, projects as projectsPT, siteConfig } from "@/lib/constants";
 import { getContent } from "@/lib/content.en";
 import { categoryLabel } from "@/lib/i18n";
 import { LocaleProvider } from "@/lib/locale";
@@ -32,8 +32,11 @@ export async function generateMetadata({
   if (!p) return {};
   const description = p.overview || p.description;
   const url = `${siteUrl}/en/projetos/${p.id}`;
+  // The EN overlay inherits PT fields unless explicitly translated.
+  const translatedHeadline = p.headline && p.headline !== projectsPT.find((project) => project.id === p.id)?.headline;
+  const title = `${p.title} — ${translatedHeadline ? p.headline : `${categoryLabel("en", p.category)} case study`}`;
   return {
-    title: `${p.title} — Case | Eduardo Gouveia`,
+    title,
     description,
     alternates: {
       canonical: url,
@@ -46,11 +49,11 @@ export async function generateMetadata({
       type: "article",
       locale: "en_US",
       url,
-      title: `${p.title} — Case · Eduardo Gouveia`,
+      title,
       description,
       images: [portfolioOgImage],
     },
-    twitter: { card: "summary_large_image", title: `${p.title} — Eduardo Gouveia`, description, images: [portfolioOgImage.url] },
+    twitter: { card: "summary_large_image", title, description, images: [portfolioOgImage.url] },
   };
 }
 

@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { track } from "@vercel/analytics";
 import { workanaHref } from "@/lib/links";
-import { getAttribution } from "@/lib/attribution";
+import { compactAttribution, getAttribution } from "@/lib/attribution";
 
 /**
  * Único caminho de saída para a Workana em todo o site.
@@ -30,10 +30,14 @@ export default function WorkanaLink({
       rel="noopener noreferrer"
       className={className}
       onClick={() => {
-        const { src, ref } = getAttribution();
-        // O Vercel Analytics grava poucas propriedades por evento — mandamos
-        // só as duas que decidem canal.
+        const attribution = getAttribution();
+        const { src, ref } = attribution;
+        // Preserve a conversão existente e o limite de 2 propriedades do Pro.
         track("workana_cta", { location, ...(src ? { src } : ref ? { ref } : {}) });
+        if (!/^\/(contratar|solucoes)(\/|$)/.test(window.location.pathname)) {
+          // Registro complementar de origem; não contar como outra conversão.
+          track("workana_attribution", { location, attribution: compactAttribution(attribution) });
+        }
         onClick?.();
       }}
     >

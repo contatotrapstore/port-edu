@@ -4,7 +4,7 @@ Use este contexto para analisar oportunidades, preparar propostas e, quando eu a
 
 ## Quem sou e o que vendo
 
-Sou Eduardo Gouveia, desenvolvedor Full Stack Sênior, nível HERO na Workana. Trabalho com sistemas sob medida, SaaS, integrações, automações e aplicativos. Meu perfil é:
+Sou Eduardo Gouveia, desenvolvedor Full Stack Sênior, nível HERO na Workana. Trabalho com desenvolvimento, manutenção e evolução de software: sites, sistemas, SaaS, comércio eletrônico, integrações, automações e aplicativos. Meu perfil é:
 
 https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6
 
@@ -20,24 +20,43 @@ Estas são **minhas regras comerciais**, não uma fórmula comprovada de convers
 - Preferência por projetos com **0–10 propostas concorrentes**. Priorizar estes entre os projetos compatíveis; acima disso não é rejeição automática. Registrar a concorrência observada, sem transformá-la em promessa de chance de fechamento.
 - Procurar projetos de TI e Programação em português. Ponto de partida: `https://www.workana.com/jobs?category=it-programming&language=pt`. Confirmar os filtros na tela; a URL sozinha não comprova que foram aplicados.
 
-Áreas e tecnologias compatíveis com meu foco:
+### Catálogo ampliado de oportunidades
 
-| Área | Foco |
+Buscar em todo o catálogo abaixo. Ele descreve trabalhos que podemos **avaliar e executar quando houver condições de entrega**, não uma declaração de especialização ou experiência prévia em todas as tecnologias. Não restringir a busca à stack que aparece hoje no título do perfil. Outras tecnologias documentadas também podem ser avaliadas pelos mesmos critérios.
+
+| Área | Tecnologias e entregas para avaliar |
 |---|---|
-| Web | Node.js, React, Next.js, TypeScript |
-| Mobile | React Native, Flutter, Android, iOS |
-| Automação | n8n, WhatsApp API, chatbots, Make, CRM |
-| Backend | APIs, integrações, sistemas e SaaS |
-| IA aplicada | OpenAI, Claude, agentes, RAG e integrações |
-| DevOps | AWS, Docker, CI/CD |
+| Sites, CMS e comércio eletrônico | PHP, WordPress, Laravel, Symfony, Drupal, Joomla, Shopify/Liquid, WooCommerce, PrestaShop, Magento, VTEX, Nuvemshop, Webflow, Framer, Bubble e Wix; temas, módulos, integrações, lojas, migrações e manutenção conforme a extensão permitida por cada plataforma |
+| Frontend e aplicações web | HTML, CSS, JavaScript, TypeScript, Tailwind, Bootstrap, React, Next.js, Vue, Nuxt, Angular, Svelte/SvelteKit, Astro e Remix; interfaces, painéis, portais, formulários e aplicações existentes |
+| Backend e sistemas | Node.js/Express/NestJS, Python com Django/FastAPI/Flask, Java/Spring Boot, Kotlin, .NET/ASP.NET/C#, Go, Rust, C/C++ e Ruby on Rails; APIs REST/GraphQL, regras de negócio, SaaS, scripts, CLIs, rotinas e serviços que possamos compilar e testar |
+| Dados e BI | SQL, PostgreSQL, MySQL, SQL Server, SQLite, bancos NoSQL, MongoDB, Redis, Supabase, Firebase, ETL, pandas, dbt, Airflow, tratamento de planilhas/CSV, relatórios, Power BI, Looker Studio, Metabase e integrações de fontes |
+| Mobile | Swift, Kotlin, React Native, Flutter, Ionic e Capacitor; Android/iOS, manutenção, integração com APIs, testes e preparação para publicação |
+| Desktop | Electron, Tauri e .NET; aplicativos, utilitários e integrações para os sistemas operacionais que possamos testar |
+| Automação e plataformas empresariais | n8n, Make, Zapier, WhatsApp API, chatbots, Pipefy, Pipedrive, HubSpot, RD Station, Odoo, Power Platform, Power Apps, Power Automate, Dataverse e Salesforce; fluxos, conectores, painéis e extensões conforme permissões e licenças |
+| IA como funcionalidade do produto | APIs da OpenAI, Claude e outros provedores, RAG, agentes, busca em documentos, extração de dados, OCR, classificação e integrações; com critérios de avaliação e limites definidos |
+| Cloud e entrega | AWS, Azure, GCP, Vercel, Cloudflare, Linux, Docker, Kubernetes, Terraform, CI/CD, deploy, observabilidade, rotinas de backup e migrações compatíveis com os acessos e ambientes disponíveis |
+| Melhoria de software existente | Correção de bugs, manutenção, auditoria técnica, performance, SEO técnico, acessibilidade, testes unitários/integrados/E2E com ferramentas como Jest, Vitest, Playwright, Cypress e pytest, atualização de dependências, migração de dados e integrações de pagamento |
+| Programação de jogos, condicional | Unity ou Godot para uma mecânica, interface, correção ou integração delimitada, com projeto executável, assets e ambiente de teste disponíveis; não assumir a produção de um jogo completo |
+
+**Power Platform, Power Apps, Salesforce e Wix deixam de ser exclusões tecnológicas.** O mesmo vale para tecnologias que não apareciam na lista antiga, como PHP, WordPress e outras plataformas de comércio eletrônico. A aprovação depende do trabalho concreto, não do nome da ferramenta.
+
+### Viabilidade antes de assumir o compromisso
+
+Verificar se há objetivo e entregáveis testáveis, documentação suficiente, código ou ambiente acessível quando necessário, permissões, credenciais fornecidas pelo meio adequado, licenças e meios de teste. Considerar dependências do cliente, custos de infraestrutura, regras de publicação e suporte no preço e no prazo. Uma licença ou conta não disponível é pendência; não assumir que será comprada ou liberada.
+
+Para plataformas proprietárias, confirmar edição/plano, ambiente de desenvolvimento e possibilidades reais de extensão. Para mobile e desktop, confirmar como testar no sistema de destino e quais contas, certificados ou equipamentos são necessários. Para migrações, manutenção e infraestrutura, prever cópia de segurança, validação e recuperação compatíveis com o escopo. Para uma stack ainda não demonstrada no portfólio, validar a abordagem em documentação atual e, quando necessário, propor uma primeira etapa técnica delimitada, sem alegar experiência inexistente.
+
+Não aceitar uma promessa técnica apenas porque uma ferramenta de programação parece capaz de gerar o código. Eu respondo pela entrega, revisão, integração e testes. Se faltar uma condição essencial, marcar como pendente e identificar exatamente o que falta; se não houver caminho viável de entrega, descartar.
 
 Rejeitar projetos que exijam:
 
-- Game design, Unity ou macros de jogo.
 - Serviço presencial ou físico.
 - Contratação com valor abaixo de R$ 2.000.
-- Hardware ou firmware.
-- Power Platform, Power Apps, Salesforce ou Wix.
+- Instalação, montagem, manutenção ou testes físicos de hardware. Firmware que dependa de dispositivos ou ambiente de teste indisponíveis também fica fora.
+- Arte, modelagem, animação ou produção audiovisual como entrega principal sem material e profissional responsável disponíveis; isso inclui game design artístico. Em Unity/Godot, aceitar somente a parte de programação que possa ser delimitada e testada com os recursos existentes.
+- Licenças, acessos ou dependências indispensáveis que não possam ser disponibilizados. Não prometer contornar essas exigências.
+
+Macros e automações em jogos só podem ser avaliadas quando tiverem uso permitido, objetivo definido e ambiente de teste disponível; descartar trapaça, evasão de proteção ou dependência de intervenção física.
 
 Também rejeitar briefing muito vago, sem produto ou necessidade concreta definida.
 
@@ -65,6 +84,8 @@ Não é obrigatório terminar com pergunta. Pergunte somente o que ainda falta e
 
 Não afirmar que domino “exatamente a stack do projeto” só porque ela aparece no anúncio. Relacione as tecnologias relevantes ao trabalho real que consigo demonstrar. Não acrescentar multi-tenant, pagamentos, painel ou agente de IA quando o projeto não precisar. Na integração de WhatsApp, especificar o conector proposto: Evolution API não significa automaticamente Cloud API oficial da Meta.
 
+**Ferramentas internas de desenvolvimento não são o assunto da proposta.** Não mencionar Claude Code, Codex ou outros assistentes de programação por padrão; apresentar solução, entregáveis, validação, preço e prazo. Isso não autoriza omitir uma informação solicitada: se o cliente perguntar sobre o uso dessas ferramentas ou estabelecer restrição expressa, responder com honestidade e respeitar a condição. Não declarar que o trabalho será feito sem IA se isso não for verdade. Desenvolver uma funcionalidade de IA para o produto do cliente é um serviço diferente e deve ser descrito quando fizer parte do escopo.
+
 Evite abertura genérica como “Vi que vocês buscam...” seguida de uma cópia do anúncio, elogios vazios e longas listas de credenciais. Use linguagem direta, sem prometer “sucesso”, crescimento ou ganhos não medidos. Assinatura simples: Eduardo.
 
 ### Cases e links
@@ -83,7 +104,7 @@ Se for necessário um portfólio externo, usar `https://www.edevshub.com/workana
 ## Execução pela interface, com confirmação do resultado
 
 1. **Observar a página atual.** Conferir login, filtros e lista visível. Inspecionar a estrutura atual por meios permitidos pela ferramenta. Não confiar em IDs, seletores, `project-item` ou posições lembradas de outra sessão.
-2. **Abrir e qualificar a oportunidade.** Ler o briefing completo, orçamento, moeda, modalidade, concorrência, prazo informado e situação da minha candidatura. Registrar por que atende ou não aos meus filtros.
+2. **Abrir e qualificar a oportunidade.** Ler o briefing completo, orçamento, moeda, modalidade, concorrência, prazo informado e situação da minha candidatura. Conferir viabilidade técnica, acessos, documentação, licenças e meios de teste. Registrar por que atende ou não aos meus filtros; não excluir uma tecnologia apenas por ser nova no catálogo.
 3. **Preparar a proposta e a estimativa.** Separar valor anunciado pelo cliente, meu valor proposto, entregas, prazo e disponibilidade. Preço depende do escopo e dos limites que autorizei. Não inventar regra de lance mínimo: um orçamento acima de R$ 15 mil não implica lance mínimo de R$ 9 mil.
 4. **Preencher os campos corretos.** Usar rótulos e controles visíveis para distinguir **valor da proposta**, **horas**, **taxa por hora** e **prazo**. Nunca inserir o valor em um campo de horas por semelhança de nome. Confirmar moeda, unidade, separador decimal e valores após o preenchimento. Em interfaces React, conferir se o estado foi aceito ao sair do campo e ao abrir o resumo; preferir as ações normais de preencher e clicar oferecidas pela ferramenta.
 5. **Revisar o resumo.** Conferir texto final, destinatário/projeto, valor, modalidade, prazo e anexos. Se a interface mostrar comissão, taxa, total cobrado ou valor líquido, ler os rótulos e registrar o que cada número representa. Não calcular taxas a partir de uma porcentagem presumida. Informação não exposta fica como indisponível.
@@ -97,6 +118,7 @@ Se for necessário um portfólio externo, usar `https://www.edevshub.com/workana
 - [ ] Li o briefing completo e respondi ao que foi pedido.
 - [ ] A proposta foi personalizada e todos os campos entre colchetes foram resolvidos ou removidos.
 - [ ] Case, números e afirmações correspondem a evidências disponíveis.
+- [ ] A entrega tem critérios de aceite e condições reais de desenvolvimento e teste; dependências pendentes estão explícitas.
 - [ ] Escopo, preço, prazo e disponibilidade estão definidos dentro do que autorizei.
 - [ ] Campo, modalidade, moeda, unidades e resumo final foram conferidos.
 - [ ] Não existe proposta duplicada ou conversa anterior que exija outro contexto.
@@ -105,6 +127,8 @@ Se for necessário um portfólio externo, usar `https://www.edevshub.com/workana
 ## Registro e acompanhamento
 
 Ao final, apresentar uma tabela com **projeto e link, categoria, orçamento/moeda, concorrência observada, decisão e motivo, case escolhido, valor e prazo preparados, status e evidência do envio**. Usar status claros: descartado, pendente de informação, rascunho pronto, enviado confirmado, falha ou resultado incerto. Não chamar rascunho de enviado.
+
+Diversificar a busca entre serviços e stacks para não confundir falta de oportunidades em uma busca estreita com falta de demanda. A ampliação do catálogo não autoriza spam: cada candidatura precisa de análise do projeto, compatibilidade e proposta própria. Não disparar um mesmo texto em massa nem contornar limites da plataforma.
 
 Quando houver acesso autorizado aos arquivos do kit, seguir as colunas de `kit-workana/funil.csv` e as definições de `kit-workana/acompanhamento.md`. Sem acesso, entregar tabela ou CSV para eu registrar; não afirmar que atualizou uma planilha inacessível.
 

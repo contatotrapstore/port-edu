@@ -75,6 +75,9 @@ export default function ProjectCatalog({ locale }: { locale: Locale }) {
           <p className="mt-3 text-sm text-white/55">
             {workanaStats.projectsCompleted} {locale === "en" ? "completed projects on Workana" : "projetos realizados na Workana"} · {workanaStats.level}
           </p>
+          <Link href="/servicos" className="mt-4 inline-flex min-h-11 items-center text-sm text-[#4ade80] underline underline-offset-4 hover:text-white">
+            {locale === "en" ? "Explore development services (in Portuguese)" : "Conheça os serviços e o que entra em cada escopo"} <span aria-hidden className="ml-2">↗</span>
+          </Link>
 
           {content.verticals.map((v) => {
             const items = cases.filter((p) => p.vertical === v.id);

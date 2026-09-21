@@ -21,14 +21,14 @@ export default function TerminalHeader({
         <span /><span /><span />
       </div>
       <span
-        className={`ml-3 text-[10px] font-[family-name:var(--font-jetbrains-mono)] ${
-          gold ? "text-[#fbbf24]/60" : "text-white/40"
+        className={`ml-3 text-[11px] font-[family-name:var(--font-jetbrains-mono)] ${
+          gold ? "text-[#fbbf24]/80" : "text-white/65"
         }`}
       >
         {title}
       </span>
       {right && (
-        <span className="ml-auto text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/25">
+        <span className="ml-auto pl-2 text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/65">
           {right}
         </span>
       )}

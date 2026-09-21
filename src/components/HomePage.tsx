@@ -22,7 +22,7 @@ import SkillsSection from "@/components/sections/SkillsSection";
 import ContactSection from "@/components/sections/ContactSection";
 import { LocaleProvider, type Locale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
-import { getAttribution } from "@/lib/attribution";
+import { compactAttribution } from "@/lib/attribution";
 
 const Experience = dynamic(
   () => import("@/components/experience/Experience"),
@@ -123,12 +123,12 @@ export default function HomePage({ locale }: { locale: Locale }) {
     // Scroll-depth: fire once per deepest chapter reached this session
     if (chapter > maxChapterSeen.current) {
       maxChapterSeen.current = chapter;
-      track("scroll_depth", { chapter: chapters[chapter].id, ...getAttribution() });
+      track("scroll_depth", { chapter: chapters[chapter].id, attribution: compactAttribution() });
     }
   }, []);
 
   const openCase = useCallback((p: Project) => {
-    track("ver_case", { id: p.id, ...getAttribution() });
+    track("ver_case", { id: p.id, attribution: compactAttribution() });
     setCaseStudy(p);
   }, []);
 
