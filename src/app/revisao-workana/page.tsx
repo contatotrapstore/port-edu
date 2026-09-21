@@ -47,7 +47,7 @@ export default function WorkanaReviewPage() {
         <div className="min-w-0 space-y-16">
           <div className="max-w-3xl">
             <h1 className="font-display text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">Seu próximo perfil,<br />pronto para revisar.</h1>
-            <p className="mt-5 text-lg leading-8 text-slate-300">Ajuste os textos, complete sua participação nos cases e copie o que aprovar para a Workana.</p>
+            <p className="mt-5 text-lg leading-8 text-slate-300">Revise os textos do perfil e dos cases, já com sua autoria confirmada, e copie o que aprovar para a Workana.</p>
             <div className="mt-6 rounded-xl border border-[#90b8ea]/25 bg-[#90b8ea]/7 px-5 py-4 text-sm leading-6 text-slate-200"><strong className="font-semibold text-white">Revisão local.</strong> Esta tela não publica alterações. Seus rascunhos são salvos neste navegador; se o armazenamento estiver indisponível, o campo avisa. A página não fica disponível no site em produção.</div>
           </div>
 
@@ -56,7 +56,7 @@ export default function WorkanaReviewPage() {
             <div className="flex flex-wrap gap-x-6 gap-y-2 border-y border-slate-700/70 py-4 text-sm text-slate-300"><span><strong className="text-white">{portfolioWorkanaStats.projectsCompleted}</strong> projetos</span><span><strong className="text-white">{portfolioWorkanaStats.rating.toLocaleString("pt-BR")}/5</strong> em {portfolioWorkanaStats.clientReviews} avaliações</span><span>{portfolioWorkanaStats.level}</span><span>Conferido em {portfolioWorkanaStats.verifiedAtLabel}</span></div>
             <CopyBlock draftKey="profile-title" title="Título" initialText={profileCopy.title} rows={2} />
             <CopyBlock draftKey="profile-about" title="Sobre mim" initialText={profileCopy.about} rows={20} hint="Começa pela oferta. O histórico vem depois; não repetimos ranking, stack e números em todos os parágrafos." />
-            <CopyBlock draftKey="profile-experience" title="Experiência profissional" initialText={profileCopy.experience} rows={9} hint="Pode ganhar exemplos mais específicos depois que você preencher sua participação nos cases abaixo." />
+            <CopyBlock draftKey="profile-experience" title="Experiência profissional" initialText={profileCopy.experience} rows={9} hint="Use os cases abaixo para detalhar o desenvolvimento que você realizou e as funcionalidades entregues." />
           </section>
 
           <section id="vitrine" className="scroll-mt-8 space-y-6">

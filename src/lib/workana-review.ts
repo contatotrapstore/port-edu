@@ -1,3 +1,5 @@
+import { getPortfolioRole } from "@/lib/portfolio-case-copy";
+
 export const reviewDate = "21/09/2026";
 
 export const profileCopy = {
@@ -33,7 +35,8 @@ export const reviewCases = [
     category: "Integração e atendimento",
     title: "Muda Paisagens | Qualificação de leads no WhatsApp com registro no CRM",
     summary: "Fluxo de pré-atendimento com IA, perguntas estruturadas e integração ao Pipefy via Make.",
-    prompt: "Ex.: quais fluxos você configurou, qual integração desenvolveu e o que já existia antes?",
+    role: getPortfolioRole("mudapaisagens", "pt")!,
+    deliverables: "• Pré-atendimento e qualificação de leads pelo WhatsApp.\n• Perguntas estruturadas para reunir as informações do contato.\n• Fluxo no Make com registro das informações no Pipefy.",
     image: "/images/projects/mudapaisagens.webp",
   },
   {
@@ -42,7 +45,8 @@ export const reviewCases = [
     category: "Sistema de gestão",
     title: "Passagens Europa | CRM para atendimento e gestão comercial",
     summary: "Leads, cotações, financeiro e comissões reunidos em uma plataforma para a operação comercial.",
-    prompt: "Ex.: quais módulos você entregou, quais integrações fez e quem participou com você?",
+    role: getPortfolioRole("passagenseuropa", "pt")!,
+    deliverables: "• CRM com atendimento por WhatsApp e funil de vendas.\n• Módulos de cotação e venda.\n• Gestão financeira, relatórios e comissões.",
     image: "/images/projects/passagenseuropa.webp",
   },
   {
@@ -51,7 +55,8 @@ export const reviewCases = [
     category: "Plataforma SaaS",
     title: "Clinafy | Gestão clínica com prontuário, agenda e teleconsulta",
     summary: "Plataforma para profissionais e clínicas de saúde mental, com prontuário, agenda e teleconsulta.",
-    prompt: "Ex.: quais módulos ficaram sob sua responsabilidade e em qual etapa do produto você atuou?",
+    role: getPortfolioRole("clinafy", "pt")!,
+    deliverables: "• Agenda e área do paciente.\n• Prontuário eletrônico e teleconsulta.\n• Gestão financeira integrada à rotina clínica.",
     image: "/images/projects/clinafy.webp",
   },
 ] as const;
@@ -62,7 +67,7 @@ export const proposalCopy = `Olá, [nome]. Pelo que você descreveu, o objetivo 
 
 Eu começaria por [primeira entrega útil]. Depois seguiria com [etapa necessária], considerando [restrição informada pelo cliente].
 
-Tenho um trabalho relacionado no portfólio da Workana: [case]. Nele, minha responsabilidade foi [participação comprovada], que se aproxima do seu projeto em [ponto específico].
+Desenvolvi [case relacionado do meu portfólio], com [funcionalidade real que responde a uma necessidade deste projeto].
 
 [Se faltar informação decisiva: faça uma pergunta que ainda não foi respondida no briefing.]
 [Se já houver informação suficiente: apresente entregáveis, valor, prazo e premissas.]
@@ -87,8 +92,8 @@ export const checklist = [
     detail: "Escolher as habilidades que representam o trabalho que você quer vender. Conferir os anos reais de React e Python: perfil e site mostravam faixas diferentes.",
   },
   {
-    title: "Conferir autoria, imagens e títulos dos cases",
-    detail: "Preencher sua participação nos três cases. Conferir o título e a stack de AnamNex, a grafia de KDElojob e os títulos de Revix e Tap Aviation. Remover contatos externos das imagens compartilhadas na plataforma.",
+    title: "Conferir imagens e títulos dos cases",
+    detail: "A autoria do desenvolvimento foi confirmada por você em 21/09/2026. Conferir o título e a stack de AnamNex, a grafia de KDElojob e os títulos de Revix e Tap Aviation. Remover contatos externos das imagens compartilhadas na plataforma.",
   },
   {
     title: "Observar a vitrine depois de salvar",

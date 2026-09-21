@@ -17,6 +17,8 @@ Catálogo: https://www.edevshub.com/projetos
 Cases: https://www.edevshub.com/projetos/mudapaisagens, https://www.edevshub.com/projetos/passagenseuropa e https://www.edevshub.com/projetos/clinafy
 Serviços publicados: https://www.edevshub.com/servicos, https://www.edevshub.com/servicos/sistemas-sob-medida, https://www.edevshub.com/servicos/integracoes-e-automacoes e https://www.edevshub.com/servicos/desenvolvimento-saas
 
+Estado já apurado e informado pela extensão em 21/09/2026: a sessão disponível não oferecia uma propriedade do EDevsHub; nenhuma ação foi executada no Search Console, e métricas e estado de indexação não foram obtidos. A checagem pública das nove URLs acima retornou HTTP 200 sem redirecionamento, canonical para a própria URL e index,follow; o sitemap era XML válido com 54 URLs, e o robots permitia o rastreamento verificado. Isso não comprova que o Google indexou as páginas ou leu o sitemap. Retome as etapas do painel quando a propriedade correta estiver acessível; não repetir a checagem pública sem mudança ou outra necessidade concreta de revalidação.
+
 Execute as etapas acessíveis sem pedir autorização novamente. Confira a propriedade selecionada: ela precisa cobrir www.edevshub.com. Se houver propriedade de domínio e de prefixo de URL, registre a escolhida e use a mesma nos comparativos. Não criar propriedade, trocar conta ou alegar acesso com base apenas em uma tela de login. Se houver falta de acesso, diga qual acesso falta e continue nas verificações públicas independentes.
 
 1. Em desempenho de pesquisa, compare os últimos 90 dias completos disponíveis com os 90 dias imediatamente anteriores, sem sobreposição. Registre datas exatas, propriedade, tipo de pesquisa e filtros. Se o histórico não comportar esses períodos, use o maior intervalo comparável e informe a limitação. Não misturar dados recentes ainda incompletos com dias completos.
@@ -58,10 +60,10 @@ Se houver acesso autorizado à pasta local, use kit-workana/funil.csv e kit-work
 Ao final, entregue o funil por período e segmento, a amostra analisada, os gargalos sustentados por evidências e o que continua sem resposta. Solicite apenas as informações que não conseguiu obter na conta; agrupe as perguntas necessárias. Não peça que eu digite números que você consegue ler no histórico.
 ```
 
-## 3. Workana: comprovar participação nos três cases
+## 3. Workana: detalhar os três cases com autoria já confirmada
 
 ```text
-Quero completar a descrição da minha participação nos três cases prioritários, usando evidências reais do meu histórico e dos materiais que já forneci. Execute a pesquisa acessível sem me pedir confirmação a cada leitura. Não envie mensagens a clientes para conseguir essas informações.
+Quero melhorar a apresentação dos três cases prioritários usando os materiais que já forneci. Em 21/09/2026 confirmei que fiz todo o desenvolvimento dos projetos do meu portfólio. Use essa confirmação como fonte da autoria e escreva “Desenvolvi...” para as funcionalidades apresentadas; não peça novamente prova genérica de participação. A tarefa agora é tornar o escopo e a entrega mais claros. Execute a pesquisa acessível sem me pedir confirmação a cada leitura. Não envie mensagens a clientes para conseguir informações.
 
 Meu perfil: https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6
 Minha vitrine isolada: https://www.edevshub.com/workana
@@ -70,26 +72,25 @@ Cases públicos:
 - Passagens Europa: https://www.edevshub.com/projetos/passagenseuropa
 - Clinafy: https://www.edevshub.com/projetos/clinafy
 
-Objetivo comercial: mostrar integração/automação, sistema de gestão e SaaS. Isso orienta a seleção; não prova que fui responsável por todo o produto.
+Objetivo comercial: mostrar integração/automação, sistema de gestão e SaaS. A autoria do desenvolvimento está confirmada por mim; design, branding, conteúdo de terceiros, cronologia e resultados de negócio não devem ser inferidos dessa declaração.
 
-Leia os cases públicos e procure, nos meus projetos e conversas da Workana aos quais a sessão tenha acesso, contratos, briefing, marcos, aceite e entregas relacionados. Confira a correspondência entre projeto, cliente e produto antes de associar a evidência. Use apenas repositórios, arquivos ou materiais que eu já tenha disponibilizado para este trabalho. Não acessar sistemas de clientes com credenciais antigas ou autorização presumida.
+Leia os cases públicos e aproveite as funcionalidades e telas reais já apresentadas. Quando um detalhe adicional de escopo, aceite ou resultado melhorar o texto, consulte os materiais já fornecidos e o histórico relacionado acessível na Workana. Confira a correspondência entre projeto e produto antes de associar esses detalhes. Essa pesquisa complementa a descrição; não é requisito para reconhecer a autoria já confirmada. Use apenas repositórios, arquivos ou materiais disponibilizados para este trabalho, sem acessar sistemas de clientes com credenciais antigas.
 
-Para cada case, reconstrua:
-1. Qual necessidade existia e em qual fase do produto entrei.
-2. O que já estava pronto antes do meu trabalho.
-3. Os módulos, fluxos e integrações sob minha responsabilidade.
-4. O que foi feito por equipe, parceiro ou pelo próprio cliente, quando documentado.
-5. As entregas e os critérios de aceite comprovados.
-6. As telas reais que demonstram essas entregas, sem contatos ou dados privados.
-7. Resultados que tenham fonte, data e relação demonstrada com minha entrega. Se isso faltar, descrever funcionalidades e capacidades, sem inventar ganho percentual ou receita.
+Para cada case, descreva:
+1. A necessidade atendida e o público do produto, conforme os materiais disponíveis.
+2. Os módulos, fluxos e integrações que desenvolvi e estão apresentados no portfólio.
+3. As entregas demonstradas e as telas reais que as ilustram, sem contatos ou dados privados.
+4. Detalhes de escopo, fase, cronologia ou critérios de aceite somente quando informados ou documentados; não supor que havia uma base pronta antes de eu entrar.
+5. Design, branding, materiais ou contribuições de terceiros somente se houver informação específica sobre eles, sem presumir autoria nem colaboração.
+6. Resultados apenas com fonte, data e relação demonstrada com a entrega. Na ausência desses dados, descrever funcionalidades e capacidades sem inventar ganho percentual, receita ou impacto.
 
-Produza para cada case um título comercial, resumo curto, “Minha participação”, “Entregas” e uma nota interna com as fontes. Se um dado não puder ser comprovado, marque a pendência fora do texto pronto para colar e faça uma pergunta específica ao final. Não deixar uma afirmação inventada no lugar de um campo ausente. Não atribuir depoimento de outro projeto ao case.
+Produza para cada case um título comercial, resumo curto, “Desenvolvimento realizado”, “Entregas” e uma nota interna com as fontes, incluindo minha confirmação de autoria em 21/09/2026. Um detalhe opcional ausente não impede entregar o texto já sustentado pelo portfólio e por essa confirmação. Faça uma pergunta específica somente se a resposta mudar materialmente a descrição; deixe a pendência fora do texto pronto para colar. Não inventar um dado para completar campos nem atribuir depoimento de outro projeto ao case.
 
-Referência de abordagem: Muda Paisagens envolve qualificação e registro no Pipefy via Make; Passagens Europa reúne atendimento e gestão comercial; Clinafy reúne prontuário, agenda e teleconsulta. Estas são descrições do produto, ainda insuficientes para determinar minha autoria. Não usar números como “500 profissionais” ou “50 mil consultas” como impacto do meu trabalho sem comprovação.
+Pontos de partida já utilizáveis: “Desenvolvi a automação do Muda Paisagens para qualificação de leads e registro no Pipefy via Make”; “Desenvolvi o CRM do Passagens Europa para atendimento e gestão comercial”; “Desenvolvi o Clinafy, com prontuário, agenda e teleconsulta”. Ajustar a ênfase ao público da proposta e aos detalhes apresentados no case. Não usar números como “500 profissionais” ou “50 mil consultas” como impacto do meu trabalho sem fonte específica.
 
-Quando a atualização desses cases já estiver autorizada nesta conversa e o texto estiver sustentado pelas evidências, aplique aos itens existentes do meu perfil e confira o conteúdo após salvar. Não apagar/recriar projetos para tentar forçar ordenação, não duplicar cases e não alterar campos que continuem sem comprovação. Se a sessão autorizar somente pesquisa, entregue os textos prontos sem publicar. Não pedir uma aprovação repetida para uma atualização já autorizada.
+Quando a atualização desses cases já estiver autorizada nesta conversa, aplique o texto sustentado pelo portfólio e pela minha confirmação aos itens existentes do perfil e confira o conteúdo após salvar. Não apagar/recriar projetos para tentar forçar ordenação, não duplicar cases e não preencher detalhes desconhecidos. Se a sessão autorizar somente pesquisa, entregue os textos prontos sem publicar. Não pedir uma aprovação repetida para uma atualização já autorizada.
 
-Entregue a tabela de participação e fontes, os três textos e as pendências reais. Se puder salvar na pasta local autorizada, use kit-workana/participacao-cases.md; caso contrário, entregue o conteúdo no chat. Informe exatamente quais alterações foram confirmadas na plataforma, se houve alguma.
+Entregue a tabela de escopos e fontes, os três textos e somente as pendências específicas que restarem. A autoria do desenvolvimento não é uma pendência. Se puder salvar na pasta local autorizada, use kit-workana/participacao-cases.md; caso contrário, entregue o conteúdo no chat. Informe exatamente quais alterações foram confirmadas na plataforma, se houve alguma.
 ```
 
 ## 4. Redes sociais: agendar somente na conta identificada

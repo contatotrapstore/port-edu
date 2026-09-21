@@ -8,8 +8,8 @@ import { useReviewDraft } from "./useReviewDraft";
 type ReviewCase = (typeof reviewCases)[number];
 
 export default function CaseReview({ item, position }: { item: ReviewCase; position: number }) {
-  const roleDraft = useReviewDraft(`${item.id}-role`, "");
-  const deliverablesDraft = useReviewDraft(`${item.id}-deliverables`, "");
+  const roleDraft = useReviewDraft(`${item.id}-role`, item.role);
+  const deliverablesDraft = useReviewDraft(`${item.id}-deliverables`, item.deliverables);
   const role = roleDraft.value;
   const deliverables = deliverablesDraft.value;
   const storageUnavailable = roleDraft.storageUnavailable || deliverablesDraft.storageUnavailable;
@@ -31,13 +31,18 @@ export default function CaseReview({ item, position }: { item: ReviewCase; posit
       </div>
       <div className="space-y-6 p-5 sm:p-6">
         <CopyBlock draftKey={`${item.id}-title`} title={`Título de ${item.name}`} initialText={item.title} rows={2} />
-        <div className="rounded-lg border border-amber-200/20 bg-amber-200/5 p-4 text-sm leading-6 text-amber-100">
-          A descrição abaixo precisa da sua participação real antes de ficar pronta para copiar. As funções do produto, sozinhas, não definem sua autoria.
+        <div className="rounded-lg border border-emerald-200/20 bg-emerald-200/5 p-4 text-sm leading-6 text-emerald-100">
+          Desenvolvimento integral confirmado por você em 21/09/2026. O texto abaixo já está preenchido para sua revisão.
         </div>
         <label className="block text-base font-medium text-white" htmlFor={`${item.id}-role`}>
           Minha participação
-          <textarea id={`${item.id}-role`} value={role} onChange={(event) => roleDraft.setValue(event.target.value)} rows={3} placeholder={item.prompt} className={fieldClass} />
+          <textarea id={`${item.id}-role`} value={role} onChange={(event) => roleDraft.setValue(event.target.value)} rows={3} className={fieldClass} />
         </label>
+        {(roleDraft.changed || deliverablesDraft.changed) && (
+          <button type="button" onClick={() => { roleDraft.reset(); deliverablesDraft.reset(); }} className="min-h-11 rounded-lg border border-slate-500 px-4 py-2 text-sm text-slate-200 hover:bg-slate-700/40 focus-visible:outline-2 focus-visible:outline-[#b8d3f3]">
+            Usar descrição confirmada
+          </button>
+        )}
         <label className="block text-base font-medium text-white" htmlFor={`${item.id}-deliverables`}>
           Entregas que posso comprovar
           <textarea id={`${item.id}-deliverables`} value={deliverables} onChange={(event) => deliverablesDraft.setValue(event.target.value)} rows={3} placeholder="Liste módulos, fluxos ou integrações que você entregou. Inclua números de resultado somente com fonte e contexto." className={fieldClass} />

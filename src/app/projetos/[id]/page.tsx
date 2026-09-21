@@ -9,6 +9,7 @@ import AuthorCard from "@/components/AuthorCard";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
 import { siteUrl } from "@/lib/site";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
+import { getCaseDescription } from "@/lib/portfolio-case-copy";
 
 // Only projects with real case-study content get a page; others (e.g. Click) 404.
 export const dynamicParams = false;
@@ -25,7 +26,7 @@ export async function generateMetadata({
   const { id } = await params;
   const p = projects.find((x) => x.id === id);
   if (!p) return {};
-  const description = (p.overview || p.description).slice(0, 155);
+  const description = getCaseDescription(p, "pt");
   const url = `${siteUrl}/projetos/${p.id}`;
   return {
     title: p.headline ? `${p.title} — ${p.headline}` : `${p.title} — Case | Eduardo Gouveia`,

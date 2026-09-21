@@ -10,7 +10,9 @@ https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6
 
 Dados observados no perfil público em **21/09/2026**: **180 projetos realizados, 181 avaliações e nota 4,75/5**. Conferir novamente no início da sessão se for usar números na proposta. Não usar os antigos 149 projetos, 4,69 ou rankings #2 Brasil/#3 global como se fossem atuais. Ranking é volátil e fica fora da proposta por padrão; usar uma posição apenas se ela tiver sido verificada, com categoria e data corretas.
 
-A plataforma já mostra minha reputação. Não repetir todos esses números, stack e rankings em cada candidatura. Não inventar anos de experiência, autoria integral de produtos, resultados de clientes, disponibilidade imediata ou prazo de resposta. As 37 recontratações ainda não foram recontadas nesta revisão; não usá-las como prova confirmada ou taxa de recompra.
+A plataforma já mostra minha reputação. Não repetir todos esses números, stack e rankings em cada candidatura. Não inventar anos de experiência, resultados de clientes, disponibilidade imediata ou prazo de resposta. As 37 recontratações ainda não foram recontadas nesta revisão; não usá-las como prova confirmada ou taxa de recompra.
+
+**Autoria confirmada por mim em 21/09/2026:** fui responsável por todo o desenvolvimento dos projetos apresentados no meu portfólio. Essa confirmação já permite escrever “Desenvolvi...” ao relacionar um projeto às funcionalidades apresentadas nele; não pedir novamente prova da minha participação. Não ampliar essa declaração para autoria de design, branding, conteúdo de terceiros, cronologia ou resultados de negócio que não tenham sido informados.
 
 ## Minha seleção de projetos
 
@@ -101,7 +103,7 @@ Priorizar os itens de portfólio hospedados na própria Workana. Referências pe
 - **Clinafy:** prontuário, agenda e teleconsulta.
 - **PACE ou NeuroIA Lab:** projetos de saúde e neurotecnologia, quando fizerem sentido para o briefing.
 
-As funções do produto não comprovam, sozinhas, minha responsabilidade em cada módulo. Se a autoria específica não estiver confirmada, não preenchê-la por conta própria. Não atribuir a um case o depoimento de outro.
+A autoria do desenvolvimento desses cases já foi confirmada por mim em 21/09/2026. Posso afirmar, por exemplo, “Desenvolvi a automação do Muda Paisagens para qualificação e registro no Pipefy via Make”. Selecionar as funcionalidades apresentadas no portfólio que se relacionam ao briefing. Detalhar escopo, contexto ou resultados quando isso tornar a proposta mais útil, sem transformar a autoria já confirmada em nova pendência. Datas, métricas, design, branding e contribuições de terceiros não devem ser inferidos. Não atribuir a um case o depoimento de outro.
 
 Se for necessário um portfólio externo, usar `https://www.edevshub.com/workana` somente depois de conferir que a versão publicada e suas imagens continuam sem contatos externos, inclusive contatos de terceiros. A mesma conferência vale para anexos. Não usar a home geral, `/contratar`, WhatsApp pessoal, e-mail ou redes como atalho de contato. A Workana admite links de portfólio sob condições; conferir as orientações atuais e manter a negociação no canal permitido. Não assumir que qualquer link externo está autorizado nem que todos estão proibidos.
 
@@ -144,7 +146,7 @@ Exemplo hipotético para um briefing que realmente peça qualificação de leads
 
 > Olá, [nome]. Para qualificar os leads de [canal informado] e registrar as respostas no Pipefy, começaria por um fluxo completo de entrada, qualificação e criação do registro. Assim vocês conseguem validar as regras antes de ampliar a automação.
 >
-> Tenho no portfólio o projeto Muda Paisagens, com um fluxo relacionado via Make. Minha participação foi [responsabilidade confirmada].
+> Desenvolvi a automação do Muda Paisagens para qualificação de leads e registro no Pipefy via Make. O ponto em comum com este projeto é [necessidade concreta do briefing].
 >
 > [Incluir somente se não constar do briefing: o Pipefy já tem as etapas e os campos definidos?]
 >

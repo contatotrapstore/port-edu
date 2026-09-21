@@ -6,6 +6,7 @@ import WorkanaLink from "@/components/workana/WorkanaLink";
 import CaseGallery from "@/components/CaseGallery";
 import CaseInsights from "@/components/CaseInsights";
 import { getCaseInsights } from "@/lib/case-insights";
+import { getPortfolioRole } from "@/lib/portfolio-case-copy";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
 
@@ -26,6 +27,7 @@ export default function CaseStudyContent({ project }: { project: Project }) {
   const color = projectColors[project.category];
   const capabilities = project.portfolioOutput ?? project.output;
   const insights = getCaseInsights(project.id, locale);
+  const role = project.role ?? getPortfolioRole(project.id, locale);
   const galleryImages = project.gallery?.length
     ? project.gallery
     : insights?.useProjectImage && project.image
@@ -38,10 +40,10 @@ export default function CaseStudyContent({ project }: { project: Project }) {
         {project.overview || project.description}
       </p>
 
-      {project.role && (
+      {role && (
         <div className="border-l-2 border-[#4ade80]/50 pl-4">
           <Label color="#4ade80">{t(locale, "case.role")}</Label>
-          <p className="text-[15px] leading-relaxed text-white/80">{project.role}</p>
+          <p className="text-[15px] leading-relaxed text-white/80">{role}</p>
         </div>
       )}
 

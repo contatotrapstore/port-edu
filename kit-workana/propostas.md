@@ -2,12 +2,14 @@
 
 Revisão de 21/09/2026. Nenhum destes textos foi enviado. Os campos entre colchetes precisam de dados reais; apagar as instruções editoriais antes de enviar.
 
+Eduardo confirmou em **21/09/2026** que fez todo o desenvolvimento dos projetos apresentados no portfólio. Os modelos podem usar **“Desenvolvi...”** para suas funcionalidades apresentadas, sem nova comprovação de participação. Detalhes de escopo e resultados podem ser acrescentados quando úteis; essa confirmação não autoriza inventar métricas, design, branding, cronologia ou contribuições de terceiros.
+
 ## Antes de escrever
 
 - Conferir se clientes que já responderam aguardam uma ação concreta. Ler a última troca e preparar o retorno específico; priorizar essas pendências no resumo da rodada. Enviar somente quando a retomada estiver autorizada.
 - Responder às perguntas do cliente e demonstrar leitura do briefing com um detalhe concreto.
 - Explicar a primeira entrega útil, limites do escopo e próximo passo. O tamanho depende do pedido; não sacrificar respostas necessárias por uma contagem arbitrária.
-- Selecionar um case pertinente e descrever sua participação comprovada. Não copiar a bio nem atribuir a esse case o depoimento de outro projeto.
+- Selecionar um case pertinente e descrever o desenvolvimento já confirmado, destacando uma funcionalidade apresentada no portfólio. Não copiar a bio nem atribuir a esse case o depoimento de outro projeto.
 - Perguntar somente quando a resposta ainda não estiver no briefing e mudar escopo, preço ou prazo. Se já houver informação suficiente, apresentar a proposta objetiva.
 - Respeitar pedidos de consultoria, mentoria e autonomia na ferramenta atual. Explicar sessões e correções guiadas quando esse for o objetivo; propor migração somente com limitação técnica concreta e alternativas claras.
 - Informar início depois de conferir a agenda. O preço deve considerar trabalho e risco reais, sem corte automático para compensar baixa conversão.
@@ -29,7 +31,7 @@ Olá, [nome]. Você precisa [objetivo informado no briefing], conectado a [ferra
 
 Eu começaria por [um fluxo completo e verificável]. Depois incluiria [etapa necessária ao objetivo], com [restrição ou regra de negócio informada]. Para a integração, usaria [API/conector exato, após conferir disponibilidade e requisitos].
 
-Um case relacionado é Muda Paisagens, com pré-atendimento e registro no Pipefy via Make. Minha participação foi [trabalho comprovado]. Ele se aproxima do seu projeto em [ponto concreto].
+Desenvolvi a automação do Muda Paisagens, com pré-atendimento e registro no Pipefy via Make. Ela se aproxima do seu projeto em [ponto concreto].
 
 [Se necessário: uma pergunta sobre uma informação decisiva ainda ausente.]
 [Se o escopo estiver claro: entregas, valor, prazo e premissas.]
@@ -48,7 +50,7 @@ Olá, [nome]. Pelo briefing, você quer [resultado pedido], incluindo [detalhe e
 
 Minha primeira entrega seria [fluxo ou módulo que o cliente já consegue validar]. A partir daí, seguiria com [próxima etapa necessária], considerando [regras e restrições conhecidas].
 
-Tenho um projeto relacionado no portfólio da Workana: [Passagens Europa, Rei, Clube Azul ou outro case pertinente]. Nele, minha responsabilidade foi [participação comprovada]. O ponto em comum é [necessidade equivalente].
+Desenvolvi [Passagens Europa, Rei, Clube Azul ou outro case pertinente], com [funcionalidade apresentada no portfólio e relacionada ao briefing]. O ponto em comum é [necessidade equivalente].
 
 [Pergunta decisiva ainda não respondida OU escopo, valor, prazo e premissas.]
 
@@ -66,7 +68,7 @@ Olá, [nome]. O fluxo principal que você descreveu é [objetivo do usuário do 
 
 Eu organizaria a primeira versão em torno de [primeira entrega útil]. Antes de desenvolver, definiríamos o que entra nesta etapa e os critérios de aceite. Depois viriam [demais etapas necessárias], respeitando [restrição de prazo, integração ou orçamento informada].
 
-Um case relacionado é [case pertinente]. Minha participação foi [trabalho comprovado], especialmente em [parte relevante para o briefing].
+Desenvolvi [case pertinente], incluindo [funcionalidade apresentada no portfólio e relevante para o briefing].
 
 [Pergunta decisiva ainda não respondida OU entregas, valor, prazo e premissas.]
 

@@ -12,6 +12,7 @@ import AuthorCard from "@/components/AuthorCard";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
 import { siteUrl } from "@/lib/site";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
+import { getCaseDescription } from "@/lib/portfolio-case-copy";
 
 const { projects } = getContent("en");
 
@@ -30,7 +31,7 @@ export async function generateMetadata({
   const { id } = await params;
   const p = projects.find((x) => x.id === id);
   if (!p) return {};
-  const description = p.overview || p.description;
+  const description = getCaseDescription(p, "en");
   const url = `${siteUrl}/en/projetos/${p.id}`;
   // The EN overlay inherits PT fields unless explicitly translated.
   const translatedHeadline = p.headline && p.headline !== projectsPT.find((project) => project.id === p.id)?.headline;

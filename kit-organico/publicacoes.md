@@ -1,6 +1,6 @@
 # Conteúdo orgânico preparado
 
-Textos preparados em 21/09/2026. Não publicados nem agendados: o perfil/canal de destino e o calendário ainda não foram definidos. O piloto visual está em `midia/piloto-muda-paisagens.png`. As descrições usam fatos já presentes no portfólio, sem atribuir resultados comerciais ou autoria integral de módulos.
+Textos preparados em 21/09/2026. Não publicados nem agendados: o perfil/canal de destino e o calendário ainda não foram definidos. O piloto visual está em `midia/piloto-muda-paisagens.png`. As descrições usam fatos presentes no portfólio e a autoria do desenvolvimento confirmada por Eduardo nesta data, sem inventar resultados comerciais.
 
 Os links estão preparados para LinkedIn, que foi o canal sugerido no plano. Se escolher outro canal, trocar `utm_source`; manter `utm_campaign` e o identificador da peça. As novas páginas de serviço foram publicadas e verificadas em 21/09/2026; conferir novamente os destinos no momento do agendamento.
 
@@ -15,7 +15,7 @@ O atendimento termina. As informações chegam ao CRM?
 
 Uma automação precisa cuidar do caminho completo: o que perguntar, quais respostas registrar e como a operação continua depois.
 
-No case Muda Paisagens, o fluxo de pré-atendimento pelo WhatsApp faz a qualificação inicial e registra informações no Pipefy, com o Make conectando as etapas.
+Desenvolvi a automação do Muda Paisagens: o fluxo de pré-atendimento pelo WhatsApp faz a qualificação inicial e registra informações no Pipefy, com o Make conectando as etapas.
 
 É esse tipo de integração que faz sentido discutir antes de escolher ferramentas: entrada, regras e destino dos dados.
 
@@ -34,7 +34,7 @@ Um CRM precisa acompanhar o jeito como a empresa trabalha.
 
 Cadastro de leads é uma parte. Depois vêm as etapas do funil, as cotações, as vendas e a relação com financeiro e comissões.
 
-O case Passagens Europa reúne essas rotinas em uma plataforma, com atendimento por WhatsApp e acompanhamento comercial.
+Desenvolvi o Passagens Europa para reunir essas rotinas em uma plataforma, com atendimento por WhatsApp e acompanhamento comercial.
 
 Para planejar um sistema assim, começo pelas perguntas de operação: quem altera cada informação, o que precisa acontecer em cada etapa e qual entrega a equipe consegue validar primeiro.
 
