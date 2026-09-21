@@ -23,9 +23,13 @@ Search Console mede descoberta no Google. Eventos do site medem navegação e sa
 
 ## Situação do Search Console
 
-Resultado informado pela extensão em **21/09/2026**: a sessão acessível não oferecia uma propriedade do EDevsHub. Não foram executadas ações no Search Console, e cliques, impressões, CTR, posição e situação das URLs no índice continuam indisponíveis.
+Em **21/09/2026**, a propriedade de domínio **`sc-domain:edevshub.com`** foi cadastrada e verificada pelo método **Provedor do nome de domínio**, com TXT no DNS da HostGator. O bloqueio anterior de acesso à propriedade foi resolvido. A visão geral exibe **dados em processamento**, com orientação para voltar em aproximadamente um dia. Cliques, impressões, CTR e posição continuam indisponíveis nesta execução; não foram tratados como zero nem houve comparativos ou exportações.
 
-Na verificação pública informada, as **9 URLs examinadas** responderam HTTP 200, sem redirecionamento, com canonical para a própria URL e diretiva `index,follow`. O sitemap retornou XML válido com **54 URLs**, e o robots permitia o rastreamento verificado. Esses sinais descrevem a configuração pública; **não comprovam indexação, leitura do sitemap pelo Google ou desempenho de pesquisa**. A etapa pendente é obter acesso à propriedade correta para consultar esses dados, não repetir a checagem pública sem uma mudança que justifique isso.
+A inspeção da home `https://www.edevshub.com/` confirmou **“O URL está no Google” / “A página está indexada”**, com último rastreamento informado em **08/09/2026 às 11:16:10**. Portanto, a home já era conhecida pelo Google antes deste cadastro; sua indexação não é resultado de uma ação feita hoje. As demais URLs ainda não foram inspecionadas nesta etapa.
+
+O envio de `https://www.edevshub.com/sitemap.xml` foi confirmado pelo painel. Na conferência final, o relatório ainda exibiu **“Não foi possível buscar o sitemap”**, tipo desconhecido e 0 URLs; esse zero pertence ao registro do sitemap, não a tráfego nem ao total de páginas do site. O teste ao vivo de **21/09/2026 às 15:23:28**, no horário exibido pelo painel, confirmou URL disponível para o Google, rastreamento permitido e busca com êxito. **Isso confirma acesso ao XML, não seu processamento como sitemap nem a indexação das URLs contidas nele.** A leitura do sitemap pelo relatório ainda não está confirmada. Não duplicar nem repetir o envio imediatamente; se a falha persistir e o diagnóstico/correção justificar, o mesmo sitemap pode ser reenviado conforme a [orientação do Google](https://support.google.com/webmasters/answer/7451001?hl=pt-BR). Não presumir erro no XML ou necessidade de alterar código.
+
+Na verificação pública, o sitemap retornou HTTP 200, `application/xml` e XML válido com **54 URLs**; o robots permite o rastreamento e aponta para esse endereço. As nove URLs públicas examinadas anteriormente também responderam HTTP 200, com canonical próprio e `index,follow`. Esses sinais não substituem a inspeção do índice.
 
 ## Piloto e reprodução
 
@@ -35,7 +39,7 @@ Os outros dois textos podem ser publicados como texto com link. Novas peças vis
 
 ## Próximos passos
 
-1. Disponibilizar a propriedade correta do EDevsHub no Search Console e executar as etapas restantes do primeiro prompt: métricas, situação do sitemap no painel e inspeção de URLs.
+1. Retomar a propriedade já verificada `sc-domain:edevshub.com` após o processamento indicado pelo Google, aproximadamente um dia na visão geral; conferir o sitemap existente e, na etapa de análise, inspecionar as demais URLs. Executar comparativos apenas com histórico suficiente, conforme o primeiro prompt. Nenhum acompanhamento foi agendado.
 2. Preencher o funil Workana com histórico e datas de envio verificáveis, sem tratar a lista parcial como total do período.
 3. Usar a autoria do desenvolvimento já confirmada para apresentar os três cases. Detalhar escopos e resultados quando útil, sem inventar métricas, design, branding, cronologia ou participação de terceiros; não pedir novamente comprovação genérica de autoria.
 4. Definir o perfil social e o calendário; usar o prompt de publicação com os textos e o piloto aprovados. Nenhum post foi enviado ou agendado pela criação deste kit.
