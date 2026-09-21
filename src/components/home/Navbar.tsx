@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { m } from "framer-motion";
-import { chapters, workanaStats } from "@/lib/constants";
+import { chapters, portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 import { track } from "@vercel/analytics";
 import { useLocale } from "@/lib/locale";
 import { t, chaptersLabels } from "@/lib/i18n";

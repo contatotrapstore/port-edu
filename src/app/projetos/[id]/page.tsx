@@ -8,6 +8,7 @@ import CaseHeader from "@/components/CaseHeader";
 import AuthorCard from "@/components/AuthorCard";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
 import { siteUrl } from "@/lib/site";
+import { portfolioOgImage } from "@/lib/portfolio-metadata";
 
 // Only projects with real case-study content get a page; others (e.g. Click) 404.
 export const dynamicParams = false;
@@ -41,9 +42,39 @@ export async function generateMetadata({
       url,
       title: p.headline ? `${p.title} — ${p.headline}` : `${p.title} — Case · Eduardo Gouveia`,
       description,
-      images: [{ url: p.image, width: 1280, height: 800, alt: p.title }],
+      images: [portfolioOgImage],
     },
+    twitter: { card: "summary_large_image", title: `${p.title} — Eduardo Gouveia`, description, images: [portfolioOgImage.url] },
   };
+}
+
+function CardNav({ p, dir }: { p: (typeof projects)[number]; dir: "prev" | "next" }) {
+  return (
+    <Link
+      href={`/projetos/${p.id}`}
+      className={`group flex items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0a0a0a]/60 backdrop-blur-sm p-4 hover:border-white/20 transition-colors ${
+        dir === "next" ? "flex-row-reverse text-right" : ""
+      }`}
+    >
+      <span className="relative h-14 w-24 shrink-0 overflow-hidden rounded border border-white/[0.08]">
+        <Image
+          src={p.cover ?? p.image}
+          alt=""
+          fill
+          sizes="96px"
+          className="object-cover object-center opacity-80 group-hover:opacity-100 transition-opacity"
+        />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[9px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-white/45 mb-0.5">
+          {dir === "prev" ? "← case anterior" : "próximo case →"}
+        </span>
+        <span className="block font-display font-bold text-white text-sm truncate group-hover:text-[#4ade80] transition-colors">
+          {p.title}
+        </span>
+      </span>
+    </Link>
+  );
 }
 
 export default async function ProjectPage({
@@ -132,6 +163,12 @@ export default async function ProjectPage({
             </div>
           </div>
 
+          {project.headline && (
+            <p className="mt-3 text-lg md:text-xl leading-relaxed text-white/75">
+              {project.headline}
+            </p>
+          )}
+
           {project.image && (
             <div className="mt-6 relative aspect-[16/10] overflow-hidden rounded-lg border border-white/[0.08] bg-[#0d0d0d]">
               <Image
@@ -160,38 +197,6 @@ export default async function ProjectPage({
             const idx = cases.findIndex((p) => p.id === project.id);
             const prev = cases[(idx - 1 + cases.length) % cases.length];
             const next = cases[(idx + 1) % cases.length];
-            const CardNav = ({
-              p,
-              dir,
-            }: {
-              p: (typeof cases)[number];
-              dir: "prev" | "next";
-            }) => (
-              <Link
-                href={`/projetos/${p.id}`}
-                className={`group flex items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0a0a0a]/60 backdrop-blur-sm p-4 hover:border-white/20 transition-colors ${
-                  dir === "next" ? "flex-row-reverse text-right" : ""
-                }`}
-              >
-                <span className="relative h-14 w-24 shrink-0 overflow-hidden rounded border border-white/[0.08]">
-                  <Image
-                    src={p.cover ?? p.image}
-                    alt=""
-                    fill
-                    sizes="96px"
-                    className="object-cover object-center opacity-80 group-hover:opacity-100 transition-opacity"
-                  />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[9px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-white/45 mb-0.5">
-                    {dir === "prev" ? "← case anterior" : "próximo case →"}
-                  </span>
-                  <span className="block font-display font-bold text-white text-sm truncate group-hover:text-[#4ade80] transition-colors">
-                    {p.title}
-                  </span>
-                </span>
-              </Link>
-            );
             return (
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <CardNav p={prev} dir="prev" />

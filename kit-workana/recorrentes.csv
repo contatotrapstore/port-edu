@@ -1,2 +1,1 @@
-cliente,sistema_entregue,ultimo_projeto,valor_acumulado_usd,tier_comissao,ideia_enviada,data_envio,respondeu,reabriu,valor
-EXEMPLO - apagar,,,,20%/10%/5%,,,,,
+cliente,sistema_entregue,data_ultimo_projeto,valor_acumulado,moeda,necessidade_identificada,contato_autorizado,data_envio,respondeu,reabriu,valor_novo_contrato,observacao

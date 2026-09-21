@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { workanaStats } from "@/lib/constants";
+import { portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 import { track } from "@vercel/analytics";
 import { useLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";

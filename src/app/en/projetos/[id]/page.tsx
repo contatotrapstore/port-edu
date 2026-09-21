@@ -7,8 +7,11 @@ import { getContent } from "@/lib/content.en";
 import { categoryLabel } from "@/lib/i18n";
 import { LocaleProvider } from "@/lib/locale";
 import CaseStudyContent from "@/components/CaseStudyContent";
+import CaseHeader from "@/components/CaseHeader";
+import AuthorCard from "@/components/AuthorCard";
 import AmbientBackdrop from "@/components/AmbientBackdrop";
 import { siteUrl } from "@/lib/site";
+import { portfolioOgImage } from "@/lib/portfolio-metadata";
 
 const { projects } = getContent("en");
 
@@ -45,9 +48,31 @@ export async function generateMetadata({
       url,
       title: `${p.title} — Case · Eduardo Gouveia`,
       description,
-      images: [{ url: p.image, width: 1280, height: 800, alt: p.title }],
+      images: [portfolioOgImage],
     },
+    twitter: { card: "summary_large_image", title: `${p.title} — Eduardo Gouveia`, description, images: [portfolioOgImage.url] },
   };
+}
+
+function CardNav({ p, dir }: { p: (typeof projects)[number]; dir: "prev" | "next" }) {
+  return (
+    <Link
+      href={`/en/projetos/${p.id}`}
+      className={`group flex items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0a0a0a]/60 backdrop-blur-sm p-4 hover:border-white/20 transition-colors ${
+        dir === "next" ? "flex-row-reverse text-right" : ""
+      }`}
+    >
+      <span className="relative h-14 w-24 shrink-0 overflow-hidden rounded border border-white/[0.08]">
+        <Image src={p.cover ?? p.image} alt="" fill sizes="96px" className="object-cover object-center opacity-80 group-hover:opacity-100 transition-opacity" />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[9px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-white/45 mb-0.5">
+          {dir === "prev" ? "← previous case" : "next case →"}
+        </span>
+        <span className="block font-display font-bold text-white text-sm truncate group-hover:text-[#4ade80] transition-colors">{p.title}</span>
+      </span>
+    </Link>
+  );
 }
 
 export default async function ProjectPage({
@@ -78,7 +103,7 @@ export default async function ProjectPage({
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/en` },
-          { "@type": "ListItem", position: 2, name: "Projects", item: `${siteUrl}/en#projects` },
+          { "@type": "ListItem", position: 2, name: "Projects", item: `${siteUrl}/en/projetos` },
           {
             "@type": "ListItem",
             position: 3,
@@ -99,7 +124,9 @@ export default async function ProjectPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main lang="en" className="fixed inset-0 z-10 overflow-y-auto scrollbar-none">
+      <CaseHeader source={`case_${project.id}_en`} />
+
+      <main lang="en" className="fixed inset-0 top-14 z-10 overflow-y-auto scrollbar-none">
         <div className="mx-auto max-w-3xl min-h-full px-5 md:px-8 py-10 md:py-16">
           <nav
             aria-label="Breadcrumb"
@@ -109,7 +136,7 @@ export default async function ProjectPage({
               home
             </Link>
             <span aria-hidden className="text-white/25">/</span>
-            <Link href="/en#projects" className="hover:text-white transition-colors">
+            <Link href="/en/projetos" className="hover:text-white transition-colors">
               projects
             </Link>
             <span aria-hidden className="text-white/25">/</span>
@@ -153,44 +180,16 @@ export default async function ProjectPage({
             <CaseStudyContent project={project} />
           </div>
 
+          <div className="mt-6">
+            <AuthorCard source={`case_${project.id}_en`} locale="en" />
+          </div>
+
           {/* Prev / next case — no dead ends */}
           {(() => {
             const cases = projects.filter((p) => p.overview);
             const idx = cases.findIndex((p) => p.id === project.id);
             const prev = cases[(idx - 1 + cases.length) % cases.length];
             const next = cases[(idx + 1) % cases.length];
-            const CardNav = ({
-              p,
-              dir,
-            }: {
-              p: (typeof cases)[number];
-              dir: "prev" | "next";
-            }) => (
-              <Link
-                href={`/en/projetos/${p.id}`}
-                className={`group flex items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0a0a0a]/60 backdrop-blur-sm p-4 hover:border-white/20 transition-colors ${
-                  dir === "next" ? "flex-row-reverse text-right" : ""
-                }`}
-              >
-                <span className="relative h-14 w-24 shrink-0 overflow-hidden rounded border border-white/[0.08]">
-                  <Image
-                    src={p.cover ?? p.image}
-                    alt=""
-                    fill
-                    sizes="96px"
-                    className="object-cover object-center opacity-80 group-hover:opacity-100 transition-opacity"
-                  />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[9px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] text-white/45 mb-0.5">
-                    {dir === "prev" ? "← previous case" : "next case →"}
-                  </span>
-                  <span className="block font-display font-bold text-white text-sm truncate group-hover:text-[#4ade80] transition-colors">
-                    {p.title}
-                  </span>
-                </span>
-              </Link>
-            );
             return (
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <CardNav p={prev} dir="prev" />

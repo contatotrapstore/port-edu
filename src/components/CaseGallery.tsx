@@ -26,6 +26,7 @@ export default function CaseGallery({ images, title }: { images: string[]; title
 
   useEffect(() => {
     if (!open) return;
+    const opener = openerRef.current;
     const onKey = (e: KeyboardEvent) => {
       e.stopPropagation();
       if (e.key === "Escape") setOpen(false);
@@ -35,7 +36,7 @@ export default function CaseGallery({ images, title }: { images: string[]; title
     document.addEventListener("keydown", onKey, true);
     return () => {
       document.removeEventListener("keydown", onKey, true);
-      openerRef.current?.focus();
+      opener?.focus();
     };
   }, [open, next, prev]);
 
@@ -44,7 +45,7 @@ export default function CaseGallery({ images, title }: { images: string[]; title
   return (
     <LazyMotion features={domAnimation} strict>
     <div>
-      <div className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] mb-2 text-[#c0c0c0]">
+      <div className="text-[12px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[1.5px] mb-2 text-[#c0c0c0]">
         &gt; {t(locale, "gallery.screens")}:
       </div>
 
@@ -61,12 +62,12 @@ export default function CaseGallery({ images, title }: { images: string[]; title
           alt={`${title} — ${t(locale, "gallery.screen")} ${idx + 1}`}
           fill
           sizes="(max-width: 768px) 92vw, 640px"
-          className="object-cover object-top"
+          className="object-contain"
         />
-        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 rounded bg-black/60 px-2 py-1 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/75 opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 rounded bg-black/85 px-2.5 py-1.5 text-xs font-[family-name:var(--font-jetbrains-mono)] text-white">
           <Maximize2 className="h-3 w-3" /> {t(locale, "gallery.enlarge")}
         </span>
-        <span className="absolute bottom-2 left-2 rounded bg-black/60 px-2 py-1 text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/75">
+        <span className="absolute bottom-2 left-2 rounded bg-black/85 px-2 py-1.5 text-xs font-[family-name:var(--font-jetbrains-mono)] text-white/85">
           {idx + 1}/{images.length}
         </span>
       </button>

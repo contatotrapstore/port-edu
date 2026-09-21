@@ -1,110 +1,100 @@
-# Perfil Workana — textos prontos para colar
+# Perfil e vitrine Workana — revisão de 21/09/2026
 
-Tudo aqui é copiar e colar. O único campo que eu não posso preencher por você são os **anos de experiência**, porque só você sabe o número verdadeiro — e declarar acima do real é o tipo de coisa que derruba a confiança na hora que o cliente pergunta.
+Textos preparados para revisão e atualização manual. O perfil público não foi alterado. A revisão visual está em `/revisao-workana` no servidor local; a rota não fica disponível em produção. Os campos editáveis salvam rascunhos neste navegador, com aviso se o armazenamento estiver indisponível. Eles não alteram os arquivos do kit nem publicam no perfil.
 
----
+## Dados conferidos
 
-## 1. Habilidades principais (3 slots)
+Na inspeção pública de **21/09/2026**: **180 projetos realizados, 181 avaliações, nota 4,75/5 e nível HERO**. Estes números podem mudar: conferir antes de publicar. A contagem de 37 clientes recorrentes não foi reconstituída e ficou fora da nova bio. Não calcular taxa de recompra sem a quantidade de clientes únicos.
 
-Trocar de `JavaScript · Python · React.js` para:
+Top 1 Brasil e Top 3 Global em TI são conquistas históricas, não posição atual. Evitar rankings atuais difíceis de manter na abertura. As duas violações e os 13 projetos em execução vistos na auditoria precisam de conferência no painel; os contadores não explicam, sozinhos, queda de conversão ou situação da conta.
 
-```
-React.js
-Node.js
-Inteligência artificial
-```
+## Título
 
-Isso muda o título indexado do seu perfil, que hoje é **"Freelancer profissional especialista em HTML"** — o Google e o buscador da Workana leem essa lista.
-
-## 2. Anos de experiência
-
-Hoje o seu card de busca mostra **React.js "1 a 3 anos"** e **Python "1 a 3 anos"**, ao lado de concorrentes que exibem "3 a 5" cobrando R$ 300/h. O `constants.ts` do seu site declara React 5 anos, Node 5, PostgreSQL 5, Python 4, Docker 4.
-
-Ajuste para a faixa **verdadeira** nestes: React.js, Node.js, Python, REST API, PostgreSQL, AWS, Docker, React Native.
-
-## 3. Subcategoria
-
-Adicionar **"Programação de Apps"** (e "Data Science e IA", se aparecer na sua conta). Rankings de subcategoria são menos disputados que o geral, e a própria Workana diz que eles pesam.
-
----
-
-## 4. Bio — primeira linha (é a que aparece no card de busca)
-
-```
-Construo SaaS, sistemas de gestão e apps sob medida para empresas que já passaram da fase de ideia e precisam de software que aguente uso real, crescimento e manutenção — da arquitetura ao deploy.
-
-176 projetos entregues na Workana · 4,74/5 em 179 avaliações · 37 clientes que voltaram a me contratar · nível HERO, com pico de Top 1 do Brasil e Top 3 Global em TI e Programação.
+```text
+Sistemas, SaaS e Integrações | Full Stack Sênior
 ```
 
-Parágrafo seguinte:
+## Sobre mim
 
-```
-O QUE EU CONSTRUO
+```text
+Desenvolvo sistemas sob medida, plataformas SaaS e integrações entre ferramentas. Posso construir uma solução nova ou evoluir um produto existente, com escopo e entregas definidos antes do desenvolvimento.
 
-• Automação e atendimento com IA integrados ao CRM, ERP ou agenda que a empresa já usa
-• Sistemas, painéis e integrações sob medida entre ferramentas que não se conversam
-• SaaS e MVPs com autenticação, multi-tenant e pagamento
-```
+Sou Eduardo Gouveia, desenvolvedor Full Stack Sênior e HERO na Workana, com 180 projetos realizados na plataforma.
 
-**Corrigir os números defasados:** a bio diz "175 projetos" no topo e "165 projetos" três parágrafos abaixo. O real é **176**. Em "Experiência profissional" o 175 aparece mais duas vezes. São 3 lugares no total.
+POSSO AJUDAR COM
+• Sistemas de gestão, CRMs e painéis administrativos.
+• Plataformas SaaS e MVPs com funcionalidades priorizadas.
+• Integrações entre APIs, bancos de dados e ferramentas da operação.
+• Automações de processos e aplicações de IA.
+• Aplicativos web e mobile.
 
-> Contradição interna é o pior sinal possível para quem vende atenção a detalhe: o cliente que ler até o meio conclui que você não revisa o próprio material.
+Trabalho com JavaScript e TypeScript, React, Next.js, Node.js e Python, além das ferramentas que o projeto exige. A escolha técnica parte do uso, das integrações e da manutenção necessária.
 
----
+COMO TRABALHO
+Antes de começar, alinhamos escopo, prazo e critérios de aceite no chat da Workana. Divido o desenvolvimento em etapas para você acompanhar e validar as entregas. Se o caminho que você pediu precisar de ajustes, explico a alternativa e seu impacto antes de executar.
 
-## 5. Vitrine do portfólio — só os 6 primeiros aparecem antes do "ver mais"
-
-Ordem atual: PACE, Revix, NeuroIA Lab, AnamNex, ConNote, **Cacao Store** (loja Shopify em 6º, enquanto o Clinafy — o único case com número de negócio — está em 9º).
-
-Nova ordem e títulos:
-
-| # | Projeto | Título para colar |
-|---|---------|-------------------|
-| 1 | Clinafy | `Clinafy \| Prontuário + agenda + teleconsulta com IA — 500+ profissionais e 50 mil consultas` |
-| 2 | Muda Paisagens | `Muda Paisagens \| Atendimento com IA integrado ao Pipefy via Make — leads qualificados sem intervenção manual` |
-| 3 | PACE | `PACE \| Neurofeedback com EEG em tempo real no navegador — 28 jogos 3D e protocolo de 12 semanas` |
-| 4 | NeuroIA Lab | `NeuroIA Lab \| SaaS de saúde mental — 19 assistentes de IA clínicos em produção` |
-| 5 | BlackinBot | `BlackinBot \| SaaS de monetização no Telegram — Pix, boleto e cartão com liberação automática` |
-| 6 | Rei | `Rei \| Gestão de obras telecom — etapas, SLAs e dependências num painel único` |
-| 7 | Passagens Europa | `Passagens Europa \| CRM sob medida com atendimento, funil e IA de apoio` |
-| 8 | CorpxBank | `CorpxBank \| App bancário mobile publicado na App Store e no Google Play` |
-
-**Se a Workana não deixar reordenar:** salve título, descrição e imagem dos 8, apague e recrie na ordem inversa (Rei primeiro, Clinafy por último) numa sessão só — os mais recentes vão para o topo.
-
-**Erros públicos para corrigir:**
-- `KDElojab` → `KDElojob`
-- `Tap | Site institucional taxi aereo` → `Tap Aviation | Site institucional para táxi aéreo`
-- `Revix | Aplicativo Social Automotiva com Eventos` → `Revix | Aplicativo social automotivo com eventos`
-
----
-
-## 6. Regra de seleção de projeto
-
-Cole num arquivo de notas e siga sem exceção:
-
-**ENVIAR se cair em um destes:**
-- **A — Automação / IA / integração**: título ou descrição com whatsapp, chatbot, agente de IA, automação, integração, API, n8n, Make, CRM, ERP — **e** orçamento ≥ USD 250 ou "a combinar" — **e** ≤ 40 propostas
-- **B — Sistema / painel / ERP sob medida**: ≥ USD 500 **e** ≤ 60 propostas
-- **C — SaaS / MVP**: ≥ USD 1.000 **e** ≤ 30 propostas — só na primeira hora (chegam a 102 propostas em 7h)
-
-**DESCARTAR sempre:** WordPress, Shopify, Wix, Elementor, landing page, "criação de site"; "Menos de USD 50"; "Menos de USD 15/hora"; mais de 60 propostas.
-
-**Meta de mix:** ≥ 50% em A/B. Volume: manter 30–40 por semana. Se a regra não entregar volume, relaxe o teto de A para 60 propostas — **nunca** abrindo para commodity.
-
-**Não use o filtro "pagamento verificado":** o selo aparece em 1 de cada 28 projetos e cortaria ~90% do feed.
-
-**Não espere achar orçamento alto E baixa concorrência juntos.** Na contagem de 88 projetos, zero combinavam ≥ USD 500 com ≤ 20 propostas.
-
-## 7. Buscas salvas (o Explorer permite 10)
-
-Uma para cada termo, todas com os filtros: **TI e Programação + português + últimas 24 horas + ordenar por recentes**.
-
-```
-whatsapp · chatbot · agente de ia · automação · integração · api · n8n · make · crm · painel
+Me conte o que precisa construir ou melhorar e quais ferramentas já utiliza. Com esse contexto, avalio o caminho técnico e o que cabe no prazo do projeto.
 ```
 
-## 8. Rotina
+## Experiência profissional
 
-Três janelas de 25 minutos: **8h30 · 13h30 · 19h30**. Duas a três propostas por janela = 30 a 40 por semana. Cada uma registrada na planilha.
+```text
+Desenvolvimento de sistemas web, SaaS, integrações e aplicativos, da definição técnica ao deploy e à evolução do produto.
 
-Sexta, 30 minutos: follow-up único nas propostas **lidas** sem resposta há mais de 48h.
+Meu portfólio inclui projetos para saúde e neurotecnologia, sistemas de gestão e automações comerciais. Entre eles estão PACE, NeuroIA Lab, Clinafy, Passagens Europa e Muda Paisagens.
+
+Também atuo na evolução de produtos existentes, integração de serviços e manutenção. O trabalho é organizado por entregas e critérios de aceite combinados com o cliente.
+```
+
+Esta versão não atribui autoria integral dos produtos nem ganhos de clientes. Depois de confirmar a participação em dois ou três cases, podemos acrescentar exemplos concretos à experiência.
+
+## Habilidades e experiência
+
+Escolher as três habilidades principais com base nos serviços que você quer vender e no histórico que consegue demonstrar. Para sistemas e integrações, React.js, Node.js e integração de APIs são uma seleção inicial a conferir entre as opções da plataforma. IA pode ganhar prioridade quando houver demanda e cases compatíveis; não é troca obrigatória.
+
+Conferir os anos reais antes de mudar as faixas. React e Python apareciam entre 1 e 3 anos no perfil, enquanto o site informava períodos maiores. Não aumentar a faixa para acompanhar concorrentes. Subcategorias adicionais devem representar trabalho que você quer e pode executar; não presumir melhora de ranking por adicioná-las.
+
+## Vitrine sugerida para sistemas, integrações e SaaS
+
+| Ordem de teste | Título | Informação necessária para fechar a descrição |
+|---|---|---|
+| 1 | Muda Paisagens — Qualificação de leads no WhatsApp com registro no CRM | Fluxos configurados, integração desenvolvida, partes preexistentes e sua participação |
+| 2 | Passagens Europa — CRM para atendimento e gestão comercial | Módulos entregues, integrações e participação de outras pessoas |
+| 3 | Clinafy — Gestão clínica com prontuário, agenda e teleconsulta | Etapa do produto, módulos sob sua responsabilidade e entregas comprovadas |
+
+As funções dos produtos estão documentadas no portfólio. A autoria específica ainda precisa da sua confirmação. Não publicar “500 profissionais” ou “50 mil consultas” como resultado do seu trabalho sem fonte, data e relação demonstrada. Não associar o depoimento de Arthur a Muda Paisagens, nem o de Leonardo a BlackinBot: eles se referem a outros projetos.
+
+Modelo de descrição por case:
+
+```text
+[Descrição breve e factual do produto.]
+
+MINHA PARTICIPAÇÃO
+[O que desenvolvi, quando entrei no projeto e o que já existia.]
+
+ENTREGAS
+[Módulos, fluxos ou integrações que posso comprovar.]
+```
+
+Usar PACE ou NeuroIA em propostas de saúde; escolher um app relacionado quando o briefing pedir mobile. A Workana pode controlar a apresentação final dos itens. Conferir depois de salvar, sem apagar/recriar cases para tentar forçar a ordenação.
+
+Conferências editoriais: confirmar `KDElojob` no lugar de `KDElojab`; revisar “Tap Aviation | Site institucional para táxi aéreo” e “Revix | Aplicativo social automotivo com eventos”; reconciliar escopo e stack de AnamNex com o trabalho entregue.
+
+## Seleção de oportunidades e rotina
+
+Avaliar necessidade do cliente, compatibilidade técnica, orçamento, prazo, informações disponíveis e agenda real. Automação, integração, sistemas e SaaS são categorias iniciais de acompanhamento, não regras de exclusão de todo outro serviço.
+
+Os antigos tetos de propostas concorrentes, cortes fixos de orçamento, exigência de candidatura na primeira hora e meta de 30–40 propostas por semana não têm evidência suficiente no histórico local. Registrar essas variáveis e comparar resultados antes de transformá-las em filtros rígidos. Não presumir que selo de pagamento ou horário, isoladamente, determina fechamento.
+
+Buscas úteis para experimentar conforme sua oferta: automação, integração, API, CRM, painel, SaaS, Make, n8n e agente de IA. Ajustar às opções do plano e à qualidade real do retorno. Planejar janelas de prospecção compatíveis com as entregas atuais, sem prometer disponibilidade que a agenda não comporta.
+
+## Próximos dados a preencher
+
+- Últimos 60–90 dias: propostas, respostas, conversas qualificadas, contratos, receita, categoria e origem.
+- Separar clientes novos, recorrentes e convites. “Lida” pode ser indisponível; não equivale a “não lida”.
+- Registrar motivos de perda apenas quando informados. Sem resposta não prova preço alto.
+- Fazer uma primeira revisão após 14 dias de registros novos, respeitando o tempo de decisão. O período não garante amostra suficiente.
+
+Veja `propostas.md`, `acompanhamento.md` e `baseline.csv`.
+
+Fontes: [painel da proposta](https://help.workana.com/hc/pt/articles/4419380740503-Mensagens-do-Projeto), [orientações de portfólio](https://help.workana.com/hc/pt/articles/360041612974-Como-fa%C3%A7o-para-mostrar-meu-portf%C3%B3lio). A página de revisão local é material interno; não usar seu endereço como portfólio em propostas.

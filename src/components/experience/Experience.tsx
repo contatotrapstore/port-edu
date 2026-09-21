@@ -1,12 +1,28 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useMemo, useState } from "react";
+import { useEffect, useRef, useMemo, useState, useSyncExternalStore } from "react";
 import * as THREE from "three";
 import { chapterTargets, chapters } from "@/lib/constants";
 
 // Shared scroll ref — updated by animation loop, read by CameraController
 const scrollRef = { current: 0 };
+
+// Switch scroll controllers without reloading the page or losing its session.
+const desktopQuery = "(min-width: 768px)";
+function subscribeViewport(onChange: () => void) {
+  const query = window.matchMedia(desktopQuery);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+const desktopSnapshot = () => window.matchMedia(desktopQuery).matches;
+const serverDesktopSnapshot = () => true;
+
+// Stable decorative positions also keep viewport transitions visually continuous.
+function particleNoise(index: number, seed: number) {
+  const value = Math.sin(index * 127.1 + seed * 311.7) * 43758.5453;
+  return value - Math.floor(value);
+}
 
 // Silver floating particles (optimized: 250 count, 4-segment spheres)
 function Particles({ count = 250 }) {
@@ -14,13 +30,13 @@ function Particles({ count = 250 }) {
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const data = useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      x: (Math.random() - 0.5) * 30,
-      y: (Math.random() - 0.5) * 100,
-      z: (Math.random() - 0.5) * 15,
-      speed: 0.05 + Math.random() * 0.3,
-      offset: Math.random() * Math.PI * 2,
-      scale: 0.015 + Math.random() * 0.04,
+    return Array.from({ length: count }, (_, index) => ({
+      x: (particleNoise(index, 1) - 0.5) * 30,
+      y: (particleNoise(index, 2) - 0.5) * 100,
+      z: (particleNoise(index, 3) - 0.5) * 15,
+      speed: 0.05 + particleNoise(index, 4) * 0.3,
+      offset: particleNoise(index, 5) * Math.PI * 2,
+      scale: 0.015 + particleNoise(index, 6) * 0.04,
     }));
   }, [count]);
 
@@ -134,12 +150,12 @@ function MatrixRain({ count = 80 }) {
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const data = useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      x: (Math.random() - 0.5) * 30,
-      y: Math.random() * 100,
-      z: -8 - Math.random() * 10,
-      speed: 1 + Math.random() * 3,
-      size: 0.02 + Math.random() * 0.04,
+    return Array.from({ length: count }, (_, index) => ({
+      x: (particleNoise(index, 7) - 0.5) * 30,
+      y: particleNoise(index, 8) * 100,
+      z: -8 - particleNoise(index, 9) * 10,
+      speed: 1 + particleNoise(index, 10) * 3,
+      size: 0.02 + particleNoise(index, 11) * 0.04,
     }));
   }, [count]);
 
@@ -184,13 +200,13 @@ function FloatingBrackets() {
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const brackets = useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      x: (Math.random() - 0.5) * 25,
-      y: Math.random() * -80,
-      z: (Math.random() - 0.5) * 12,
-      rotSpeed: 0.1 + Math.random() * 0.3,
-      scale: 0.08 + Math.random() * 0.15,
-      offset: Math.random() * Math.PI * 2,
+    return Array.from({ length: count }, (_, index) => ({
+      x: (particleNoise(index, 12) - 0.5) * 25,
+      y: particleNoise(index, 13) * -80,
+      z: (particleNoise(index, 14) - 0.5) * 12,
+      rotSpeed: 0.1 + particleNoise(index, 15) * 0.3,
+      scale: 0.08 + particleNoise(index, 16) * 0.15,
+      offset: particleNoise(index, 17) * Math.PI * 2,
     }));
   }, [count]);
 
@@ -225,12 +241,12 @@ function SilverRain({ count = 100 }) {
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   const data = useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      x: (Math.random() - 0.5) * 25,
-      y: Math.random() * 20,
-      z: (Math.random() - 0.5) * 10,
-      speed: 0.5 + Math.random() * 1.5,
-      size: 0.008 + Math.random() * 0.02,
+    return Array.from({ length: count }, (_, index) => ({
+      x: (particleNoise(index, 18) - 0.5) * 25,
+      y: particleNoise(index, 19) * 20,
+      z: (particleNoise(index, 20) - 0.5) * 10,
+      speed: 0.5 + particleNoise(index, 21) * 1.5,
+      size: 0.008 + particleNoise(index, 22) * 0.02,
     }));
   }, [count]);
 
@@ -273,6 +289,7 @@ interface ExperienceProps {
 }
 
 export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
+  const isDesktop = useSyncExternalStore(subscribeViewport, desktopSnapshot, serverDesktopSnapshot);
   const lastReported = useRef(0);
   const canvasReadyRef = useRef(false);
 
@@ -315,8 +332,7 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
     // No scroll-jack at all — the page flows like any landing page. Progress is
     // DERIVED from the native scroll position (mapped through each chapter's range)
     // so the 3D camera, navbar, HUD and progress bar stay in sync.
-    const mql = window.matchMedia("(min-width: 768px)");
-    if (!mql.matches) {
+    if (!isDesktop) {
       const sections = Array.from(document.querySelectorAll<HTMLElement>("main section[id]"));
       let raf2 = 0;
       const compute = () => {
@@ -346,22 +362,17 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       };
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("gotoChapter", handleGotoMobile);
-      const onModeChange = () => window.location.reload(); // crossing the breakpoint swaps modes
-      mql.addEventListener("change", onModeChange);
       compute();
       return () => {
         window.removeEventListener("scroll", onScroll);
         window.removeEventListener("gotoChapter", handleGotoMobile);
-        mql.removeEventListener("change", onModeChange);
         if (raf2) cancelAnimationFrame(raf2);
       };
     }
-    const onModeChange = () => window.location.reload();
-    mql.addEventListener("change", onModeChange);
 
     // ---------- DESKTOP (md+): cinematic chapter scroll ----------
-    let target = 0;
-    let current = 0;
+    let target = scrollRef.current;
+    let current = target;
 
     // Retorna a section ativa (opacity > 0.5) para decidir se deve delegar scroll.
     // NodeList é cacheado — as sections são estáticas após o mount (INP win).
@@ -643,10 +654,9 @@ export default function Experience({ onLoaded, onProgress }: ExperienceProps) {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("gotoChapter", handleGoto);
-      mql.removeEventListener("change", onModeChange);
       cancelAnimationFrame(raf);
     };
-  }, [onProgress]);
+  }, [onProgress, isDesktop]);
 
   return (
     <Canvas

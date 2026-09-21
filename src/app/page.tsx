@@ -1,6 +1,8 @@
 import HomePage from "@/components/HomePage";
+import { portfolioMetadata } from "@/lib/portfolio-metadata";
 
-// PT-BR is the default locale at `/` — metadata comes from the root layout.
+export const metadata = portfolioMetadata;
+
 export default function Page() {
   return <HomePage locale="pt" />;
 }

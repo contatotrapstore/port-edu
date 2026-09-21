@@ -1,280 +1,234 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { projects, testimonials, workanaStats } from "@/lib/constants";
+import { testimonials, portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 import TerminalHeader from "@/components/TerminalHeader";
-import WorkanaCtaButton from "@/components/workana/WorkanaCtaButton";
 import WorkanaLink from "@/components/workana/WorkanaLink";
+import WorkanaScreenPreview from "@/components/workana/WorkanaScreenPreview";
+import { portfolioOgImage } from "@/lib/portfolio-metadata";
 
 /**
- * ZONA WORKANA — página de credenciais anexada/enviada dentro da plataforma.
- *
- * REGRA INEGOCIÁVEL: esta página é um beco sem saída. Zero canal de contato
- * (WhatsApp, e-mail, telefone, formulário, redes) e zero link interno — nem
- * para a home, nem para os cases. A política da Workana lista "página na
- * internet" como dado de contato proibido em proposta, e a escala é de dois
- * degraus: alerta + suspensão de propostas, depois encerramento incontestável.
- *
- * O canal direto vive SÓ em /contratar e /solucoes/*. `scripts/check-workana-
- * isolation.mjs` roda no build e quebra o deploy se algo vazar para cá.
+ * Credenciais para o percurso Workana. Links somente para o perfil na
+ * plataforma ou para seções desta página. Imagens também são inspecionadas:
+ * não exibir endereços, contatos ou atalhos para contratação externa.
+ * scripts/check-workana-isolation.mjs mantém o isolamento no build.
  */
-
 export const metadata: Metadata = {
-  title: "Eduardo Gouveia — Full Stack Sênior | Workana",
-  description:
-    "176 projetos entregues · 4.74/5 em 179 avaliações · nível HERO na Workana. Cases, avaliações e como funciona trabalhar comigo.",
+  title: "Sistemas e integrações — Eduardo Gouveia | Workana",
+  description: `Sistemas sob medida, SaaS e integrações. Eduardo Gouveia, HERO na Workana: ${workanaStats.projectsCompleted} projetos realizados e ${workanaStats.clientReviews} avaliações. Conheça os projetos e o processo de trabalho.`,
   robots: { index: false, follow: false },
-  // Canonical própria e sem hreflang: o layout raiz injetaria links absolutos
-  // para o domínio, e esta página não aponta para lugar nenhum.
   alternates: { canonical: "/workana", languages: {} },
+  openGraph: { title: "Eduardo Gouveia — Sistemas e integrações", description: "Conheça os projetos e o processo de trabalho. Contratação pela Workana.", url: "/workana", images: [portfolioOgImage] },
+  twitter: { card: "summary_large_image", title: "Eduardo Gouveia — Sistemas e integrações", description: "Projetos e processo de trabalho. Contratação pela Workana.", images: [portfolioOgImage.url] },
 };
 
-// Cases com resultado afirmável — dados de constants.ts, curados aqui.
-const featuredCases: Array<{ id: string; tagline: string; result: string }> = [
-  {
-    id: "clinafy",
-    tagline:
-      "Prontuário eletrônico com IA, agenda inteligente, teleconsulta e financeiro para saúde mental — tudo em um só sistema.",
-    result: "+500 profissionais ativos · +50.000 consultas · 4.9/5",
-  },
+const cases = [
   {
     id: "mudapaisagens",
-    tagline:
-      "Atendimento comercial com IA no WhatsApp: qualificação por perguntas estruturadas e registro automático no Pipefy via Make.",
-    result: "pré-atendimento sem intervenção manual · leads registrados no CRM",
+    name: "Muda Paisagens",
+    category: "Automação e atendimento",
+    title: "Qualificação de leads com registro no CRM.",
+    description:
+      "Fluxo de pré-atendimento com IA: responde novos leads, conduz perguntas de qualificação e registra as informações no Pipefy, usando o Make como integrador.",
+    details: ["Perguntas estruturadas", "Registro no Pipefy", "Integração via Make"],
+    screen: {
+      src: "/images/projects/mudapaisagens.webp",
+      alt: "Fluxo de qualificação de leads da Muda Paisagens no Make",
+      caption: "Etapas do fluxo de qualificação configurado no Make.",
+      crop: { x: 304, y: 96, width: 698, height: 468 },
+    },
   },
   {
     id: "passagenseuropa",
-    tagline:
-      "CRM sob medida: leads, funil, atendimento, cotações, financeiro e comissões numa plataforma só, com IA de apoio.",
-    result: "operação comercial centralizada",
+    name: "Passagens Europa",
+    category: "Sistema de gestão",
+    title: "Atendimento e operação comercial no mesmo CRM.",
+    description:
+      "CRM sob medida que reúne leads, funil de atendimento, cotações, financeiro e comissões. Os módulos acompanham as etapas da operação comercial.",
+    details: ["Funil de atendimento", "Cotações e vendas", "Financeiro e comissões"],
+    screen: {
+      src: "/images/projects/passagenseuropa.webp",
+      alt: "Quadro do funil de atendimento do CRM Passagens Europa",
+      caption: "Visão do funil de atendimento e dos módulos do CRM.",
+      crop: { x: 230, y: 97, width: 829, height: 510 },
+    },
   },
   {
-    id: "neuroialab",
-    tagline:
-      "SaaS de saúde mental com assistentes de IA especializados para psicólogos, fonoaudiólogos e terapeutas.",
-    result: "19 assistentes de IA clínicos em produção",
-  },
-  {
-    id: "pace",
-    tagline:
-      "Sistema clínico de neurofeedback: sessões guiadas por ondas cerebrais (EEG) + gestão completa do consultório.",
-    result: "EEG em tempo real no navegador · 28 jogos 3D · protocolo de 12 semanas",
+    id: "clinafy",
+    name: "Clinafy",
+    category: "Plataforma SaaS",
+    title: "Prontuário, agenda e teleconsulta para saúde mental.",
+    description:
+      "Plataforma para profissionais e clínicas de saúde mental, com prontuário eletrônico, agendamento, teleconsulta e gestão financeira. Inclui área do paciente e recursos de IA para documentação.",
+    details: ["Prontuário eletrônico", "Agenda e teleconsulta", "Área do paciente"],
+    screen: null,
   },
 ];
 
-// Avaliações mais fortes/específicas das 10 verbatim — aqui o campo `project` aparece.
+// Texto íntegro e projeto identificado: cada avaliação mantém seu contexto.
 const featuredReviewAuthors = [
+  "Arthur Versolato",
   "Fernando Esteves",
   "Useconvoo",
-  "Arthur Versolato",
-  "José Ricardo Silva de Sousa",
   "Leonardo Flores",
+  "José Ricardo Silva de Sousa",
 ];
 
-const processSteps: Array<{ n: string; title: string; desc: string }> = [
-  { n: "01", title: "Briefing", desc: "respondo no mesmo dia útil com as perguntas certas sobre o seu projeto" },
-  { n: "02", title: "Proposta fechada", desc: "escopo, prazo e marcos definidos direto na Workana" },
-  { n: "03", title: "Desenvolvimento", desc: "updates constantes — você acompanha cada entrega" },
-  { n: "04", title: "Entrega + suporte", desc: "documentação, ajustes e código que escala" },
+const processSteps = [
+  {
+    title: "Entender o projeto",
+    description: "Você explica o objetivo, o que já existe e as ferramentas usadas. Confirmamos as informações que faltam para definir a entrega.",
+  },
+  {
+    title: "Combinar o escopo",
+    description: "Registramos entregáveis, prazo, valor e critérios de aceite no chat da Workana antes do desenvolvimento.",
+  },
+  {
+    title: "Acompanhar as etapas",
+    description: "Organizamos o desenvolvimento em entregas para você acompanhar e validar. Mudanças de escopo são combinadas antes de executar.",
+  },
+  {
+    title: "Validar a entrega",
+    description: "Conferimos o que foi entregue com os critérios acordados. Documentação, ajustes e suporte ficam definidos na proposta.",
+  },
 ];
 
-// Como o escopo é fechado — o que protege os dois lados numa disputa.
-const scopeRules: string[] = [
-  "escopo, entregáveis, prazo e critério de aceite escritos aqui no chat antes do depósito em garantia",
-  "marcos com liberação parcial: você libera conforme recebe, não tudo no fim",
-  "resumo de toda conversa postado no chat no mesmo dia — nada fica só no verbal",
-  "mudança de escopo vira extensão formal com prazo e valor, nunca ajuste silencioso",
-];
+const profileCtaClassName = "wk-cta inline-flex min-h-12 items-center justify-center gap-3 rounded-lg bg-[#fbbf24] px-5 py-3 text-center text-[15px] font-semibold leading-snug text-black transition-colors hover:bg-[#fcd34d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#fbbf24]";
 
 export default function WorkanaLandingPage() {
-  const cases = featuredCases
-    .map((c) => ({ ...c, project: projects.find((p) => p.id === c.id) }))
-    .filter((c) => c.project);
-  const reviews = featuredReviewAuthors
-    .map((a) => testimonials.find((tm) => tm.author === a))
-    .filter(Boolean) as typeof testimonials;
+  const reviews = featuredReviewAuthors.flatMap((author) => {
+    const review = testimonials.find((item) => item.author === author);
+    return review ? [review] : [];
+  });
+  const rating = workanaStats.rating.toLocaleString("pt-BR");
 
   return (
     <>
-      {/* Backdrop estático (zero JS, zero vídeo) — só a textura de grid */}
       <div
-        aria-hidden
-        className="wk-backdrop fixed inset-0 z-0 pointer-events-none bg-cover bg-center mix-blend-screen opacity-20"
+        aria-hidden="true"
+        className="wk-backdrop pointer-events-none fixed inset-0 z-0 bg-cover bg-center opacity-10 mix-blend-screen"
         style={{ backgroundImage: "url(/textures/hero-grid.webp)" }}
       />
-
-      {/* html/body são overflow:hidden no desktop — mesmo shell das páginas de case */}
-      <main className="wk-main fixed inset-0 z-10 overflow-y-auto scrollbar-none">
-        <div className="mx-auto max-w-3xl min-h-full px-5 md:px-8 py-10 md:py-14">
-          {/* Eyebrow terminal */}
-          <p className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80]">
-            $ workana --hire eduardo-gouveia
-          </p>
-
-          {/* 1. Perfil + CTA acima da dobra */}
-          <div className="mt-5 terminal-window">
-            <TerminalHeader tone="gold" title="perfil — verificado na Workana" />
-            <div className="p-5 md:p-7">
-              <div className="flex flex-col sm:flex-row items-center gap-5">
-                <img
-                  src="/images/profile.webp"
-                  alt="Eduardo Gouveia"
-                  className="w-20 h-20 rounded-full object-cover border-2 border-[#fbbf24]/50 shrink-0"
-                />
-                <div className="flex-1 text-center sm:text-left">
-                  <h1 className="font-display text-2xl md:text-3xl font-bold text-white leading-tight">
-                    Eduardo Gouveia
-                  </h1>
-                  <p className="text-white/55 text-sm mt-0.5">
-                    Full Stack Sênior · Workana <span className="text-[#fbbf24] font-bold">HERO</span>
-                  </p>
-                  <p className="text-[12px] font-[family-name:var(--font-jetbrains-mono)] mt-1.5">
-                    <span className="text-[#fbbf24] font-bold">★ {workanaStats.rating}/{workanaStats.ratingMax}</span>
-                    <span className="text-white/40"> · {workanaStats.clientReviews} avaliações verificadas</span>
-                  </p>
-                </div>
-                <div className="wk-cta shrink-0">
-                  <WorkanaCtaButton location="workana_lp_top" label="CONTRATAR VIA WORKANA" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 2. Números */}
-          <div className="mt-6 terminal-window">
-            <TerminalHeader title="numeros.json" />
-            <div className="p-5 md:p-6 grid grid-cols-2 md:grid-cols-3 gap-2.5 text-xs font-[family-name:var(--font-jetbrains-mono)]">
-              {[
-                { v: String(workanaStats.projectsCompleted), l: "projetos entregues" },
-                { v: String(workanaStats.recurringClients), l: "clientes recontrataram" },
-                { v: `${workanaStats.rating}/5`, l: `${workanaStats.clientReviews} avaliações` },
-                { v: `Top ${workanaStats.overallRank}`, l: `geral entre ${workanaStats.totalProfessionals}` },
-                { v: `Top ${workanaStats.peakRankITBrazil} BR · ${workanaStats.peakRankITGlobal} Global`, l: "pico em TI e Programação" },
-                { v: workanaStats.level, l: `desde ${workanaStats.memberSince}` },
-              ].map((s) => (
-                <div key={s.l} className="bg-white/[0.03] rounded-lg p-3.5 border-l-2 border-white/10">
-                  <div className="text-gradient-silver text-lg font-bold whitespace-nowrap">{s.v}</div>
-                  <div className="text-white/55 mt-0.5 text-[10px]">{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 3. Cases com resultado — cards SEM link (beco sem saída) */}
-          <p className="mt-10 mb-4 text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40">
-            // cases com resultado
-          </p>
-          <div className="space-y-3">
-            {cases.map(({ id, tagline, result, project }) => (
-              <div
-                key={id}
-                className="flex flex-col sm:flex-row gap-4 terminal-window p-4 md:p-5"
-              >
-                <span className="relative h-28 sm:h-20 sm:w-32 shrink-0 overflow-hidden rounded border border-white/[0.08]">
-                  <Image
-                    src={project!.cover ?? project!.image}
-                    alt=""
-                    fill
-                    sizes="(max-width: 640px) 92vw, 128px"
-                    className="object-cover object-center opacity-85"
-                  />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-display font-bold text-white text-sm">
-                    {project!.title}
-                  </span>
-                  <span className="block text-[11px] text-white/50 mt-1 leading-relaxed">{tagline}</span>
-                  <span className="block text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] mt-2">
-                    → {result}
-                  </span>
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* 4. Avaliações (verbatim, com o projeto avaliado) */}
-          <p className="mt-10 mb-4 text-[10px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[3px] text-white/40">
-            // avaliações verificadas
-          </p>
-          <div className="space-y-3">
-            {reviews.map((tm) => (
-              <div key={tm.author} className="terminal-window p-5">
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="text-[#fbbf24] text-[11px]">{"★".repeat(tm.rating)}</div>
-                  <div className="flex items-center gap-1 text-[8px] font-[family-name:var(--font-jetbrains-mono)] text-[#4ade80] bg-[#4ade80]/10 px-2 py-0.5 rounded border border-[#4ade80]/20">
-                    <span className="w-1 h-1 rounded-full bg-[#4ade80]" />
-                    VERIFICADO
-                  </div>
-                </div>
-                <p className="text-white/55 text-[12px] leading-relaxed italic">
-                  <span className="text-white/20">&ldquo;</span>
-                  {tm.text}
-                  <span className="text-white/20">&rdquo;</span>
-                </p>
-                <div className="mt-3 pt-3 border-t border-white/[0.06] text-[10px] font-[family-name:var(--font-jetbrains-mono)]">
-                  <span className="text-white/55">— {tm.author}</span>
-                  <span className="text-white/15"> · </span>
-                  <span className="text-white/40">{tm.date}</span>
-                  <span className="block text-[#60a5fa]/70 mt-1">{tm.project}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="wk-cta mt-4 text-center">
-            <WorkanaLink
-              location="workana_lp_reviews"
-              className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] text-white/50 hover:text-[#fbbf24] transition-colors"
-            >
-              ver todas as {workanaStats.clientReviews} avaliações →
-            </WorkanaLink>
-          </div>
-
-          {/* 5. Como funciona */}
-          <div className="mt-10 terminal-window">
-            <TerminalHeader title="process.sh — como funciona" />
-            <div className="p-5 md:p-6 space-y-4">
-              {processSteps.map((s) => (
-                <div key={s.n} className="flex gap-4 items-start">
-                  <span className="text-[#4ade80] font-[family-name:var(--font-jetbrains-mono)] text-xs font-bold pt-0.5 shrink-0">
-                    {s.n}
-                  </span>
-                  <div>
-                    <div className="text-white text-sm font-bold">{s.title}</div>
-                    <div className="text-white/50 text-[11px] mt-0.5">{s.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 6. Como fechamos — o que protege os dois lados */}
-          <div className="mt-4 terminal-window">
-            <TerminalHeader title="escopo.md — como fechamos" />
-            <div className="p-5 md:p-6">
-              <ul className="space-y-2.5">
-                {scopeRules.map((r) => (
-                  <li key={r} className="flex items-start gap-2 text-[12px] leading-relaxed text-white/60">
-                    <span className="text-[#4ade80] shrink-0">▹</span>
-                    <span>{r}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* 7. CTA final */}
-          <div className="wk-cta mt-10 text-center">
-            <WorkanaCtaButton
-              location="workana_lp_bottom"
-              label="CONTRATAR VIA WORKANA"
-              sub="resposta no mesmo dia útil · pagamento protegido pela Workana"
+      <main className="wk-main fixed inset-0 z-10 overflow-y-auto overflow-x-hidden scrollbar-none">
+        <div className="mx-auto min-h-full max-w-5xl px-5 pb-10 pt-7 sm:px-8 md:pt-12">
+          <header className="flex items-center gap-3">
+            <Image
+              src="/images/profile.webp"
+              alt=""
+              width={48}
+              height={48}
+              priority
+              className="h-12 w-12 rounded-full border border-[#fbbf24]/40 object-cover"
             />
-          </div>
+            <div>
+              <p className="font-display text-base font-semibold text-white">Eduardo Gouveia</p>
+              <p className="text-sm text-white/65">Full Stack Sênior · <span className="text-[#fbbf24]">Workana HERO</span></p>
+            </div>
+          </header>
 
-          <div className="mt-12 pb-4 text-center text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/25">
-            Eduardo Gouveia · {workanaStats.projectsCompleted} projetos entregues na Workana ·{" "}
-            {workanaStats.rating}/5 em {workanaStats.clientReviews} avaliações · nível {workanaStats.level}
-          </div>
+          <section className="border-b border-white/15 pb-8 pt-7 md:pb-10 md:pt-10" aria-labelledby="workana-title">
+            <h1 id="workana-title" className="max-w-3xl font-display text-[clamp(2rem,5.2vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.035em] text-white">
+              Sistemas sob medida e integrações para organizar sua operação.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/75 md:text-lg">
+              Desenvolvo plataformas SaaS, painéis de gestão e automações conectadas às ferramentas que sua empresa já usa. O projeto começa com escopo e entregas definidos.
+            </p>
+            <p className="mt-5 text-[15px] leading-relaxed text-white/75">
+              <strong className="font-semibold text-white">{workanaStats.projectsCompleted} projetos realizados</strong>
+              {" · "}<span className="text-[#fbbf24]">★ {rating}/5</span>
+              {" em "}{workanaStats.clientReviews} avaliações na Workana
+            </p>
+            <div className="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
+              <WorkanaLink location="workana_lp_top" className={profileCtaClassName}>
+                Ver meu perfil na Workana <span aria-hidden="true">↗</span>
+              </WorkanaLink>
+              <a href="#projetos" className="wk-cta py-2 text-[15px] text-[#4ade80] underline decoration-[#4ade80]/40 underline-offset-4 hover:decoration-[#4ade80] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4ade80]">
+                Conhecer os projetos
+              </a>
+            </div>
+          </section>
+
+          <section id="projetos" className="scroll-mt-6 pt-8 md:pt-10" aria-labelledby="projects-heading">
+            <h2 id="projects-heading" className="font-display text-2xl font-semibold text-white md:text-3xl">Projetos para necessidades diferentes.</h2>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/70">
+              Integração comercial, gestão da operação e produto SaaS. Veja o que cada solução reúne.
+            </p>
+            <div className="mt-6 space-y-6">
+              {cases.map((project) => (
+                <article key={project.id} className="terminal-window overflow-hidden">
+                  <TerminalHeader title={project.name} />
+                  <div className={`p-5 md:p-7 ${project.screen ? "grid gap-6 md:grid-cols-[1fr_1.08fr] md:items-center" : "max-w-3xl"}`}>
+                    <div>
+                      <p className="text-sm font-medium text-[#4ade80]">{project.category}</p>
+                      <h3 className="mt-2 font-display text-xl font-semibold leading-snug text-white md:text-2xl">{project.title}</h3>
+                      <p className="mt-3 text-base leading-relaxed text-white/75">{project.description}</p>
+                      <ul className="mt-4 space-y-2 text-[15px] leading-relaxed text-white/70">
+                        {project.details.map((detail) => (
+                          <li key={detail} className="flex gap-2">
+                            <span className="text-[#4ade80]" aria-hidden="true">✓</span>{detail}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    {project.screen && <WorkanaScreenPreview {...project.screen} />}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="pt-10 md:pt-14" aria-labelledby="process-heading">
+            <h2 id="process-heading" className="font-display text-2xl font-semibold text-white md:text-3xl">Você sabe o que está contratando.</h2>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/70">Escopo por escrito e entregas que você consegue acompanhar, do primeiro alinhamento à validação.</p>
+            <ol className="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-2">
+              {processSteps.map((step, index) => (
+                <li key={step.title} className="flex gap-4 border-t border-white/15 pt-5">
+                  <span className="pt-0.5 font-mono text-sm text-[#4ade80]" aria-hidden="true">0{index + 1}</span>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{step.title}</h3>
+                    <p className="mt-2 text-base leading-relaxed text-white/70">{step.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-6 border-l-2 border-[#4ade80]/60 pl-4 text-[15px] leading-relaxed text-white/75">
+              Se a necessidade mudar, revisamos prazo e valor juntos. O combinado fica registrado na Workana.
+            </p>
+          </section>
+
+          <section className="pt-10 md:pt-14" aria-labelledby="reviews-heading">
+            <h2 id="reviews-heading" className="font-display text-2xl font-semibold text-white md:text-3xl">O que os clientes dizem.</h2>
+            <p className="mt-3 text-base leading-relaxed text-white/70">Avaliações da Workana, identificadas pelo projeto a que se referem.</p>
+            <div className="mt-6 space-y-4">
+              {reviews.map((review) => (
+                <figure key={review.author} className="terminal-window p-5 md:p-6">
+                  <p className="text-sm tracking-wider text-[#fbbf24]" aria-label={`Nota ${review.rating} de 5`}>{"★".repeat(review.rating)}</p>
+                  <blockquote className="mt-3 text-base leading-relaxed text-white/80">“{review.text}”</blockquote>
+                  <figcaption className="mt-4 border-t border-white/10 pt-4 text-[15px] leading-relaxed">
+                    <p className="font-semibold text-white">{review.author} <span className="font-normal text-white/60">· {review.date}</span></p>
+                    <p className="mt-1 text-white/65">{review.project}</p>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <WorkanaLink location="workana_lp_reviews" className="wk-cta mt-5 inline-block py-2 text-[15px] text-[#4ade80] underline decoration-[#4ade80]/40 underline-offset-4 hover:decoration-[#4ade80] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4ade80]">
+              Conferir as avaliações no meu perfil ↗
+            </WorkanaLink>
+          </section>
+
+          <section className="mt-10 border-y border-white/15 py-8 md:mt-14 md:py-10" aria-labelledby="contact-heading">
+            <h2 id="contact-heading" className="max-w-2xl font-display text-2xl font-semibold leading-snug text-white md:text-3xl">O que você precisa construir ou melhorar?</h2>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/75">Me conte o objetivo, o que já existe e as ferramentas que utiliza. Com esse contexto, avalio o caminho técnico e as entregas possíveis.</p>
+            <WorkanaLink location="workana_lp_bottom" className={`${profileCtaClassName} mt-6`}>
+              Ver meu perfil na Workana <span aria-hidden="true">↗</span>
+            </WorkanaLink>
+            <p className="mt-3 text-sm leading-relaxed text-white/60">Se já estamos conversando pela plataforma, pode responder no mesmo chat.</p>
+          </section>
+
+          <footer className="pt-6 text-sm leading-relaxed text-white/55">
+            <p>Eduardo Gouveia · Full Stack Sênior · Workana HERO</p>
+            <p className="mt-1">Dados do perfil conferidos em {workanaStats.verifiedAtLabel}.</p>
+            <p className="mt-1">Pico histórico em TI e Programação: Top {workanaStats.peakRankITBrazil} no Brasil e Top {workanaStats.peakRankITGlobal} global.</p>
+          </footer>
         </div>
       </main>
     </>

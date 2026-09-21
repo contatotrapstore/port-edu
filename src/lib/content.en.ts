@@ -3,6 +3,7 @@ import {
   resultMetrics,
   siteConfig,
   testimonials,
+  portfolioWorkanaStats as workanaStats,
   type Project,
   type SiteConfig,
 } from "@/lib/constants";
@@ -16,13 +17,14 @@ import type { Locale } from "@/lib/locale";
 
 export const siteConfigEN: SiteConfig = {
   ...siteConfig,
-  title: "SENIOR FULL STACK | SAAS & SYSTEMS",
-  subtitle: "Building the future, one commit at a time.",
-  bio: "Senior Full Stack Developer. I turn ideas into real products — from architecture to deployment — focused on SaaS, dashboards and AI-powered systems. 176 projects delivered and 37 returning clients: clear communication, deadlines met and code that scales. I've reached #1 in Brazil and Top 3 worldwide in IT on Workana — HERO level.",
+  title: "Custom systems and integrations to organize your operations.",
+  subtitle: "I develop SaaS platforms, management dashboards and automations connected to the tools your company already uses. We define scope and deliverables before development.",
+  bio: "I’m Eduardo Gouveia, a Senior Full Stack Developer. I build management systems, SaaS platforms and integrations, and work on existing products. Before development, we align on the goal, the tools involved and what needs to be delivered. You follow the work in stages and validate deliveries against the agreed scope.",
 };
 
 const projectOverridesEN: Record<string, Partial<Project>> = {
   pace: {
+    headline: "neurofeedback and clinical practice management",
     description:
       "Clinical neurofeedback system for psychologists: guided sessions with 3D games driven by brainwaves (EEG), plus complete practice management.",
     overview:
@@ -69,6 +71,7 @@ const projectOverridesEN: Record<string, Partial<Project>> = {
     ],
   },
   neuroialab: {
+    headline: "AI assistants for mental health professionals",
     description:
       "Mental health SaaS with 19 specialized AI assistants for psychologists, speech therapists and other clinicians.",
     overview:
@@ -138,10 +141,11 @@ const projectOverridesEN: Record<string, Partial<Project>> = {
     ],
   },
   clinafy: {
+    headline: "clinical records, scheduling and telehealth",
     description:
       "System for mental health professionals: AI-powered electronic records, smart scheduling, telehealth and financial management — all in one place.",
     overview:
-      "SaaS platform for mental health professionals and clinics that brings together AI-powered electronic health records, smart scheduling, integrated telehealth and complete financial management. Over 500 professionals and 50,000 appointments.",
+      "SaaS platform for mental health professionals and clinics that brings together AI-powered electronic health records, scheduling, integrated telehealth and financial management.",
     problem:
       "Mental health professionals relied on fragmented tools for records, scheduling, telehealth and finances — with no single system.",
     approach:
@@ -154,10 +158,10 @@ const projectOverridesEN: Record<string, Partial<Project>> = {
       "Complete financial management",
       "Patient area + installable app (PWA)",
     ],
-    output: [
-      "500+ active professionals",
-      "50,000+ appointments completed",
-      "4.9/5 rating",
+    portfolioOutput: [
+      "health records and scheduling in one platform",
+      "integrated telehealth",
+      "clinic financial management",
     ],
   },
   cacaostore: {
@@ -289,6 +293,7 @@ const projectOverridesEN: Record<string, Partial<Project>> = {
     ],
   },
   passagenseuropa: {
+    headline: "CRM for customer service and sales operations",
     description:
       "Custom CRM centralizing the whole commercial operation: leads, pipeline, WhatsApp, quotes, finance, commissions and automations with AI support.",
     overview:
@@ -333,6 +338,7 @@ const projectOverridesEN: Record<string, Partial<Project>> = {
     ],
   },
   revix: {
+    headline: "automotive community app and events",
     description:
       "Automotive social network with an interactive event map, feed, communities and meetup management — connecting enthusiasts and clubs nearby.",
     overview:
@@ -397,6 +403,7 @@ const projectOverridesEN: Record<string, Partial<Project>> = {
     ],
   },
   mudapaisagens: {
+    headline: "lead qualification with CRM integration",
     description:
       "AI-powered commercial pre-sales automation on WhatsApp: answers leads, qualifies them with structured questions and logs everything to Pipefy.",
     overview:
@@ -521,9 +528,9 @@ export const projectsEN: Project[] = projects.map((p) => ({
 }));
 
 export const resultMetricsEN: typeof resultMetrics = [
-  { value: "176", label: "projects delivered", description: "in 3.5 years on Workana" },
-  { value: "37", label: "clients rehired", description: "and they keep coming back" },
-  { value: "4.74/5", label: "average rating", description: "179 verified reviews" },
+  { value: String(workanaStats.projectsCompleted), label: "completed projects", description: "on the Workana profile" },
+  { value: String(workanaStats.clientReviews), label: "reviews", description: "recorded on the platform" },
+  { value: `${workanaStats.rating}/5`, label: "average rating", description: `checked on ${workanaStats.verifiedAtLabel}` },
 ];
 
 // Testimonials: quote text/author stay verbatim (real reviews) — only the
@@ -539,6 +546,8 @@ const testimonialMetaEN: Array<{ projectType: string; date: string }> = [
   { projectType: "News Portal + AI", date: "Apr/2026" },
   { projectType: "GPT Platform", date: "Sep/2025" },
   { projectType: "Corporate Website", date: "2025" },
+  { projectType: "Web Platform", date: `Checked on ${workanaStats.verifiedAtLabel}` },
+  { projectType: "Management System", date: `Checked on ${workanaStats.verifiedAtLabel}` },
 ];
 
 export const testimonialsEN: typeof testimonials = testimonials.map((tm, i) => ({

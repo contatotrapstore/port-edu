@@ -1,131 +1,122 @@
-# Templates de proposta — Workana
+# Propostas Workana — modelos para adaptar
 
-**Regras que valem mais que o template**
+Revisão de 21/09/2026. Nenhum destes textos foi enviado. Os campos entre colchetes precisam de dados reais; apagar as instruções editoriais antes de enviar.
 
-- Nome do cliente na primeira palavra.
-- 150–200 palavras. Nunca mais que isso.
-- Responda TUDO que ele perguntou, antes de qualquer outra coisa. Proposta que ignora um pedido é descartada sem leitura.
-- Nunca cole a bio. Nunca abra com preço.
-- **Nunca mande link, e-mail, telefone ou "página na internet".** Se pedirem portfólio: "os cases estão na aba Portfólio do meu perfil" — ou anexe `eduardo-gouveia-credenciais.pdf`.
-- "WhatsApp" só aparece se o próprio briefing do cliente usou a palavra. Prefira "API oficial da Meta (Cloud API) ou Evolution API" e "o canal de atendimento que você citou". Nunca perto de "me chama", número ou "contato".
-- Assinatura fixa: `Eduardo — 176 projetos entregues na Workana · 4,74/5 em 179 avaliações · nível HERO`
+## Antes de escrever
 
----
+- Responder às perguntas do cliente e demonstrar leitura do briefing com um detalhe concreto.
+- Explicar a primeira entrega útil, limites do escopo e próximo passo. O tamanho depende do pedido; não sacrificar respostas necessárias por uma contagem arbitrária.
+- Selecionar um case pertinente e descrever sua participação comprovada. Não copiar a bio nem atribuir a esse case o depoimento de outro projeto.
+- Perguntar somente quando a resposta ainda não estiver no briefing e mudar escopo, preço ou prazo. Se já houver informação suficiente, apresentar a proposta objetiva.
+- Informar início depois de conferir a agenda. O preço deve considerar trabalho e risco reais, sem corte automático para compensar baixa conversão.
+- Preferir os cases da própria Workana. Links externos de portfólio podem ser permitidos nas condições da plataforma, sem contato externo; verificar página, telas e anexos. Não usar a home geral ou a landing `/contratar` como link padrão. A página `/workana` foi preparada para esse percurso, mas deve continuar sendo conferida antes de compartilhar.
 
-## Template A — Automação e atendimento com IA
+Números observados em 21/09/2026: **180 projetos, 181 avaliações, 4,75/5, HERO**. Não é obrigatório repeti-los em toda assinatura: a plataforma já apresenta reputação. Caso sejam usados, conferir se continuam atuais.
 
-> {Nome}, li o briefing: você precisa que os leads que chegam pelo atendimento sejam respondidos e qualificados sem depender de alguém online — e que tudo caia no {CRM/planilha que ele citou}.
->
-> {Se ele perguntou algo específico, responda aqui, na íntegra, antes de continuar.}
->
-> Como eu faria:
-> 1. Integração pela API oficial (Cloud API da Meta ou Evolution API) com um agente de IA usando a base de conhecimento do seu negócio.
-> 2. Qualificação por perguntas estruturadas e passagem para humano quando o lead está pronto.
-> 3. Registro automático no {CRM} e um painel simples de acompanhamento.
->
-> Fiz exatamente isso para a Muda Paisagens: pré-atendimento com IA integrado ao Pipefy via Make, com os leads qualificados e registrados sem intervenção manual. Um cliente de agente de IA avaliou 5★: "entendeu rápido o que estávamos precisando e propôs boas melhorias".
->
-> Duas perguntas para fechar o escopo:
-> a) qual o volume de conversas por mês hoje?
-> b) o {CRM} tem API ou vocês usam planilha?
->
-> Tenho janela para começar {dia}.
->
-> Eduardo — 176 projetos entregues na Workana · 4,74/5 em 179 avaliações · nível HERO
+## A. Automação e integração de atendimento
 
----
+```text
+Olá, [nome]. Você precisa [objetivo informado no briefing], conectado a [ferramenta mencionada pelo cliente].
 
-## Template B — Sistema, painel e integração sob medida
+[Responder às perguntas específicas do cliente, se houver.]
 
-> {Nome}, pelo que você descreveu o problema não é falta de sistema — é que {sistema A} e {sistema B} não se conversam, e alguém precisa reconciliar isso na mão todo dia.
->
-> {Resposta ao que ele perguntou.}
->
-> Como eu faria:
-> 1. Mapeamento do fluxo atual e das regras que hoje só existem na cabeça de quem opera.
-> 2. Integração via API entre {sistemas citados}, com tratamento de erro e reprocessamento.
-> 3. Painel com as métricas e os controles que a operação precisa, com perfis de acesso.
->
-> Já entreguei isso no Rei, sistema de gestão de obras de infraestrutura telecom: etapas, tarefas, responsáveis, SLAs e dependências num painel único, substituindo controle manual. E no Clube Azul, com integração à Iugu para geração de boletos e baixa automática de pagamentos.
->
-> Duas perguntas para fechar o escopo:
-> a) quais sistemas precisam se conversar, e algum deles tem API pública?
-> b) quantas pessoas vão usar o painel e com quais níveis de acesso?
->
-> Tenho janela para começar {dia}.
->
-> Eduardo — 176 projetos entregues na Workana · 4,74/5 em 179 avaliações · nível HERO
+Eu começaria por [um fluxo completo e verificável]. Depois incluiria [etapa necessária ao objetivo], com [restrição ou regra de negócio informada]. Para a integração, usaria [API/conector exato, após conferir disponibilidade e requisitos].
 
----
+Um case relacionado é Muda Paisagens, com pré-atendimento e registro no Pipefy via Make. Minha participação foi [trabalho comprovado]. Ele se aproxima do seu projeto em [ponto concreto].
 
-## Template C — SaaS / MVP
+[Se necessário: uma pergunta sobre uma informação decisiva ainda ausente.]
+[Se o escopo estiver claro: entregas, valor, prazo e premissas.]
 
-> {Nome}, você tem a ideia validada e precisa dela no ar sem virar um projeto de seis meses que nunca termina.
->
-> {Resposta ao que ele perguntou.}
->
-> Como eu faria:
-> 1. Discovery curto para congelar o escopo por escrito — o que entra na fase 1 e o que fica para depois.
-> 2. Fase 1 com autenticação, multi-tenant, painel, o fluxo principal e pagamento.
-> 3. Deploy, documentação e vídeo de handover para você não ficar dependente de mim.
->
-> Foi assim no BlackinBot, SaaS de monetização com pagamento por Pix, boleto e cartão e liberação de acesso 100% automática. Um cliente que dividiu o projeto em três fases avaliou: "a fase 1 foi concluída com êxito, muito rápido, fácil comunicação".
->
-> Duas perguntas para fechar o escopo:
-> a) qual é o fluxo principal, aquele que sozinho já entrega valor ao usuário?
-> b) o pagamento é assinatura recorrente ou avulso?
->
-> Tenho janela para começar {dia}.
->
-> Eduardo — 176 projetos entregues na Workana · 4,74/5 em 179 avaliações · nível HERO
+Eduardo
+```
 
----
+Não acrescentar agente de IA, painel ou disponibilidade 24 horas quando o pedido não exigir. “Evolution API” não é sinônimo de “API oficial”: conferir se a conexão proposta usa a **WhatsApp Cloud API da Meta** ou outro conector, como Baileys. Nomear o método real e seus requisitos. O repositório da [Evolution Foundation](https://github.com/evolution-foundation/evolution-api) documenta os conectores; a decisão depende do projeto.
 
-## Follow-up de sexta — único, só em proposta LIDA há mais de 48h
+## B. Sistema, painel ou integração entre ferramentas
 
-> {Nome}, vi que a proposta foi lida — ficou alguma dúvida sobre o escopo ou o prazo? Respondo por aqui antes de qualquer decisão. Continuo com janela para começar {dia}.
+```text
+Olá, [nome]. Pelo briefing, você quer [resultado pedido], incluindo [detalhe específico].
 
-Nunca mande um segundo follow-up.
+[Responder às perguntas do cliente.]
 
----
+Minha primeira entrega seria [fluxo ou módulo que o cliente já consegue validar]. A partir daí, seguiria com [próxima etapa necessária], considerando [regras e restrições conhecidas].
 
-## Reativação de recorrente — 1 por cliente, no chat do projeto antigo
+Tenho um projeto relacionado no portfólio da Workana: [Passagens Europa, Rei, Clube Azul ou outro case pertinente]. Nele, minha responsabilidade foi [participação comprovada]. O ponto em comum é [necessidade equivalente].
 
-> Oi {nome}, tudo bem? Estava revisando o {sistema} e pensei em algo que pode valer para vocês agora: {ideia concreta}. Se fizer sentido, te mando um escopo curto com prazo e valor e você abre o projeto por aqui como das outras vezes. Abraço, Eduardo.
+[Pergunta decisiva ainda não respondida OU escopo, valor, prazo e premissas.]
 
-5 por semana, começando pelos de maior valor acumulado. Sem follow-up. Quem disser "não agora" entra em cadência trimestral.
+Eduardo
+```
 
----
+Não presumir reconciliação manual, integrações, perfis de acesso ou necessidade de painel se o cliente não os descreveu. Distinguir necessidade confirmada de hipótese técnica a validar.
 
-## Blindagem — postar no chat de cada um dos 11 projetos em execução
+## C. SaaS ou MVP
 
-> {Nome}, passando para deixar registrado onde estamos, para a gente ficar alinhado:
->
-> Escopo acordado: {…}
-> Entregue até aqui: {…}
-> Pendente: {…}
-> Próximo marco: {…} — previsão {data}
-> Critério de aceite: {…}
->
-> Se algum ponto estiver diferente do que você esperava, me fala agora que eu ajusto antes de seguir.
+```text
+Olá, [nome]. O fluxo principal que você descreveu é [objetivo do usuário do produto], com [detalhe informado].
 
-Daqui em diante: nada começa sem escopo, prazo e critério de aceite escritos no chat **antes** do depósito. Toda conversa por fora vira resumo no chat no mesmo dia.
+[Responder às perguntas específicas do cliente.]
 
----
+Eu organizaria a primeira versão em torno de [primeira entrega útil]. Antes de desenvolver, definiríamos o que entra nesta etapa e os critérios de aceite. Depois viriam [demais etapas necessárias], respeitando [restrição de prazo, integração ou orçamento informada].
 
-## Ticket de violação — 1 por violação, sem insistir
+Um case relacionado é [case pertinente]. Minha participação foi [trabalho comprovado], especialmente em [parte relevante para o briefing].
 
-Caminho: workana.com/contact → "Sou profissional" → "Outros temas" → "Outras perguntas".
+[Pergunta decisiva ainda não respondida OU entregas, valor, prazo e premissas.]
 
-> Olá, gostaria de solicitar a revisão de uma violação registrada no meu perfil.
->
-> Projeto: {nome} — {data}
-> O que foi acordado: {citar a mensagem dentro da plataforma}
-> O que foi entregue: {…} em {data}
-> Por que não houve descumprimento da minha parte: {…}
->
-> A violação decorreu de {arbitragem/mediação}, e o histórico de mensagens da plataforma mostra que o combinado foi cumprido. Solicito a revisão e a remoção da violação do meu perfil público.
->
-> Fico à disposição para qualquer informação adicional. Obrigado.
+Eduardo
+```
 
-Se negarem, pare. Não abra segundo ticket, não vá ao Reclame Aqui. É cosmético — você é HERO, elas já passaram de 12 meses e o gatilho de suspensão é 50% dos projetos (você está em 1,1%).
+Não afirmar que a ideia está validada sem o cliente informar. Autenticação, múltiplas empresas, cobrança e painel são decisões de escopo; não entram automaticamente. Prometer documentação e passagem de conhecimento apenas quando incluídas nas entregas combinadas.
+
+## Retomada de proposta
+
+Usar quando houver motivo útil para continuar a conversa, respeitando o contexto e as regras da plataforma. Não dizer que a proposta foi lida sem essa informação. Não repetir cobranças se o cliente não responder.
+
+```text
+Olá, [nome]. Retomando a proposta de [projeto]: [esclarecimento útil ou resposta a uma pendência real]. Se ficou alguma dúvida sobre [escopo/prazo], posso detalhar por aqui.
+```
+
+Disponibilidade só entra se tiver sido conferida novamente.
+
+## Cliente recorrente
+
+Enviar apenas com contato autorizado e ideia pertinente. Não afirmar “estava revisando seu sistema” se isso não aconteceu; não acessar sistema antigo sem autorização. Frequência e prioridade dependem da relação e da agenda, sem quota fixa.
+
+```text
+Olá, [nome]. Sobre o [sistema entregue], pensei em [ideia concreta relacionada ao trabalho anterior]. Isso ainda é uma necessidade para vocês? Se fizer sentido, podemos definir uma nova etapa pela Workana.
+```
+
+## Alinhamento de projeto em execução
+
+O perfil mostrava 13 projetos em execução em 21/09/2026. Conferir o status real antes de decidir quais precisam de contato. Registrar a situação existente, sem modificar unilateralmente o combinado.
+
+```text
+Olá, [nome]. Deixo o resumo do andamento para conferirmos o próximo passo:
+
+Escopo acordado: [resumo e referência ao combinado]
+Entregue: [entregas reais]
+Pendente: [pendências, responsáveis e dependências]
+Próximo marco: [entrega e previsão compatível com o acordo]
+Critério de aceite: [critério combinado ou proposta para alinharmos]
+
+Se algum ponto estiver diferente do que combinamos, me sinalize para alinharmos antes da próxima etapa.
+```
+
+Registrar alterações de escopo, preço, prazo e aceite no canal do projeto. Seguir as condições de início e garantia de pagamento da plataforma; não presumir que toda conversa precisa ocorrer antes de depósito ou que trabalho extra já está autorizado.
+
+## Conferência das violações
+
+Foram observadas duas violações públicas. Datas, causas e situação não foram verificadas. Não classificá-las como cosméticas, antigas ou causa da queda. Consultar o painel e, se faltar informação ou houver evidência de erro, usar o suporte oficial.
+
+```text
+Olá. Gostaria de entender o registro de violação relacionado a [projeto/data, conforme o painel].
+
+O registro informa: [motivo exibido].
+O histórico que gostaria de conferir é: [fatos e referências às mensagens/entregas].
+
+Podem esclarecer a situação atual e o procedimento aplicável? [Se houver evidência de erro: descrever objetivamente e solicitar revisão.]
+```
+
+Não inventar arbitragem, descumprimento, idade da violação, limiar de suspensão ou direito à remoção. Não abrir chamados duplicados sem necessidade.
+
+Fontes: [orientações de proposta](https://help.workana.com/hc/pt/articles/360041477614-Conselhos-para-a-hora-de-se-candidatar-a-um-projeto), [compartilhamento de portfólio](https://help.workana.com/hc/pt/articles/360041612974-Como-fa%C3%A7o-para-mostrar-meu-portf%C3%B3lio). Materiais preparados para revisão; nenhuma mensagem foi enviada.

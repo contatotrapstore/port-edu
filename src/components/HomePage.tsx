@@ -12,7 +12,6 @@ import TerminalCursor from "@/components/TerminalCursor";
 import type { Project } from "@/lib/constants";
 import { track } from "@vercel/analytics";
 import CanvasErrorBoundary from "@/components/CanvasErrorBoundary";
-import LoadingScreen from "@/components/home/LoadingScreen";
 import Navbar from "@/components/home/Navbar";
 import ChapterDots from "@/components/home/ChapterDots";
 import ChapterHUD from "@/components/home/ChapterHUD";
@@ -23,6 +22,7 @@ import SkillsSection from "@/components/sections/SkillsSection";
 import ContactSection from "@/components/sections/ContactSection";
 import { LocaleProvider, type Locale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
+import { getAttribution } from "@/lib/attribution";
 
 const Experience = dynamic(
   () => import("@/components/experience/Experience"),
@@ -39,11 +39,39 @@ export default function HomePage({ locale }: { locale: Locale }) {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [caseStudy, setCaseStudy] = useState<Project | null>(null);
 
-  const handleLoaded = useCallback(() => setIsLoaded(true), []);
+  const canvasFailedRef = useRef(false);
+  const controllerReadyRef = useRef(false);
+  const pendingChapterRef = useRef<number | null>(null);
+  const hasNavigationRequestRef = useRef(false);
 
-  // Teto absoluto do boot contado da hidratação. O teto interno do Experience só
-  // começa a contar depois do chunk three.js baixar (dynamic ssr:false) — em rede
-  // lenta o loader ficava sem limite real. Quem chegar primeiro vence.
+  const navigateToChapter = useCallback((index: number) => {
+    if (canvasFailedRef.current) {
+      document
+        .getElementById(chapters[index].id)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    window.dispatchEvent(
+      new CustomEvent("gotoChapter", { detail: { index } })
+    );
+  }, []);
+
+  const flushPendingChapter = useCallback(() => {
+    const index = pendingChapterRef.current;
+    if (index === null) return;
+    pendingChapterRef.current = null;
+    navigateToChapter(index);
+  }, [navigateToChapter]);
+
+  const handleLoaded = useCallback(() => {
+    // Só o callback do Experience confirma que seus listeners já foram montados.
+    controllerReadyRef.current = true;
+    setIsLoaded(true);
+    flushPendingChapter();
+  }, [flushPendingChapter]);
+
+  // O prazo de boot permite processar o hash, mas não confirma que o controlador
+  // já recebeu seu chunk. A navegação continua pendente até handleLoaded.
   useEffect(() => {
     const cap = setTimeout(() => setIsLoaded(true), 1500);
     return () => clearTimeout(cap);
@@ -52,12 +80,16 @@ export default function HomePage({ locale }: { locale: Locale }) {
   // Modo degradado: se o WebGL não estiver disponível, o site não pode depender
   // do Experience (scroll-jack + capítulos). A classe `webgl-failed` restaura o
   // scroll de documento via CSS e os cliques de menu passam a usar scrollIntoView.
-  const canvasFailedRef = useRef(false);
-  const handleCanvasError = useCallback(() => {
+  const activateCanvasFallback = useCallback(() => {
     canvasFailedRef.current = true;
     document.documentElement.classList.add("webgl-failed");
+    flushPendingChapter();
+  }, [flushPendingChapter]);
+
+  const handleCanvasError = useCallback(() => {
+    activateCanvasFallback();
     setIsLoaded(true);
-  }, []);
+  }, [activateCanvasFallback]);
 
   // Probe síncrono de capacidade: o erro do renderer do three.js estoura como
   // uncaught (fora do caminho do error boundary), então detectamos direto e nem
@@ -75,8 +107,10 @@ export default function HomePage({ locale }: { locale: Locale }) {
     }
   });
   useEffect(() => {
-    if (!webglOk) handleCanvasError();
-  }, [webglOk, handleCanvasError]);
+    if (webglOk) return;
+    activateCanvasFallback();
+    return () => document.documentElement.classList.remove("webgl-failed");
+  }, [webglOk, activateCanvasFallback]);
 
   const maxChapterSeen = useRef(0);
   const handleProgress = useCallback((p: number) => {
@@ -89,36 +123,37 @@ export default function HomePage({ locale }: { locale: Locale }) {
     // Scroll-depth: fire once per deepest chapter reached this session
     if (chapter > maxChapterSeen.current) {
       maxChapterSeen.current = chapter;
-      track("scroll_depth", { chapter: chapters[chapter].id });
+      track("scroll_depth", { chapter: chapters[chapter].id, ...getAttribution() });
     }
   }, []);
 
   const openCase = useCallback((p: Project) => {
-    track("ver_case", { id: p.id });
+    track("ver_case", { id: p.id, ...getAttribution() });
     setCaseStudy(p);
   }, []);
 
   const handleChapterClick = useCallback((i: number) => {
-    if (canvasFailedRef.current) {
-      document
-        .getElementById(chapters[i].id)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!Number.isInteger(i) || i < 0 || i >= chapters.length) return;
+    hasNavigationRequestRef.current = true;
+    if (!controllerReadyRef.current && !canvasFailedRef.current) {
+      // Um clique mais recente substitui o anterior enquanto o chunk carrega.
+      pendingChapterRef.current = i;
       return;
     }
-    window.dispatchEvent(
-      new CustomEvent("gotoChapter", { detail: { index: i } })
-    );
-  }, []);
+    navigateToChapter(i);
+  }, [navigateToChapter]);
 
-  // Deep-link: /#projects (e.g. back from a case page) jumps to that chapter once the 3D
-  // scene is mounted (isLoaded) — guarantees the gotoChapter listener already exists.
+  // O hash inicial usa a mesma fila do menu. Uma escolha explícita do visitante
+  // durante o boot tem prioridade e nunca é sobrescrita pelo hash da entrada.
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || hasNavigationRequestRef.current) return;
     const hash = window.location.hash.replace("#", "");
     if (!hash) return;
     const idx = chapters.findIndex((c) => c.id === hash);
     if (idx <= 0) return;
-    const timer = setTimeout(() => handleChapterClick(idx), 120);
+    const timer = setTimeout(() => {
+      if (!hasNavigationRequestRef.current) handleChapterClick(idx);
+    }, 120);
     return () => clearTimeout(timer);
   }, [isLoaded, handleChapterClick]);
 
@@ -126,8 +161,6 @@ export default function HomePage({ locale }: { locale: Locale }) {
     <LazyMotion features={domMax} strict>
     <MotionConfig reducedMotion="user">
       <a href="#hero" className="skip-link">{t(locale, "skip.content")}</a>
-
-      <LoadingScreen isLoaded={isLoaded} onSkip={handleLoaded} />
 
       {/* 3D Background (decorative — hidden from assistive tech) */}
       <div className="fixed inset-0 z-0" aria-hidden="true">
@@ -184,7 +217,6 @@ export default function HomePage({ locale }: { locale: Locale }) {
       {/* ============ HERO ============ */}
       <HeroSection
         progress={progress}
-        isLoaded={isLoaded}
         onChapterClick={handleChapterClick}
       />
 

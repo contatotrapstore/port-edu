@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import HomePage from "@/components/HomePage";
 import { siteUrl } from "@/lib/site";
+import { portfolioWorkanaStats as workanaStats } from "@/lib/constants";
+import { portfolioOgImage } from "@/lib/portfolio-metadata";
+
+const workanaProof = `${workanaStats.projectsCompleted} completed projects · ${workanaStats.rating}/5 across ${workanaStats.clientReviews} reviews`;
 
 export const metadata: Metadata = {
   title: "EDevsHub | Eduardo Gouveia — Senior Full Stack · Workana HERO",
   description:
-    "Eduardo Gouveia — Senior Full Stack Developer, HERO level on Workana: 176 projects delivered, 4.74/5 ⭐ across 179 reviews, reached #1 in IT in Brazil. Specialist in SaaS, dashboards and AI systems.",
+    `Custom systems, SaaS platforms and integrations with Eduardo Gouveia. ${workanaProof} · ${workanaStats.level} on Workana.`,
   keywords: [
     "Eduardo Gouveia",
     "EDevsHub",
@@ -33,13 +37,13 @@ export const metadata: Metadata = {
     siteName: "EDevsHub — Eduardo Gouveia",
     title: "EDevsHub | Eduardo Gouveia — Senior Full Stack · Workana HERO",
     description:
-      "176 projects delivered · 4.74/5 ⭐ (179 reviews) · HERO level · reached #1 in IT in Brazil. Specialist in SaaS, dashboards and systems.",
+      `Custom systems, SaaS and integrations. ${workanaProof} · ${workanaStats.level} on Workana.`,
     images: [
       {
-        url: "/og-cover.jpg",
+        url: portfolioOgImage.url,
         width: 1200,
         height: 630,
-        alt: "Eduardo Gouveia — Senior Full Stack · Workana HERO · reached #1 in Brazil",
+        alt: `Eduardo Gouveia — Senior Full Stack · Workana ${workanaStats.level}`,
       },
     ],
   },
@@ -47,8 +51,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "EDevsHub | Eduardo Gouveia — Senior Full Stack",
     description:
-      "176 projects · 4.74/5 ⭐ · Workana HERO. SaaS & systems specialist.",
-    images: ["/og-cover.jpg"],
+      `${workanaProof} · Workana ${workanaStats.level}. Custom systems, SaaS and integrations.`,
+    images: [portfolioOgImage.url],
   },
 };
 

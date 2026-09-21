@@ -1,2 +1,1 @@
-data,projeto,bucket,orcamento_anunciado,n_propostas_no_envio,lida,horas_ate_resposta,respondeu,fechou,valor,moeda,cliente,preco_hora_usado,observacao
-2026-09-03,EXEMPLO - apagar esta linha,A,USD 500-1000,18,sim,6,sim,nao,,BRL,novo,240,cliente pediu prazo menor
+data_envio,projeto,categoria,origem,cliente_novo_ou_recorrente,orcamento_anunciado,moeda_orcamento,n_propostas_no_envio,lida,data_primeira_resposta,respondeu,conversa_qualificada,fechou,data_contrato,valor_proposto,valor_contratado,moeda_contrato,case_usado,horas_estimadas,motivo_perda_informado,observacao

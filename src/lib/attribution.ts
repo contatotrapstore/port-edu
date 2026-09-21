@@ -14,37 +14,54 @@ export type Attribution = {
   landing?: string;
 };
 
+// Também preserva a origem durante a navegação quando o navegador bloqueia storage.
+let sessionAttribution: Attribution | undefined;
+
 /** Lê (e grava, na primeira vez) a atribuição da sessão. Seguro em SSR. */
 export function getAttribution(): Attribution {
   if (typeof window === "undefined") return {};
-  try {
-    const saved = sessionStorage.getItem(KEY);
-    if (saved) return JSON.parse(saved) as Attribution;
+  if (sessionAttribution) return sessionAttribution;
 
-    const params = new URLSearchParams(window.location.search);
-    // gclid e fbclid vêm antes: são os únicos parâmetros que o Google e a Meta
-    // colam sozinhos no clique do anúncio, mesmo quando a UTM não foi montada.
-    const src =
-      params.get("utm_source") ||
-      params.get("src") ||
-      params.get("ref") ||
-      (params.get("gclid") ? "google-ads" : undefined) ||
-      (params.get("fbclid") ? "meta-ads" : undefined) ||
-      undefined;
-    let ref: string | undefined;
-    try {
-      ref = document.referrer ? new URL(document.referrer).host : undefined;
-    } catch {
-      ref = undefined;
+  try {
+    const saved = window.sessionStorage.getItem(KEY);
+    const parsed: unknown = saved ? JSON.parse(saved) : undefined;
+    if (
+      parsed && typeof parsed === "object" && !Array.isArray(parsed) &&
+      "landing" in parsed && typeof parsed.landing === "string" &&
+      (!("src" in parsed) || typeof parsed.src === "string") &&
+      (!("ref" in parsed) || typeof parsed.ref === "string")
+    ) {
+      sessionAttribution = parsed as Attribution;
+      return sessionAttribution;
     }
-    const attr: Attribution = {
-      ...(src ? { src } : {}),
-      ...(ref ? { ref } : {}),
-      landing: window.location.pathname,
-    };
-    sessionStorage.setItem(KEY, JSON.stringify(attr));
-    return attr;
   } catch {
-    return {};
+    // Storage bloqueado ou valor antigo inválido: ainda capturamos esta entrada.
   }
+
+  const params = new URLSearchParams(window.location.search);
+  // Origem explícita tem prioridade; IDs de clique são apenas fallback.
+  const src =
+    params.get("utm_source") ||
+    params.get("src") ||
+    params.get("ref") ||
+    (params.get("gclid") ? "google-ads" : undefined) ||
+    (params.get("fbclid") ? "meta-ads" : undefined) ||
+    undefined;
+  let ref: string | undefined;
+  try {
+    ref = document.referrer ? new URL(document.referrer).host : undefined;
+  } catch {
+    ref = undefined;
+  }
+  sessionAttribution = {
+    ...(src ? { src } : {}),
+    ...(ref ? { ref } : {}),
+    landing: window.location.pathname,
+  };
+  try {
+    window.sessionStorage.setItem(KEY, JSON.stringify(sessionAttribution));
+  } catch {
+    // O fallback em memória já preserva a sessão do App Router.
+  }
+  return sessionAttribution;
 }

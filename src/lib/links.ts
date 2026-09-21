@@ -1,4 +1,4 @@
-import { workanaStats } from "@/lib/constants";
+import { portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 
 /** URL do perfil Workana. Todo link de saída passa por aqui. */
 export function workanaHref(): string {

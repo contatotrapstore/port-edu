@@ -2,17 +2,15 @@
 
 import Link from "next/link";
 import { m, AnimatePresence } from "framer-motion";
-import { chapters, projectColors, workanaStats } from "@/lib/constants";
+import { chapters, projectColors } from "@/lib/constants";
 import type { Project } from "@/lib/constants";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { track } from "@vercel/analytics";
 import TerminalHeader from "@/components/TerminalHeader";
 import Section from "@/components/home/Section";
 import SectionNext from "@/components/home/SectionNext";
 import { useLocale } from "@/lib/locale";
 import { t, categoryLabel } from "@/lib/i18n";
 import { getContent } from "@/lib/content.en";
-import WorkanaLink from "@/components/workana/WorkanaLink";
 
 const rangeOf = (id: string) => chapters.find((c) => c.id === id)!.range;
 
@@ -33,8 +31,11 @@ export default function ProjectsSection({
   const { projects: allProjects } = getContent(locale);
   // Lista editorial mostra os destaques; o restante do portfólio vai para a
   // grade de arquivo logo abaixo (carouselIdx indexa apenas os destaques).
-  const projects = allProjects.filter((p) => p.featured);
-  const archive = allProjects.filter((p) => !p.featured);
+  const featuredIds = ["mudapaisagens", "passagenseuropa", "clinafy", "pace", "neuroialab", "revix"];
+  const projects = featuredIds.flatMap(id => allProjects.filter(p => p.id === id));
+  // O arquivo só aponta para cases que possuem uma página publicada.
+  const archive = allProjects.filter(p => p.overview && !featuredIds.includes(p.id));
+  const caseBasePath = locale === "en" ? "/en/projetos" : "/projetos";
   return (
     <Section id="projects" progress={progress} range={rangeOf("projects")}>
       <div>
@@ -42,12 +43,11 @@ export default function ProjectsSection({
           <h2 className="font-display text-2xl md:text-4xl font-bold text-white">
             {t(locale, "projects.title")}<span className="text-white/20">.</span>
           </h2>
-          <WorkanaLink location="projects_all" className={"font-[family-name:var(--font-jetbrains-mono)] text-[11px] text-white/50 hover:text-[#4ade80] transition-colors pb-1"}>
+          <Link href={locale === "en" ? "/en/projetos" : "/projetos"} className="text-sm text-white/70 hover:text-[#4ade80] transition-colors py-3 underline underline-offset-4">
             {t(locale, "projects.allLink", {
-              count: allProjects.length,
-              total: workanaStats.projectsCompleted,
+              count: allProjects.filter(p => p.overview).length,
             })}
-          </WorkanaLink>
+          </Link>
         </div>
         <div className="h-0.5 w-16 bg-gradient-to-r from-white/30 to-transparent mb-6" />
 
@@ -58,7 +58,7 @@ export default function ProjectsSection({
             {projects.map((p, i) => (
               <li key={p.id}>
                 <Link
-                  href={p.overview ? `/projetos/${p.id}` : "#projects"}
+                  href={p.overview ? `${caseBasePath}/${p.id}` : "#projects"}
                   onMouseEnter={() => setCarouselIdx(i)}
                   onFocus={() => setCarouselIdx(i)}
                   onClick={(e) => {
@@ -85,6 +85,7 @@ export default function ProjectsSection({
                     }`}
                   >
                     {p.title}
+                    <span className="mt-1 block text-sm font-normal tracking-normal text-white/60 leading-relaxed">{p.headline}</span>
                   </span>
                   <span
                     className="ml-auto text-[8px] font-[family-name:var(--font-jetbrains-mono)] uppercase tracking-[2px] px-2 py-0.5 rounded border shrink-0"
@@ -125,7 +126,7 @@ export default function ProjectsSection({
                 <div className="absolute inset-0 ring-1 ring-inset ring-white/[0.06] pointer-events-none" />
               </div>
               <div className="p-5">
-                <p className="text-xs text-white/55 leading-relaxed line-clamp-2 mb-3">
+                <p className="text-base text-white/75 leading-relaxed mb-3">
                   {projects[carouselIdx].description}
                 </p>
                 <div className="flex flex-wrap gap-1.5 mb-4">
@@ -206,7 +207,7 @@ export default function ProjectsSection({
                   {categoryLabel(locale, projects[carouselIdx].category)}
                 </span>
               </div>
-              <p className="text-xs text-white/55 leading-relaxed mb-3">
+              <p className="text-base text-white/75 leading-relaxed mb-3">
                 {projects[carouselIdx].description}
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -281,7 +282,7 @@ export default function ProjectsSection({
               {archive.map((p) => (
                 <li key={p.id}>
                   <Link
-                    href={`/projetos/${p.id}`}
+                    href={`${caseBasePath}/${p.id}`}
                     onClick={(e) => { e.preventDefault(); openCase(p); }}
                     className="group block w-full text-left terminal-window overflow-hidden hover:border-white/20 transition-colors"
                   >

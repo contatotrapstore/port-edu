@@ -177,7 +177,7 @@ export default function SkillConstellation({
         {nodes.map((n) => (
           <button
             key={n.name}
-            aria-label={`${n.name} — ${n.years}+ ${t(locale, "skills.years")}`}
+            aria-label={n.name}
             onMouseEnter={() => setActive(n.name)}
             onFocus={() => setActive(n.name)}
             onClick={() => setActive(active === n.name ? null : n.name)}
@@ -203,9 +203,6 @@ export default function SkillConstellation({
           >
             <div className="flex items-baseline justify-between gap-2 mb-1.5">
               <span className="font-display font-bold text-white text-sm">{activeNode.name}</span>
-              <span className="text-[10px] font-[family-name:var(--font-jetbrains-mono)] text-white/55">
-                {activeNode.years}+ {t(locale, "skills.years")}
-              </span>
             </div>
             {related.length > 0 ? (
               <>
@@ -255,7 +252,7 @@ export default function SkillConstellation({
                     key={s.name}
                     className="text-[11px] font-[family-name:var(--font-jetbrains-mono)] px-2.5 py-1 rounded border border-white/10 bg-white/[0.04] text-white/70"
                   >
-                    {s.name} <span className="text-white/40">· {s.years}+{t(locale, "skills.yearsAbbrev")}</span>
+                    {s.name}
                   </span>
                 ))}
             </div>

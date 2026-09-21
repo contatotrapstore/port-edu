@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import MetaPixel from "@/components/analytics/MetaPixel";
+import AttributionInitializer from "@/components/analytics/AttributionInitializer";
+import SiteStructuredData from "@/components/analytics/SiteStructuredData";
 import "./globals.css";
 import { siteUrl } from "@/lib/site";
 
@@ -165,12 +167,10 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+        <SiteStructuredData legacy={structuredData} />
       </head>
       <body>
+        <AttributionInitializer />
         {children}
         <Analytics />
         <MetaPixel />

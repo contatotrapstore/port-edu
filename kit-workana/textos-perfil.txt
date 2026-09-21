@@ -1,0 +1,29 @@
+Sistemas, SaaS e Integrações | Full Stack Sênior
+
+SOBRE MIM
+
+Desenvolvo sistemas sob medida, plataformas SaaS e integrações entre ferramentas. Posso construir uma solução nova ou evoluir um produto existente, com escopo e entregas definidos antes do desenvolvimento.
+
+Sou Eduardo Gouveia, desenvolvedor Full Stack Sênior e HERO na Workana, com 180 projetos realizados na plataforma.
+
+POSSO AJUDAR COM
+• Sistemas de gestão, CRMs e painéis administrativos.
+• Plataformas SaaS e MVPs com funcionalidades priorizadas.
+• Integrações entre APIs, bancos de dados e ferramentas da operação.
+• Automações de processos e aplicações de IA.
+• Aplicativos web e mobile.
+
+Trabalho com JavaScript e TypeScript, React, Next.js, Node.js e Python, além das ferramentas que o projeto exige. A escolha técnica parte do uso, das integrações e da manutenção necessária.
+
+COMO TRABALHO
+Antes de começar, alinhamos escopo, prazo e critérios de aceite no chat da Workana. Divido o desenvolvimento em etapas para você acompanhar e validar as entregas. Se o caminho que você pediu precisar de ajustes, explico a alternativa e seu impacto antes de executar.
+
+Me conte o que precisa construir ou melhorar e quais ferramentas já utiliza. Com esse contexto, avalio o caminho técnico e o que cabe no prazo do projeto.
+
+EXPERIÊNCIA PROFISSIONAL
+
+Desenvolvimento de sistemas web, SaaS, integrações e aplicativos, da definição técnica ao deploy e à evolução do produto.
+
+Meu portfólio inclui projetos para saúde e neurotecnologia, sistemas de gestão e automações comerciais. Entre eles estão PACE, NeuroIA Lab, Clinafy, Passagens Europa e Muda Paisagens.
+
+Também atuo na evolução de produtos existentes, integração de serviços e manutenção. O trabalho é organizado por entregas e critérios de aceite combinados com o cliente.

@@ -12,6 +12,8 @@ export interface Project {
   github?: string;
   category: "saas" | "ecommerce" | "mobile" | "sistema" | "web";
   output?: string[];
+  /** Capacidades apresentadas no portfólio; preserva a copy aprovada de outras rotas. */
+  portfolioOutput?: string[];
   // Case study (conteúdo real do portfólio Workana, quando disponível)
   overview?: string;
   problem?: string;
@@ -51,9 +53,9 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
-  title: "FULL STACK SENIOR | SAAS & SISTEMAS",
-  subtitle: "Construindo o futuro, um commit por vez.",
-  bio: "Desenvolvedor Full Stack Sênior. Transformo ideias em produtos reais — da arquitetura ao deploy — com foco em SaaS, dashboards e sistemas com IA. 176 projetos entregues e 37 clientes que voltam: comunicação clara, prazos cumpridos e código que escala. Já cheguei ao Top 1 do Brasil e ao Top 3 Global em TI na Workana — nível HERO.",
+  title: "Sistemas sob medida e integrações para organizar sua operação.",
+  subtitle: "Desenvolvo plataformas SaaS, painéis de gestão e automações conectadas às ferramentas que sua empresa já usa. O projeto começa com escopo e entregas definidos.",
+  bio: "Sou Eduardo Gouveia, desenvolvedor Full Stack Sênior. Construo sistemas de gestão, plataformas SaaS e integrações. Também trabalho na evolução de produtos existentes. Antes de desenvolver, alinho o objetivo, as ferramentas envolvidas e o que precisa ser entregue. Você acompanha o trabalho por etapas e valida as entregas conforme o escopo combinado.",
   social: {
     github: "https://github.com/GouveiaZx",
     linkedin: "",
@@ -66,6 +68,7 @@ export const siteConfig: SiteConfig = {
 };
 
 export const workanaStats = {
+  // Snapshot legado consumido pela landing de anúncios, fora desta revisão.
   projectsCompleted: 176,
   projectsRunning: 11,
   clientReviews: 179,
@@ -74,7 +77,6 @@ export const workanaStats = {
   ratingMax: 5,
   certifications: 7,
   hourlyRate: 200,
-  // Ranking de TI é volátil — exibir sempre como pico de carreira, nunca como posição atual
   peakRankITBrazil: 1,
   peakRankITGlobal: 3,
   overallRank: 6,
@@ -84,11 +86,33 @@ export const workanaStats = {
   workanaProfileUrl: "https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6",
 };
 
-// Metrics de resultado para clientes — todas verificáveis no perfil Workana
+export const portfolioWorkanaStats = {
+  // Snapshot do perfil público. Conferir antes de atualizar e manter a data.
+  verifiedAt: "2026-09-21",
+  verifiedAtLabel: "21/09/2026",
+  projectsCompleted: 180,
+  projectsRunning: 13,
+  clientReviews: 181,
+  recurringClients: 37,
+  rating: 4.75,
+  ratingMax: 5,
+  certifications: 7,
+  hourlyRate: 200,
+  // Ranking de TI é volátil — exibir sempre como pico de carreira, nunca como posição atual
+  peakRankITBrazil: 1,
+  peakRankITGlobal: 3,
+  overallRank: 33,
+  totalProfessionals: "15.02M",
+  level: "HERO",
+  memberSince: "Fev/2023",
+  workanaProfileUrl: "https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6",
+};
+
+// Prova pública, sem inferir resultados financeiros ou técnicos dos clientes.
 export const resultMetrics = [
-  { value: "176", label: "projetos entregues", description: "em 3 anos e meio de Workana" },
-  { value: "37", label: "clientes recontrataram", description: "e seguem voltando" },
-  { value: "4.74/5", label: "nota média", description: "179 avaliações verificadas" },
+  { value: String(portfolioWorkanaStats.projectsCompleted), label: "projetos realizados", description: "no perfil da Workana" },
+  { value: String(portfolioWorkanaStats.clientReviews), label: "avaliações", description: "registradas na plataforma" },
+  { value: `${portfolioWorkanaStats.rating.toLocaleString("pt-BR")}/5`, label: "nota média", description: `conferida em ${portfolioWorkanaStats.verifiedAtLabel}` },
 ];
 
 // Avaliações reais verificadas (Workana) — texto verbatim do perfil
@@ -194,6 +218,31 @@ export const testimonials = [
     rating: 5,
   },
 ];
+
+// Avaliações públicas observadas na auditoria. A data indica a conferência,
+// pois o perfil informa apenas a idade relativa de publicação.
+testimonials.push(
+  {
+    text: "O Eduardo é fantástico! Profissional responsável, ágil, inteligente... A gente imagina e ele realiza! Amei o resultado. Ficou melhor do que imaginei. Contratem, sem medo!",
+    author: "NATÁLIA D.",
+    project: "Desenvolvimento de Plataforma Web de Estudo Inteligente com Banco de Questões e Dashboard",
+    projectType: "Plataforma web",
+    date: `Conferido em ${portfolioWorkanaStats.verifiedAtLabel}`,
+    verified: true,
+    recurring: false,
+    rating: 5,
+  },
+  {
+    text: "Eduardo é dev excelente. Impressionante a velocidade e qualidade de programação que ele trouxe no projeto. Muito satisfeito!",
+    author: "P. M. C.",
+    project: "Desenvolvimento de Plataforma Web Completa para Gestão de Mesa Proprietária de Day Trade",
+    projectType: "Sistema de gestão",
+    date: `Conferido em ${portfolioWorkanaStats.verifiedAtLabel}`,
+    verified: true,
+    recurring: false,
+    rating: 5,
+  },
+);
 
 /**
  * Ofertas produtizadas.
@@ -440,7 +489,7 @@ export const projects: Project[] = [
     description:
       "Sistema para profissionais de saúde mental: prontuário eletrônico com IA, agenda inteligente, teleconsulta e gestão financeira — tudo em um só lugar.",
     overview:
-      "Plataforma SaaS para profissionais e clínicas de saúde mental que reúne prontuário eletrônico com IA, agenda inteligente, teleconsulta integrada e gestão financeira completa. Mais de 500 profissionais e 50.000 consultas.",
+      "Plataforma SaaS para profissionais e clínicas de saúde mental que reúne prontuário eletrônico com IA, agenda inteligente, teleconsulta integrada e gestão financeira.",
     problem:
       "Profissionais de saúde mental usavam ferramentas fragmentadas para prontuário, agenda, teleconsulta e financeiro — sem um sistema único.",
     approach:
@@ -463,6 +512,11 @@ export const projects: Project[] = [
       "+500 profissionais ativos",
       "+50.000 consultas realizadas",
       "4.9/5 de avaliação",
+    ],
+    portfolioOutput: [
+      "prontuário e agenda em uma plataforma",
+      "teleconsulta integrada",
+      "gestão financeira da clínica",
     ],
   },
   {
