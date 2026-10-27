@@ -98,6 +98,14 @@
   border-top: 1px solid var(--line);
 }
 .lp-band-alt { background: var(--bg-2); }
+.lp [id] { scroll-margin-top: 80px; }
+.lp-section-note {
+  margin: -1.25rem 0 2.5rem;
+  max-width: 64ch;
+  color: var(--ink-2);
+  font-size: 1rem;
+  line-height: 1.6;
+}
 
 /* ── Hero ────────────────────────────────────────────────────────────────── */
 
@@ -121,6 +129,7 @@
   align-items: center;
   position: relative;
 }
+.lp-hero-grid > * { min-width: 0; }
 @media (min-width: 900px) {
   .lp-hero-grid {
     /* assimétrico de propósito: a copy manda, a arte apoia.
@@ -316,32 +325,40 @@
   background: var(--bg-3);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.2s ease, transform 0.2s ease;
 }
-.lp-case:hover { border-color: var(--line-2); transform: translateY(-2px); }
 .lp-case-img { display: block; aspect-ratio: 16 / 10; overflow: hidden; }
-.lp-case-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lp-case-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .lp-case-body { display: block; padding: 1.1rem 1.25rem 1.3rem; }
-.lp-case-body strong {
+.lp-case-body h3 {
   font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
   font-size: 1rem;
   display: block;
+  margin: 0;
 }
 .lp-case-head {
   display: block;
-  margin-top: 0.3rem;
-  font-size: 0.8125rem;
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 .lp-case-out {
   display: block;
-  margin-top: 0.75rem;
+  margin: 0.4rem 0 0;
   font-family: var(--font-jetbrains-mono), monospace;
   /* Mono a 12px encolhe mais que uma sans no mesmo corpo: no celular é o
      resultado do case que fica ilegível, e é ele que convence. */
   font-size: 0.8125rem;
   color: var(--acc-ink);
+  line-height: 1.5;
+}
+.lp-case-features {
+  display: grid;
+  gap: 0.4rem;
+  margin: 1rem 0 0;
+  padding-left: 1rem;
+  color: var(--ink-3);
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 
@@ -658,7 +675,7 @@
   font-size: 0.9375rem;
   font-weight: 600;
   text-decoration: none;
-  white-space: nowrap;          /* CTA nunca quebra em duas linhas */
+  white-space: nowrap;          /* No desktop o CTA fica em uma linha. */
   border: 0;
   cursor: pointer;
   transition: background 0.18s ease, transform 0.12s ease;
@@ -705,5 +722,14 @@
 /* Em telas estreitas o botão ocupa a largura toda: alvo de toque generoso */
 @media (max-width: 559px) {
   .lp-cta-row { flex-direction: column; }
-  .lp-btn, .lp-btn-ghost { width: 100%; }
+  .lp-btn, .lp-btn-ghost {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    height: auto;
+    padding-block: 0.75rem;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.4;
+  }
 }

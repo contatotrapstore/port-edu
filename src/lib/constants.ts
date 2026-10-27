@@ -53,9 +53,9 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: "Eduardo Gouveia",
-  title: "Sistemas sob medida e integrações para organizar sua operação.",
-  subtitle: "Desenvolvo plataformas SaaS, painéis de gestão e automações conectadas às ferramentas que sua empresa já usa. O projeto começa com escopo e entregas definidos.",
-  bio: "Sou Eduardo Gouveia, desenvolvedor Full Stack Sênior. Construo sistemas de gestão, plataformas SaaS e integrações. Também trabalho na evolução de produtos existentes. Antes de desenvolver, alinho o objetivo, as ferramentas envolvidas e o que precisa ser entregue. Você acompanha o trabalho por etapas e valida as entregas conforme o escopo combinado.",
+  title: "Sites, apps e sistemas desenvolvidos sob medida.",
+  subtitle: "Desenvolvo sites, aplicativos, plataformas e sistemas. Do projeto novo à melhoria do que já existe, você começa com escopo e entregas definidos.",
+  bio: "Sou Eduardo Gouveia, desenvolvedor Full Stack Sênior. Desenvolvo sites, aplicativos, plataformas e sistemas, além de integrações e melhorias em projetos existentes. Antes de programar, alinho o objetivo e o que precisa ser entregue. Você acompanha o trabalho por etapas e valida as entregas conforme o escopo combinado.",
   social: {
     github: "https://github.com/GouveiaZx",
     linkedin: "",
@@ -245,32 +245,29 @@ testimonials.push(
 );
 
 /**
- * Ofertas produtizadas.
- *
- * Preços são FAIXAS a confirmar com dados reais (horas gastas em Muda
- * Paisagens e Passagens Europa; maior contrato já fechado). Enquanto
- * `priceConfirmed` for false, a /contratar não renderiza a âncora de preço —
- * publicar número que a prova não sustenta é pior do que não publicar.
+ * Serviços com valores de entrada aprovados pelo Eduardo.
+ * O orçamento e o prazo finais dependem do escopo de cada projeto.
+ * `pricingConfirmed` é legado; a landing usa os valores de `offers`.
  */
 export const pricingConfirmed = false;
 
 export const offers = [
   {
     id: "sistema-sob-medida",
-    name: "Sistema ou app sob medida",
+    name: "Site, app, plataforma ou sistema sob medida",
     promise:
-      "O sistema que a sua operação precisa e nenhuma ferramenta de prateleira faz do jeito certo, com escopo fechado por escrito antes de começar.",
+      "Desenvolvimento de um projeto novo ou melhoria do que você já tem. A proposta define o que será entregue, quanto custa e qual é o prazo.",
     scope: [
-      "Telas e fluxos desenhados a partir do jeito que a operação já funciona",
-      "Autenticação, perfis de acesso e regras de negócio",
-      "Painel com as métricas e os controles do dia a dia",
-      "Pagamento (Pix ou cartão) quando o produto precisa cobrar",
-      "Deploy, documentação e vídeo de handover",
+      "Sites institucionais, landing pages e lojas virtuais",
+      "Aplicativos, plataformas e sistemas com as funções definidas no escopo",
+      "Áreas de clientes, painéis, pagamentos e integrações quando previstos",
+      "Melhorias, novas funções e correções em projetos existentes",
+      "Publicação, documentação e orientação para usar o que foi entregue",
     ],
-    notFor: "quem ainda está validando a ideia e não tem o problema definido",
-    range: "a partir de R$ 5 mil",
-    term: "2 a 4 semanas",
-    cases: ["blackinbot", "focus", "clinafy"],
+    notFor: "quem procura um produto pronto por assinatura, em vez de contratar desenvolvimento",
+    range: "a partir de R$ 3 mil",
+    term: "prazo definido após o escopo",
+    cases: ["paylink", "connote", "clinafy", "rei"],
   },
   {
     id: "automacao-ia",
@@ -278,7 +275,7 @@ export const offers = [
     promise:
       "Seu WhatsApp responde, qualifica e registra o lead no CRM que você já usa, sem depender de alguém online.",
     scope: [
-      "Integração pela API oficial (Cloud API da Meta ou Evolution API)",
+      "Integração com o WhatsApp e as ferramentas previstas no escopo",
       "Agente de IA com a base de conhecimento do seu negócio",
       "Qualificação por perguntas estruturadas e handoff para humano",
       "Registro automático no CRM (Pipefy, RD, HubSpot ou planilha)",
@@ -287,7 +284,7 @@ export const offers = [
     notFor:
       "quem cabe numa plataforma pronta de R$ 300 a 900 por mês e não precisa integrar com sistema próprio",
     range: "a partir de R$ 12 mil",
-    term: "2 a 4 semanas",
+    term: "estimativa de 2 a 4 semanas, conforme o escopo",
     cases: ["mudapaisagens", "passagenseuropa"],
   },
   {
@@ -302,9 +299,9 @@ export const offers = [
       "Regras de negócio, permissões e perfis de acesso",
       "Importação e exportação de dados, relatórios e documentos",
     ],
-    notFor: "quem precisa de site institucional, landing page ou loja de prateleira",
+    notFor: "conectar ferramentas sem acesso autorizado ou sem avaliar as opções de integração",
     range: "a partir de R$ 3 mil",
-    term: "2 a 6 semanas",
+    term: "estimativa de 2 a 6 semanas, conforme o escopo",
     cases: ["rei", "clubeazul", "blackinbot"],
   },
 ] as const;

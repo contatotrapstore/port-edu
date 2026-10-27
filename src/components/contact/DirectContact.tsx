@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import type { SyntheticEvent } from "react";
 import { track } from "@vercel/analytics";
 import { siteConfig } from "@/lib/constants";
-import { getAttribution } from "@/lib/attribution";
-import { metaTrack } from "@/components/analytics/MetaPixel";
+import { compactAttribution, getAttribution } from "@/lib/attribution";
+import { safeContactAttribution, whatsappHref } from "@/lib/contact-attribution";
+import { metaTrackCustom } from "@/components/analytics/MetaPixel";
 import WorkanaLink from "@/components/workana/WorkanaLink";
 
 /**
@@ -19,12 +20,6 @@ import WorkanaLink from "@/components/workana/WorkanaLink";
  * CTAs com o mesmo peso viram zero CTA.
  */
 
-const PREFILL = (page: string, src?: string) =>
-  `Olá Eduardo, vim pelo site (${page}${src ? ` · ${src}` : ""}).\n\n` +
-  `O que está travando hoje: \n` +
-  `Sistemas que já uso: \n` +
-  `Prazo e orçamento previsto: `;
-
 export default function DirectContact({
   page,
   variant = "final",
@@ -36,42 +31,64 @@ export default function DirectContact({
   const { whatsapp, email } = siteConfig.social;
   const hasWhats = Boolean(whatsapp);
   const hasEmail = Boolean(email);
+  const isHiringPage = page.startsWith("contratar");
 
-  const onChannel = (channel: string) => {
-    const { src, ref } = getAttribution();
-    track("contato_direto", {
-      channel,
-      ...(src ? { src } : ref ? { ref } : { page }),
-    });
-    // "Contact" é o evento padrão da Meta para "alguém iniciou conversa com o
-    // negócio". Padrão, e não custom, porque só os padrão entram na lista de
-    // eventos priorizados que o iOS exige e servem de objetivo de campanha.
-    metaTrack("Contact", { content_name: page, channel });
+  const onChannel = (channel: "whatsapp" | "email") => {
+    const attribution = safeContactAttribution(getAttribution());
+    // These events measure opening a channel. A conversation and its sales
+    // stage are recorded separately after the person actually contacts us.
+    try {
+      track(`${channel}_click`, {
+        location: page,
+        attribution: compactAttribution(attribution),
+      });
+    } catch {
+      // Analytics must never prevent someone from opening their contact app.
+    }
+    try {
+      metaTrackCustom(channel === "whatsapp" ? "WhatsAppClick" : "EmailClick", {
+        content_name: page,
+        ...attribution,
+      });
+    } catch {
+      // Browser extensions may block the pixel independently of Vercel.
+    }
   };
 
-  // Lido depois da hidratação, de propósito. Se fosse durante o render, o
-  // servidor renderizaria sem atribuição, o cliente teria que bater com esse
-  // HTML e a origem nunca chegaria ao link: a conversa do WhatsApp é onde o
-  // lead é lido de verdade, e ela não carrega UTM nenhuma.
-  const [attr, setAttr] = useState<string | undefined>(undefined);
-  useEffect(() => setAttr(getAttribution().src), []);
+  // The SSR link already works without JavaScript. Resolve first-touch data
+  // on interaction so hydration stays deterministic; keep native navigation,
+  // keyboard, middle-click and copy-link behavior (no popup/window.open).
+  const prepareWhatsApp = (event: SyntheticEvent<HTMLAnchorElement>) => {
+    event.currentTarget.href = whatsappHref(whatsapp, page, getAttribution());
+  };
 
   return (
     <div className={variant === "hero" ? "lp-cta lp-cta-hero" : "lp-cta lp-cta-final"}>
       <div className="lp-cta-row">
         {hasWhats && (
           <a
-            href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(PREFILL(page, attr))}`}
+            href={whatsappHref(whatsapp, page)}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => onChannel("whatsapp")}
+            onFocus={prepareWhatsApp}
+            onPointerDown={prepareWhatsApp}
+            onContextMenu={prepareWhatsApp}
+            onClick={(event) => {
+              prepareWhatsApp(event);
+              onChannel("whatsapp");
+            }}
+            onAuxClick={(event) => {
+              if (event.button !== 1) return;
+              prepareWhatsApp(event);
+              onChannel("whatsapp");
+            }}
             className="lp-btn"
           >
-            Falar no WhatsApp agora
+            Pedir orçamento pelo WhatsApp
           </a>
         )}
 
-        {!hasWhats && (
+        {!hasWhats && !isHiringPage && (
           <WorkanaLink location={`${page}_workana`} className="lp-btn">
             Ver perfil e contratar
           </WorkanaLink>
@@ -93,8 +110,8 @@ export default function DirectContact({
       <p className="lp-cta-note">
         {variant === "hero" ? (
           <>
-            Resposta no mesmo dia útil.{" "}
-            {hasWhats ? (
+            Conte seu projeto para receber uma avaliação inicial.{" "}
+            {!isHiringPage && (hasWhats ? (
               <>
                 Prefere pagamento retido até aceitar cada etapa?{" "}
                 <WorkanaLink location={`${page}_workana`} className="lp-cta-alt">
@@ -104,12 +121,12 @@ export default function DirectContact({
               </>
             ) : (
               workanaNote
-            )}
+            ))}
           </>
         ) : (
           <>
-            Escreva o volume por mês e quais sistemas já existem: com essas duas
-            respostas eu já devolvo faixa de preço e prazo.
+            Conte o que deseja desenvolver, para quem é e qual investimento considera.
+            Eu retorno com os próximos passos para preparar seu orçamento.
           </>
         )}
       </p>

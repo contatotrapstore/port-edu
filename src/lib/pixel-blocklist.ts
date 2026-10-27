@@ -9,7 +9,7 @@
  * Se alguém tirar "/workana" daqui, `scripts/check-workana-isolation.mjs`
  * quebra o deploy.
  */
-export const PIXEL_BLOCKED_PREFIXES = ["/workana"];
+export const PIXEL_BLOCKED_PREFIXES = ["/workana", "/admin"];
 
 export function isPixelBlocked(pathname: string) {
   return PIXEL_BLOCKED_PREFIXES.some(

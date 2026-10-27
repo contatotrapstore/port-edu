@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-26",
+  "projectRef": "kcjshrnjkrmtzgpwnygc",
+  "projectName": "edevshub-content-studio",
+  "retiredApps": [
+    "finance-os",
+    "elyndra-market"
+  ],
+  "preservedProject": "financeiro-edevshub",
+  "oldSchemaRemoved": true,
+  "oldPublicTablesRemoved": true,
+  "oldAuthUsersRemoved": 2,
+  "oldRuntimeRoleRemoved": true,
+  "newTables": 10,
+  "allTablesRLS": true,
+  "anonymousAccess": false,
+  "automationEnabled": false,
+  "publicationEnabled": false,
+  "runtimeConnectionVerified": true,
+  "remoteRehearsal": "rollback passed",
+  "tests": "9/9",
+  "review": "fresh reviewer: no important findings",
+  "panelDeployed": false
+}

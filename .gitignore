@@ -50,3 +50,10 @@ next-env.d.ts
 
 # Artefatos gerados fora do build
 eduardo-gouveia-credenciais.pdf
+
+# Content Studio: local renders, upstream reference and runtime
+/output/
+/tools/content-worker/vendor/
+/tools/content-worker/.venv/
+/tools/content-worker/node_modules/
+/.superpowers/

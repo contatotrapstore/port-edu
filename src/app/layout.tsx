@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
-import MetaPixel from "@/components/analytics/MetaPixel";
-import AttributionInitializer from "@/components/analytics/AttributionInitializer";
+import PublicTracking from "@/components/analytics/PublicTracking";
 import SiteStructuredData from "@/components/analytics/SiteStructuredData";
 import "./globals.css";
 import { siteUrl } from "@/lib/site";
@@ -170,10 +168,8 @@ export default function RootLayout({
         <SiteStructuredData legacy={structuredData} />
       </head>
       <body>
-        <AttributionInitializer />
         {children}
-        <Analytics />
-        <MetaPixel />
+        <PublicTracking />
       </body>
     </html>
   );

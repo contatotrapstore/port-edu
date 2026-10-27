@@ -1,0 +1,11 @@
+import Link from 'next/link';
+import {redirect} from 'next/navigation';
+import {contentConfigured,getAdmin} from '@/lib/content/auth';
+import {requestLogin} from '../actions';
+export default async function Login({searchParams}:{searchParams:Promise<{status?:string}>}){
+ if(await getAdmin())redirect('/admin/conteudo');
+ const {status}=await searchParams;const configured=contentConfigured();
+ const messages:Record<string,string>={sent:'Se este e-mail tiver acesso, você receberá um link. Abra-o neste mesmo navegador.',unavailable:'Não foi possível enviar o link. Confira o e-mail autorizado ou tente novamente em alguns minutos.',invalid:'Confira o e-mail e tente novamente.',expired:'O link expirou ou foi aberto em outro navegador. Solicite um novo.',denied:'Sua conta não tem acesso a este painel.'};
+ return <main className="studio-login"><Link href="/" className="studio-wordmark">edevshub<span>Content Studio</span></Link><div className="studio-login-grid"><section><p className="studio-eyebrow">SEU CONTEÚDO, DO RASCUNHO À PUBLICAÇÃO</p><h1>Um lugar para<br/>dar forma às ideias.</h1><p>Planeje as pautas, revise os carrosséis e acompanhe cada publicação.</p></section><section className="studio-login-box"><h2>Entrar no estúdio</h2><p>Acesso exclusivo para administradores. Enviaremos um link de entrada ao seu e-mail.</p>{!configured?<p role="status">O painel aguarda a configuração do ambiente.</p>:<form action={requestLogin}><label htmlFor="email">E-mail de acesso</label><input id="email" name="email" type="email" autoComplete="email" placeholder="voce@empresa.com" required maxLength={254}/><button type="submit">Receber link de acesso</button></form>}{status&&messages[status]&&<p role="status" className="studio-notice">{messages[status]}</p>}<small>Não há cadastro público.</small></section></div></main>;
+}
+

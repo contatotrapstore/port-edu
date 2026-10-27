@@ -9,6 +9,7 @@ type StructuredData = { "@context": string; "@graph": Record<string, unknown>[] 
 /** A revisão do portfólio não altera o snapshot aprovado nas páginas de anúncios. */
 export default function SiteStructuredData({ legacy }: { legacy: StructuredData }) {
   const pathname = usePathname();
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) return null;
   const isAdsPage = /^\/(contratar|solucoes)(\/|$)/.test(pathname ?? "");
   const data = isAdsPage ? legacy : {
     ...legacy,

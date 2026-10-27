@@ -82,3 +82,10 @@ export function metaTrack(evento: string, dados?: Record<string, unknown>) {
   if (typeof window === "undefined" || !window.fbq) return;
   window.fbq("track", evento, dados);
 }
+
+/** A navigation intent is a custom event, never a confirmed lead or conversation. */
+export function metaTrackCustom(evento: string, dados?: Record<string, unknown>) {
+  if (typeof window === "undefined" || !window.fbq ||
+      !HOSTS.includes(window.location.hostname) || isPixelBlocked(window.location.pathname)) return;
+  window.fbq("trackCustom", evento, dados);
+}

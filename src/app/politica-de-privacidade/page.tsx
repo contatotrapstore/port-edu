@@ -12,7 +12,7 @@ import CaseHeader from "@/components/CaseHeader";
 export const metadata: Metadata = {
   title: "Política de privacidade",
   description:
-    "Como os dados enviados por WhatsApp, e-mail ou navegação em edevshub.com são tratados, por quanto tempo e quais são os seus direitos.",
+    "Como os dados enviados por formulários de anúncios, WhatsApp, e-mail ou navegação em edevshub.com são tratados, por quanto tempo e quais são os seus direitos.",
   alternates: { canonical: "/politica-de-privacidade" },
 };
 
@@ -46,7 +46,17 @@ export default function PoliticaPage() {
             <p>
               <b className="text-white/85">Os que você envia.</b> Ao iniciar uma conversa por
               WhatsApp ou e-mail, você compartilha o que escrever na mensagem — normalmente
-              nome, contato e a descrição do projeto. Nada além disso é solicitado.
+              nome, contato e a descrição do projeto.
+            </p>
+            <p className="mt-3">
+              <b className="text-white/85">Formulários de anúncios da Meta.</b> Ao solicitar
+              uma avaliação de projeto pelos anúncios da EDevsHub, você informa nome,
+              telefone, email opcional, tipo e descrição do projeto e compatibilidade
+              com o investimento anunciado. Conforme o formulário, também podem ser
+              solicitadas informações sobre a empresa, participação na decisão ou
+              processo que deseja melhorar. A Meta
+              coleta essas respostas e as disponibiliza à EDevsHub. Não inclua dados
+              confidenciais da sua empresa ou de clientes.
             </p>
             <p className="mt-3">
               <b className="text-white/85">Dados de navegação.</b> O site usa o Vercel Analytics,
@@ -76,7 +86,8 @@ export default function PoliticaPage() {
           <section>
             <h2 className="font-display text-lg font-bold text-white mb-2">Para que são usados</h2>
             <p>
-              Exclusivamente para responder ao seu contato, elaborar proposta e, se houver
+              Para avaliar sua solicitação de projeto, responder pelo telefone, WhatsApp
+              ou email informado, elaborar proposta e, se houver
               contratação, executar o projeto. A base legal é a execução de contrato ou os
               procedimentos preliminares a ele, conforme o art. 7º da LGPD.
             </p>
@@ -87,7 +98,9 @@ export default function PoliticaPage() {
             <p>
               O que você me escreve fica nas ferramentas usadas para atender você: WhatsApp,
               provedor de e-mail e, quando a contratação acontece pela plataforma, a própria
-              Workana, cada um sob a política do respectivo serviço. Os dados de navegação
+              Workana, cada um sob a política do respectivo serviço. Respostas aos formulários
+              de anúncios também são tratadas pela Meta conforme suas próprias políticas.
+              Os dados de navegação
               descritos acima vão para a Vercel e, nas páginas com pixel, para a Meta. Não vendo
               dados, e não envio o conteúdo das suas mensagens para nenhuma plataforma de
               anúncio.
@@ -97,7 +110,9 @@ export default function PoliticaPage() {
           <section>
             <h2 className="font-display text-lg font-bold text-white mb-2">Por quanto tempo</h2>
             <p>
-              Conversas que não viram projeto são descartadas em até 12 meses. Dados de projetos
+              Nos meus registros, conversas e solicitações de formulário que não viram
+              projeto são descartadas em até 12 meses. A retenção pelas plataformas usadas
+              segue as políticas de cada serviço. Dados de projetos
               contratados são mantidos pelo prazo legal de guarda fiscal e contratual.
             </p>
           </section>
