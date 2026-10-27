@@ -4,7 +4,7 @@ import {slideHtml,storyboard} from '../scripts/composer.mjs';
 test('storyboard varies layouts within a carousel and direction across topics',()=>{
  const a=storyboard(['Como funciona um agente?','Uma etapa por vez. Confira os dados.','Antes de agir, confirme.','Conecte os sistemas.','Revise os resultados.','Defina limites.','Qual etapa começa hoje?']);
  assert.ok(new Set(a.map(s=>s.layout)).size>=4);
- assert.ok(a.some(s=>s.cues.some(c=>c.tipo==='tecla')));
+ assert.ok(a.some(s=>s.cues.some(c=>c.tipo.startsWith('sfx-key-'))));
  const b=storyboard(['Uma novidade importante','Primeiro detalhe','Outro detalhe','Próximo passo']);
  assert.notDeepEqual(a,b);
 });

@@ -9,8 +9,8 @@ export function storyboard(slides){
  const middle=['terminal','cards','flow','focus'];
  return slides.map((text,index)=>{
   const layout=index===0?'cover':index===slides.length-1?'closing':middle[(index-1+seed%2)%middle.length];
-  const types={cover:['whoosh','impacto'],terminal:['tecla','tecla','clique'],cards:['pop','land'],flow:['clique','whoosh','land'],focus:['tchac','pop'],closing:['whoosh','clique']};
-  return {layout,direction,cues:types[layout].map((tipo,i)=>({t:1+i*.5,tipo,gain:.28,o_que:layout==='terminal'?'digitação':layout==='cards'?'cartão pousa':'elemento atravessa'}))};
+  const types={cover:['sweep','impact'],terminal:['key','key','click'],cards:['pop','card'],flow:['toggle','sweep','success'],focus:['impact','sparkle'],closing:['sweep','notification']};
+  return {layout,direction,cues:types[layout].map((tipo,i)=>({t:1+i*.5,tipo:'sfx-'+tipo+'-'+(seed%3),gain:.35,o_que:layout==='terminal'?'digitação':layout==='cards'?'cartão pousa':'elemento atravessa'}))};
  });
 }
 export function slideHtml(text,index,total,plan=storyboard(Array.from({length:total},()=>text))[index]){
@@ -45,7 +45,11 @@ export function composeProject(job,slides){
  const upstream=path.join(repo,'tools/content-worker/vendor/criador-de-carrosseis-simples-0c0323d44ecdf69c501145a27af0796763efaff5');
  fs.cpSync(path.join(upstream,'assets/fonts'),path.join(root,'src/kit/fonts'),{recursive:true});
  const music=fs.readFileSync(path.join(upstream,'scripts/musica.py'),'utf8').replace("open(SAI / 'beats.json')","open(SAI / 'beats.json', encoding='utf-8')").replace("open(SAI / 'loudness.json', 'w')","open(SAI / 'loudness.json', 'w', encoding='utf-8')");
- fs.writeFileSync(path.join(root,'scripts/musica.py'),music);
+ const audioPlan=storyboard(slides);
+ const palette=audioPlan[0].direction;
+ const adapted=music.replace('import numpy as np','import numpy as np\nfrom sound_library import synthesize').replace("        if tipo == 'impacto':","        if tipo.startswith('sfx-'):\n            _, family, variant = tipo.split('-'); poe(synthesize(family, int(variant)) * g, t); continue\n        if tipo == 'impacto':").replace("TOM = 'D'","TOM = '"+({editorial:'D',blueprint:'E',console:'A'}[palette])+"'").replace("CLIMA = 'quente'","CLIMA = '"+(palette==='console'?'frio':'quente')+"'");
+ fs.copyFileSync(path.join(repo,'tools/content-worker/scripts/sound_library.py'),path.join(root,'scripts/sound_library.py'));
+ fs.writeFileSync(path.join(root,'scripts/musica.py'),adapted);
  const plan=storyboard(slides);
  fs.writeFileSync(path.join(root,'storyboard.json'),JSON.stringify(plan,null,2));
  slides.forEach((text,i)=>fs.writeFileSync(path.join(root,'src/slides',`slide-${String(i+1).padStart(2,'0')}.html`),slideHtml(text,i,slides.length,plan[i])));
