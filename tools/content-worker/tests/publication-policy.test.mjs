@@ -19,3 +19,20 @@ test('refresh only valid old tokens close to expiry',()=>{
  assert.equal(refreshDue({expires_at:new Date(now+60*day),refreshed_at:new Date(now)},now),false);
  assert.equal(refreshDue({expires_at:new Date(now-day),refreshed_at:new Date(now-60*day)},now),false);
 });
+
+for(const format of ['reel','story'])test(`${format} accepts one checked vertical video for multiple narrative scenes`,()=>{
+ const media=[{...assets[0],provenance:{slide:1,format,width:1080,height:1920,duration:30,qa:'vertical-layout-audio-passed'}}];
+ const input={...base,format,assets:media,expectedFingerprint:fingerprint(media),review:{decision:'approved',assetFingerprint:fingerprint(media)}};
+ assert.equal(publicationEligibility(input),null);
+ assert.equal(publicationEligibility({...base,format}),'incomplete_media');
+ for(const patch of [{format:'carousel'},{width:1350},{height:1080},{qa:'loop-layout-determinism-passed'},{slide:2},{duration:2},{duration:91},{duration:NaN},{duration:undefined},...(format==='story'?[{duration:61}]:[])]){
+  const bad=[{...media[0],provenance:{...media[0].provenance,...patch}}];
+  assert.ok(publicationEligibility({...input,assets:bad,expectedFingerprint:fingerprint(bad),review:{decision:'approved',assetFingerprint:fingerprint(bad)}}));
+ }
+ assert.equal(publicationEligibility({...input,mode:'automatic'}),'invalid_mode');
+});
+test('unknown formats fail closed while explicit carousel preserves legacy fingerprints',()=>{
+ for(const format of ['',null,'REELS','image'])assert.equal(publicationEligibility({...base,format}),'invalid_format');
+ assert.equal(publicationEligibility({...base,format:'carousel'}),null);
+ assert.equal(fingerprint(assets),'767d17709a9e44ca1c4d211658bbd9bf3f4637efcd0346d5ada67e88389e5f62');
+});

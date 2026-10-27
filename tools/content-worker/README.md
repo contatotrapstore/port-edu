@@ -20,16 +20,26 @@ O gerador recusa substituir um piloto existente. Python, bibliotecas em requirem
 
 Referência: https://github.com/Felpborges/criador-de-carrosseis-simples, commit `0c0323d44ecdf69c501145a27af0796763efaff5`. O gerador espera uma cópia local desse commit em `vendor/criador-de-carrosseis-simples-<commit>` e usa suas fontes e seu script de música com adaptação UTF-8. Nenhuma licença geral foi identificada na cópia inspecionada: não redistribuir o pacote original como código próprio. Vendor e mídia gerada não são versionados.
 
-## Operação atual
+## Operação atual — 27/10/2026
 
-O worker persistente inicia no login do Windows pelo atalho EDevsHub Content Studio. Pode ser iniciado manualmente com `powershell -File tools/content-worker/INICIAR-WORKER.ps1`; evita instância duplicada.
+- Produção **somente sob demanda**. Pesquisa diária está desativada e o atalho de inicialização foi removido. Não iniciar `worker-loop.mjs` sem nova autorização.
+- Para processar um pedido já na fila, execute `node tools/content-worker/scripts/worker-once.mjs`. O processo termina após um job e não publica.
+- Vercel executa o publicador; Supabase Cron chama a rota protegida uma vez por minuto. Arquivos prontos ficam no Storage privado. O PC pode estar desligado na hora da postagem.
+- Modo atual: somente revisões aprovadas e explicitamente agendadas. Na agenda manual há um slot por formato/dia: `principal` (carrossel), `reel`, `story`. A seleção automática continua limitada ao carrossel e não está ativada.
+- Preparação normal começa até 20 minutos antes. Tolerância de 15 minutos; não recuperar dias perdidos. Envios de resultado incerto são reconciliados por leitura e nunca reenviados automaticamente; não bloqueiam outros posts.
+- Aprovar é uma etapa editorial. Agendar é separado. Alterações de texto criam nova revisão, invalidam a aprovação anterior e pausam agendas antigas. Alterar somente a legenda preserva o storyboard vertical; alterar cenas/formato gera um novo storyboard padrão.
+- Token Meta criptografado; renovação ocorre no publicador cloud quando aplicável. Revogação exige reconectar pelo painel.
 
-- Pesquisa/produção consulta a fila a cada 30 segundos. Pesquisa diária após 9h de Brasília, fontes oficiais e deduplicação; sem notícia recente, pauta educativa. Usa Codex/ChatGPT ou Claude Code/Claude.ai no PC conforme escolha no painel. Não usa API paga de geração. Limites da assinatura continuam valendo.
-- Publicador independente consulta a cada 60 segundos, mesmo durante renderização. Precisa do PC ligado, sessão Windows e internet. Vercel hospeda o painel; não executa o render/publicador.
-- A aprovação editorial não agenda nem ativa envios. Modo aprovado exige aprovação da revisão e mídias exatas, mais agenda manual. Modo automático exige ativação explícita, escolhe uma produção das últimas 36 horas com QA, rejeita pedidos de ajustes. Limite operacional: um slot por dia.
-- Preparação de containers começa até 20 minutos antes; envio só no horário. Tolerância de 15 minutos, sem recuperar dias perdidos. Pausa global bloqueia novos envios; resultados incertos continuam sendo conferidos por leitura. Nunca repetir media_publish automaticamente após resposta perdida.
-- Cancelar é permitido antes do envio. Após confirmação de envio, confira o resultado no Instagram. Em erro de processamento, cancele, crie nova revisão e revise novamente; containers não são reutilizados indefinidamente.
-- Token criptografado AES-GCM; refresh quando faltar menos de 14 dias e tiver mais de 24h de idade. Revogação/expiração exige reconectar pelo painel. Sem PC ligado durante toda a validade, a renovação não acontece.
-- Efeitos originais: 12 famílias × 3 variações, 48kHz, sincronizados aos elementos e mixados na trilha. Prévia das famílias no painel. MP4s antigos preservam o áudio que foi revisado.
+## Reels e Stories narrados
 
-Verificação de implantação: publicação global desligada e nenhuma chamada real de postagem. Testes com Meta simulada exercitam conclusão, pausa, cancelamento, resposta perdida e retomada. A primeira publicação real permanece uma validação operacional pendente de autorização do usuário.
+`brief.format`: `carousel` (padrão legado), `reel`, `story`. A UI permite escolher formato. As linhas do roteiro são cenas: um carrossel gera um vídeo por cena; Reel e Story geram um vídeo contínuo 1080×1920, H.264/AAC, 30 fps. Limites editoriais internos: Reel 3–90 s; Story 3–60 s. A narração determina a duração.
+
+`vertical_render.py` usa `edge-tts==7.3.1`, voz sintética `pt-BR-AntonioNeural`, legendas baseadas em tempos de palavras, trilha e efeitos originais. O texto da narração é enviado ao serviço online de voz do Edge; não usar dados privados de clientes nos roteiros. Não usa crédito de API GPT/Claude para a voz, não clona a voz do usuário e não requer uma nova assinatura. A disponibilidade do serviço externo não é garantida: se falhar, o job para; não substitui silenciosamente por outra voz.
+
+Instalar dependências locais: `tools/content-worker/.venv/Scripts/python.exe -m pip install -r tools/content-worker/requirements.txt`.
+
+Artefatos: `output/conteudo/job-<id>-<attempt>/resultados/slide-01.mp4`, `estatico/slide-01.png`, `review.jpg` e `qa.json`. Conferir roteiro, prévia e áudio antes de aprovar. O QA automatizado valida estrutura; não substitui revisão editorial.
+
+Reels usam `media_type=REELS` e aparecem também no feed; Stories usam `STORIES`, sem legenda enviada à API. Não há stickers de enquete/link simulados. A mesma máquina de estados e proteções de duplicação atendem os três formatos.
+
+Verificações: `node --test tools/content-worker/tests/*.test.mjs` e `tools/content-worker/.venv/Scripts/python.exe tools/content-worker/tests/vertical.test.py`.

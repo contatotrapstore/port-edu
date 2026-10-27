@@ -1,0 +1,511 @@
+[
+  {
+    "date": "2026-10-27",
+    "time": "19:00",
+    "format": "reel",
+    "topic": "Seu agente respondeu. Mas executou a tarefa?",
+    "brief": {
+      "text": "Conteúdo educativo original para devs, vibe coders e compradores de sistemas. Exemplo ilustrativo; sem resultados ou métricas inventados. Narração sintética PT-BR e motion autoral.",
+      "format": "reel",
+      "vertical": {
+        "series": "Agentes / além da resposta",
+        "scenes": [
+          {
+            "title": "Respondeu. Mas executou?",
+            "narration": "Seu agente disse: pronto, cadastrei o cliente. Mas o cadastro realmente existe?",
+            "kind": "question",
+            "labels": [
+              "Uma frase não comprova uma ação."
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Resposta não é comprovante.",
+            "narration": "Neste exemplo, o chat confirma a tarefa. Só que nenhuma ferramenta foi chamada. O sistema continua igual.",
+            "kind": "compare",
+            "labels": [
+              "Chat: cadastro concluído",
+              "Sistema: nenhum registro novo"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "A ação precisa acontecer.",
+            "narration": "O fluxo precisa chamar a ferramenta, receber o retorno e conferir se a operação foi concluída.",
+            "kind": "pipeline",
+            "labels": [
+              "Solicitar cadastro",
+              "Executar a ferramenta",
+              "Conferir o retorno"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Falhou? Mostre a falha.",
+            "narration": "Se o serviço estiver indisponível, informe isso. Não transforme uma tentativa em uma confirmação de sucesso.",
+            "kind": "terminal",
+            "labels": [
+              "criar_cliente()",
+              "serviço indisponível",
+              "status: não concluído"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "O que confirma o seu agente?",
+            "narration": "No seu projeto, o que prova que a tarefa aconteceu: a mensagem ou o registro? Mostra esse teste para quem constrói com você.",
+            "kind": "closing",
+            "labels": [
+              "Mensagem ou registro?"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          }
+        ]
+      },
+      "generation": {
+        "engine": "codex",
+        "method": "chat-session editorial reviewed"
+      },
+      "batch": "vertical-2026-10-27"
+    },
+    "slides": [
+      "Respondeu. Mas executou? Seu agente disse: pronto, cadastrei o cliente. Mas o cadastro realmente existe?",
+      "Resposta não é comprovante. Neste exemplo, o chat confirma a tarefa. Só que nenhuma ferramenta foi chamada. O sistema continua igual.",
+      "A ação precisa acontecer. O fluxo precisa chamar a ferramenta, receber o retorno e conferir se a operação foi concluída.",
+      "Falhou? Mostre a falha. Se o serviço estiver indisponível, informe isso. Não transforme uma tentativa em uma confirmação de sucesso.",
+      "O que confirma o seu agente? No seu projeto, o que prova que a tarefa aconteceu: a mensagem ou o registro? Mostra esse teste para quem constrói com você."
+    ],
+    "caption": "“Pronto, cadastrei.” É uma resposta ou um resultado verificado?\n\nUma aplicação com ferramentas precisa tratar execução, retorno e falha. O modelo gerar uma confirmação não comprova uma alteração no sistema.\n\nDemonstração ilustrativa, com dados fictícios. Na EDevsHub, construímos sistemas e integrações com IA para operações reais.\n\nQue ação você gostaria de conseguir conferir no seu agente?\n\n#AgentesDeIA #Desenvolvimento #Automação #EDevsHub",
+    "sources": [
+      "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
+    ]
+  },
+  {
+    "date": "2026-10-27",
+    "time": "19:15",
+    "format": "story",
+    "topic": "Seu agente fala ou faz?",
+    "brief": {
+      "text": "Conteúdo educativo original para devs, vibe coders e compradores de sistemas. Exemplo ilustrativo; sem resultados ou métricas inventados. Narração sintética PT-BR e motion autoral.",
+      "format": "story",
+      "vertical": {
+        "series": "Do Reel para a conversa",
+        "scenes": [
+          {
+            "title": "Seu agente fala ou faz?",
+            "narration": "No Reel de hoje: como conferir se o agente executou a tarefa ou só respondeu.",
+            "kind": "question",
+            "labels": [
+              "Mensagem ou registro?"
+            ],
+            "note": "EDEVSHUB / IA NA PRÁTICA"
+          },
+          {
+            "title": "E no seu projeto?",
+            "narration": "No seu projeto, o que comprova a execução? Responda este Story.",
+            "kind": "closing",
+            "labels": [
+              "Responda este Story."
+            ],
+            "note": "CONTEÚDO EDUCATIVO"
+          }
+        ]
+      },
+      "generation": {
+        "engine": "codex",
+        "method": "chat-session editorial reviewed"
+      },
+      "batch": "vertical-2026-10-27"
+    },
+    "slides": [
+      "Seu agente fala ou faz? No Reel de hoje: como conferir se o agente executou a tarefa ou só respondeu.",
+      "E no seu projeto? No seu projeto, o que comprova a execução? Responda este Story."
+    ],
+    "caption": "",
+    "sources": [
+      "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview"
+    ]
+  },
+  {
+    "date": "2026-10-29",
+    "time": "19:00",
+    "format": "reel",
+    "topic": "Conectar um MCP não exige entregar todas as permissões",
+    "brief": {
+      "text": "Conteúdo educativo original para devs, vibe coders e compradores de sistemas. Exemplo ilustrativo; sem resultados ou métricas inventados. Narração sintética PT-BR e motion autoral.",
+      "format": "reel",
+      "vertical": {
+        "series": "MCP / controle de acesso",
+        "scenes": [
+          {
+            "title": "Seu agente precisa mesmo dessa permissão?",
+            "narration": "Você conectou um servidor MCP para consultar dados. Por que ele também pode alterar tudo?",
+            "kind": "question",
+            "labels": [
+              "Conectar não é liberar tudo."
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Comece pela tarefa.",
+            "narration": "Se a tarefa é consultar um pedido, comece com acesso de leitura. Permissões de escrita precisam de uma razão.",
+            "kind": "compare",
+            "labels": [
+              "Necessidade: consultar pedido",
+              "Permissão: somente leitura"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Separe consulta e ação.",
+            "narration": "Separe ferramentas de consulta das ações que alteram o sistema. Assim, cada tarefa recebe o acesso de que precisa.",
+            "kind": "pipeline",
+            "labels": [
+              "Consultar informações",
+              "Validar a necessidade",
+              "Autorizar a ação"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Teste o limite.",
+            "narration": "Peça ao agente uma ação fora do escopo e confira se a integração realmente bloqueia. Não basta escrever uma regra no prompt.",
+            "kind": "terminal",
+            "labels": [
+              "tarefa: consultar pedido",
+              "tentativa: excluir pedido",
+              "acesso negado"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Qual acesso está sobrando?",
+            "narration": "Qual ferramenta do seu projeto tem mais acesso do que precisa? Esse é um bom ponto para começar a revisão.",
+            "kind": "closing",
+            "labels": [
+              "Menos acesso. Mais controle."
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          }
+        ]
+      },
+      "generation": {
+        "engine": "codex",
+        "method": "chat-session editorial reviewed"
+      },
+      "batch": "vertical-2026-10-27"
+    },
+    "slides": [
+      "Seu agente precisa mesmo dessa permissão? Você conectou um servidor MCP para consultar dados. Por que ele também pode alterar tudo?",
+      "Comece pela tarefa. Se a tarefa é consultar um pedido, comece com acesso de leitura. Permissões de escrita precisam de uma razão.",
+      "Separe consulta e ação. Separe ferramentas de consulta das ações que alteram o sistema. Assim, cada tarefa recebe o acesso de que precisa.",
+      "Teste o limite. Peça ao agente uma ação fora do escopo e confira se a integração realmente bloqueia. Não basta escrever uma regra no prompt.",
+      "Qual acesso está sobrando? Qual ferramenta do seu projeto tem mais acesso do que precisa? Esse é um bom ponto para começar a revisão."
+    ],
+    "caption": "MCP conecta ferramentas. O limite de acesso continua sendo uma decisão de engenharia.\n\nComece pela tarefa, restrinja escopos e teste se operações não autorizadas são bloqueadas. Uma instrução no prompt não substitui a autorização do sistema.\n\nExemplo ilustrativo. Referência: boas práticas de segurança do Model Context Protocol.\n\nSeu agente só consulta ou também altera dados?\n\n#MCP #AgentesDeIA #Programação #EDevsHub",
+    "sources": [
+      "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices"
+    ]
+  },
+  {
+    "date": "2026-10-29",
+    "time": "19:15",
+    "format": "story",
+    "topic": "MCP conectado. Acesso revisado?",
+    "brief": {
+      "text": "Conteúdo educativo original para devs, vibe coders e compradores de sistemas. Exemplo ilustrativo; sem resultados ou métricas inventados. Narração sintética PT-BR e motion autoral.",
+      "format": "story",
+      "vertical": {
+        "series": "Do Reel para a conversa",
+        "scenes": [
+          {
+            "title": "MCP conectado. Acesso revisado?",
+            "narration": "Seu agente precisa consultar dados ou também pode alterar tudo?",
+            "kind": "question",
+            "labels": [
+              "Só leitura ou também escrita?"
+            ],
+            "note": "EDEVSHUB / IA NA PRÁTICA"
+          },
+          {
+            "title": "E no seu projeto?",
+            "narration": "Mostramos no Reel como separar a tarefa da permissão. Qual acesso você revisaria primeiro?",
+            "kind": "closing",
+            "labels": [
+              "Responda este Story."
+            ],
+            "note": "CONTEÚDO EDUCATIVO"
+          }
+        ]
+      },
+      "generation": {
+        "engine": "codex",
+        "method": "chat-session editorial reviewed"
+      },
+      "batch": "vertical-2026-10-27"
+    },
+    "slides": [
+      "MCP conectado. Acesso revisado? Seu agente precisa consultar dados ou também pode alterar tudo?",
+      "E no seu projeto? Mostramos no Reel como separar a tarefa da permissão. Qual acesso você revisaria primeiro?"
+    ],
+    "caption": "",
+    "sources": [
+      "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices"
+    ]
+  },
+  {
+    "date": "2026-10-31",
+    "time": "19:00",
+    "format": "reel",
+    "topic": "Sua chave de API está no navegador?",
+    "brief": {
+      "text": "Conteúdo educativo original para devs, vibe coders e compradores de sistemas. Exemplo ilustrativo; sem resultados ou métricas inventados. Narração sintética PT-BR e motion autoral.",
+      "format": "reel",
+      "vertical": {
+        "series": "Vibe coding / antes do deploy",
+        "scenes": [
+          {
+            "title": "Seu app escondeu a tela. E a chave?",
+            "narration": "A interface ficou linda. Mas a chave secreta da API foi parar no código enviado ao navegador?",
+            "kind": "question",
+            "labels": [
+              "Interface pronta não encerra a revisão."
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Público significa público.",
+            "narration": "No Next.js, variáveis com o prefixo NEXT PUBLIC podem ser incluídas no código do cliente. Esse não é lugar para um segredo.",
+            "kind": "terminal",
+            "labels": [
+              "NEXT_PUBLIC_API_URL",
+              "configuração pública",
+              "segredo: manter no servidor"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Mude o caminho.",
+            "narration": "O navegador chama o seu servidor. O servidor valida quem pode pedir a operação e acessa o serviço com a credencial privada.",
+            "kind": "pipeline",
+            "labels": [
+              "Navegador faz o pedido",
+              "Servidor autoriza",
+              "Serviço recebe a chamada"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Só mover não resolve tudo.",
+            "narration": "Também valide os dados e limite o uso. Se a chave já ficou exposta, substitua a credencial no provedor.",
+            "kind": "checklist",
+            "labels": [
+              "Validar a entrada",
+              "Limitar o uso",
+              "Substituir segredo exposto"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Antes do próximo deploy.",
+            "narration": "Você revisa o que vai para o navegador antes de publicar? Salve este lembrete para o próximo projeto feito com IA.",
+            "kind": "closing",
+            "labels": [
+              "Confira o que o cliente recebe."
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          }
+        ]
+      },
+      "generation": {
+        "engine": "codex",
+        "method": "chat-session editorial reviewed"
+      },
+      "batch": "vertical-2026-10-27"
+    },
+    "slides": [
+      "Seu app escondeu a tela. E a chave? A interface ficou linda. Mas a chave secreta da API foi parar no código enviado ao navegador?",
+      "Público significa público. No Next.js, variáveis com o prefixo NEXT PUBLIC podem ser incluídas no código do cliente. Esse não é lugar para um segredo.",
+      "Mude o caminho. O navegador chama o seu servidor. O servidor valida quem pode pedir a operação e acessa o serviço com a credencial privada.",
+      "Só mover não resolve tudo. Também valide os dados e limite o uso. Se a chave já ficou exposta, substitua a credencial no provedor.",
+      "Antes do próximo deploy. Você revisa o que vai para o navegador antes de publicar? Salve este lembrete para o próximo projeto feito com IA."
+    ],
+    "caption": "Um detalhe que merece revisão antes do deploy de um app feito com IA: onde estão as credenciais?\n\nNo Next.js, NEXT_PUBLIC_ identifica valores disponibilizados ao cliente. Mantenha segredos no servidor e implemente autorização, validação e limites de uso. Se uma credencial foi exposta, substitua-a no provedor.\n\nExemplo educativo, sem credenciais reais. Referência: documentação oficial do Next.js.\n\n#VibeCoding #Nextjs #DesenvolvimentoWeb #EDevsHub",
+    "sources": [
+      "https://nextjs.org/docs/app/guides/environment-variables"
+    ]
+  },
+  {
+    "date": "2026-10-31",
+    "time": "19:15",
+    "format": "story",
+    "topic": "Antes do próximo deploy.",
+    "brief": {
+      "text": "Conteúdo educativo original para devs, vibe coders e compradores de sistemas. Exemplo ilustrativo; sem resultados ou métricas inventados. Narração sintética PT-BR e motion autoral.",
+      "format": "story",
+      "vertical": {
+        "series": "Do Reel para a conversa",
+        "scenes": [
+          {
+            "title": "Antes do próximo deploy.",
+            "narration": "Confira onde estão as chaves de API do seu projeto. Público não é privado.",
+            "kind": "question",
+            "labels": [
+              "Revise as variáveis públicas."
+            ],
+            "note": "EDEVSHUB / IA NA PRÁTICA"
+          },
+          {
+            "title": "E no seu projeto?",
+            "narration": "O Reel de hoje mostra o caminho pelo servidor. Você já revisou as variáveis públicas?",
+            "kind": "closing",
+            "labels": [
+              "Responda este Story."
+            ],
+            "note": "CONTEÚDO EDUCATIVO"
+          }
+        ]
+      },
+      "generation": {
+        "engine": "codex",
+        "method": "chat-session editorial reviewed"
+      },
+      "batch": "vertical-2026-10-27"
+    },
+    "slides": [
+      "Antes do próximo deploy. Confira onde estão as chaves de API do seu projeto. Público não é privado.",
+      "E no seu projeto? O Reel de hoje mostra o caminho pelo servidor. Você já revisou as variáveis públicas?"
+    ],
+    "caption": "",
+    "sources": [
+      "https://nextjs.org/docs/app/guides/environment-variables"
+    ]
+  },
+  {
+    "date": "2026-11-02",
+    "time": "19:00",
+    "format": "reel",
+    "topic": "O teste que falta antes de confiar no seu agente",
+    "brief": {
+      "text": "Conteúdo educativo original para devs, vibe coders e compradores de sistemas. Exemplo ilustrativo; sem resultados ou métricas inventados. Narração sintética PT-BR e motion autoral.",
+      "format": "reel",
+      "vertical": {
+        "series": "IA aplicada / teste de realidade",
+        "scenes": [
+          {
+            "title": "Na demo, tudo funciona. E quando falta informação?",
+            "narration": "Seu agente acertou a demonstração. Agora tire uma informação importante do pedido. O que acontece?",
+            "kind": "question",
+            "labels": [
+              "Teste também o caminho incompleto."
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Pedido incompleto.",
+            "narration": "Neste exemplo, o cliente quer um orçamento, mas não informa a quantidade. O agente pergunta ou inventa?",
+            "kind": "compare",
+            "labels": [
+              "Pedido: quero um orçamento",
+              "Falta: quantidade desejada"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Defina o resultado esperado.",
+            "narration": "Escreva antes o comportamento correto: identificar o dado ausente, fazer uma pergunta e não concluir a operação.",
+            "kind": "pipeline",
+            "labels": [
+              "Detectar o que falta",
+              "Pedir a informação",
+              "Aguardar antes de agir"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Transforme em um teste.",
+            "narration": "Guarde esse caso e rode novamente quando mudar o modelo, o prompt ou a ferramenta. Assim você compara versões.",
+            "kind": "terminal",
+            "labels": [
+              "caso: quantidade ausente",
+              "esperado: pedir quantidade",
+              "ação concluída: não"
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          },
+          {
+            "title": "Qual falha você ainda não testou?",
+            "narration": "Que informação faltando quebraria sua automação hoje? Comece por ela. Um teste útil vale mais que uma demo perfeita.",
+            "kind": "closing",
+            "labels": [
+              "Uma falha real. Um teste repetível."
+            ],
+            "note": "DEMONSTRAÇÃO ILUSTRATIVA"
+          }
+        ]
+      },
+      "generation": {
+        "engine": "codex",
+        "method": "chat-session editorial reviewed"
+      },
+      "batch": "vertical-2026-10-27"
+    },
+    "slides": [
+      "Na demo, tudo funciona. E quando falta informação? Seu agente acertou a demonstração. Agora tire uma informação importante do pedido. O que acontece?",
+      "Pedido incompleto. Neste exemplo, o cliente quer um orçamento, mas não informa a quantidade. O agente pergunta ou inventa?",
+      "Defina o resultado esperado. Escreva antes o comportamento correto: identificar o dado ausente, fazer uma pergunta e não concluir a operação.",
+      "Transforme em um teste. Guarde esse caso e rode novamente quando mudar o modelo, o prompt ou a ferramenta. Assim você compara versões.",
+      "Qual falha você ainda não testou? Que informação faltando quebraria sua automação hoje? Comece por ela. Um teste útil vale mais que uma demo perfeita."
+    ],
+    "caption": "Uma demonstração bonita mostra um caminho. Uma avaliação precisa conferir também os casos difíceis.\n\nTeste pedidos incompletos, defina o resultado esperado e compare versões quando mudar modelo, prompt ou ferramentas. Não há garantia de acerto universal: o objetivo é medir o comportamento nos casos importantes para a sua aplicação.\n\nExemplo ilustrativo. Referência: documentação de avaliações da OpenAI.\n\nQue caso você adicionaria ao teste do seu agente?\n\n#AgentesDeIA #TestesDeSoftware #InteligenciaArtificial #EDevsHub",
+    "sources": [
+      "https://developers.openai.com/api/docs/guides/evals"
+    ]
+  },
+  {
+    "date": "2026-11-02",
+    "time": "19:15",
+    "format": "story",
+    "topic": "Tire uma informação do pedido.",
+    "brief": {
+      "text": "Conteúdo educativo original para devs, vibe coders e compradores de sistemas. Exemplo ilustrativo; sem resultados ou métricas inventados. Narração sintética PT-BR e motion autoral.",
+      "format": "story",
+      "vertical": {
+        "series": "Do Reel para a conversa",
+        "scenes": [
+          {
+            "title": "Tire uma informação do pedido.",
+            "narration": "Seu agente pede o dado que falta ou tenta adivinhar?",
+            "kind": "question",
+            "labels": [
+              "Perguntar antes de agir."
+            ],
+            "note": "EDEVSHUB / IA NA PRÁTICA"
+          },
+          {
+            "title": "E no seu projeto?",
+            "narration": "Veja o exemplo no Reel de hoje. Que situação você colocaria no teste da sua automação?",
+            "kind": "closing",
+            "labels": [
+              "Responda este Story."
+            ],
+            "note": "CONTEÚDO EDUCATIVO"
+          }
+        ]
+      },
+      "generation": {
+        "engine": "codex",
+        "method": "chat-session editorial reviewed"
+      },
+      "batch": "vertical-2026-10-27"
+    },
+    "slides": [
+      "Tire uma informação do pedido. Seu agente pede o dado que falta ou tenta adivinhar?",
+      "E no seu projeto? Veja o exemplo no Reel de hoje. Que situação você colocaria no teste da sua automação?"
+    ],
+    "caption": "",
+    "sources": [
+      "https://developers.openai.com/api/docs/guides/evals"
+    ]
+  }
+]

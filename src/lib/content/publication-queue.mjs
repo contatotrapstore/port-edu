@@ -11,10 +11,10 @@ export async function automaticSchedule(db){
  // Only fresh, fully rendered drafts, one slot/day; never backfill missed days.
  const settings=(await db.query("select *,(now() at time zone timezone)::date::text as today from content_studio.settings where publication_enabled and publication_mode='automatic' and (now() at time zone timezone)::time between publish_time-interval '20 minutes' and publish_time+interval '5 minutes'")).rows[0];
  if(!settings)return;
- const candidates=(await db.query("select p.id,p.active_revision_id,r.slides from content_studio.posts p join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 and p.state='review' and r.created_at>now()-interval '36 hours' and r.brief->'generation' is not null and not exists(select 1 from content_studio.schedules s where s.revision_id=r.id) and not exists(select 1 from content_studio.publications u where u.revision_id=r.id) order by r.created_at desc limit 10",[settings.brand_id])).rows;
+ const candidates=(await db.query("select p.id,p.active_revision_id,r.slides,case when r.brief ? 'format' then r.brief->>'format' else 'carousel' end as format from content_studio.posts p join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 and p.state='review' and r.created_at>now()-interval '36 hours' and r.brief->'generation' is not null and (not (r.brief ? 'format') or r.brief->>'format'='carousel') and not exists(select 1 from content_studio.schedules s where s.revision_id=r.id) and not exists(select 1 from content_studio.publications u where u.revision_id=r.id) order by r.created_at desc limit 10",[settings.brand_id])).rows;
  for(const post of candidates){
   const {assets,review}=await mediaAndReview(db,post.id,post.active_revision_id),hash=fingerprint(assets);
-  if(publicationEligibility({revisionId:post.active_revision_id,activeRevision:post.active_revision_id,slides:post.slides,assets,review,expectedFingerprint:hash,mode:'automatic'}))continue;
+  if(publicationEligibility({revisionId:post.active_revision_id,activeRevision:post.active_revision_id,slides:post.slides,format:post.format,assets,review,expectedFingerprint:hash,mode:'automatic'}))continue;
   await db.query("insert into content_studio.schedules(account_id,revision_id,local_date,local_time,timezone,slot_id,state,asset_fingerprint,approval_mode) values($1,$2,$3,$4,'America/Sao_Paulo','principal','scheduled',$5,'automatic') on conflict do nothing",[EXPECTED_ACCOUNT,post.active_revision_id,settings.today,settings.publish_time,hash]);return;
  }
 }
@@ -45,14 +45,15 @@ export async function publicationTick(db,{api,sign,shouldContinue=()=>true}){
  // Unknown sends must be reconciled, never marked missed or retried.
  await db.query("update content_studio.schedules s set state='missed' where s.account_id=$1 and s.state='scheduled' and (s.local_date+s.local_time) at time zone s.timezone<now()-interval '15 minutes' and not exists(select 1 from content_studio.publications u where u.revision_id=s.revision_id and u.state in ('publishing','unknown','published'))",[EXPECTED_ACCOUNT]);
  await db.query("update content_studio.posts p set state='paused' where state='publishing' and exists(select 1 from content_studio.schedules s where s.revision_id=p.active_revision_id and s.state='missed')");
- const schedule=(await db.query(`select s.*,p.id as post_id,p.active_revision_id,p.state as post_state,r.slides,r.caption,
+ const schedule=(await db.query(`select s.*,p.id as post_id,p.active_revision_id,p.state as post_state,r.slides,r.caption,case when r.brief ? 'format' then r.brief->>'format' else 'carousel' end as format,
  ((s.local_date+s.local_time) at time zone s.timezone)<=now() as due
  from content_studio.schedules s join content_studio.revisions r on r.id=s.revision_id join content_studio.posts p on p.id=r.post_id
  where s.account_id=$1 and s.state='scheduled' and (s.local_date+s.local_time) at time zone s.timezone<=now()+interval '20 minutes'
+ and not exists(select 1 from content_studio.publications u where u.revision_id=s.revision_id and u.account_id=s.account_id and u.state in ('unknown','publishing'))
  order by s.local_date,s.local_time limit 1`,[EXPECTED_ACCOUNT])).rows[0];
  if(!schedule)return {state:'idle'};
  const {assets,review}=await mediaAndReview(db,schedule.post_id,schedule.revision_id);
- const reason=publicationEligibility({revisionId:schedule.revision_id,activeRevision:schedule.active_revision_id,slides:schedule.slides,assets,review,expectedFingerprint:schedule.asset_fingerprint,mode:schedule.approval_mode});
+ const reason=publicationEligibility({revisionId:schedule.revision_id,activeRevision:schedule.active_revision_id,slides:schedule.slides,format:schedule.format,assets,review,expectedFingerprint:schedule.asset_fingerprint,mode:schedule.approval_mode});
  if(reason||schedule.approval_mode==='automatic'&&settings.publication_mode!=='automatic'){
   await db.query("update content_studio.schedules set state='paused' where id=$1",[schedule.id]);
   await db.query("update content_studio.settings set publisher_error=$1 where brand_id=$2",[reason||'automatic_mode_disabled',settings.brand_id]);return {state:'paused'};
@@ -64,7 +65,7 @@ export async function publicationTick(db,{api,sign,shouldContinue=()=>true}){
   const post=(await db.query('select active_revision_id,state from content_studio.posts where id=$1 for update',[schedule.post_id])).rows[0];
   if(post.active_revision_id!==schedule.revision_id||!['review','ready','draft','paused','publishing','publishing_unknown'].includes(post.state))throw Error('revision_changed');
   const fresh=await mediaAndReview(db,schedule.post_id,schedule.revision_id);
-  if(publicationEligibility({revisionId:schedule.revision_id,activeRevision:post.active_revision_id,slides:schedule.slides,...fresh,expectedFingerprint:schedule.asset_fingerprint,mode:schedule.approval_mode}))throw Error('approval_changed');
+  if(publicationEligibility({revisionId:schedule.revision_id,activeRevision:post.active_revision_id,slides:schedule.slides,format:schedule.format,...fresh,expectedFingerprint:schedule.asset_fingerprint,mode:schedule.approval_mode}))throw Error('approval_changed');
   await db.query("insert into content_studio.publications(account_id,revision_id,idempotency_key) values($1,$2,$3) on conflict do nothing",[EXPECTED_ACCOUNT,schedule.revision_id,EXPECTED_ACCOUNT+':'+schedule.revision_id]);
   publication=(await db.query('select * from content_studio.publications where account_id=$1 and revision_id=$2',[EXPECTED_ACCOUNT,schedule.revision_id])).rows[0];
   if(publication.state==='failed'){await db.query("update content_studio.schedules set state='paused' where id=$1",[schedule.id]);await db.query('commit');return {state:'failed'};}
@@ -98,7 +99,7 @@ export async function publicationTick(db,{api,sign,shouldContinue=()=>true}){
  // URLs last 1 hour, generated only for this authorized publication attempt.
  const urls=await Promise.all(videos.map(a=>sign(a.object_key)));
  try{
-  const result=await advancePublication({enabled:true,due:schedule.due,accountId:EXPECTED_ACCOUNT,caption:schedule.caption,videos:urls},previous,api,save,allow);
+  const result=await advancePublication({enabled:true,due:schedule.due,accountId:EXPECTED_ACCOUNT,caption:schedule.caption,format:schedule.format,videos:urls},previous,api,save,allow);
   if(result.phase==='complete'&&result.mediaId){
    try{const media=await api(result.mediaId,{fields:'permalink'},'GET');if(/^https:\/\/www\.instagram\.com\//.test(media.permalink||''))await db.query('update content_studio.publications set permalink=$1 where id=$2',[media.permalink,publication.id]);}catch{/* Publication already persisted; permalink is optional. */}
   }

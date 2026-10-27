@@ -5,10 +5,10 @@ import vm from 'node:vm';
 import {createRequire} from 'node:module';
 import * as policy from '../../../src/lib/content/publication-policy.mjs';
 const require=createRequire(new URL('../../../package.json',import.meta.url));
-function setup({admin=true,online=true,health='verified',valid=true,review='approved',active='r'}={}){
- const calls=[],assets=[1,2].map(slide=>({id:String(slide),kind:'mp4',sha256:'a'.repeat(64),object_key:String(slide),provenance:{slide}}));
+function setup({admin=true,online=true,health='verified',valid=true,review='approved',active='r',format=undefined,media=undefined}={}){
+ const calls=[],assets=media||[1,2].map(slide=>({id:String(slide),kind:'mp4',sha256:'a'.repeat(64),object_key:String(slide),provenance:{slide}}));
  const db={release(){},async query(sql,args){calls.push({sql,args});let rows=[];
- if(sql.includes('for update of p'))rows=[{active_revision_id:active,brand_id:'brand',state:'review',slides:['a','b']}];
+ if(sql.includes('for update of p'))rows=[{active_revision_id:active,brand_id:'brand',state:'review',slides:['a','b'],format}];
  else if(sql.includes('as valid'))rows=[{valid}];
  else if(sql.includes('content_studio.assets'))rows=assets;
  else if(sql.includes("action='review.recorded'"))rows=[{metadata:{decision:review,assetFingerprint:policy.fingerprint(assets)}}];
@@ -30,4 +30,16 @@ test('manual agenda rejects stale revision, unapproved content and invalid BRT d
  }
  const {api,calls}=setup();await api.scheduleDraft('p','r','2026-10-28T12:30');const insert=calls.find(c=>c.sql.startsWith('insert into content_studio.schedules'));assert.ok(insert);assert.equal(insert.args[2],'2026-10-28');assert.equal(insert.args[3],'12:30');
  assert.equal(calls.some(c=>c.sql.startsWith('update content_studio.settings')),false);
+});
+
+test('same-day manual formats select distinct principal, reel and story slots',async()=>{
+ const slots=[];
+ for(const format of [undefined,'reel','story']){
+  const media=format?[{id:'a',sha256:'x',kind:'mp4',object_key:'video',provenance:{slide:1,format,width:1080,height:1920,duration:30,qa:'vertical-layout-audio-passed'}}]:undefined;
+  const {api,calls}=setup({format,media});await api.scheduleDraft('p','r','2026-10-28T19:00');const insert=calls.find(c=>c.sql.startsWith('insert into content_studio.schedules'));slots.push(insert.args[6]);
+ }
+ assert.deepEqual(slots,['principal','reel','story']);
+});
+test('manual scheduling rejects explicit null and unknown format',async()=>{
+ for(const format of [null,'','REELS']){const {api,calls}=setup({format});await assert.rejects(api.scheduleDraft('p','r','2026-10-28T19:00'));assert.equal(calls.some(c=>c.sql.startsWith('insert into content_studio.schedules')),false);}
 });
