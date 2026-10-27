@@ -2,14 +2,19 @@
 -- Provision content_publisher_secret in Vault privately before activation.
 create extension if not exists pg_cron with schema pg_catalog;
 create extension if not exists pg_net with schema extensions;
+-- pg_net's extension-owned queue can be readable by database roles.
+-- Send only a 90-second HMAC, never the long-lived Vault secret.
 
 select cron.schedule('content-studio-publisher','* * * * *', $job$
  select net.http_post(
    url := 'https://www.edevshub.com/api/internal/content-publisher',
-   headers := jsonb_build_object('Content-Type','application/json','Authorization','Bearer '||decrypted_secret),
+   headers := jsonb_build_object('Content-Type','application/json','Authorization',
+     'Bearer '||stamp||'.'||encode(extensions.hmac(stamp,decrypted_secret,'sha256'),'hex')),
    body := '{}'::jsonb,
    timeout_milliseconds := 300000
- ) from vault.decrypted_secrets where name='content_publisher_secret';
+ ) from vault.decrypted_secrets cross join
+ (select floor(extract(epoch from now()))::bigint::text as stamp) clock
+ where name='content_publisher_secret';
 $job$);
 
 -- Scope retention to these jobs, preserving other projects' history.
