@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import {contentDb} from './db';
 import {requireAdmin} from './auth';
 import type {DraftInput} from './input';
-export type ContentPost={id:string;topic:string;state:string;active_revision_id:string;created_at:Date;caption:string;brief:{text?:string};slides:string[];source_refs:string[]};
+export type ContentPost={id:string;topic:string;state:string;active_revision_id:string;created_at:Date;caption:string;brief:{text?:string;generation?:{engine?:string;model?:string}};slides:string[];source_refs:string[]};
 export async function listPosts(){await requireAdmin();return (await contentDb().query<ContentPost>(`select p.*,r.caption,r.brief,r.slides,r.source_refs from content_studio.posts p left join content_studio.revisions r on r.id=p.active_revision_id order by p.created_at desc limit 100`)).rows;}
 export async function saveDraft(input:DraftInput,postId?:string,expectedRevision?:string){
  const actor=await requireAdmin(), db=await contentDb().connect();

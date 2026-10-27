@@ -53,7 +53,7 @@ try{
    if(!current||lost)throw Error('revision_changed');
    const valid=await createRenderQueue(db).finish(job.id,job.lease_token);if(!valid)throw Error('lease_lost');
    if((await db.query('select id from content_studio.assets where revision_id=$1 limit 1',[job.revision_id])).rows.length)throw Error('assets_already_exist');
-   for(const asset of assets)await db.query('insert into content_studio.assets(revision_id,kind,object_key,sha256,provenance) values($1,$2,$3,$4,$5)',[job.revision_id,asset.kind,asset.key,asset.hash,JSON.stringify({slide:asset.slide,jobId:job.id,template:'editorial-v1',width:1080,height:1350,qa:'loop-layout-determinism-passed'})]);
+   for(const asset of assets)await db.query('insert into content_studio.assets(revision_id,kind,object_key,sha256,provenance) values($1,$2,$3,$4,$5)',[job.revision_id,asset.kind,asset.key,asset.hash,JSON.stringify({slide:asset.slide,jobId:job.id,template:'storyboard-v2',width:1080,height:1350,qa:'loop-layout-determinism-passed'})]);
    await db.query("update content_studio.posts set state='review' where id=$1",[current.id]);
    await db.query("insert into content_studio.events(actor,entity_id,action,metadata) values('local-worker',$1,'render.completed',$2)",[current.id,JSON.stringify({revisionId:job.revision_id,jobId:job.id,assets:assets.length})]);
    await db.query('commit');console.log(JSON.stringify({rendered:true,assets:assets.length,published:false}));

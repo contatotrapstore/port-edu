@@ -42,3 +42,14 @@ Plano: kit-conteudo/PLANO.md. Branch: codex/content-studio, worktree separado.
 - Deploy promovido: `dpl_6gK2b1PbfqkUEpqcsniibnRfK4ZK`, https://port-hkoqccoux-edevs.vercel.app, commit f37abfe. Painel oficial confirmado com controles e mídias.
 - Próximas pendências reais: ajustar identidade/motion conforme análise do usuário; radar de novidades e geração diária; adaptador Codex opcional; conexão Meta ainda bloqueada no convite de testador; integração de publicação só após autorização explícita do post. Não chamar projeto completo neste estágio.
 
+
+
+## Pesquisa com assinatura e variedade visual — 27/10/2026
+- Codex CLI com login ChatGPT local como padrão; teste real registrou gpt-6.1-sol. Sem API key, sem tokens no painel, sem fallback pago. Claude Code selecionável para novos pedidos.
+- Migração 20261027022714 aplicada somente kcjshrnjkrmtzgpwnygc após ensaio com rollback. Nova fila privada research_runs; RLS/runtime restrito. Financeiro ativo preservado.
+- Pesquisa diária local a partir de 09h America/Sao_Paulo, uma execução automática por data; pedidos manuais adicionais explícitos. PC/worker ligados. Fontes: releases estáveis oficiais OpenAI Codex, Anthropic Claude Code, Gemini CLI, Microsoft AutoGen. Não mede popularidade nem cobre todas as notícias de IA.
+- Fontes recentes (14 dias), URLs já usadas excluídas, títulos recentes enviados para evitar repetição. Fontes são dados, não instruções. URLs de saída restritas por schema. Falha exige nova solicitação; não há repetição automática consumindo assinatura.
+- Resultado cria revisão imutável e render, nunca schedule/publication. Pesquisa ligada; publication_enabled permanece false. Aprovação continua apenas editorial.
+- Ruling: manter renderizador de HTML confiável e campos escapados, com seis composições e três direções visuais; não executar HTML arbitrário gerado de fontes externas. Custo: catálogo limitado, ainda não direção de arte irrestrita por post.
+- Storyboard v2: capa, cartões, terminal, fluxo, destaque e CTA; música local e cues de impacto, whoosh, teclas, clique, pop/land, em tempos de meio segundo. Quadro inicial/final idênticos, QA de margens/loop/determinismo.
+- Revisão independente identificou seletor não controlado e ausência de temas recentes no prompt evergreen; ambos corrigidos. Teste real anterior bloqueou fonte inventada; schema agora usa enum de URLs coletadas.
