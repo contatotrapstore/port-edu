@@ -1,7 +1,7 @@
-"""On-demand vertical motion renderer. Public script text only is sent to Edge TTS.
+"""On-demand vertical motion renderer. Public narration goes to the configured voice provider.
 Original procedural soundtrack/SFX. No Meta calls, no background loop.
 """
-import asyncio, hashlib, json, math, pathlib, re, subprocess, sys
+import asyncio, hashlib, json, math, pathlib, re, subprocess, sys, os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy.io import wavfile
@@ -61,6 +61,11 @@ def textblock(draw,text,xy,size,color=IVORY,width=880,max_lines=3,mono=False,spa
  return y
 
 async def speech(scene,target):
+ provider=os.environ.get('CONTENT_VOICE_PROVIDER','elevenlabs')
+ if provider=='elevenlabs':
+  from eleven_voice import speech as eleven_speech
+  return await asyncio.to_thread(eleven_speech,scene,target)
+ if provider!='edge':raise ValueError('invalid_voice_provider')
  import edge_tts
  signature=hashlib.sha256(scene['narration'].encode()).hexdigest()
  meta=target.with_suffix('.json')
@@ -177,7 +182,7 @@ async def render(input_file,root):
  if peak>.96:mix*=.96/peak
  wavfile.write(audio/'mix.wav',SR,(mix*32767).astype(np.int16))
  target=out/'slide-01.mp4';partial=out/'vertical.partial.mp4'
- args=['ffmpeg','-y','-v','error','-f','rawvideo','-pix_fmt','rgb24','-s',f'{W}x{H}','-r',str(FPS),'-i','pipe:0','-i',str(audio/'mix.wav'),'-map','0:v','-map','1:a','-c:v','libx264','-preset','veryfast','-crf','20','-pix_fmt','yuv420p','-threads','4','-c:a','aac','-b:a','128k','-ar','48000','-af','loudnorm=I=-16:TP=-1.5:LRA=9','-t',str(duration),'-movflags','+faststart',str(partial)]
+ args=['ffmpeg','-y','-v','error','-f','rawvideo','-pix_fmt','rgb24','-s',f'{W}x{H}','-r',str(FPS),'-i','pipe:0','-i',str(audio/'mix.wav'),'-map','0:v','-map','1:a','-c:v','libx264','-preset','veryfast','-crf','20','-pix_fmt','yuv420p','-threads','4','-c:a','aac','-b:a','128k','-ar','48000','-af','loudnorm=I=-16:TP=-3:LRA=9,alimiter=limit=0.7:level=false','-t',str(duration),'-movflags','+faststart',str(partial)]
  screenshots=[]
  with (root/'render-errors.log').open('wb') as errors:
   proc=subprocess.Popen(args,stdin=subprocess.PIPE,stderr=errors,creationflags=0x08000000 if sys.platform=='win32' else 0)
@@ -200,7 +205,7 @@ async def render(input_file,root):
  probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(target)]))
  v=next(s for s in probe['streams'] if s['codec_type']=='video');a=next(s for s in probe['streams'] if s['codec_type']=='audio')
  if v['width']!=W or v['height']!=H or v['codec_name']!='h264' or a['codec_name']!='aac':raise ValueError('invalid_encoded_media')
- qa={'format':data['format'],'width':W,'height':H,'duration':float(probe['format']['duration']),'codec':'h264','audio':'aac','qa':'vertical-layout-audio-passed','scenes':len(scenes),'voice':'pt-BR-AntonioNeural','voice_provider':'Edge online TTS via edge-tts 7.3.1','subtitles':'word-boundary groups','soundtrack':'EDevsHub original procedural','audio_review_required':True,'visual_review_required':True}
+ qa={'format':data['format'],'width':W,'height':H,'duration':float(probe['format']['duration']),'codec':'h264','audio':'aac','qa':'vertical-layout-audio-passed','scenes':len(scenes),'voice':os.environ.get('ELEVENLABS_VOICE_NAME','Gabriel - Shorts & Reels') if os.environ.get('CONTENT_VOICE_PROVIDER','elevenlabs')=='elevenlabs' else 'pt-BR-AntonioNeural','voice_provider':os.environ.get('CONTENT_VOICE_PROVIDER','elevenlabs'),'voice_model':os.environ.get('ELEVENLABS_MODEL_ID','eleven_v4'),'commercial_plan_verified':os.environ.get('CONTENT_VOICE_PROVIDER','elevenlabs')=='elevenlabs','subtitles':'word-boundary groups','soundtrack':'EDevsHub original procedural','audio_review_required':True,'visual_review_required':True}
  (out/'qa.json').write_text(json.dumps(qa,indent=2),encoding='utf-8')
  print(json.dumps(qa),flush=True)
 if __name__=='__main__':asyncio.run(render(sys.argv[1],sys.argv[2]))

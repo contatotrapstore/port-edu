@@ -43,3 +43,12 @@ Artefatos: `output/conteudo/job-<id>-<attempt>/resultados/slide-01.mp4`, `estati
 Reels usam `media_type=REELS` e aparecem também no feed; Stories usam `STORIES`, sem legenda enviada à API. Não há stickers de enquete/link simulados. A mesma máquina de estados e proteções de duplicação atendem os três formatos.
 
 Verificações: `node --test tools/content-worker/tests/*.test.mjs` e `tools/content-worker/.venv/Scripts/python.exe tools/content-worker/tests/vertical.test.py`.
+
+## Voz padrão: ElevenLabs / Gabriel (27/10/2026)
+O renderer vertical agora usa ElevenLabs por padrão e falha se faltar configuração; não retorna silenciosamente ao Edge. Configuração exclusivamente local em `.env.elevenlabs.local` (ignorado pelo Git): ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID, ELEVENLABS_MODEL_ID, ELEVENLABS_VOICE_NAME e CONTENT_VOICE_PROVIDER. A chave não vai para Vercel, Supabase, navegador do painel ou subprocessos de geração de texto. O worker passa somente essas variáveis ao renderer vertical.
+
+Chave autorizada para geração de fala, leitura de vozes e consulta do usuário/saldo, com limite de 10.000 créditos por ciclo. Voz Gabriel — Shorts & Reels; modelo eleven_v4. Não há compra automática de créditos nem ativação de produção contínua. Para uso comercial o provider exige assinatura diferente de Free. Falha de rede de uma geração potencialmente cobrada não dispara retry automático. Cache inclui provedor, voz, modelo, parâmetros e texto, sem reutilizar o cache Edge.
+
+O provider recebe alinhamento de caracteres, converte em palavras e sincroniza as legendas. Áudio normalizado com margem de true peak e limiter antes do AAC. Testes: `python tools/content-worker/tests/eleven_voice.test.py` e `python tools/content-worker/tests/vertical.test.py` usando o Python da venv.
+
+O lote de 27/10 a 02/11 foi regenerado após ativação do Starter: dois primeiros áudios pelo navegador e seis vídeos restantes via API. Foram criadas revisões novas, assets novos e aprovações novas; os containers antigos não foram reaproveitados. Consulte `kit-conteudo/ENTREGA-GABRIEL-2026-10-27.md`.

@@ -17,9 +17,9 @@ const pool=new pg.Pool({connectionString:url.href,ssl:{rejectUnauthorized:true,c
 const queue=createRenderQueue(pool);
 let job,timer,child,lost=false;
 function stopChild(){if(child?.pid&&child.exitCode===null){if(process.platform==='win32')spawnSync('taskkill',['/PID',String(child.pid),'/T','/F'],{windowsHide:true,stdio:'ignore'});else child.kill();}}
-function run(exe,args,cwd){return new Promise((resolve,reject)=>{
+function run(exe,args,cwd,extraEnv={}){return new Promise((resolve,reject)=>{
  if(lost)return reject(Error('lease_lost'));
- child=spawn(exe,args,{cwd,env:subscriptionEnv(process.env),windowsHide:true,stdio:['ignore','pipe','pipe']});
+ child=spawn(exe,args,{cwd,env:{...subscriptionEnv(process.env),...extraEnv},windowsHide:true,stdio:['ignore','pipe','pipe']});
  child.stdout.on('data',()=>{});child.stderr.on('data',()=>{});
  const timeout=setTimeout(()=>{stopChild();reject(Error('render_timeout'));},20*60*1000);
  child.once('error',()=>{clearTimeout(timeout);reject(Error('process_start_failed'));});
@@ -37,9 +37,13 @@ try{
   const vertical=format!=='carousel';
   const root=vertical?path.join(repo,'output/conteudo',`job-${job.id}-${job.attempts}`):composeProject(job,revision.slides),render=path.join(repo,'tools/content-worker/scripts/render.mjs');
   let verticalQa;
+  const voiceFile=path.join(repo,'.env.elevenlabs.local');
+  const voiceEnv=fs.existsSync(voiceFile)?parseEnv(fs.readFileSync(voiceFile,'utf8')):{};
+  const allowedVoice=new Set(['ELEVENLABS_API_KEY','ELEVENLABS_VOICE_ID','ELEVENLABS_MODEL_ID','ELEVENLABS_VOICE_NAME','CONTENT_VOICE_PROVIDER']);
+  const privateVoiceEnv=Object.fromEntries(Object.entries(voiceEnv).filter(([key])=>allowedVoice.has(key)));
   if(vertical){
    fs.mkdirSync(root,{recursive:true});fs.writeFileSync(path.join(root,'input.json'),JSON.stringify({...revision,format}));
-   await run(path.join(repo,'tools/content-worker/.venv/Scripts/python.exe'),[path.join(repo,'tools/content-worker/scripts/vertical_render.py'),path.join(root,'input.json'),root],repo);
+   await run(path.join(repo,'tools/content-worker/.venv/Scripts/python.exe'),[path.join(repo,'tools/content-worker/scripts/vertical_render.py'),path.join(root,'input.json'),root],repo,privateVoiceEnv);
    verticalQa=JSON.parse(fs.readFileSync(path.join(root,'resultados/qa.json'),'utf8'));
    if(verticalQa.qa!=='vertical-layout-audio-passed'||verticalQa.format!==format||verticalQa.width!==1080||verticalQa.height!==1920||!Number.isFinite(verticalQa.duration)||verticalQa.duration<3||verticalQa.duration>(format==='story'?60:90))throw Error('vertical_qa_failed');
   }else{

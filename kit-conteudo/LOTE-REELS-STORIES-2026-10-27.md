@@ -44,3 +44,9 @@ O envio é cloud com PC desligado. Produção local finalizada, não contínua. 
 - `forms`: usei opções de formato em radio buttons nativos com legend e labels, seguindo “Expose mutually exclusive options as visible radio buttons when choices are fewer than six”. Isso mantém as três opções visíveis e acessíveis por teclado.
 
 Verificação final às 18h15 de Brasília: Meta retornou FINISHED para os dois containers de hoje. Banco confirma seis carrosséis, quatro Reels e quatro Stories agendados; heartbeat cloud atualizado e publisher_error nulo. Nenhuma publicação antecipada.
+
+## Atualização editorial — 27/10, 18h30 BRT
+Após escolha explícita de Gabriel como voz padrão, os oito agendamentos narrados com Edge foram retirados da fila (estado cancelled; arquivos preservados). Os seis carrosséis seguem agendados. O Reel Gabriel Free é somente prévia interna; a retomada depende de geração licenciada. Consultar FLUXO-EDITORIAL-ATE-2026-11-02.md para o calendário atual e a operação sob demanda. A tabela acima registra o lote originalmente programado, não o estado atual dos Reels/Stories.
+
+## Atualização final — Gabriel
+Lote regenerado com Starter ativo e novos agendamentos. Hoje: 19h30 Reel / 19h45 Story; demais vídeos 29/10, 31/10 e 02/11 às 19h / 19h15. Carrosséis preservados. Consulte ENTREGA-GABRIEL-2026-10-27.md.
