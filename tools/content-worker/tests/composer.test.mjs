@@ -12,3 +12,11 @@ test('draft text is escaped and never becomes executable HTML',()=>{
  const html=slideHtml('</script><img src="https://evil.test" onerror="alert(1)">',0,7);
  assert.ok(html.includes('&lt;/script&gt;'));assert.equal(html.includes('<img'),false);assert.equal((html.match(/<script>/g)||[]).length,1);assert.ok(html.includes('window.seek='));
 });
+test('interaction soundtrack has a typing sequence and distinct timelines for visual layouts',()=>{
+ const plan=storyboard(['Uma capa','Primeiro detalhe','Segundo detalhe','Terceiro detalhe','Quarto detalhe','Quinto detalhe','Próxima ação']);
+ const terminal=plan.find(p=>p.layout==='terminal');
+ assert.ok(terminal.cues.filter(c=>c.tipo.startsWith('sfx-key')).length>=12);
+ assert.ok(new Set(plan.map(p=>JSON.stringify(p.cues))).size===plan.length);
+ for(const page of plan)assert.ok(page.cues.every(c=>c.t>=0&&c.t<6.8));
+ assert.deepEqual(plan,storyboard(['Uma capa','Primeiro detalhe','Segundo detalhe','Terceiro detalhe','Quarto detalhe','Quinto detalhe','Próxima ação']));
+});
