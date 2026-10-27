@@ -2,13 +2,13 @@
 import {useState,useTransition} from 'react';
 import {useRouter} from 'next/navigation';
 import {savePublication,prepareSchedule,removeSchedule} from './publication-actions';
-type Props={enabled:boolean;mode:string;time:string;connected:boolean;online:boolean;lastSeen:string|null;error:string|null;postId?:string;revisionId?:string;schedules:{id:string;topic:string;state:string;local_date:string;local_time:string;publication_state:string|null}[]};
+type Props={enabled:boolean;location:string;mode:string;time:string;connected:boolean;online:boolean;lastSeen:string|null;error:string|null;postId?:string;revisionId?:string;schedules:{id:string;topic:string;state:string;local_date:string;local_time:string;publication_state:string|null}[]};
 export default function PublicationControl(props:Props){
  const [enabled,setEnabled]=useState(props.enabled),[mode,setMode]=useState(props.mode),[time,setTime]=useState(props.time.slice(0,5)),[message,setMessage]=useState(''),[pending,start]=useTransition(),router=useRouter();
  return <section id="agenda" className="studio-operation studio-research" aria-labelledby="agenda-title">
   <h2 id="agenda-title">Agenda e publicação</h2>
-  <p><strong>{props.online?'Executor online neste PC':'Executor offline ou sem sinal recente'}</strong>{props.lastSeen?' · Último sinal: '+props.lastSeen:''}</p>
-  <p>Mantenha o Windows conectado e o worker ligado. Um post por dia. Tolerância de 15 minutos; depois disso, o horário é marcado como perdido, sem publicar atrasados em sequência.</p>
+  <p><strong>{props.online?(props.location==='cloud'?'Publicador online na nuvem':'Publicador online neste PC'):'Publicador sem sinal recente'}</strong>{props.lastSeen?' · Último sinal: '+props.lastSeen:''}</p>
+  <p>{props.location==='cloud'?'Vídeos prontos são publicados mesmo com o PC desligado. Ligue o PC somente para pesquisar e produzir novos carrosséis.':'Mantenha o Windows conectado e o worker ligado para publicar.'} Um post por dia. Tolerância de 15 minutos; depois disso, o horário é marcado como perdido, sem publicar atrasados em sequência.</p>
   {props.error&&<p role="alert">A operação precisa de atenção ({props.error}). Confira a conexão e o executor antes de ativar.</p>}
   <form onSubmit={event=>{event.preventDefault();const form=new FormData(event.currentTarget);start(async()=>{const result=await savePublication(form);setMessage(result.ok?'Configuração de publicação salva.':'Não foi possível salvar. Para ativar, confira Instagram conectado, executor online, confirmação e horário.');if(result.ok)router.refresh();});}}>
    <fieldset disabled={pending}><legend>Modo de publicação</legend>
