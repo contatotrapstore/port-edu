@@ -53,3 +53,12 @@ Plano: kit-conteudo/PLANO.md. Branch: codex/content-studio, worktree separado.
 - Ruling: manter renderizador de HTML confiável e campos escapados, com seis composições e três direções visuais; não executar HTML arbitrário gerado de fontes externas. Custo: catálogo limitado, ainda não direção de arte irrestrita por post.
 - Storyboard v2: capa, cartões, terminal, fluxo, destaque e CTA; música local e cues de impacto, whoosh, teclas, clique, pop/land, em tempos de meio segundo. Quadro inicial/final idênticos, QA de margens/loop/determinismo.
 - Revisão independente identificou seletor não controlado e ausência de temas recentes no prompt evergreen; ambos corrigidos. Teste real anterior bloqueou fonte inventada; schema agora usa enum de URLs coletadas.
+
+
+### Recibo de validação online
+- Commit 5d680b9, deployment READY dpl_8uK6qZFKoj68xDrQMnEJr3FDU2V2 promovido a www.edevshub.com. Build e 27 testes passaram.
+- Pesquisa real Codex gerou post 5d1d187f-d53d-4ab2-8677-da68ff28bf02; render 288c7329-d615-4931-a1fb-074829ce5897 concluído, 12 assets privados (6 vídeos e 6 PNGs), H264/AAC 1080x1350, 8s. Reprodução real online confirmada sem erro e pausada para usuário.
+- Alternância online Claude → salvar → Codex → salvar verificada no banco; padrão final codex, research_enabled=true, publication_enabled=false. Zero schedules/publications.
+- Worker reiniciado PID 38692. Atalho EDevsHub Content Studio.lnk na pasta Startup do usuário chama INICIAR-WORKER.ps1 oculto no login, sem alterar ExecutionPolicy RemoteSigned. Após reiniciar precisa entrar no Windows e manter PC acordado. Esse início após reboot ainda não foi testado por reinicialização real.
+- Pesquisa diária automática disparou outro rascunho (53975ef5-11d3-455e-b38e-ba742d0d2cb5), sem publicação. Falhas anteriores de teste ficam no histórico; foram bloqueadas por URL não permitida.
+- Ajuste final local isolou classes de layout para não estilizar descendentes do cabeçalho/rodapé. Os assets existentes não foram sobrescritos.
