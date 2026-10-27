@@ -20,15 +20,16 @@ O gerador recusa substituir um piloto existente. Python, bibliotecas em requirem
 
 Referência: https://github.com/Felpborges/criador-de-carrosseis-simples, commit `0c0323d44ecdf69c501145a27af0796763efaff5`. O gerador espera uma cópia local desse commit em `vendor/criador-de-carrosseis-simples-<commit>` e usa suas fontes e seu script de música com adaptação UTF-8. Nenhuma licença geral foi identificada na cópia inspecionada: não redistribuir o pacote original como código próprio. Vendor e mídia gerada não são versionados.
 
-Este motor ainda não é um serviço persistente: não consome fila hospedada, não publica no Instagram e não executa com o computador desligado.
+## Operação atual
 
-A base de fila em scripts/queue.mjs recebe uma conexão Postgres restrita e implementa enqueue, claim, heartbeat e confirmação de renderização. Claims são atômicos, lease de dois minutos, até três tentativas; nunca recupera publicação incerta como render. Ainda não há daemon integrado, upload de artefatos nem atualização automática do estado editorial. Não a anuncie como automação ativa.
-# Execução local e revisão
+O worker persistente inicia no login do Windows pelo atalho EDevsHub Content Studio. Pode ser iniciado manualmente com `powershell -File tools/content-worker/INICIAR-WORKER.ps1`; evita instância duplicada.
 
-- `powershell -File tools/content-worker/INICIAR-WORKER.ps1` mantém um worker discreto neste PC, consultando apenas renders solicitados a cada 30 segundos. Depois de reiniciar o PC, execute novamente. Não é tarefa diária de geração nem publicador.
-- `node tools/content-worker/scripts/worker-once.mjs` processa um render pendente e termina. Precisa de `.env.local`, dependências do doctor e da referência local de fontes/música. Falha não publica nada.
-- No painel, salvar texto cria revisão; **Gerar vídeos** enfileira; **Atualizar status** consulta; **Pedir ajustes/Aprovar conteúdo** registra decisão editorial. Aprovar não agenda/publica. Alterações invalidam a aprovação anterior.
-- `generateWithClaude(input,cwd)` em `draft-generation.mjs` usa o Claude Code oficial e seu login local Claude.ai. O teste real gerou sete slides com assinatura Max; não há proxy de OAuth nem chave de API no painel. Consome os limites da assinatura. Codex está autenticado, mas adaptador ainda pendente.
-- O roteiro gerado ainda passa por revisão editorial; o teste precisou remover uma hipótese sem evidência e melhorar a legenda. Não tratar JSON válido como qualidade editorial aprovada.
-- Radar, rotina diária de escrita e conexão final Meta continuam pendentes. Publicação segue bloqueada por decisão do usuário.
+- Pesquisa/produção consulta a fila a cada 30 segundos. Pesquisa diária após 9h de Brasília, fontes oficiais e deduplicação; sem notícia recente, pauta educativa. Usa Codex/ChatGPT ou Claude Code/Claude.ai no PC conforme escolha no painel. Não usa API paga de geração. Limites da assinatura continuam valendo.
+- Publicador independente consulta a cada 60 segundos, mesmo durante renderização. Precisa do PC ligado, sessão Windows e internet. Vercel hospeda o painel; não executa o render/publicador.
+- A aprovação editorial não agenda nem ativa envios. Modo aprovado exige aprovação da revisão e mídias exatas, mais agenda manual. Modo automático exige ativação explícita, escolhe uma produção das últimas 36 horas com QA, rejeita pedidos de ajustes. Limite operacional: um slot por dia.
+- Preparação de containers começa até 20 minutos antes; envio só no horário. Tolerância de 15 minutos, sem recuperar dias perdidos. Pausa global bloqueia novos envios; resultados incertos continuam sendo conferidos por leitura. Nunca repetir media_publish automaticamente após resposta perdida.
+- Cancelar é permitido antes do envio. Após confirmação de envio, confira o resultado no Instagram. Em erro de processamento, cancele, crie nova revisão e revise novamente; containers não são reutilizados indefinidamente.
+- Token criptografado AES-GCM; refresh quando faltar menos de 14 dias e tiver mais de 24h de idade. Revogação/expiração exige reconectar pelo painel. Sem PC ligado durante toda a validade, a renovação não acontece.
+- Efeitos originais: 12 famílias × 3 variações, 48kHz, sincronizados aos elementos e mixados na trilha. Prévia das famílias no painel. MP4s antigos preservam o áudio que foi revisado.
 
+Verificação de implantação: publicação global desligada e nenhuma chamada real de postagem. Testes com Meta simulada exercitam conclusão, pausa, cancelamento, resposta perdida e retomada. A primeira publicação real permanece uma validação operacional pendente de autorização do usuário.
