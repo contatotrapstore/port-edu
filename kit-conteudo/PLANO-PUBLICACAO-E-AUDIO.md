@@ -12,9 +12,9 @@ Arquitetura: token privado, cliente Instagram com persistência de containers, a
 - Credenciais não entram no chat, logs, repositório ou browser bundle.
 
 ## Entregas e verificações
-- [x] Convite Instagram aceito. Login para autorização pendente de usuário.
-- [ ] Confirmar token, identidade e escopos somente por leitura.
-- [ ] Ampliar biblioteca sintetizada e integrar cues, com manifesto e prévia auditável.
+- [x] Convite Instagram aceito e OAuth pelo domínio concluído.
+- [x] Confirmar token, identidade e escopos somente por leitura: @edevshub, basic/publicação/insights, validade 26/12/2026.
+- [x] Ampliar biblioteca sintetizada: 12 famílias / 36 variações, manifesto e demo local; cues integrados.
 - [ ] Testar política de agenda (aprovação, revisão, mídia, fuso, futuro, pausa).
 - [ ] Implementar publicação retomável: filhos, processamento, pai, estado incerto e reconciliação. Simular sem postar.
 - [ ] Expor controles e diagnóstico no painel, mantidos desligados.
@@ -25,3 +25,6 @@ Credencial expirada; edição após aprovação; resposta perdida após envio; a
 
 ## Áudio
 Manter identidade com variação de timbre por carrossel. Efeitos só em ações visuais, volume controlado, repouso no fim do loop. Não alegar ganho de conversão sem experimento real. Bibliotecas externas exigem registro de origem/licença por arquivo; nenhuma compra autorizada.
+
+## Verificação de conexão — 27/10/2026
+OAuth concluído em www.edevshub.com, credencial criptografada, conta confirmada por leitura. Publicação desligada, nenhuma chamada media_publish real. Revisão independente: removido caminho manual que não validava insights; status considera expiração. Agenda e executor de publicação ainda em implementação, controles não expostos em produção.
