@@ -6,6 +6,11 @@ import {contentAuth,contentConfigured} from '@/lib/content/auth';
 import {parseDraft} from '@/lib/content/input';
 import {saveDraft} from '@/lib/content/repository';
 import {recordReview} from '@/lib/content/review';
+import {requestRender} from '@/lib/content/render';
+export async function renderPost(postId:string,revisionId:string){
+ try{await requestRender(postId,revisionId);}catch{return {error:'Não foi possível pedir os vídeos. Confira se a revisão mudou ou já possui arquivos.'};}
+ revalidatePath('/admin/conteudo');return {error:null};
+}
 export async function reviewPost(form:FormData){
  try{await recordReview(String(form.get('postId')||''),String(form.get('revisionId')||''),String(form.get('decision')||''),String(form.get('notes')||''),form.get('confirmed')==='on',String(form.get('assetFingerprint')||''));}
  catch(error){return {error:error instanceof Error&&/Confirme|Descreva|revisão mudou|Gere todos|Revise os campos|As mídias mudaram/.test(error.message)?error.message:'Não foi possível registrar a avaliação. Confira sua sessão e tente novamente.'};}
