@@ -1,7 +1,6 @@
-import {listAssets} from '@/lib/content/storage';
+import type {ContentAsset} from '@/lib/content/storage';
 
-export default async function AssetPreview({revisionId}:{revisionId:string}){
-  const assets=await listAssets(revisionId);
+export default function AssetPreview({assets}:{assets:ContentAsset[]}){
   const videos=assets.filter(asset=>asset.kind==='mp4');
   return <section className="studio-preview">
     <h2>Prévia desta revisão</h2>

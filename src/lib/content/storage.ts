@@ -3,10 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 import { requireAdmin } from './auth';
 import { contentDb } from './db';
 
-export type ContentAsset={id:string;kind:'png'|'mp4'|'audio'|'qa';object_key:string;provenance:{slide?:number}};
+export type ContentAsset={id:string;kind:'png'|'mp4'|'audio'|'qa';object_key:string;sha256:string;provenance:{slide?:number}};
 export async function listAssets(revisionId:string){
   await requireAdmin();
-  return (await contentDb().query<ContentAsset>('select id,kind,object_key,provenance from content_studio.assets where revision_id=$1 order by object_key',[revisionId])).rows;
+  return (await contentDb().query<ContentAsset>('select id,kind,object_key,sha256,provenance from content_studio.assets where revision_id=$1 order by object_key',[revisionId])).rows;
 }
 export async function getPreviewUrl(assetId:string){
   await requireAdmin();

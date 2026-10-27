@@ -35,3 +35,15 @@ O Revix e seu antigo schema atreia vazio também não foram alterados. O conecto
 5. Hospedar worker para funcionar sem PC ligado; só ativar agenda após validação real.
 
 A Vercel hospeda painel/APIs. Renderização HTML/Chromium/Python/FFmpeg é externa. JEV/Hermes seguem fora da implementação inicial.
+# Atualização — execução local com assinatura (26/10/2026)
+
+O usuário escolheu PC ligado, usando Claude Code ou Codex já assinados. Verificado localmente: Claude Code 2.1.170 com login claude.ai/Max; Codex CLI 0.162.1 com login ChatGPT. Não copiar OAuth/cookies para Vercel nem oferecer login Claude.ai dentro do painel.
+
+Implementado adaptador local `tools/content-worker/scripts/draft-generation.mjs`: invoca o binário oficial Claude Code, sem shell, sem ferramentas/MCP e sem herdar chaves API/banco. Dados de entrada são limitados; saída JSON é validada, fontes precisam estar na entrada e placeholders são rejeitados. Falha de sessão/limite interrompe o trabalho, sem fallback pago. Um rascunho real de sete slides foi gerado em `output/conteudo/teste-assinatura/draft.json`. Isso comprova a geração local via assinatura, não um serviço autônomo já instalado.
+
+Revisão editorial adicionada: decisão e notas persistem no histórico, vinculadas à revisão e ao hash das mídias apresentadas. Aprovação NÃO agenda, habilita publicação nem cria jobs. Modificação de texto/mídia exige nova avaliação. Apenas o usuário deve aprovar o conteúdo.
+
+Pendente: ligar pesquisa → geração → renderer → upload → painel e instalar rotina local; concluir Meta antes de qualquer teste real de publicação. Usuário proibiu publicar até analisar o post. Codex permanece uma alternativa autenticada; seu adaptador ainda não foi implementado/testado.
+
+Referências: https://code.claude.com/docs/en/headless ; https://code.claude.com/docs/en/legal-and-compliance ; https://learn.chatgpt.com/docs/auth ; https://learn.chatgpt.com/docs/non-interactive-mode . Uso local individual pelos aplicativos oficiais, sujeito aos limites das assinaturas.
+
