@@ -31,3 +31,14 @@ Plano: kit-conteudo/PLANO.md. Branch: codex/content-studio, worktree separado.
 - Suite consolidada após fila: 16/16 passou. Painel autenticado e rascunho persistido validados no navegador. Convite Meta falhou também manualmente; toast genérico capturado. Sem token/sem publicação.
 
 - Storage privado content-studio criado; 14 arquivos piloto (7 PNG/7 MP4) com hash e revisionId. Chave de Storage somente no servidor, em .env ignorado. API de preview exige admin e redireciona para URL de cinco minutos. Teste HTTP: sem sessão401/no-store; URL pública negada400; URL assinada200 video/mp4. Reprodução autenticada no painel confirmada 1080x1350, 8s, sem erro; pausa confirmada. Suite17/17, tsc/lint do código novo passaram. Revisão adicional de storage/rota/preview/fila sem achados importantes. Nenhuma implantação, nenhum post Instagram.
+# 26/10/2026 — geração por assinatura e teste integrado privado
+
+- Usuário autorizou PC ligado com Claude Code/Codex e proibiu publicar antes de analisar. Fechadas cinco abas antigas, preservado apenas o painel online.
+- Claude Code 2.1.170 autenticado Claude.ai/Max; Codex CLI 0.162.1 autenticado ChatGPT. Geração real via CLI oficial Claude, ferramentas/MCP desativados e ambiente sem chaves API, retornou sete slides. Texto passou por revisão humana/assistente antes de salvar; saída bruta preservada localmente.
+- Novo post de teste `422773db-c3a8-424c-a401-34607bfda2b6`, revisão `da556e20-c257-46c9-bf04-f6ec11e7fd47`. Job `0b639fea-0e97-4acf-b5cb-185924d482a8` completou: 7 MP4 + 7 PNG privados. Todos H.264/AAC, 1080x1350, 8s; QA de layout/loop/determinismo passou. Aprovação auditiva/editorial final pertence ao usuário.
+- Painel permite pedir render e registrar ajustes/aprovação editorial com fingerprint das mídias vistas; nenhuma ação cria publicação/agenda. Teste de comentário vazio retornou erro esperado sem registrar decisão. Banco confirmou post em review, 14 assets, zero avaliações e publication_enabled/automation_enabled=false.
+- Worker local contínuo iniciado por INICIAR-WORKER.ps1, PID observado 40968, consulta renders a cada 30s; reiniciar manualmente após reboot. Não produz pautas diariamente ainda.
+- Build local/remoto e 24 testes passaram. Revisão independente encontrou corrida de aprovação de mídia trocada; corrigida com snapshot compartilhado e teste RED→GREEN. Revisão estática adicional do worker não encontrou problema importante.
+- Deploy promovido: `dpl_6gK2b1PbfqkUEpqcsniibnRfK4ZK`, https://port-hkoqccoux-edevs.vercel.app, commit f37abfe. Painel oficial confirmado com controles e mídias.
+- Próximas pendências reais: ajustar identidade/motion conforme análise do usuário; radar de novidades e geração diária; adaptador Codex opcional; conexão Meta ainda bloqueada no convite de testador; integração de publicação só após autorização explícita do post. Não chamar projeto completo neste estágio.
+
