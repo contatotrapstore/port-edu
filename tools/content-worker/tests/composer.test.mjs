@@ -20,3 +20,9 @@ test('interaction soundtrack has a typing sequence and distinct timelines for vi
  for(const page of plan)assert.ok(page.cues.every(c=>c.t>=0&&c.t<6.8));
  assert.deepEqual(plan,storyboard(['Uma capa','Primeiro detalhe','Segundo detalhe','Terceiro detalhe','Quarto detalhe','Quinto detalhe','Próxima ação']));
 });
+test('public slide header uses brand and contextual subject, never internal studio names',()=>{
+ const slides=['Seu lead pediu orçamento. E agora?','Organize os dados.','Conecte o CRM.'];
+ const html=slideHtml(slides[0],0,slides.length,storyboard(slides)[0]);
+ assert.ok(html.includes('EDevsHub / Atendimento &amp; IA'));
+ assert.equal(/CONTENT STUDIO|SYSTEM NOTES/.test(html),false);
+});

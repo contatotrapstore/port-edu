@@ -20,7 +20,7 @@ try{
   const sources=await research(used);
   const root=path.join(repo,'output/conteudo/research',run.id);fs.mkdirSync(root,{recursive:true});
   const input=path.join(root,'input.json'),output=path.join(root,'draft.json');
-  fs.writeFileSync(input,JSON.stringify({engine:run.engine,topic:sources.length?'Explique uma novidade recente e relevante para quem contrata software e agentes.':'Conteúdo educativo sobre agentes de IA e integrações: um exemplo hipotético útil, sem repetir os posts recentes.',sources,recentTopics:recent.map(r=>r.topic)}));
+  fs.writeFileSync(input,JSON.stringify({engine:run.engine,topic:sources.length?'Escolha a mudança de maior impacto prático para devs e vibe coders: MCPs, APIs, modelos, agentes e ferramentas de desenvolvimento. Explique o que muda, quem consegue usar agora, um caso concreto e um limite. Não faça notícia de correção pequena.':'Não houve notícia com sinal suficiente de impacto. Crie um tutorial ou comparação educativa útil para devs e vibe coders sobre MCPs, APIs e agentes, sem apresentar como lançamento ou tendência e sem repetir temas recentes.',sources,recentTopics:recent.map(r=>r.topic)}));
   await new Promise((resolve,reject)=>{
    const child=spawn(process.execPath,[path.join(repo,'tools/content-worker/scripts/generate-child.mjs'),input,output],{cwd:root,env:subscriptionEnv(process.env),windowsHide:true,stdio:'ignore'});
    child.once('error',reject);child.once('close',code=>code===0?resolve():reject(Error('generation_failed')));

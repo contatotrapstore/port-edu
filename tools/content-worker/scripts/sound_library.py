@@ -15,7 +15,16 @@ def synthesize(family,variant=0):
  duration={'click':.10,'key':.16,'pop':.22,'toggle':.19,'notification':.55,'success':.8,'card':.35,'paper':.4,'sweep':.65,'reverse':.65,'impact':.55,'sparkle':.8}[family]
  t=np.arange(round(duration*SR))/SR;pitch=1+variant*.16;noise=rng.standard_normal(len(t))
  band=lambda x,lo,hi:sosfilt(butter(2,[lo,hi],fs=SR,btype='bandpass',output='sos'),x)
- if family in ('click','key','toggle'):
+ if family=='key':
+  # Mechanical switch: short downstroke, damped case resonance and softer return.
+  # Original synthesis, not a recording or a sample from a commercial library.
+  strike=band(noise,900,9000)*np.exp(-t/.006)
+  body=(np.sin(2*np.pi*(185+variant*32)*t)+.35*np.sin(2*np.pi*(460+variant*55)*t))*np.exp(-t/.016)
+  x=.78*strike+.32*body
+  delay=int((.047+variant*.008)*SR)
+  release=band(rng.standard_normal(len(t)-delay),1600,11000)*np.exp(-np.arange(len(t)-delay)/SR/.004)
+  x[delay:]+=.3*release
+ elif family in ('click','toggle'):
   f=(700 if family=='key' else 1200)*pitch
   x=(np.sin(2*np.pi*f*t)+.3*band(noise,1800,6500))*np.exp(-t/(.018+variant*.005))
   if family!='click':

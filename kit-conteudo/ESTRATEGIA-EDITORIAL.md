@@ -103,3 +103,16 @@ Pesquisa em 26/10/2026. Buffer analisou mais de 2 milhões de posts e encontrou 
 - https://buffer.com/resources/state-of-social-media-engagement-2026/
 
 Estudos agregados servem como ponto de partida. Não foram acessados Insights privados, histórico completo, atividade dos seguidores ou desempenho atual de @edevshub nesta preparação.
+
+
+## Direção atualizada pelo usuário — 27/10/2026
+
+Público prioritário: devs, vibe coders e pessoas construindo produtos com IA. Misturar com serviços reais da EDevsHub, sem transformar toda notícia em anúncio.
+
+- Novidade só merece post quando muda o trabalho: ferramenta/MCP novo ou capacidade material, API/modelo relevante, custo, disponibilidade, limites, migração importante ou segurança de impacto. Pequenos patches, bump de dependências, ajustes cosméticos e changelog sem consequência prática ficam fora.
+- Gancho concreto; segundo slide entrega valor, sem enrolação; exemplo aplicável; disponibilidade e limite honestos; uma pergunta específica ou material digno de salvar. Não inventar comparações, números, popularidade ou prometer viralização. Não pedir comentários apenas para inflar alcance.
+- O radar automatizado atual cobre 11 repositórios oficiais e até 5 releases de cada, últimos 14 dias, deduplicadas e ranqueadas por sinais textuais de impacto. É triagem heurística, não medição de tendências ou monitoramento completo do mercado. Pontuação alta não comprova viralidade. Sem sinal útil, gerar tutorial evergreen, não notícia artificial.
+- Fontes oficiais adicionais: GitHub MCP Server, Playwright MCP, SDK TypeScript MCP, Vercel AI SDK, Transformers, SDKs OpenAI e Anthropic, além de Codex, Claude Code, Gemini CLI e AutoGen.
+- Cabeçalho público: EDevsHub / assunto contextual (Atendimento & IA, MCPs na prática, APIs & integrações, Dev com IA, Agentes na prática). Remover CONTENT STUDIO e SYSTEM NOTES das peças.
+- Som como parte da interação: teclas mecânicas sintetizadas com ataque/retorno/resonância, clique quando há clique visual, cartões e transições sincronizados. Fundo musical secundário e variação de arranjo. Nenhuma amostra comercial usada; não afirmar que síntese é gravação de teclado real.
+- Concorrentes são referências para clareza, ritmo e utilidade; não copiar roteiro/design nem atribuir um benchmark sem analisar perfis concretos.
