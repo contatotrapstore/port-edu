@@ -1,0 +1,93 @@
+{
+  "usdBrl": 5.4,
+  "idleAfterSeconds": 90,
+  "idleHideMinutes": 240,
+  "remoteApproval": { "enabled": true, "timeoutSeconds": 45, "timeoutAusenteSeconds": 300, "_obs": "Só espera resposta remota se o painel estiver aberto e visível (aviso a cada 10 s) ou se o modo ausente estiver ligado (/fora no Telegram ou botão no site); aí espera timeoutAusenteSeconds. Senão o pedido vai direto para o terminal. Mudou os tempos? Rode npm run hooks:install de novo." },
+  "_obsRooms": "O prédio é montado a partir daqui. match = expressão sobre a pasta da sessão (barras normais, sem diferença de maiúsculas), testada na ordem da lista. slot = vaga no andar (térreo 0-3, 1º 0-6, 2º 0-4, 3º 0-3). type: project (padrão), control (Diretoria, térreo vaga 3, mesa do Dudu), reception, infra, studio. fallback: true recebe as pastas sem sala. cliente = de quem é o projeto (cor da sala e relatório mensal). vercel = nomes dos projetos na Vercel (deploys na TI e no cartão). cliente = de quem é o projeto (cor da sala e relatório mensal). vercel = nomes dos projetos na Vercel (deploys na TI e no cartão). budgetBrl = orçamento do dia em R$ (equivalente em API): passou, alerta no Telegram e barra no prédio.",
+  "floors": [
+    {"name":"Térreo","desc":"Recepção, TI, estúdio de posts e Diretoria"},
+    {"name":"Clientes","desc":"Um projeto por sala; o cliente aparece embaixo do nome"},
+    {"name":"Fernando e sites","desc":"ChatCupom, Beeder, Livoreto, sites e projetos avulsos"},
+    {"name":"Produtos EDevsHub","desc":"Site e vendas, Revix, Meu Financeiro e StayDirect"}
+  ],
+  "rooms": [
+    {"room": "Recepção", "floor": 0, "slot": 0, "type": "reception", "stack": "Resumo do dia"},
+    {"room": "TI · Infra", "floor": 0, "slot": 1, "type": "infra", "stack": "Monitor dos sites e domínios"},
+    {"room": "Estúdio · Posts e reels", "floor": 0, "slot": 2, "type": "studio", "cliente": "EDevsHub", "stack": "Content Studio · Instagram automático · ElevenLabs · Higgsfield", "match": "/worktrees/content-studio/|/port edu/kit-conteudo"},
+    {"room": "Diretoria", "floor": 0, "slot": 3, "type": "control", "cliente": "EDevsHub", "stack": "Central de Agentes, planos, custos e conversas soltas do Codex", "match": "/port edu/central-agentes(/|$)|^c:/users/gouveiarx$|/documents/codex/"},
+
+    {"room": "MX Corp", "floor": 1, "slot": 0, "cliente": "Marcelo", "stack": "gestão e produção de conteúdo", "match": "/downloads/marcelo(-wt)?(/|$)"},
+    {"room": "Organzza · Kommo", "floor": 1, "slot": 1, "cliente": "Organzza", "stack": "CRM Kommo", "match": "/downloads/(kommo|organzza)"},
+    {"room": "PlanetShake", "floor": 1, "slot": 2, "cliente": "PlanetShake", "stack": "App Android", "vercel": ["planetshake-app"], "match": "/downloads/planet(shake)?(/|$)"},
+    {"room": "King Prime", "floor": 1, "slot": 3, "cliente": "Renato", "stack": "reservas diretas", "match": "/downloads/renato(/|$)|kingprime"},
+    {"room": "Fisko", "floor": 1, "slot": 4, "cliente": "Alberto", "stack": "Alberto", "match": "/downloads/alberto(/|$)|fisko"},
+    {"room": "Ligou Chegou", "floor": 1, "slot": 5, "cliente": "Danyllo", "stack": "Danyllo Gás", "match": "/downloads/danyllo(/|$)|ligou-chegou"},
+    {"room": "AntiCasino", "floor": 1, "slot": 6, "cliente": "AntiCasino", "stack": "Cliente", "match": "/downloads/anticassino(/|$)|anticasino"},
+
+    {"room": "ChatCupom", "floor": 2, "slot": 0, "cliente": "Fernando", "stack": "busca de cupons em conversa", "vercel": ["chatcupom"], "match": "/downloads/fernando(/|$)|chatcupom"},
+    {"room": "Beeder", "floor": 2, "slot": 1, "cliente": "Fernando", "stack": "beeder.me", "vercel": ["beeder"], "match": "/downloads/beeder(/|$)"},
+    {"room": "Livoreto", "floor": 2, "slot": 2, "cliente": "Fernando", "stack": "marketplace de eBooks e cursos", "match": "/downloads/plat fernando(/|$)|livoreto"},
+    {"room": "Psicóloga Marli", "floor": 2, "slot": 3, "cliente": "Marli", "stack": "Site", "vercel": ["psicolmarli"], "match": "/documents/site mae(/|$)|psicolmarli"},
+    {"room": "Projetos avulsos", "floor": 2, "slot": 4, "stack": "Pastas sem sala própria (aparece o nome da pasta)", "fallback": true},
+
+    {"room": "EDevsHub · Site e vendas", "floor": 3, "slot": 0, "cliente": "EDevsHub", "stack": "Site, Workana e Meta Ads", "vercel": ["port-edu"], "match": "/downloads/port edu(/|$)"},
+    {"room": "Revix", "floor": 3, "slot": 1, "cliente": "EDevsHub", "stack": "Encontros de carro num mapa só", "vercel": ["revix", "revix-admin"], "match": "/downloads/revix(/|$)|/documents/revix"},
+    {"room": "Meu Financeiro", "floor": 3, "slot": 2, "cliente": "EDevsHub", "stack": "Produto EDevsHub", "vercel": ["financeiro-edevshub"], "match": "/downloads/financeiro(/|$)"},
+    {"room": "StayDirect", "floor": 3, "slot": 3, "cliente": "EDevsHub", "stack": "Produto EDevsHub · reservas", "vercel": ["staydirect"], "match": "/downloads/hospedagens(/|$)|staydirect"}
+  ],
+  "defaultFloor": 2,
+
+  "_obsUptime": "Sites conferidos a cada 5 min pelo agente (tela da sala de TI).",
+  "uptime": ["https://www.edevshub.com", "https://kingprime.com.br", "https://beeder.me", "https://www.chatcupom.com", "https://psicolmarli.com.br", "https://useconvoo.com.br"],
+
+  "orquestra": {
+    "_obs": "Agentes conversando: quadro por projeto + tarefas delegadas (claude -p / codex exec na pasta do projeto). maxTarefas = quantas rodam juntas; maxUsdClaude = teto de gasto por tarefa do Claude (equivalente em API). modeloClaude = modelo das tarefas delegadas ao Claude (ex.: \"sonnet\" gasta menos da janela; null = o padrão do Claude Code). Nos prompts dos fluxos: {{objetivo}}, {{anterior}} (saída do passo anterior), {{passo1}}, {{passo2}}…",
+    "maxTarefas": 2, "minutosMax": 30, "maxUsdClaude": 3, "modeloClaude": null,
+    "fluxos": [
+      { "id": "planejar-executar-revisar", "nome": "Planejar → Executar → Revisar", "passos": [
+        { "para": "claude", "modo": "ler", "prompt": "Você é o líder técnico deste projeto. Leia o código e escreva um plano curto e concreto (arquivos, passos, testes) para: {{objetivo}}. Não edite nada." },
+        { "para": "codex", "modo": "editar", "prompt": "Execute este plano neste projeto. Siga o padrão do código existente e rode os testes que houver.\n\nObjetivo: {{objetivo}}\n\nPlano:\n{{anterior}}" },
+        { "para": "claude", "modo": "ler", "prompt": "Revise o que foi feito (veja o git diff) contra o plano. Aponte bugs e o que faltou, em ordem de gravidade. Não edite.\n\nObjetivo: {{objetivo}}\n\nPlano:\n{{passo1}}\n\nRelato de quem executou:\n{{anterior}}" }
+      ] },
+      { "id": "segunda-opiniao", "nome": "Segunda opinião (Codex revisa)", "passos": [
+        { "para": "codex", "modo": "ler", "prompt": "Faça uma revisão crítica e independente deste projeto focada em: {{objetivo}}. Liste problemas concretos com arquivo e linha. Não edite." }
+      ] },
+      { "id": "investigar-corrigir", "nome": "Investigar → Corrigir → Conferir", "passos": [
+        { "para": "codex", "modo": "ler", "prompt": "Investigue a causa raiz deste problema sem editar: {{objetivo}}. Mostre a evidência (arquivo, linha, log)." },
+        { "para": "claude", "modo": "editar", "prompt": "Corrija a causa raiz encontrada abaixo, com a menor mudança segura, e rode os testes.\n\nProblema: {{objetivo}}\n\nInvestigação:\n{{anterior}}" },
+        { "para": "codex", "modo": "ler", "prompt": "Confira se a correção resolve a causa raiz e não quebra nada (veja o git diff). Problema: {{objetivo}}\n\nRelato da correção:\n{{anterior}}" }
+      ] }
+    ]
+  },
+
+  "pricing": {
+    "_obs": "US$ por milhão de tokens, por prefixo do modelo (vence o prefixo mais longo). Claude conferido em 29/10/2026. cacheWrite = cache de 5 min (1,25x a entrada); cacheWrite1h = cache de 1h (2x), que é o que o Claude Code usa.",
+    "claude-opus-5-5": { "in": 4, "out": 20, "cacheRead": 0.2, "cacheWrite": 5, "cacheWrite1h": 8 },
+    "claude-opus": { "in": 5, "out": 25, "cacheRead": 0.5, "cacheWrite": 6.25, "cacheWrite1h": 10 },
+    "claude-sonnet-5": { "in": 2, "out": 10, "cacheRead": 0.2, "cacheWrite": 2.5, "cacheWrite1h": 4 },
+    "claude-sonnet": { "in": 3, "out": 15, "cacheRead": 0.3, "cacheWrite": 3.75, "cacheWrite1h": 6 },
+    "claude-haiku": { "in": 1, "out": 5, "cacheRead": 0.1, "cacheWrite": 1.25, "cacheWrite1h": 2 },
+    "claude-fable": { "in": 10, "out": 50, "cacheRead": 0.25, "cacheWrite": 12.5, "cacheWrite1h": 20 },
+    "_obsGpt": "OpenAI conferido em 29/10/2026 (CloudZero 21/10/2026 e MorphLLM; a página da OpenAI bloqueia leitura automática). Acima de ~272 mil tokens de entrada a requisição inteira custa 2x na entrada e 1,5x na saída; o agente não aplica essa regra.",
+    "gpt-6": { "in": 10, "out": 50, "cacheRead": 1, "cacheWrite": 12.5 },
+    "gpt-5.6-sol": { "in": 5, "out": 30, "cacheRead": 0.5, "cacheWrite": 6.25 },
+    "gpt-5.6-terra": { "in": 2, "out": 12, "cacheRead": 0.2, "cacheWrite": 2.5 },
+    "gpt-5.6-luna": { "in": 0.2, "out": 1.2, "cacheRead": 0.02, "cacheWrite": 0.25 },
+    "gpt-5": { "in": 1.25, "out": 10, "cacheRead": 0.125, "cacheWrite": 0 },
+    "default": { "in": 3, "out": 15, "cacheRead": 0.3, "cacheWrite": 3.75 }
+  },
+
+  "plans": {
+    "claude": {
+      "name": "Claude", "tier": "Max 20x", "brl": 1100,
+      "_obs": "Tetos estimados em tokens equivalentes (entrada + saída, sem cache). Calibre comparando com o /usage do Claude Code.",
+      "sessionTokenBudget": 9000000,
+      "weeklyTokenBudget": 150000000,
+      "weeklyResetDow": 3, "weeklyResetHour": 9,
+      "experimentalOauthUsage": false
+    },
+    "gpt": { "name": "ChatGPT", "tier": "5x", "brl": 550 },
+    "eleven": { "name": "ElevenLabs", "tier": "Starter", "brl": 33 },
+    "higgs": { "name": "Higgsfield", "tier": "Free", "brl": 0, "manualCreditsLeft": 0, "manualCreditsTotal": 0, "_obs": "Conferido na conta em 29/10/2026: plano Free, 0 créditos. A Higgsfield não tem API pública de saldo; atualize à mão." }
+  }
+}

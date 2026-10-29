@@ -1,0 +1,24 @@
+{
+  "name": "edh-central-agentes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agente local da Central de Agentes EDevsHub: lê sessões do Claude Code e Codex, recebe hooks e serve o painel em 127.0.0.1:4321",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "hooks:install": "node scripts/install-hooks.js",
+    "hooks:uninstall": "node scripts/uninstall-hooks.js",
+    "check": "node --check src/index.js && node --check hooks/edh-hook.js",
+    "autostart:on": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/autostart-windows.ps1 -IniciarAgora",
+    "autostart:off": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/autostart-windows.ps1 -Remover",
+    "telegram:parear": "node scripts/parear-telegram.js",
+    "site:sync": "node scripts/site-sync.js",
+    "test": "node scripts/teste-telegram.mjs && node scripts/teste-nuvem.mjs",
+    "mcp:install": "node scripts/mcp-install.js",
+    "mcp:uninstall": "node scripts/mcp-install.js --remover"
+  }
+}
