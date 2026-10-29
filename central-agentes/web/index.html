@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Central de Agentes · ao vivo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Painel de depuração: valida os dados reais antes de ligar o prédio 3D. */
+:root{--bg:#0B1210;--panel:#111A17;--line:#22302B;--fg:#EDE6D6;--muted:#8E9A92;--amber:#F5B935;--ok:#5BD69E;--wait:#FFD84A;--err:#FF6B5E;--idle:#6F837B;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 'Instrument Sans',system-ui,sans-serif;padding:16px}
+.wrap{max-width:1280px;margin:0 auto;display:grid;gap:12px}
+header{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;padding:12px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+header b{font-size:18px}
+.k{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.conn{margin-left:auto;font-size:12px;color:var(--muted)}
+.conn i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--err);margin-right:6px}
+.conn.on i{background:var(--ok)}
+a.btn,button{font:inherit;color:inherit;border:1px solid var(--line);background:#16211D;border-radius:999px;padding:6px 12px;cursor:pointer;text-decoration:none;font-weight:600;font-size:12.5px}
+button.allow{background:var(--amber);border-color:var(--amber);color:#1A1405}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:12px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:14px}
+h2{margin:0 0 10px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.floor{margin-top:12px;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--amber);font-weight:600}
+.ag{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:4px 10px;padding:10px;border:1px solid var(--line);border-radius:8px;margin-top:6px;background:#16211D}
+.ag .dot{width:9px;height:9px;border-radius:50%;margin-top:5px}
+.ag .t{font-weight:600}
+.ag .s{font-size:12px;color:var(--muted)}
+.ag code,.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+.ag code{display:block;color:#BFE9D2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag .p{grid-column:2/4;font-size:12.5px;color:#CFC9BB;border-left:2px solid var(--amber);padding-left:8px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ag .c{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.ag .c small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+.perm{border-color:rgba(255,216,74,.5);background:rgba(255,216,74,.06)}
+.perm .row{display:flex;gap:6px;margin-top:8px}
+.meter{margin-top:10px}
+.bar{height:6px;border-radius:3px;background:#1F2C27;margin:6px 0 4px;overflow:hidden}
+.bar i{display:block;height:100%}
+.note{font-size:12px;color:var(--muted)}
+ul.feed{list-style:none;margin:0;padding:0;font:11.5px 'JetBrains Mono',monospace}
+ul.feed li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:6px;padding:5px 0;border-bottom:1px dashed var(--line)}
+ul.feed time{color:var(--muted)}
+.empty{color:var(--muted);padding:12px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <b>EDevsHub · Central ao vivo</b>
+    <div><div class="k">Consumo hoje</div><div class="v" id="spend">R$ 0,00</div></div>
+    <div><div class="k">Ativos</div><div class="v" id="active">0</div></div>
+    <div><div class="k">Precisam de você</div><div class="v" id="waiting">0</div></div>
+    <a class="btn" href="/predio">Abrir prédio 3D</a>
+    <span class="conn" id="conn"><i></i>conectando…</span>
+  </header>
+  <div class="grid">
+    <section class="card"><h2>Agentes por andar</h2><div id="agents"></div></section>
+    <aside style="display:grid;gap:12px">
+      <section class="card"><h2>Pedidos de permissão</h2><div id="pending"></div></section>
+      <section class="card"><h2>Planos</h2><div id="plans"></div></section>
+      <section class="card"><h2>Atividade</h2><ul class="feed" id="feed"></ul></section>
+    </aside>
+  </div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ST = {working:'#5BD69E', waiting:'#FFD84A', error:'#FF6B5E', idle:'#6F837B'};
+const STL = {working:'Trabalhando', waiting:'Precisa de você', error:'Erro', idle:'Ocioso'};
+const TOOL = {Edit:'Editando', MultiEdit:'Editando', Write:'Criando', Read:'Lendo', Bash:'Executando', Grep:'Buscando', Glob:'Procurando', WebFetch:'Consultando', WebSearch:'Pesquisando', Task:'Delegando', Pensando:'Pensando', shell:'Executando'};
+const FLOORS = ['Térreo','1º Desenvolvimento','2º Comercial','3º Marketing'];
+const brl = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+const hm = t => t ? new Date(t).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '';
+const span = ms => { const m = Math.max(0, Math.round(ms/60000)); return m < 60 ? m + ' min' : Math.floor(m/60) + 'h' + String(m%60).padStart(2,'0'); };
+const resetTxt = t => !t ? '' : t - Date.now() < 86400e3 ? 'reinicia em ' + span(t - Date.now()) : 'reinicia ' + new Date(t).toLocaleString('pt-BR', {weekday:'short', hour:'2-digit', minute:'2-digit'});
+
+function render(s){
+  const rate = s.usdBrl || 5.4, agents = s.agents || [];
+  $('spend').textContent = brl(agents.reduce((x,a) => x + a.costUsdToday, 0) * rate);
+  $('active').textContent = agents.filter(a => a.state !== 'idle').length;
+  $('waiting').textContent = agents.filter(a => a.state === 'waiting').length;
+
+  let html = '';
+  for (let f = 3; f >= 0; f--){
+    const list = agents.filter(a => a.floor === f); if (!list.length) continue;
+    html += `<div class="floor">${FLOORS[f] || 'Andar ' + f}</div>`;
+    for (const a of list){
+      const now = a.state === 'waiting' ? 'Pede permissão: ' + (a.waitCmd || a.target) : a.state === 'error' ? a.errMsg : a.tool ? (TOOL[a.tool] || a.tool) + ' · ' + a.target : '';
+      html += `<div class="ag"><span class="dot" style="background:${ST[a.state]};box-shadow:0 0 8px ${ST[a.state]}"></span>
+        <div style="min-width:0"><div class="t">${esc(a.room)} · ${esc(a.name)} <span class="s">${esc(a.source)} · ${esc(a.model || '?')}</span></div>
+        <div class="s">${STL[a.state]} há ${span(Date.now() - a.since)} · ${a.tasksToday} turnos hoje</div>${now ? `<code>${esc(now)}</code>` : ''}</div>
+        <div class="c">${brl(a.costUsdToday * rate)}<small>${Math.round((a.tokens.in + a.tokens.out)/1000)} mil tokens</small></div>
+        ${a.prompt ? `<div class="p">${esc(a.prompt)}</div>` : ''}</div>`;
+    }
+  }
+  $('agents').innerHTML = html || '<div class="empty">Nenhuma sessão nas últimas horas. Abra o Claude Code ou o Codex em algum projeto.</div>';
+
+  const pend = s.pending || [];
+  $('pending').innerHTML = pend.length ? pend.map(p => { const a = agents.find(x => x.id === p.agentId);
+    return `<div class="ag perm"><span></span><div style="min-width:0;grid-column:2/4"><div class="t">${esc(a ? a.room + ' · ' + a.name : p.agentId)}</div><code>${esc(p.tool)} · ${esc(p.text)}</code>
+      <div class="row"><button class="allow" data-id="${esc(p.id)}" data-d="allow">Permitir</button><button data-id="${esc(p.id)}" data-d="deny">Negar</button></div></div></div>`; }).join('')
+    : `<p class="note">${s.remoteApproval ? 'Nenhum pedido agora.' : 'Aprovação pelo painel desligada (config.json → remoteApproval.enabled). Os pedidos aparecem só como aviso.'}</p>`;
+
+  const P = s.plans || {}, meters = [];
+  for (const [k, name] of [['claude','Claude'], ['gpt','ChatGPT · Codex']]) for (const m of (P[k]?.meters || [])) meters.push([name + ' · ' + m.label, m.usedPct, resetTxt(m.resetAt), m.source]);
+  if (P.eleven?.limit) meters.push(['ElevenLabs · ' + (P.eleven.tier || ''), P.eleven.used / P.eleven.limit * 100, resetTxt(P.eleven.resetAt), P.eleven.source]);
+  $('plans').innerHTML = meters.map(([l, p, r, src]) => `<div class="meter"><div style="display:flex;justify-content:space-between;gap:8px"><span>${esc(l)}</span><span class="note">${Math.round(p)}%</span></div>
+    <div class="bar"><i style="width:${Math.min(100,p).toFixed(1)}%;background:${p > 85 ? 'var(--err)' : p > 60 ? 'var(--amber)' : 'var(--ok)'}"></i></div><div class="note">${esc(r)} · fonte: ${esc(src)}</div></div>`).join('')
+    + `<p class="note" style="margin-top:10px">ElevenLabs: ${esc(P.eleven?.source)} · Higgsfield: ${esc(P.higgs?.source)}</p>`;
+
+  $('feed').innerHTML = (s.feed || []).slice(0, 40).map(e => { const a = agents.find(x => x.id === e.agentId);
+    return `<li><time>${hm(e.t)}</time><span>${esc(a ? a.room : '')} · <b style="color:${e.kind==='err'?'var(--err)':e.kind==='wait'?'var(--wait)':e.kind==='done'?'var(--ok)':'var(--amber)'}">${esc(e.tag)}</b> · ${esc(e.text)}</span></li>`; }).join('');
+}
+
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button[data-id]'); if (!b) return;
+  b.disabled = true;
+  await fetch('/api/permission/' + encodeURIComponent(b.dataset.id), {method:'POST', headers:{'Content-Type':'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify({decision: b.dataset.d})});
+});
+
+let last = null;
+function connect(){
+  const es = new EventSource('/api/events');
+  es.addEventListener('state', ev => { last = JSON.parse(ev.data); render(last); $('conn').className = 'conn on'; $('conn').lastChild.textContent = 'ao vivo'; });
+  es.onerror = () => { $('conn').className = 'conn'; $('conn').lastChild.textContent = 'agente desligado, tentando de novo…'; };
+}
+connect();
+setInterval(() => last && render(last), 15000);
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "usdBrl": 5.4,
+  "idleAfterSeconds": 90,
+  "idleHideMinutes": 240,
+  "remoteApproval": { "enabled": false, "timeoutSeconds": 45 },
+
+  "rooms": [
+    { "match": "planet", "room": "PlanetShake", "floor": 1 },
+    { "match": "ligou", "room": "Ligou Chegou", "floor": 1 },
+    { "match": "organzza|kommo", "room": "Organzza · Kommo", "floor": 1 },
+    { "match": "revix", "room": "Revix", "floor": 1 },
+    { "match": "meta-coleta|marcelo", "room": "Meta Coleta IA", "floor": 1 },
+    { "match": "fisko", "room": "Fisko", "floor": 1 },
+    { "match": "kingprime|beeder|useconvoo|infra", "room": "TI · Infra", "floor": 0 },
+    { "match": "central-agentes", "room": "Diretoria", "floor": 0 },
+    { "match": "workana|propostas", "room": "Workana", "floor": 2 },
+    { "match": "prospec|leads", "room": "Prospecção", "floor": 2 },
+    { "match": "edevshub-site|edevshub\\.com|/port edu($|/)", "room": "Tráfego & Site", "floor": 3 },
+    { "match": "elyvra", "room": "Estúdio criativo", "floor": 3 }
+  ],
+  "defaultFloor": 1,
+
+  "pricing": {
+    "_obs": "US$ por milhão de tokens, por prefixo do modelo (vence o prefixo mais longo). Claude conferido em 29/10/2026. cacheWrite = cache de 5 min (1,25x a entrada); cacheWrite1h = cache de 1h (2x), que é o que o Claude Code usa.",
+    "claude-opus-5-5": { "in": 4, "out": 20, "cacheRead": 0.2, "cacheWrite": 5, "cacheWrite1h": 8 },
+    "claude-opus": { "in": 5, "out": 25, "cacheRead": 0.5, "cacheWrite": 6.25, "cacheWrite1h": 10 },
+    "claude-sonnet-5": { "in": 2, "out": 10, "cacheRead": 0.2, "cacheWrite": 2.5, "cacheWrite1h": 4 },
+    "claude-sonnet": { "in": 3, "out": 15, "cacheRead": 0.3, "cacheWrite": 3.75, "cacheWrite1h": 6 },
+    "claude-haiku": { "in": 1, "out": 5, "cacheRead": 0.1, "cacheWrite": 1.25, "cacheWrite1h": 2 },
+    "claude-fable": { "in": 10, "out": 50, "cacheRead": 0.25, "cacheWrite": 12.5, "cacheWrite1h": 20 },
+    "_obsGpt": "OpenAI conferido em 29/10/2026 (CloudZero 21/10/2026 e MorphLLM; a página da OpenAI bloqueia leitura automática). Acima de ~272 mil tokens de entrada a requisição inteira custa 2x na entrada e 1,5x na saída; o agente não aplica essa regra.",
+    "gpt-6": { "in": 10, "out": 50, "cacheRead": 1, "cacheWrite": 12.5 },
+    "gpt-5.6-sol": { "in": 5, "out": 30, "cacheRead": 0.5, "cacheWrite": 6.25 },
+    "gpt-5.6-terra": { "in": 2, "out": 12, "cacheRead": 0.2, "cacheWrite": 2.5 },
+    "gpt-5.6-luna": { "in": 0.2, "out": 1.2, "cacheRead": 0.02, "cacheWrite": 0.25 },
+    "gpt-5": { "in": 1.25, "out": 10, "cacheRead": 0.125, "cacheWrite": 0 },
+    "default": { "in": 3, "out": 15, "cacheRead": 0.3, "cacheWrite": 3.75 }
+  },
+
+  "plans": {
+    "claude": {
+      "name": "Claude", "tier": "Max 20x", "brl": 1100,
+      "_obs": "Tetos estimados em tokens equivalentes (entrada + saída, sem cache). Calibre comparando com o /usage do Claude Code.",
+      "sessionTokenBudget": 9000000,
+      "weeklyTokenBudget": 150000000,
+      "weeklyResetDow": 3, "weeklyResetHour": 9,
+      "experimentalOauthUsage": false
+    },
+    "gpt": { "name": "ChatGPT", "tier": "5x", "brl": 550 },
+    "eleven": { "name": "ElevenLabs", "tier": "Starter", "brl": 33 },
+    "higgs": { "name": "Higgsfield", "tier": "a confirmar", "brl": null, "manualCreditsLeft": null, "manualCreditsTotal": null }
+  }
+}
