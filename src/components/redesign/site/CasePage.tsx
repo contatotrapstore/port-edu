@@ -8,7 +8,9 @@ import type { Locale } from "@/lib/locale";
 import { getPortfolioRole } from "@/lib/portfolio-case-copy";
 import { siteUrl } from "@/lib/site";
 import profile from "../../../../public/images/profile.jpeg";
+import ProjectCard from "./ProjectCard";
 import SitePage from "./SitePage";
+import { catalogOrder, coverFor, entryFor, kindLabel, materialLabel } from "./catalog";
 import { getSiteCopy } from "./copy";
 import { hireHref, localePath } from "./paths";
 import { projectImageSize } from "./project-images";
@@ -27,14 +29,18 @@ export default function CasePage({ project, locale }: { project: Project; locale
   const en = locale === "en";
   const base = localePath("/projetos", locale).href;
   const url = `${siteUrl}${base}/${project.id}`;
-  const cases = getContent(locale).projects.filter((item) => item.overview);
+  // Ordem do catálogo: anterior e próximo ficam, em geral, no mesmo tipo de trabalho.
+  const cases = catalogOrder(getContent(locale).projects.filter((item) => item.overview));
   const index = cases.findIndex((item) => item.id === project.id);
   const prev = cases[(index - 1 + cases.length) % cases.length];
   const next = cases[(index + 1) % cases.length];
+  const entry = entryFor(project.id);
+  const cover = coverFor(project);
+  const coverSize = cover.width && cover.height ? { width: cover.width, height: cover.height } : projectImageSize(cover.src);
+  const sameKind = cases.filter((item) => item.id !== project.id && item.id !== prev.id && item.id !== next.id && entryFor(item.id).kind === entry.kind).slice(0, 3);
   const role = project.role ?? getPortfolioRole(project.id, locale);
   const insights = getCaseInsights(project.id, locale);
   const capabilities = project.portfolioOutput ?? project.output;
-  const vertical = t.projectsIndex.verticals.find((item) => item.id === project.vertical);
   const headline = capitalize(project.headline ?? project.description);
   const gallery = project.gallery?.length ? project.gallery : insights?.useProjectImage && project.image ? [project.image] : [];
   const service = insights ? localePath(insights.service.href, locale) : null;
@@ -84,24 +90,30 @@ export default function CasePage({ project, locale }: { project: Project; locale
             </ol>
           </nav>
           <p className="edh-pagehead-kicker">
-            {[vertical?.label, project.year].filter(Boolean).join(", ")}
+            <Link href={`${base}#tipo-${entry.kind}`}>{kindLabel(entry.kind, locale)}</Link>
+            {project.year ? `, ${project.year}` : ""}
           </p>
           <h1 id="edh-page-title" className="edh-pagehead-title">
             {project.title}
           </h1>
           <p className="edh-pagehead-lead">{headline}.</p>
         </div>
-        <figure className="edh-casehero">
+        <figure
+          className={`edh-casehero edh-casehero--${entry.material}`}
+          // Capa menor que a moldura (ex.: tela de 830 px): mostrada no tamanho original, sem ampliar.
+          style={cover.width && cover.width < 1100 ? ({ "--cover-max": `${cover.width}px` } as React.CSSProperties) : undefined}
+        >
           <div className="edh-frame">
             <div className="edh-case-frame">
               <Image
-                src={project.image}
+                src={cover.src}
                 alt={c.imageAlt(project.title, headline)}
-                {...projectImageSize(project.image)}
+                {...coverSize}
                 priority
                 sizes="(min-width: 80rem) 80rem, calc(100vw - 2.5rem)"
               />
             </div>
+            <figcaption className="edh-case-note">{materialLabel(entry.material, locale)}</figcaption>
           </div>
         </figure>
       </section>
@@ -273,21 +285,23 @@ export default function CasePage({ project, locale }: { project: Project; locale
       <nav className="edh-ch edh-ch--paper" aria-label={c.all}>
         <div className="edh-frame">
           <div className="edh-casenav">
-            {[
-              { item: prev, label: c.prev, cls: "" },
-              { item: next, label: c.next, cls: "edh-casenav-next" },
-            ].map(({ item, label, cls }) => (
-              <Link key={label} href={`${base}/${item.id}`} className={cls}>
-                <span className="edh-casenav-thumb">
-                  <Image src={item.image} alt="" fill sizes="7rem" />
-                </span>
-                <span>
-                  <span className="edh-casenav-label">{label}</span>
-                  <span className="edh-casenav-name">{item.title}</span>
-                </span>
-              </Link>
-            ))}
+            <ProjectCard project={prev} locale={locale} href={`${base}/${prev.id}`} label={c.prev} />
+            <ProjectCard project={next} locale={locale} href={`${base}/${next.id}`} label={c.next} />
           </div>
+          {sameKind.length ? (
+            <section className="edh-samekind" aria-labelledby="edh-samekind-title">
+              <h2 id="edh-samekind-title" className="edh-pgroup-title">
+                {en ? "More" : "Mais em"} {kindLabel(entry.kind, locale).toLowerCase()}
+              </h2>
+              <ul className="edh-pgrid">
+                {sameKind.map((item) => (
+                  <li key={item.id}>
+                    <ProjectCard project={item} locale={locale} href={`${base}/${item.id}`} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
           <p className="edh-casenav-all">
             <Link href={base} className="edh-link">
               {c.all}

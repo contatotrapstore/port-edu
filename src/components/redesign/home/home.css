@@ -729,162 +729,303 @@
 
 /* --- Método --------------------------------------------------------------------- */
 
-.edh-method {
-  position: relative;
-  margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+/* Processo: cada etapa com o que o cliente recebe e decide; ao lado, um
+   exemplo ilustrativo do que é entregue. Sem JavaScript, o exemplo vem logo
+   abaixo da etapa; com JavaScript, no desktop, um painel fixo acompanha a
+   etapa em leitura. */
+.edh-process {
+  display: grid;
+  margin-top: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
 }
 
-.edh-method-track {
-  display: grid;
-  gap: 2.25rem;
+.edh-process-steps {
   margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.edh-pstep {
+  padding-block: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.edh-pstep-title {
+  margin: 0;
+  color: var(--ivory);
+  font-size: clamp(1.625rem, 1.15rem + 1.6vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.edh-pstep-pair {
+  display: grid;
+  gap: 1rem 2rem;
+  margin: 1.25rem 0 0;
+}
+
+.edh-pstep-pair dt {
+  color: var(--amber);
+  font: var(--mono-label);
+}
+
+.edh-pstep-pair dd {
+  margin: 0.35rem 0 0;
+  color: #c4cfca;
+  line-height: 1.55;
+}
+
+.edh-pstep-art {
+  margin-top: 1.75rem;
+}
+
+.edh-process-stage {
+  display: none;
+}
+
+@media (width >= 40rem) {
+  .edh-pstep-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 64rem) {
+  .edh-process.is-enhanced {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    column-gap: clamp(3rem, 1rem + 4vw, 6rem);
+    align-items: start;
+  }
+
+  /* A etapa ativa fica clara; as outras recuam, sem sumir. */
+  .is-enhanced .edh-pstep {
+    display: grid;
+    align-content: center;
+    min-height: 46vh;
+    opacity: 0.42;
+    transition: opacity 0.35s ease;
+  }
+
+  .is-enhanced .edh-pstep.is-active {
+    opacity: 1;
+  }
+
+  /* O exemplo continua acessível na etapa; só sai da vista. */
+  .is-enhanced .edh-pstep-art {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .is-enhanced .edh-process-stage {
+    position: sticky;
+    top: max(6rem, calc(50vh - 15rem));
+    display: grid;
+  }
+
+  .edh-stage-item {
+    grid-area: 1 / 1;
+    opacity: 0;
+    translate: 0 0.75rem;
+    transition:
+      opacity 0.35s ease,
+      translate 0.35s ease;
+  }
+
+  .edh-stage-item.is-active {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-enhanced .edh-pstep,
+  .edh-stage-item {
+    transition: none;
+    translate: none;
+  }
+}
+
+/* Exemplos: folhas claras sobre a mesa escura. */
+.edh-art {
+  overflow: hidden;
+  border-radius: 0.625rem;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 40px 70px -40px rgb(0 0 0 / 0.7);
+}
+
+.edh-art--doc {
+  padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+}
+
+.edh-art-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.edh-art-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.edh-art-tag {
+  margin: 0;
+  color: var(--moss);
+  font: 400 0.75rem/1.4 var(--font-mono);
+}
+
+.edh-art-project {
+  margin: 0.25rem 0 0;
+  color: var(--moss);
+  font-size: 0.9375rem;
+}
+
+.edh-art dl {
+  margin: 1.1rem 0 0;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-art dl > div {
+  display: grid;
+  gap: 0.2rem;
+  padding-block: 0.7rem;
+  border-bottom: 1px solid var(--rule-paper);
+}
+
+.edh-art dt {
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-art dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.edh-art-checks,
+.edh-art-handoff {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.1rem 0 0;
   padding: 0;
   list-style: none;
 }
 
-.edh-step {
+.edh-art-checks li,
+.edh-art-handoff li {
   position: relative;
-  display: grid;
-  gap: 0.6rem;
-  padding-left: 2.75rem;
+  padding-left: 1.85rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }
 
-/* Trilho: as hastes da marca nas pontas, o ponto âmbar percorre as etapas. */
-.edh-method-rail {
-  position: absolute;
-  inset: 0.4rem auto 0.4rem 0.6875rem;
-  width: 2px;
-  background: var(--rule-strong);
-}
-
-.edh-method-rail::before,
-.edh-method-rail::after {
+/* Marcador: círculo âmbar com visto (conferido) ou contorno (a conferir). */
+.edh-art-checks li::before,
+.edh-art-handoff li::before {
   content: "";
   position: absolute;
-  left: 50%;
-  width: 0.75rem;
-  height: 2.25rem;
-  border-radius: 999px;
-  background: var(--ivory);
-  translate: -50% 0;
-}
-
-.edh-method-rail::before {
-  top: -1.4rem;
-}
-
-.edh-method-rail::after {
-  bottom: -1.4rem;
-}
-
-.edh-method-dot {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 1rem;
-  height: 1rem;
+  top: 0.15rem;
+  left: 0;
+  width: 1.15rem;
+  height: 1.15rem;
   border-radius: 50%;
   background: var(--amber);
-  translate: -50% 0;
 }
 
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .edh-method-dot {
-      animation: edh-dot-travel linear both;
-      animation-timeline: view();
-      animation-range: entry 70% exit 35%;
-    }
-  }
+.edh-art-checks li::after,
+.edh-art-handoff li::after {
+  content: "";
+  position: absolute;
+  top: 0.42rem;
+  left: 0.38rem;
+  width: 0.38rem;
+  height: 0.22rem;
+  border-bottom: 2px solid var(--ink);
+  border-left: 2px solid var(--ink);
+  rotate: -45deg;
 }
 
-@keyframes edh-dot-travel {
-  from {
-    top: 0%;
-  }
-
-  to {
-    top: calc(100% - 1rem);
-  }
+.edh-art-checks li[data-state="open"]::before {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--moss);
 }
 
-.edh-step-n {
-  color: var(--amber);
-  font: 500 0.875rem/1 var(--font-mono);
+.edh-art-checks li[data-state="open"]::after {
+  content: none;
 }
 
-.edh-step-title {
-  margin: 0;
-  font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem);
+.edh-art-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.4rem 0 0;
+}
+
+.edh-art-actions span {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--rule-paper-strong);
+  border-radius: 999px;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: -0.015em;
 }
 
-.edh-step-body {
-  max-width: 30rem;
+.edh-art-actions span:first-child {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.edh-art-next {
+  margin: 1.25rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule-paper);
+  color: var(--moss);
+  font-size: 0.9375rem;
+}
+
+.edh-art--browser img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.edh-art-bar {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--rule-paper);
+  background: var(--paper-deep);
+}
+
+.edh-art-bar span {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: rgb(14 23 22 / 0.18);
+}
+
+.edh-art-bar p {
+  margin: 0 0 0 0.75rem;
+  color: var(--moss);
+  font: 400 0.75rem/1 var(--font-mono);
+}
+
+.edh-art-foot {
   margin: 0;
-  color: #c4cfca;
-  line-height: 1.6;
-}
-
-@media (width >= 64rem) {
-  .edh-method-track {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 2.5rem;
-    padding-top: 3.5rem;
-  }
-
-  .edh-step {
-    padding-left: 0;
-  }
-
-  .edh-method-rail {
-    inset: 0.6875rem 0 auto;
-    width: auto;
-    height: 2px;
-  }
-
-  .edh-method-rail::before,
-  .edh-method-rail::after {
-    top: 50%;
-    width: 2.25rem;
-    height: 0.75rem;
-    translate: 0 -50%;
-  }
-
-  .edh-method-rail::before {
-    left: -1.25rem;
-  }
-
-  .edh-method-rail::after {
-    right: -1.25rem;
-    left: auto;
-    bottom: auto;
-  }
-
-  .edh-method-dot {
-    top: 50%;
-    left: 0;
-    translate: 0 -50%;
-  }
-
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .edh-method-dot {
-        animation-name: edh-dot-travel-x;
-      }
-    }
-  }
-}
-
-@keyframes edh-dot-travel-x {
-  from {
-    left: 0%;
-  }
-
-  to {
-    left: calc(100% - 1rem);
-  }
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--rule-paper);
+  color: var(--moss);
+  font: 400 0.75rem/1.45 var(--font-mono);
 }
 
 .edh-method-note {

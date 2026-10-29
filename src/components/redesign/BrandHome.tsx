@@ -91,7 +91,7 @@ export default function BrandHome({ locale, variant }: { locale: Locale; variant
         <StationHero copy={hero} />
         <HomeProjects copy={home} locale={locale} />
         <HomeSolutions copy={home} locale={locale} />
-        <HomeMethod copy={home} />
+        <HomeMethod method={home.method} />
         <HomeAbout copy={home} locale={locale} />
         <HomeContact copy={home} source={`${source}-contato`} locale={locale} />
       </main>

@@ -1,24 +1,26 @@
-import Image from "next/image";
 import Link from "next/link";
 import { workanaProfile as stats } from "@/lib/constants";
 import { getContent } from "@/lib/content.en";
 import type { Locale } from "@/lib/locale";
 import { siteUrl } from "@/lib/site";
+import ProjectCard from "./ProjectCard";
 import SitePage from "./SitePage";
+import { catalogKinds, catalogOrder, entryFor } from "./catalog";
 import { getSiteCopy } from "./copy";
 import { localePath } from "./paths";
 
-const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
-
 /**
- * Índice dos cases no design novo: agrupado pelo tipo de trabalho, como o
- * catálogo atual, em linhas com imagem, título e ano. Só entram projetos com
- * página de case (os que têm visão geral documentada).
+ * Catálogo completo: todos os projetos com página de case, por tipo de
+ * trabalho (ver catalog.ts), em capas do mesmo formato. A home faz a
+ * curadoria; aqui a função é encontrar qualquer trabalho.
  */
 export default function ProjectsIndex({ locale }: { locale: Locale }) {
   const t = getSiteCopy(locale);
   const p = t.projectsIndex;
-  const cases = getContent(locale).projects.filter((project) => project.overview);
+  const cases = catalogOrder(getContent(locale).projects.filter((project) => project.overview));
+  const groups = catalogKinds(locale)
+    .map((kind) => ({ kind, items: cases.filter((project) => entryFor(project.id).kind === kind.id) }))
+    .filter((group) => group.items.length);
   const base = localePath("/projetos", locale).href;
   const services = localePath("/servicos", locale);
   const jsonLd = {
@@ -79,41 +81,35 @@ export default function ProjectsIndex({ locale }: { locale: Locale }) {
 
       <section className="edh-ch edh-ch--paper" aria-label={p.title}>
         <div className="edh-frame">
-          {p.verticals.map((vertical) => {
-            const items = cases.filter((project) => project.vertical === vertical.id);
-            if (!items.length) return null;
-            return (
-              <section key={vertical.id} className="edh-pgroup" aria-labelledby={`grupo-${vertical.id}`}>
-                <div className="edh-pgroup-head">
-                  <h2 id={`grupo-${vertical.id}`} className="edh-pgroup-title">
-                    {vertical.label}
-                  </h2>
-                  <p className="edh-pgroup-blurb">{vertical.blurb}</p>
-                </div>
-                <ul className="edh-prows">
-                  {items.map((project) => (
-                    <li key={project.id} className="edh-prow">
-                      <Link href={`${base}/${project.id}`}>
-                        <span className="edh-prow-thumb">
-                          <Image src={project.image} alt="" fill sizes="(min-width: 48rem) 11rem, 7.5rem" />
-                        </span>
-                        <span>
-                          <span className="edh-prow-name">{project.title}</span>
-                          <span className="edh-prow-headline">
-                            {capitalize(project.headline ?? project.description)}
-                          </span>
-                        </span>
-                        <span className="edh-prow-meta">
-                          {project.year ? <span>{project.year}</span> : null}
-                          <span>{project.tech.slice(0, 3).join(", ")}</span>
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            );
-          })}
+          {/* Descoberta por tipo de trabalho: atalhos com a contagem de cada grupo. */}
+          <nav className="edh-kindnav" aria-label={locale === "en" ? "Kinds of work" : "Tipos de trabalho"}>
+            <ul>
+              {groups.map(({ kind, items }) => (
+                <li key={kind.id}>
+                  <a href={`#tipo-${kind.id}`}>
+                    {kind.label} <span>{items.length}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          {groups.map(({ kind, items }) => (
+            <section key={kind.id} id={`tipo-${kind.id}`} className="edh-pgroup" aria-labelledby={`grupo-${kind.id}`}>
+              <div className="edh-pgroup-head">
+                <h2 id={`grupo-${kind.id}`} className="edh-pgroup-title">
+                  {kind.label}
+                </h2>
+                <p className="edh-pgroup-blurb">{kind.blurb}</p>
+              </div>
+              <ul className="edh-pgrid">
+                {items.map((project) => (
+                  <li key={project.id}>
+                    <ProjectCard project={project} locale={locale} href={`${base}/${project.id}`} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
         </div>
       </section>
     </SitePage>

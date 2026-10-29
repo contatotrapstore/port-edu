@@ -26,7 +26,7 @@ const pt = {
     ],
   },
   hero: {
-    lead: "Desenvolvemos sistemas de gestão, produtos SaaS, lojas e integrações, e usamos IA onde ela resolve uma tarefa real. Para empresas que precisam organizar a operação e colocar produtos em uso.",
+    lead: "Desenvolvemos sistemas, produtos digitais, lojas e integrações. Aplicamos IA onde ela ajuda a resolver o problema.",
     secondary: "Ver projetos",
   },
   proof: {
@@ -150,18 +150,68 @@ const pt = {
     ],
   },
   method: {
-    title: "Clareza antes do código. Visibilidade durante a entrega.",
-    intro: "O projeto começa pelo problema e avança em etapas que você acompanha e valida.",
+    title: "Como um projeto anda, e o que você decide em cada etapa.",
+    intro: "Cada etapa termina com algo que você recebe e uma decisão sua. Os exemplos ao lado são ilustrativos, não documentos de clientes.",
+    receive: "Você recebe",
+    decide: "Você decide",
+    illustrative: "Exemplo ilustrativo",
     steps: [
       {
-        n: "01",
-        title: "Entender a necessidade",
-        body: "O que precisa funcionar, quem vai usar e quais ferramentas já fazem parte da operação.",
+        id: "escopo",
+        title: "Escopo por escrito",
+        receive: "O que entra nesta etapa, o que fica para depois, os critérios de aceite, o prazo e o valor.",
+        decide: "Se o escopo resolve o problema principal e se o investimento cabe agora.",
       },
-      { n: "02", title: "Definir a entrega", body: "Escopo, prazo e critérios de aceite combinados por escrito antes de começar." },
-      { n: "03", title: "Desenvolver por etapas", body: "Você acompanha as entregas e valida o que foi combinado ao longo do projeto." },
-      { n: "04", title: "Colocar em uso", body: "Documentação e orientação gravada. Suporte e evolução seguem as condições da proposta." },
+      {
+        id: "previa",
+        title: "Entrega navegável",
+        receive: "Um ambiente de teste para abrir e usar o que já foi construído, conforme as etapas da proposta.",
+        decide: "O que está certo e o que precisa de ajuste antes de seguir.",
+      },
+      {
+        id: "validacao",
+        title: "Validação",
+        receive: "Os critérios de aceite conferidos um a um, com os cenários combinados.",
+        decide: "Aprovar a etapa ou pedir o ajuste previsto no escopo.",
+      },
+      {
+        id: "operacao",
+        title: "Entrada em operação",
+        receive: "A publicação no ambiente combinado, com documentação e orientação gravada.",
+        decide: "O suporte e as próximas etapas, nas condições da proposta.",
+      },
     ],
+    artifacts: {
+      scope: {
+        heading: "Escopo, etapa 1",
+        project: "Painel de pedidos",
+        rows: [
+          ["Entra nesta etapa", "Cadastro de pedidos com etapas e responsáveis. Perfis de acesso para equipe e gestão."],
+          ["Fica para depois", "Integração com o ERP, orçada como outra etapa."],
+          ["Critério de aceite", "Um usuário autorizado avança um pedido entre as etapas combinadas; o sistema registra quem alterou e quando."],
+          ["Prazo e valor", "Definidos na proposta."],
+        ],
+      },
+      preview: {
+        bar: "Ambiente de teste",
+        note: "Recriação com dados fictícios a partir do CRM entregue à Passagens Europa.",
+        alt: "Recriação da tela de um CRM com funil de leads por etapa, com dados fictícios.",
+      },
+      validation: {
+        heading: "Critérios de aceite, etapa 1",
+        items: [
+          ["done", "O pedido avança entre as etapas combinadas e o histórico registra a alteração."],
+          ["done", "Ações não autorizadas são bloqueadas também no servidor."],
+          ["open", "Filtros e totais conferidos com um conjunto de registros conhecido."],
+        ],
+        actions: ["Aprovar a etapa", "Pedir ajuste"],
+      },
+      operation: {
+        heading: "Etapa entregue",
+        items: ["Publicada no ambiente combinado", "Documentação de uso", "Orientação gravada"],
+        next: "Próxima etapa: orçada à parte, quando você decidir.",
+      },
+    },
     note: "Prazo, valor e suporte de cada projeto ficam definidos na proposta.",
   },
   about: {
@@ -212,7 +262,7 @@ const en: HomeCopy = {
     ],
   },
   hero: {
-    lead: "We build management systems, SaaS products, online stores and integrations, and use AI where it solves a real task. For companies that need their operations organized and their products in use.",
+    lead: "We build systems, digital products, online stores and integrations. We apply AI where it helps solve the problem.",
     secondary: "See projects",
   },
   proof: {
@@ -336,15 +386,69 @@ const en: HomeCopy = {
     ],
   },
   method: {
-    title: "Clarity before code. Visibility during delivery.",
-    intro: "Every project starts with the problem and moves in stages you can follow and approve.",
+    title: "How a project moves, and what you decide at each stage.",
+    intro: "Every stage ends with something you receive and a decision of yours. The examples alongside are illustrative, not client documents.",
+    receive: "You receive",
+    decide: "You decide",
+    illustrative: "Illustrative example",
     steps: [
-      { n: "01", title: "Understand the need", body: "What needs to work, who will use it and which tools your business already relies on." },
-      { n: "02", title: "Define the delivery", body: "Scope, schedule and acceptance criteria agreed in writing before development." },
-      { n: "03", title: "Build in stages", body: "Follow the deliveries and validate the agreed scope throughout the project." },
-      { n: "04", title: "Put it to use", body: "Documentation and recorded guidance. Support and next stages follow the terms of the proposal." },
+      {
+        id: "escopo",
+        title: "Scope in writing",
+        receive: "What goes into this stage, what waits for later, the acceptance criteria, the timeline and the price.",
+        decide: "Whether the scope solves the main problem and whether the budget fits now.",
+      },
+      {
+        id: "previa",
+        title: "A delivery you can use",
+        receive: "A test environment to open and use what has been built so far, following the stages in the proposal.",
+        decide: "What is right and what needs adjusting before moving on.",
+      },
+      {
+        id: "validacao",
+        title: "Validation",
+        receive: "The acceptance criteria checked one by one, with the agreed scenarios.",
+        decide: "Approve the stage or ask for the adjustment the scope allows.",
+      },
+      {
+        id: "operacao",
+        title: "Going live",
+        receive: "Release to the agreed environment, with documentation and recorded guidance.",
+        decide: "Support and the next stages, on the terms of the proposal.",
+      },
     ],
-    note: "Each project's timeline, price and support are set in the proposal.",
+    artifacts: {
+      scope: {
+        heading: "Scope, stage 1",
+        project: "Order dashboard",
+        rows: [
+          ["In this stage", "Order records with stages and owners. Access roles for the team and managers."],
+          ["Later", "ERP integration, quoted as another stage."],
+          ["Acceptance criterion", "An authorized user moves an order between the agreed stages; the system records who changed it and when."],
+          ["Timeline and price", "Set in the proposal."],
+        ],
+      },
+      preview: {
+        bar: "Test environment",
+        note: "Recreation with fictional data, based on the CRM delivered to Passagens Europa.",
+        alt: "Recreation of a CRM screen with a lead pipeline by stage, with fictional data.",
+      },
+      validation: {
+        heading: "Acceptance criteria, stage 1",
+        items: [
+          ["done", "The order moves between the agreed stages and the history records the change."],
+          ["done", "Unauthorized actions are also blocked on the server."],
+          ["open", "Filters and totals checked against a known set of records."],
+        ],
+        actions: ["Approve the stage", "Ask for an adjustment"],
+      },
+      operation: {
+        heading: "Stage delivered",
+        items: ["Released to the agreed environment", "User documentation", "Recorded guidance"],
+        next: "Next stage: quoted separately, when you decide.",
+      },
+    },
+    note: "Timeline, price and support for each project are set in the proposal.",
   },
   about: {
     title: "Engineering close to the people who decide.",

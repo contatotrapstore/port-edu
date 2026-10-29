@@ -281,6 +281,152 @@
   line-height: 1.55;
 }
 
+/* --- Catálogo: atalhos por tipo, grade de capas e cartão de projeto ---------- */
+
+.edh-kindnav {
+  margin-bottom: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--ink);
+}
+
+.edh-kindnav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-kindnav a {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: baseline;
+  padding-block: 0.35rem;
+  color: var(--ink);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.edh-kindnav a span {
+  color: var(--moss);
+  font: 400 0.8125rem/1 var(--font-mono);
+}
+
+.edh-kindnav a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.edh-pgroup {
+  scroll-margin-top: 6rem;
+}
+
+.edh-pgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: clamp(1.75rem, 1rem + 2vw, 2.75rem) clamp(1.25rem, 0.75rem + 1.5vw, 2rem);
+  margin: 0;
+  padding: 1.5rem 0 0;
+  list-style: none;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-pcard {
+  display: grid;
+  gap: 0.9rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Mesma moldura para todas as capas: o material muda, o enquadramento não. */
+.edh-pcard-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 0.5rem;
+  background: var(--paper-deep);
+  box-shadow: 0 0 0 1px rgb(14 23 22 / 0.08);
+}
+
+.edh-pcard-media img {
+  object-fit: cover;
+  object-position: 50% 0%;
+  transition: scale 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Arte de divulgação: o aparelho fica no centro da cena. */
+.edh-pcard--promo .edh-pcard-media img {
+  object-position: 50% 50%;
+}
+
+.edh-pcard:hover .edh-pcard-media img,
+.edh-pcard:focus-visible .edh-pcard-media img {
+  scale: 1.03;
+}
+
+.edh-pcard-text {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.edh-pcard-label {
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-pcard-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.edh-pcard:hover .edh-pcard-name {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.edh-pcard-headline {
+  color: #34403c;
+  line-height: 1.5;
+}
+
+.edh-pcard-meta {
+  color: var(--moss);
+  font: 400 0.8125rem/1.45 var(--font-mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edh-pcard-media img {
+    transition: none;
+  }
+}
+
+.edh-samekind {
+  margin-top: clamp(3.5rem, 2.5rem + 3vw, 5rem);
+}
+
+.edh-samekind .edh-pgrid {
+  margin-top: 1.25rem;
+}
+
+/* Arte de divulgação no topo do case: largura contida, para a cena de outra
+   marca não tomar a página; telas e páginas usam a largura toda. */
+.edh-casehero--promo {
+  --cover-max: 56rem;
+}
+
+.edh-casehero .edh-case-note {
+  margin-top: 0.85rem;
+}
+
+.edh-casehero .edh-case-frame,
+.edh-casehero .edh-case-note {
+  max-width: var(--cover-max, none);
+  margin-inline: auto;
+}
+
 .edh-prows {
   margin: 0;
   padding: 0;
@@ -382,6 +528,28 @@
 
   .edh-prows {
     grid-column: 5 / -1;
+  }
+
+  /* Catálogo de capas: título e descrição numa linha, a grade na largura toda. */
+  .edh-pgroup:has(.edh-pgrid) .edh-pgroup-head {
+    position: static;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: end;
+  }
+
+  .edh-pgroup:has(.edh-pgrid) .edh-pgroup-title {
+    grid-column: 1 / span 5;
+  }
+
+  .edh-pgroup:has(.edh-pgrid) .edh-pgroup-blurb {
+    grid-column: 7 / -1;
+    margin: 0;
+  }
+
+  .edh-pgroup .edh-pgrid {
+    grid-column: 1 / -1;
   }
 }
 
@@ -575,15 +743,12 @@
   gap: 1rem;
 }
 
-.edh-casenav a {
-  display: grid;
-  grid-template-columns: 7rem minmax(0, 1fr);
-  gap: 1rem;
-  align-items: center;
-  padding: 1rem 0;
-  border-top: 1px solid var(--rule-paper-strong);
-  color: inherit;
-  text-decoration: none;
+/* Anterior e próximo: as mesmas capas do índice, lado a lado. */
+@media (width >= 40rem) {
+  .edh-casenav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+  }
 }
 
 .edh-casenav-thumb {

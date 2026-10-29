@@ -11,13 +11,13 @@ import { siteUrl } from "@/lib/site";
  */
 export function brandHomeMetadata(locale: Locale): Metadata {
   const en = locale === "en";
-  const title = en ? "EDevsHub | Custom software. Engineering that goes live." : "EDevsHub | Software sob medida. Engenharia que entra em uso.";
+  const title = en ? "EDevsHub | Custom software for real operations." : "EDevsHub | Software sob medida para operações reais.";
   const proof = en
     ? `${stats.projectsCompleted} projects completed on Workana, rated ${stats.rating}/5 across ${stats.clientReviews} reviews.`
     : `${stats.projectsCompleted} projetos realizados na Workana, nota ${stats.rating.toLocaleString("pt-BR")}/5 em ${stats.clientReviews} avaliações.`;
   const description = en
-    ? `Software and AI engineering studio: internal systems, SaaS, integrations and AI agents for real operations. ${proof}`
-    : `Estúdio de engenharia de software e IA: sistemas internos, SaaS, integrações e agentes de IA para operações reais. ${proof}`;
+    ? `Custom software company: systems, digital products, online stores and integrations, with AI where it helps solve the problem. ${proof}`
+    : `Empresa de software sob medida: sistemas, produtos digitais, lojas e integrações, com IA onde ela ajuda a resolver o problema. ${proof}`;
   const url = en ? `${siteUrl}/en` : siteUrl;
 
   return {
