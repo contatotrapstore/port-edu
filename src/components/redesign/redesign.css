@@ -50,6 +50,11 @@ html:has(.edh) body:has(.edh) {
 
   --gutter: clamp(1.25rem, 0.4rem + 3.4vw, 4rem);
   --frame: 80rem;
+  /* Escala de espaço vertical: capítulo (seção inteira), grupo (blocos de
+     uma seção, ex.: categorias do catálogo) e bloco (título e conteúdo). */
+  --space-section: clamp(4.5rem, 2.25rem + 6.5vw, 9rem);
+  --space-group: clamp(3.5rem, 2.5rem + 3vw, 5.5rem);
+  --space-block: clamp(1.75rem, 1.25rem + 1.5vw, 2.5rem);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-open: cubic-bezier(0.65, 0, 0.2, 1);
 

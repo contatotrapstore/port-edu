@@ -82,7 +82,6 @@ export default function ProjectsIndex({ locale }: { locale: Locale }) {
 
       <section className="edh-ch edh-ch--paper" aria-label={p.title}>
         <div className="edh-frame">
-          <div id="catalogo" />
           <CatalogFilter en={locale === "en"} groups={groups.map(({ kind, items }) => ({
             id: kind.id, label: kind.label, count: items.length, content: (
             <section key={kind.id} id={`tipo-${kind.id}`} className="edh-pgroup" aria-labelledby={`grupo-${kind.id}`}>

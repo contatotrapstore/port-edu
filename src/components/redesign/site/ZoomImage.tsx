@@ -17,7 +17,7 @@ export default function ZoomImage({ src, alt, width, height, sizes, priority = f
       event.preventDefault(); setActual(false); dialog.current.showModal();
     }} aria-label={`${en ? "Enlarge" : "Ampliar"}: ${alt}`}>
       <Image src={src} alt={alt} width={width} height={height} sizes={sizes} priority={priority} />
-      <span className="edh-image-open-label" aria-hidden="true">↗ {en ? "Explore image" : "Explorar imagem"}</span>
+      <span className="edh-image-open-label" aria-hidden="true">↗<span> {en ? "Explore image" : "Explorar imagem"}</span></span>
     </a>
     <dialog ref={dialog} className="edh-image-dialog" aria-labelledby={id}>
       <header>
@@ -29,7 +29,7 @@ export default function ZoomImage({ src, alt, width, height, sizes, priority = f
         {/* Original pixels: avoids the low-resolution responsive thumbnail in the viewer. */}
         <Image src={src} alt={alt} width={width} height={height} unoptimized style={actual ? { width, maxWidth: "none" } : undefined} />
       </div>
-      <p>{width} × {height} px · {en ? "Original capture. Pinch to zoom on your phone." : "Captura original. Use o gesto de pinça no celular."}</p>
+      <p>{width} × {height} px · {en ? "Image at its original resolution. Pinch to zoom on your phone." : "Imagem na resolução original. Use o gesto de pinça no celular."}</p>
     </dialog>
   </>;
 }

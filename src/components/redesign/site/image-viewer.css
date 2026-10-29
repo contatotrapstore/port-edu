@@ -1,5 +1,11 @@
-.edh-image-open { display: block; position: relative; color: inherit; cursor: zoom-in; }
-.edh-image-open-label { position: absolute; right: .75rem; bottom: .75rem; padding: .6rem .8rem; background: #101c18; color: #f0ede4; font: .75rem var(--font-mono); border: 1px solid #879287; border-radius: 3px; }
+.edh-image-open { display: block; position: relative; color: inherit; cursor: zoom-in; container-type: inline-size; }
+.edh-image-open-label { position: absolute; right: .75rem; bottom: .75rem; display: inline-flex; align-items: center; justify-content: center; min-width: 2.25rem; min-height: 2.25rem; padding: .5rem .75rem; background: #101c18; color: #f0ede4; font: .75rem var(--font-mono); border: 1px solid #879287; border-radius: 3px; }
+/* Imagem pequena (celular, bilhete, detalhe): só o ícone, para não cobrir a
+   interface. O nome completo da ação está no aria-label do link. */
+@container (width < 26rem) {
+  .edh-image-open-label { right: .4rem; bottom: .4rem; min-width: 1.5rem; min-height: 1.5rem; padding: .2rem; font-size: .7rem; }
+  .edh-image-open-label span { display: none; }
+}
 .edh-image-dialog { width: min(96vw, 1600px); max-width: 96vw; max-height: 94dvh; padding: 0; border: 1px solid #6d796e; background: #101c18; color: #f0ede4; border-radius: 6px; }
 .edh-image-dialog[open] { display: flex; flex-direction: column; }
 .edh-image-dialog:modal { overscroll-behavior: contain; }
@@ -10,7 +16,9 @@
 .edh-image-dialog button[aria-pressed=true] { background: #f0ede4; color: #101c18; }
 .edh-image-dialog p { margin: 0; padding: .7rem 1rem; font-size: .75rem; }
 .edh-image-scroll { overflow: auto; overscroll-behavior: contain; min-height: 0; background: #08100d; }
-.edh-image-scroll img { display: block; width: auto; height: auto; max-width: 100%; max-height: 72dvh; object-fit: contain; margin: auto; }
-.edh-image-scroll.is-actual img { max-height: none; margin: 0; }
+/* O dialog fica dentro das molduras (.edh-case-frame img { width: 100% }) no
+   DOM; o seletor mais específico impede que "Ajustar" amplie além do original. */
+.edh-image-dialog .edh-image-scroll img { display: block; width: auto; height: auto; max-width: 100%; max-height: 72dvh; object-fit: contain; margin: auto; }
+.edh-image-dialog .edh-image-scroll.is-actual img { max-height: none; margin: 0; }
 .edh-image-open:focus-visible, .edh-image-dialog :focus-visible { outline: 3px solid #c08031; outline-offset: 4px; }
 @media(max-width: 40rem) { .edh-image-dialog h2 { font-size: .75rem; } .edh-image-dialog header { gap: .4rem; padding: .6rem; } }

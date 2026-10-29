@@ -33,3 +33,19 @@ Rei Sol (830 px) and Muda (699 px) still need better original captures for furth
 Use `vercel deploy --scope edevs --build-env EDH_NEW_SITE=1`; do not use --prod or promote. Existing production secrets are excluded by .vercelignore and scoped to production in Vercel. No publishing schedules were altered.
 
 Preview ready: https://port-eyszertpk-edevs.vercel.app — deployment dpl_6up2f2kMzH27dubehMHjzGC3GeXB, code commit 47edd8e. Authenticated CLI checks confirmed 29-case catalog, seven additions, EN case HTML, Workana isolation and unconfigured preview admin. No production promotion.
+
+## Finishing round before production (29 October 2026)
+Base: merge of `main` (a1b779c, keeps the /central agents panel routes) into this branch.
+
+Fixed:
+- Catalog categories touched the previous cards: CatalogFilter wraps each group, so `.edh-pgroup + .edh-pgroup` never matched. Groups now sit in `.edh-pgroups` with `gap` (hidden groups take no space). Spacing scale added as tokens: `--space-section`, `--space-group`, `--space-block`.
+- Filtering from the bottom left visitors in the footer, and direct `#tipo-` links hid the control. The filter now scrolls back to the control when it changes, adds "Escolher outra categoria" at the end, and "Todos" clears the hash so Back returns to the card.
+- Case galleries showed portrait phone screens at full column width (~1,300 px each). Portrait screens now use a narrow column, two per row from 40rem.
+- Service crops requested images smaller than displayed (sizes ignored the crop scale); sizes are now multiplied by the crop factor.
+- /contratar showcase used `object-fit: cover`, cutting PACE sides and the Cacao Store bottom; now `contain` like the catalog.
+- Image viewer: "Fit" enlarged images beyond their width (frame rule won by order); the footer said "original capture" even on recreated demos; it now states the file resolution only.
+- Zoom hint covered small interface images; below 26rem of width it becomes an icon (full name in the link's aria-label).
+- Exhibit: overview repeated the section lead; returning to overview dropped keyboard focus.
+- Case body had double top padding (~200 px gap on desktop).
+
+Checked: 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920 px, phone landscape, 200% page zoom and 320 px reflow, reduced motion, no JavaScript, keyboard. CLS 0.000 on the pages measured.

@@ -180,20 +180,25 @@ export default function CasePage({ project, locale }: { project: Project; locale
               <section className="edh-case-section">
                 <h2>{c.gallery}</h2>
                 <div className="edh-case-gallery">
-                  {gallery.map((src, i) => (
-                    <figure key={src}>
-                      <div className="edh-case-frame">
-                        <ZoomImage
-                          en={en}
-                          src={src}
-                          alt={insights?.galleryCaptions[i] ?? `${project.title}, ${c.gallery.toLowerCase()} ${i + 1}`}
-                          {...projectImageSize(src)}
-                          sizes="(min-width: 64rem) min(46rem, 55vw), calc(100vw - 2.5rem)"
-                        />
-                      </div>
-                      {insights?.galleryCaptions[i] ? <figcaption className="edh-case-note">{insights.galleryCaptions[i]}</figcaption> : null}
-                    </figure>
-                  ))}
+                  {gallery.map((src, i) => {
+                    const size = projectImageSize(src);
+                    // Tela de celular em pé: coluna estreita, para não virar uma faixa de 1.300 px.
+                    const portrait = size.height > size.width * 1.2;
+                    return (
+                      <figure key={src} className={portrait ? "edh-case-shot--portrait" : undefined}>
+                        <div className="edh-case-frame">
+                          <ZoomImage
+                            en={en}
+                            src={src}
+                            alt={insights?.galleryCaptions[i] ?? `${project.title}, ${c.gallery.toLowerCase()} ${i + 1}`}
+                            {...size}
+                            sizes={portrait ? "(min-width: 40rem) 21rem, min(18rem, 100vw - 2.5rem)" : "(min-width: 64rem) min(46rem, 55vw), calc(100vw - 2.5rem)"}
+                          />
+                        </div>
+                        {insights?.galleryCaptions[i] ? <figcaption className="edh-case-note">{insights.galleryCaptions[i]}</figcaption> : null}
+                      </figure>
+                    );
+                  })}
                 </div>
               </section>
             ) : null}

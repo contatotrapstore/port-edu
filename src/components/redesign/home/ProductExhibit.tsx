@@ -14,6 +14,7 @@ const copy = {
     notes: ["Posição, cor e tamanho organizam os eventos no espaço. O mapa dá contexto antes de apresentar os detalhes.", "A legenda torna a codificação visual explícita. No app, a lista permite comparar magnitude, local e horário.", "O produto oferece uma visão histórica além dos eventos recentes. No Android, ela tem sua própria tela."],
     note: "Visita guiada com capturas reais. Dados registrados nas telas; não é monitoramento ao vivo nem alerta oficial.",
     full: "Conhecer o projeto", overview: "Visão geral", hint: "Escolha um ponto para aproximar", next: "Próximo ponto",
+    start: "Comece pelo ponto 1 ou escolha uma etapa da lista.",
   },
   en: {
     eyebrow: "In focus / PlanetShake", title: "A planet of data.\nAn interface to explore.",
@@ -22,6 +23,7 @@ const copy = {
     notes: ["Position, color and size organize events in space. The map provides context before the detail.", "The legend makes the visual encoding explicit. In the app, a list helps compare magnitude, location and time.", "The product offers a historical view beyond recent events. On Android it has its own screen."],
     note: "A guided visit using real captures. Data recorded in the screens; not live monitoring or an official alert.",
     full: "Explore the project", overview: "Overview", hint: "Choose a point to get closer", next: "Next point",
+    start: "Start with point 1 or pick a step from the list.",
   },
 };
 
@@ -51,8 +53,8 @@ export default function ProductExhibit({ locale }: { locale: Locale }) {
             <div role="group" aria-label={locale === "en" ? "Interface tour" : "Visita à interface"}>
               {c.steps.map((name, i) => <button key={name} ref={node => { stepButtons.current[i] = node; }} aria-pressed={point === i} onClick={() => setPoint(i)}><span>0{i + 1}</span>{name}<b aria-hidden="true">↗</b></button>)}
             </div>
-            <p className="edh-exhibit-explanation" aria-live="polite">{point >= 0 ? c.notes[point] : c.lead}</p>
-            <div className="edh-exhibit-actions"><button onClick={() => setPoint(-1)} disabled={point < 0}>{c.overview}</button><button onClick={() => setPoint((point + 1) % 3)}>{c.next} →</button></div>
+            <p className="edh-exhibit-explanation" aria-live="polite">{point >= 0 ? c.notes[point] : c.start}</p>
+            <div className="edh-exhibit-actions"><button onClick={(event) => { setPoint(-1); (event.currentTarget.nextElementSibling as HTMLButtonElement | null)?.focus(); }} disabled={point < 0}>{c.overview}</button><button onClick={() => setPoint((point + 1) % 3)}>{c.next} →</button></div>
             <Link href={`${locale === "en" ? "/en" : ""}/projetos/planetshake`}>{c.full} ↗</Link>
           </aside>
         </div>
