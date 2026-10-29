@@ -21,11 +21,11 @@
 - Workana, admin and existing content-worker paths remain unaffected.
 
 ## Tasks
-- [ ] Capture public pages for King Prime, Beeder, PnL, ChatCupom, Marli and Livoreto; use original PlanetShake screenshots. Record source and limits.
-- [ ] Add a bilingual project data module and connect new-site case routes, catalog and sitemap.
-- [ ] Correct image fit; add native image enlargement and accessible category filters.
-- [ ] Add a guided PlanetShake exhibit using actual product screens, with explicit snapshot labeling and touch controls.
-- [ ] Validate builds, isolation, links, desktop/mobile and keyboard interactions; review diff and publish preview only.
+- [x] Capture public pages for King Prime, Beeder, PnL, ChatCupom, Marli and Livoreto; use original PlanetShake screenshots. Record source and limits.
+- [x] Add a bilingual project data module and connect new-site case routes, catalog and sitemap.
+- [x] Correct image fit; add native image enlargement and accessible category filters.
+- [x] Add a guided PlanetShake exhibit using actual product screens, with explicit snapshot labeling and touch controls.
+- [x] Validate builds, isolation, links, desktop/mobile and keyboard interactions; review diff and publish preview only.
 
 ## Ledger
 - Starting commit fbb30aa; branch codex/portfolio-evolution in existing managed worktree. Existing untracked content assets preserved.

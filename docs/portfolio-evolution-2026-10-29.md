@@ -31,3 +31,5 @@ Rei Sol (830 px) and Muda (699 px) still need better original captures for furth
 
 ## Preview deployment
 Use `vercel deploy --scope edevs --build-env EDH_NEW_SITE=1`; do not use --prod or promote. Existing production secrets are excluded by .vercelignore and scoped to production in Vercel. No publishing schedules were altered.
+
+Preview ready: https://port-eyszertpk-edevs.vercel.app — deployment dpl_6up2f2kMzH27dubehMHjzGC3GeXB, code commit 47edd8e. Authenticated CLI checks confirmed 29-case catalog, seven additions, EN case HTML, Workana isolation and unconfigured preview admin. No production promotion.
