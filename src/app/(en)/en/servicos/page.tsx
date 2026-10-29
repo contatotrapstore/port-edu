@@ -4,9 +4,9 @@ import { isNewSiteEnabled } from "@/components/redesign/preview";
 import ServicesIndex from "@/components/redesign/site/ServicesIndex";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
 
-const title = "Custom systems, integrations and SaaS | Eduardo Gouveia";
+const title = "Custom systems, integrations and SaaS | EDevsHub";
 const description =
-  "Development services by Eduardo Gouveia: management systems, integrations and automations, SaaS platforms and the evolution of existing products.";
+  "Development services by EDevsHub: management systems, integrations and automations, SaaS platforms and the evolution of existing products.";
 
 // Versão em inglês de /servicos: existe só com EDH_NEW_SITE=1 (ver preview.ts).
 export const metadata: Metadata = {

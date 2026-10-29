@@ -9,8 +9,13 @@ import { siteUrl } from "@/lib/site";
 import { isNewSiteEnabled } from "@/components/redesign/preview";
 import ServicesIndex from "@site/services";
 
-const title = "Sistemas sob medida, integrações e SaaS | Eduardo Gouveia";
-const description = "Conheça os serviços de desenvolvimento de Eduardo Gouveia: sistemas de gestão, integrações e automações, plataformas SaaS e evolução de produtos existentes.";
+// Com o site novo, quem fala é a EDevsHub; o site atual mantém o texto de hoje.
+const title = isNewSiteEnabled()
+  ? "Sistemas sob medida, integrações e SaaS | EDevsHub"
+  : "Sistemas sob medida, integrações e SaaS | Eduardo Gouveia";
+const description = isNewSiteEnabled()
+  ? "Conheça os serviços de desenvolvimento da EDevsHub: sistemas de gestão, integrações e automações, plataformas SaaS e evolução de produtos existentes."
+  : "Conheça os serviços de desenvolvimento de Eduardo Gouveia: sistemas de gestão, integrações e automações, plataformas SaaS e evolução de produtos existentes.";
 
 export const metadata: Metadata = {
   title,

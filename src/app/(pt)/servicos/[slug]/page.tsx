@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import ServiceDetail from "@/components/services/ServiceDetail";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
 import { findService, services } from "@/lib/services";
+import { findServiceFor } from "@/lib/services.en";
 import { isNewSiteEnabled } from "@/components/redesign/preview";
 import ServiceView from "@site/service";
 
@@ -14,7 +15,8 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const service = findService(slug);
+  // Com o site novo, o texto vem da versão com a voz da EDevsHub (services.en.ts).
+  const service = isNewSiteEnabled() ? findServiceFor(slug, "pt") : findService(slug);
   if (!service) return {};
   const path = `/servicos/${service.slug}`;
   return {
@@ -30,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const service = findService(slug);
+  const service = isNewSiteEnabled() ? findServiceFor(slug, "pt") : findService(slug);
   if (!service) notFound();
   if (isNewSiteEnabled() && ServiceView) return <ServiceView service={service} locale="pt" />;
   return <ServiceDetail service={service} />;
