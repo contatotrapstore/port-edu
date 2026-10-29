@@ -1,6 +1,7 @@
 import { MetadataRoute } from "next";
 import { isNewSiteEnabled } from "@/components/redesign/preview";
 import { projects } from "@/lib/constants";
+import { getPortfolioProjects } from "@/lib/portfolio-additions";
 import { siteUrl } from "@/lib/site";
 
 /** Com o site novo, serviços, contratação e privacidade também têm versão em inglês. */
@@ -15,7 +16,7 @@ const ptPathOf = (url: string) => {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Omit lastModified until a trustworthy per-page content date is available.
-  const cases = projects.filter((p) => p.overview);
+  const cases = (isNewSiteEnabled() ? getPortfolioProjects("pt") : projects).filter((p) => p.overview);
   const entries: MetadataRoute.Sitemap = [
     {
       url: siteUrl,

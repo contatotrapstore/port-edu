@@ -4,6 +4,19 @@
  * Gerado a partir dos arquivos; ao trocar ou incluir uma imagem, atualizar.
  */
 const sizes: Record<string, [number, number]> = {
+  "/images/portfolio-2026/planet-history.png": [1905, 894],
+  "/images/portfolio-2026/beeder.png": [1265, 712],
+  "/images/portfolio-2026/chatcupom.png": [1920, 957],
+  "/images/portfolio-2026/kingprime.png": [1265, 712],
+  "/images/portfolio-2026/livoreto.png": [1265, 712],
+  "/images/portfolio-2026/marli.png": [1265, 712],
+  "/images/portfolio-2026/planet-1.png": [1080, 1920],
+  "/images/portfolio-2026/planet-2.png": [1080, 1920],
+  "/images/portfolio-2026/planet-3.png": [1080, 1920],
+  "/images/portfolio-2026/planet-4.png": [1080, 1920],
+  "/images/portfolio-2026/planetshake.png": [1905, 894],
+  "/images/portfolio-2026/pnlglobal.png": [1265, 712],
+
   "/images/projects/anamex-1.webp": [1280, 579],
   "/images/projects/anamex-2.webp": [1280, 574],
   "/images/projects/anamex-3.webp": [1280, 574],

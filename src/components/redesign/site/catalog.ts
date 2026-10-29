@@ -19,6 +19,13 @@ export type Material = "screen" | "page" | "promo";
 type Entry = { kind: CatalogKind; material: Material; cover?: { src: string; width: number; height: number } };
 
 export const CATALOG: Record<string, Entry> = {
+  kingprime: { kind: "sistemas", material: "page" },
+  pnlglobal: { kind: "sistemas", material: "page" },
+  planetshake: { kind: "apps", material: "screen" },
+  beeder: { kind: "saas", material: "page" },
+  chatcupom: { kind: "saas", material: "page" },
+  livoreto: { kind: "saas", material: "page" },
+  marli: { kind: "sites", material: "page" },
   // Sistemas e integrações
   rei: { kind: "sistemas", material: "screen", cover: { src: "/images/lp/rei-painel.webp", width: 830, height: 517 } },
   passagenseuropa: { kind: "sistemas", material: "promo" },
@@ -81,7 +88,8 @@ export const kindLabel = (kind: CatalogKind, locale: Locale) => KINDS[locale].fi
  */
 export function catalogOrder<T extends { id: string }>(projects: T[]): T[] {
   const ids = Object.keys(CATALOG);
-  const rank = (id: string) => (id in CATALOG ? ids.indexOf(id) : ids.length);
+  const kinds: CatalogKind[] = ["sistemas", "saas", "lojas", "apps", "sites"];
+  const rank = (id: string) => kinds.indexOf(entryFor(id).kind) * (ids.length + 1) + (id in CATALOG ? ids.indexOf(id) : ids.length);
   return [...projects].sort((a, b) => rank(a.id) - rank(b.id));
 }
 

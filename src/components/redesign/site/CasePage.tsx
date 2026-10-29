@@ -3,7 +3,8 @@ import Link from "next/link";
 import WorkanaLink from "@/components/workana/WorkanaLink";
 import { getCaseInsights } from "@/lib/case-insights";
 import { siteConfig, workanaProfile as stats, type Project } from "@/lib/constants";
-import { getContent } from "@/lib/content.en";
+import { getPortfolioProjects } from "@/lib/portfolio-additions";
+import ZoomImage from "./ZoomImage";
 import type { Locale } from "@/lib/locale";
 import { getPortfolioRole } from "@/lib/portfolio-case-copy";
 import { siteUrl } from "@/lib/site";
@@ -30,7 +31,7 @@ export default function CasePage({ project, locale }: { project: Project; locale
   const base = localePath("/projetos", locale).href;
   const url = `${siteUrl}${base}/${project.id}`;
   // Ordem do catálogo: anterior e próximo ficam, em geral, no mesmo tipo de trabalho.
-  const cases = catalogOrder(getContent(locale).projects.filter((item) => item.overview));
+  const cases = catalogOrder(getPortfolioProjects(locale).filter((item) => item.overview));
   const index = cases.findIndex((item) => item.id === project.id);
   // Sem voltas: no começo e no fim do catálogo, o lugar vira "Voltar aos projetos".
   const prev = index > 0 ? cases[index - 1] : null;
@@ -106,7 +107,8 @@ export default function CasePage({ project, locale }: { project: Project; locale
         >
           <div className="edh-frame">
             <div className="edh-case-frame">
-              <Image
+              <ZoomImage
+                en={en}
                 src={cover.src}
                 alt={c.imageAlt(project.title, headline)}
                 {...coverSize}
@@ -181,7 +183,8 @@ export default function CasePage({ project, locale }: { project: Project; locale
                   {gallery.map((src, i) => (
                     <figure key={src}>
                       <div className="edh-case-frame">
-                        <Image
+                        <ZoomImage
+                          en={en}
                           src={src}
                           alt={insights?.galleryCaptions[i] ?? `${project.title}, ${c.gallery.toLowerCase()} ${i + 1}`}
                           {...projectImageSize(src)}

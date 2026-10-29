@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { projects, projectColors, siteConfig } from "@/lib/constants";
+import { projects as originalProjects, projectColors, siteConfig } from "@/lib/constants";
 import CaseStudyContent from "@/components/CaseStudyContent";
 import CaseHeader from "@/components/CaseHeader";
 import AuthorCard from "@/components/AuthorCard";
@@ -12,6 +12,9 @@ import { portfolioOgImage } from "@/lib/portfolio-metadata";
 import { getCaseDescription } from "@/lib/portfolio-case-copy";
 import { isNewSiteEnabled } from "@/components/redesign/preview";
 import CasePage from "@site/case";
+
+import { getPortfolioProjects } from "@/lib/portfolio-additions";
+const projects = isNewSiteEnabled() ? getPortfolioProjects("pt") : originalProjects;
 
 // Only projects with real case-study content get a page; others (e.g. Click) 404.
 export const dynamicParams = false;

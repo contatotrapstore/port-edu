@@ -16,7 +16,8 @@ import { getCaseDescription } from "@/lib/portfolio-case-copy";
 import { isNewSiteEnabled } from "@/components/redesign/preview";
 import CasePage from "@site/case";
 
-const { projects } = getContent("en");
+import { getPortfolioProjects } from "@/lib/portfolio-additions";
+const projects = isNewSiteEnabled() ? getPortfolioProjects("en") : getContent("en").projects;
 
 // Only projects with real case-study content get a page; others (e.g. Click) 404.
 export const dynamicParams = false;

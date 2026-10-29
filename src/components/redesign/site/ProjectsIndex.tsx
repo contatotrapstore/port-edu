@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { workanaProfile as stats } from "@/lib/constants";
-import { getContent } from "@/lib/content.en";
+import { getPortfolioProjects } from "@/lib/portfolio-additions";
+import CatalogFilter from "./CatalogFilter";
 import type { Locale } from "@/lib/locale";
 import { siteUrl } from "@/lib/site";
 import ProjectCard from "./ProjectCard";
@@ -17,7 +18,7 @@ import { localePath } from "./paths";
 export default function ProjectsIndex({ locale }: { locale: Locale }) {
   const t = getSiteCopy(locale);
   const p = t.projectsIndex;
-  const cases = catalogOrder(getContent(locale).projects.filter((project) => project.overview));
+  const cases = catalogOrder(getPortfolioProjects(locale).filter((project) => project.overview));
   const groups = catalogKinds(locale)
     .map((kind) => ({ kind, items: cases.filter((project) => entryFor(project.id).kind === kind.id) }))
     .filter((group) => group.items.length);
@@ -81,19 +82,9 @@ export default function ProjectsIndex({ locale }: { locale: Locale }) {
 
       <section className="edh-ch edh-ch--paper" aria-label={p.title}>
         <div className="edh-frame">
-          {/* Descoberta por tipo de trabalho: atalhos com a contagem de cada grupo. */}
-          <nav className="edh-kindnav" aria-label={locale === "en" ? "Kinds of work" : "Tipos de trabalho"}>
-            <ul>
-              {groups.map(({ kind, items }) => (
-                <li key={kind.id}>
-                  <a href={`#tipo-${kind.id}`}>
-                    {kind.label} <span>{items.length}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          {groups.map(({ kind, items }) => (
+          <div id="catalogo" />
+          <CatalogFilter en={locale === "en"} groups={groups.map(({ kind, items }) => ({
+            id: kind.id, label: kind.label, count: items.length, content: (
             <section key={kind.id} id={`tipo-${kind.id}`} className="edh-pgroup" aria-labelledby={`grupo-${kind.id}`}>
               <div className="edh-pgroup-head">
                 <h2 id={`grupo-${kind.id}`} className="edh-pgroup-title">
@@ -109,7 +100,8 @@ export default function ProjectsIndex({ locale }: { locale: Locale }) {
                 ))}
               </ul>
             </section>
-          ))}
+            ),
+          }))} />
         </div>
       </section>
     </SitePage>

@@ -12,6 +12,7 @@ import HomeContact from "./home/HomeContact";
 import HomeFooter from "./home/HomeFooter";
 import HomeMethod from "./home/HomeMethod";
 import HomeProjects from "./home/HomeProjects";
+import ProductExhibit from "./home/ProductExhibit";
 import HomeSolutions from "./home/HomeSolutions";
 import { getHomeCopy } from "./home/copy";
 import { hireHref } from "./site/paths";
@@ -89,6 +90,7 @@ export default function BrandHome({ locale, variant }: { locale: Locale; variant
 
       <main id="conteudo">
         <StationHero copy={hero} />
+        <ProductExhibit locale={locale} />
         <HomeProjects copy={home} locale={locale} />
         <HomeSolutions copy={home} locale={locale} />
         <HomeMethod method={home.method} />

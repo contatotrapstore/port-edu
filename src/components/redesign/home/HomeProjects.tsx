@@ -1,4 +1,9 @@
-import Image from "next/image";
+import type { StaticImageData } from "next/image";
+import ZoomImage from "../site/ZoomImage";
+
+function CaseImage({ src, alt, sizes, en }: { src: StaticImageData; alt: string; sizes: string; en: boolean }) {
+  return <div style={{ maxWidth: src.width, marginInline: "auto" }}><ZoomImage src={src.src} width={src.width} height={src.height} alt={alt} sizes={sizes} en={en} /></div>;
+}
 import Link from "next/link";
 import { getContent } from "@/lib/content.en";
 import type { Locale } from "@/lib/locale";
@@ -11,19 +16,19 @@ import { HOME_CASES, type HomeCaseMedia } from "./media";
  * ficha completa continua na página do case. Ano vem de getContent(), a mesma
  * fonte do portfólio.
  */
-function CaseMedia({ media, alt }: { media: HomeCaseMedia; alt: Record<string, string> }) {
+function CaseMedia({ media, alt, locale }: { media: HomeCaseMedia; alt: Record<string, string>; locale: Locale }) {
   switch (media.layout) {
     case "lead":
       return (
         <div className="edh-demo">
           <div className="edh-case-frame edh-demo-main">
-            <Image src={media.crm} alt={alt.crm} placeholder="blur" sizes="(min-width: 64rem) min(62vw, 52rem), calc(100vw - 2.5rem)" />
+            <CaseImage en={locale === "en"} src={media.crm} alt={alt.crm} sizes="(min-width: 64rem) min(62vw, 52rem), calc(100vw - 2.5rem)" />
           </div>
           <div className="edh-demo-phone">
-            <Image src={media.chat} alt={alt.chat} placeholder="blur" sizes="(min-width: 64rem) 13rem, 34vw" />
+            <CaseImage en={locale === "en"} src={media.chat} alt={alt.chat} sizes="(min-width: 64rem) 13rem, 34vw" />
           </div>
           <div className="edh-demo-ticket">
-            <Image src={media.ticket} alt={alt.ticket} placeholder="blur" sizes="(min-width: 64rem) 24rem, 58vw" />
+            <CaseImage en={locale === "en"} src={media.ticket} alt={alt.ticket} sizes="(min-width: 64rem) 24rem, 58vw" />
           </div>
         </div>
       );
@@ -31,17 +36,17 @@ function CaseMedia({ media, alt }: { media: HomeCaseMedia; alt: Record<string, s
     case "flow":
       return (
         <div className="edh-case-frame">
-          <Image src={media.main} alt={alt.main} placeholder="blur" sizes="(min-width: 80rem) 80rem, calc(100vw - 2.5rem)" />
+          <CaseImage en={locale === "en"} src={media.main} alt={alt.main} sizes="(min-width: 80rem) 80rem, calc(100vw - 2.5rem)" />
         </div>
       );
     case "product":
       return (
         <div className="edh-case-shots edh-case-shots--pair">
           <div className="edh-case-frame">
-            <Image src={media.main} alt={alt.main} placeholder="blur" sizes="(min-width: 64rem) min(55vw, 46rem), calc(100vw - 2.5rem)" />
+            <CaseImage en={locale === "en"} src={media.main} alt={alt.main} sizes="(min-width: 64rem) min(55vw, 46rem), calc(100vw - 2.5rem)" />
           </div>
           <div className="edh-case-frame edh-case-detail">
-            <Image src={media.detail} alt={alt.detail} placeholder="blur" sizes="(min-width: 64rem) 24rem, 72vw" />
+            <CaseImage en={locale === "en"} src={media.detail} alt={alt.detail} sizes="(min-width: 64rem) 24rem, 72vw" />
           </div>
         </div>
       );
@@ -51,7 +56,7 @@ function CaseMedia({ media, alt }: { media: HomeCaseMedia; alt: Record<string, s
         <div className="edh-store" tabIndex={0} role="group" aria-label={alt.group}>
           {media.shots.map((shot) => (
             <div key={shot.key} className="edh-case-frame edh-store-shot">
-              <Image src={shot.image} alt={alt[shot.key]} placeholder="blur" sizes="(min-width: 64rem) 27rem, 78vw" />
+              <CaseImage en={locale === "en"} src={shot.image} alt={alt[shot.key]} sizes="(min-width: 64rem) 27rem, 78vw" />
             </div>
           ))}
         </div>
@@ -85,7 +90,7 @@ export default function HomeProjects({ copy, locale }: { copy: HomeCopy; locale:
             return (
               <article key={id} id={`caso-${id}`} className={`edh-case edh-case--${media.layout}`} aria-labelledby={`caso-${id}-title`}>
                 <figure className="edh-case-media">
-                  <CaseMedia media={media} alt={c.alt} />
+                  <CaseMedia media={media} alt={c.alt} locale={locale} />
                   {media.layout === "store" ? (
                     <ol className="edh-store-steps" aria-label={c.kind}>
                       {c.look.map((item) => (
