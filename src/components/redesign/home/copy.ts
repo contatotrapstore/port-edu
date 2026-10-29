@@ -12,9 +12,9 @@ import type { Locale } from "@/lib/locale";
  */
 
 /** Cases da home, na ordem e com o título editorial de cada um. */
-export type HomeCaseId = "passagenseuropa" | "neuroialab" | "pace" | "mudapaisagens";
+export type HomeCaseId = "passagenseuropa" | "rei" | "pace" | "cacaostore" | "mudapaisagens";
 
-type CaseCopy = { title: string; role: string; note: string; alt: Record<string, string> };
+type CaseCopy = { kind: string; title: string; summary: string; look: string[]; role: string; note: string; alt: Record<string, string> };
 
 const pt = {
   nav: {
@@ -26,7 +26,7 @@ const pt = {
     ],
   },
   hero: {
-    lead: "Desenvolvemos sistemas internos, plataformas SaaS, integrações e agentes de IA para empresas que precisam organizar a operação e colocar produtos em uso.",
+    lead: "Desenvolvemos sistemas de gestão, produtos SaaS, lojas e integrações, e usamos IA onde ela resolve uma tarefa real. Para empresas que precisam organizar a operação e colocar produtos em uso.",
     secondary: "Ver projetos",
   },
   proof: {
@@ -38,16 +38,19 @@ const pt = {
     sourceLink: "Ver perfil",
   },
   projects: {
-    title: "Projetos que mostram como trabalhamos.",
-    intro: "Sistemas em operação, cada um com o problema que resolveu, o que foi entregue e o papel da EDevsHub.",
-    spec: { problem: "Problema", delivery: "Entrega", role: "Papel", stack: "Tecnologias", year: "Ano" },
+    title: "Cinco projetos, cinco tipos de software.",
+    intro: "Do CRM comercial à loja virtual: trabalhos entregues, cada um mostrado pela tela que melhor explica o que ele faz.",
+    look: "No sistema",
     open: "Conhecer o projeto",
     all: "Ver todos os projetos",
-    allNote: "Sistemas, SaaS, lojas e automações: o portfólio completo fica na página de projetos.",
+    allNote: "Mais SaaS, aplicativos, sites e lojas estão na página de projetos.",
     cases: {
       passagenseuropa: {
+        kind: "CRM e operação comercial",
         title: "Atendimento, funil e financeiro no mesmo sistema.",
-        role: "Desenvolvimento completo: CRM, atendimento por WhatsApp, funil de vendas, cotações, gestão financeira e comissões.",
+        summary: "A operação comercial estava espalhada por ferramentas separadas. O CRM reúne leads, atendimento por WhatsApp, cotações, financeiro e comissões, com recursos de IA para apoiar o atendimento.",
+        look: ["Funil de leads por etapa", "Conversas do WhatsApp dentro do CRM", "Cotações, financeiro e comissões no mesmo lugar"],
+        role: "Desenvolvimento completo",
         note: "Demonstração recriada com dados fictícios a partir do CRM entregue. A conversa e o bilhete também são ilustrativos.",
         alt: {
           crm: "Recriação da tela do CRM com dados fictícios: menu de módulos e funil SDR com leads em cada etapa.",
@@ -55,27 +58,49 @@ const pt = {
           ticket: "Bilhete ilustrativo de São Paulo para Lisboa, com dados fictícios.",
         },
       },
-      neuroialab: {
-        title: "Dezenove assistentes de IA para a rotina clínica.",
-        role: "Desenvolvimento completo do produto.",
-        note: "Telas reais do sistema entregue.",
+      rei: {
+        kind: "Sistema de gestão de obras",
+        title: "Cada obra em etapas, com responsável e prazo.",
+        summary: "A Rei Sol Infraestrutura acompanhava obras de telecom em controles manuais. O sistema organiza etapas, tarefas, SLAs e dependências num painel que o próprio admin configura.",
+        look: ["Lista de obras com o andamento de cada uma", "Tarefa com setor, responsável, SLA e tempo restante", "Etapas e tarefas configuradas no painel administrativo"],
+        role: "Desenvolvimento completo",
+        note: "Tela do sistema entregue, com dados de teste.",
         alt: {
-          main: "Painel do NeuroIA Lab com assinaturas, assistentes ativos e conversas do mês.",
-          detail: "Conversa com um dos assistentes de IA do NeuroIA Lab.",
+          main: "Tela de obras do sistema da Rei Sol, com o andamento de três obras e o detalhe de uma tarefa com setor, responsável e SLA.",
         },
       },
       pace: {
+        kind: "Produto SaaS para clínicas",
         title: "Neurofeedback com EEG e jogos 3D, no navegador.",
-        role: "Desenvolvimento completo do produto.",
+        summary: "Com um headset EEG, o paciente controla jogos 3D pela atenção e pelo relaxamento. A plataforma reúne agenda, protocolos, evolução e relatórios de várias clínicas.",
+        look: ["Painel clínico com índices de atenção e foco", "Protocolos prontos por condição", "Sessões guiadas e relatórios em PDF"],
+        role: "Desenvolvimento completo",
         note: "Telas reais do sistema entregue, com dados de teste.",
         alt: {
           main: "Painel clínico do PACE com índices de atenção, foco e engajamento, alertas e ações rápidas.",
           detail: "Templates de protocolo do PACE para TDAH, ansiedade e atendimento infantil.",
         },
       },
+      cacaostore: {
+        kind: "Loja virtual em Shopify",
+        title: "Uma loja Shopify sob medida para uma marca de chocolates.",
+        summary: "Layout próprio sobre a Shopify, pensado primeiro para o celular, com catálogo, checkout da plataforma e produtos e estoque geridos pelo próprio cliente.",
+        look: ["Página inicial e navegação", "Destaques e produtos", "Página da marca"],
+        role: "Desenvolvimento completo",
+        note: "Capturas da loja entregue.",
+        alt: {
+          group: "Três páginas da loja Cacao Store",
+          home: "Página inicial da Cacao Store, com menu de categorias, busca e banner de produtos.",
+          products: "Seção de destaques da Cacao Store, com fotos de trufas e brownies.",
+          brand: "Página da Cacao Store com a chamada Gente que ama chocolate e fotos de produtos.",
+        },
+      },
       mudapaisagens: {
+        kind: "Integração com IA",
         title: "Pré-atendimento com IA no WhatsApp, registrado no Pipefy.",
-        role: "Desenvolvimento completo da automação.",
+        summary: "Novos leads chegavam pelo WhatsApp e esperavam alguém responder. O fluxo no Make conversa, faz as perguntas de qualificação e registra cada lead no Pipefy.",
+        look: ["Mensagem no WhatsApp", "IA responde e qualifica", "Lead registrado no Pipefy"],
+        role: "Desenvolvimento completo da automação",
         note: "Tela real do fluxo de automação.",
         alt: {
           main: "Fluxo de automação do qualificador de leads com IA, com as etapas entre WhatsApp e Pipefy.",
@@ -95,7 +120,7 @@ const pt = {
         title: "Organizar a operação",
         need: "Planilhas, conversas e controles soltos viram um sistema com regras, permissões e histórico.",
         deliverables: ["Sistemas internos", "Painéis de gestão", "Regras e perfis de acesso"],
-        caseId: "passagenseuropa" as HomeCaseId,
+        caseId: "rei" as HomeCaseId,
         service: "/servicos/sistemas-sob-medida",
       },
       {
@@ -119,7 +144,7 @@ const pt = {
         title: "Aplicar IA com controle",
         need: "Atendimento, qualificação e tarefas especializadas com IA, dentro de limites definidos e com revisão.",
         deliverables: ["Agentes de atendimento", "Assistentes especializados", "Qualificação de leads"],
-        caseId: "neuroialab" as HomeCaseId,
+        caseId: "passagenseuropa" as HomeCaseId,
         service: "/servicos/integracoes-e-automacoes",
       },
     ],
@@ -159,7 +184,7 @@ const pt = {
     workanaLink: "Ver o perfil",
   },
   footer: {
-    tagline: "Software sob medida e IA em produção para operações reais.",
+    tagline: "Sistemas, produtos, lojas e integrações sob medida.",
     columns: { work: "Trabalho", company: "EDevsHub", legal: "Informações" },
     projects: "Projetos",
     services: "Serviços",
@@ -187,7 +212,7 @@ const en: HomeCopy = {
     ],
   },
   hero: {
-    lead: "We build internal systems, SaaS platforms, integrations and AI agents for companies that need their operations organized and their products in use.",
+    lead: "We build management systems, SaaS products, online stores and integrations, and use AI where it solves a real task. For companies that need their operations organized and their products in use.",
     secondary: "See projects",
   },
   proof: {
@@ -199,16 +224,19 @@ const en: HomeCopy = {
     sourceLink: "See profile",
   },
   projects: {
-    title: "Projects that show how we work.",
-    intro: "Systems in production, each with the problem it solved, what was delivered and the role EDevsHub played.",
-    spec: { problem: "Problem", delivery: "Delivered", role: "Role", stack: "Stack", year: "Year" },
+    title: "Five projects, five kinds of software.",
+    intro: "From a sales CRM to an online store: delivered work, each shown through the screen that best explains what it does.",
+    look: "In the system",
     open: "See the project",
     all: "See all projects",
-    allNote: "Systems, SaaS, stores and automations: the full portfolio lives on the projects page.",
+    allNote: "More SaaS, apps, websites and stores are on the projects page.",
     cases: {
       passagenseuropa: {
+        kind: "CRM and sales operations",
         title: "Support, pipeline and finance in one system.",
-        role: "Full development: CRM, WhatsApp support, sales pipeline, quotes, finance and commissions.",
+        summary: "The sales operation was spread across separate tools. The CRM brings together leads, WhatsApp support, quotes, finance and commissions, with AI features to support customer service.",
+        look: ["Lead pipeline by stage", "WhatsApp conversations inside the CRM", "Quotes, finance and commissions in one place"],
+        role: "Full development",
         note: "Demo recreated with fictional data from the delivered CRM. The conversation and the ticket are illustrative too.",
         alt: {
           crm: "Recreation of the CRM screen with fictional data: module menu and SDR pipeline with leads in each stage.",
@@ -216,27 +244,49 @@ const en: HomeCopy = {
           ticket: "Illustrative ticket from São Paulo to Lisbon, with fictional data.",
         },
       },
-      neuroialab: {
-        title: "Nineteen AI assistants for clinical work.",
-        role: "Full development of the product.",
-        note: "Real screens from the delivered system.",
+      rei: {
+        kind: "Construction management system",
+        title: "Every project in stages, with an owner and a deadline.",
+        summary: "Rei Sol Infraestrutura tracked telecom construction projects with manual controls. The system organizes stages, tasks, SLAs and dependencies in a dashboard the admin configures.",
+        look: ["List of projects with each one’s progress", "Task with department, owner, SLA and time left", "Stages and tasks configured in the admin panel"],
+        role: "Full development",
+        note: "Screen from the delivered system, with test data.",
         alt: {
-          main: "NeuroIA Lab dashboard with subscriptions, active assistants and monthly conversations.",
-          detail: "Conversation with one of the NeuroIA Lab AI assistants.",
+          main: "Projects screen of the Rei Sol system, with the progress of three projects and the detail of a task with department, owner and SLA.",
         },
       },
       pace: {
+        kind: "SaaS product for clinics",
         title: "Neurofeedback with EEG and 3D games, in the browser.",
-        role: "Full development of the product.",
+        summary: "Wearing an EEG headset, the patient controls 3D games through attention and relaxation. The platform brings together scheduling, protocols, progress and reports for several clinics.",
+        look: ["Clinical dashboard with attention and focus indexes", "Ready-made protocols by condition", "Guided sessions and PDF reports"],
+        role: "Full development",
         note: "Real screens from the delivered system, with test data.",
         alt: {
           main: "PACE clinical dashboard with attention, focus and engagement indexes, alerts and quick actions.",
           detail: "PACE protocol templates for ADHD, anxiety and children.",
         },
       },
+      cacaostore: {
+        kind: "Shopify online store",
+        title: "A custom Shopify store for a chocolate brand.",
+        summary: "A custom layout on Shopify, designed for phones first, with the catalog, the platform’s checkout, and products and stock managed by the client.",
+        look: ["Home page and navigation", "Highlights and products", "Brand page"],
+        role: "Full development",
+        note: "Screenshots of the delivered store.",
+        alt: {
+          group: "Three pages of the Cacao Store",
+          home: "Cacao Store home page with the category menu, search and a product banner.",
+          products: "Cacao Store highlights section with photos of truffles and brownies.",
+          brand: "Cacao Store page with the line Gente que ama chocolate and product photos.",
+        },
+      },
       mudapaisagens: {
+        kind: "AI integration",
         title: "AI pre-sales on WhatsApp, logged in Pipefy.",
-        role: "Full development of the automation.",
+        summary: "New leads arrived on WhatsApp and waited for someone to reply. The Make workflow talks to them, asks the qualification questions and logs each lead in Pipefy.",
+        look: ["Message on WhatsApp", "AI replies and qualifies", "Lead logged in Pipefy"],
+        role: "Full development of the automation",
         note: "Real screen from the automation flow.",
         alt: {
           main: "Automation flow of the AI lead qualifier, with the steps between WhatsApp and Pipefy.",
@@ -256,7 +306,7 @@ const en: HomeCopy = {
         title: "Organize the operation",
         need: "Loose spreadsheets, chats and manual controls become one system with rules, permissions and history.",
         deliverables: ["Internal systems", "Management dashboards", "Rules and access roles"],
-        caseId: "passagenseuropa",
+        caseId: "rei",
         service: "/servicos/sistemas-sob-medida",
       },
       {
@@ -280,7 +330,7 @@ const en: HomeCopy = {
         title: "Apply AI with control",
         need: "Customer service, lead qualification and specialist tasks with AI, within defined limits and with review.",
         deliverables: ["Customer service agents", "Specialist assistants", "Lead qualification"],
-        caseId: "neuroialab",
+        caseId: "passagenseuropa",
         service: "/servicos/integracoes-e-automacoes",
       },
     ],
@@ -316,7 +366,7 @@ const en: HomeCopy = {
     workanaLink: "See the profile",
   },
   footer: {
-    tagline: "Custom software and AI in production for real operations.",
+    tagline: "Custom systems, products, stores and integrations.",
     columns: { work: "Work", company: "EDevsHub", legal: "Information" },
     projects: "Projects",
     services: "Services",

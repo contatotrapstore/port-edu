@@ -112,6 +112,10 @@ export default function HomeFooter({
           </nav>
         </div>
 
+        {/* A marca em escala de manchete fecha a página; decorativa, o nome já está no topo do rodapé. */}
+        <p className="edh-footer-wordmark" aria-hidden="true">
+          EDevsHub
+        </p>
         <div className="edh-footer-base">
           <span>
             © {year} EDevsHub. {t.rights}

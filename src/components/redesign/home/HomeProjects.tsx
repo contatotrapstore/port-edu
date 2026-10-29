@@ -3,13 +3,62 @@ import Link from "next/link";
 import { getContent } from "@/lib/content.en";
 import type { Locale } from "@/lib/locale";
 import type { HomeCopy } from "./copy";
-import { HOME_CASES } from "./media";
+import { HOME_CASES, type HomeCaseMedia } from "./media";
 
 /**
- * Projetos selecionados. Problema, entrega, stack e ano vêm de getContent(),
- * a mesma fonte das páginas de case; aqui ficam o título editorial, o papel e
- * a nota que diz o que cada imagem é. Composição alterna escala e lado.
+ * Projetos selecionados, um por tipo de trabalho. Cada um aparece do jeito que
+ * melhor demonstra o que foi feito (ver media.ts); o texto fica curto e a
+ * ficha completa continua na página do case. Ano vem de getContent(), a mesma
+ * fonte do portfólio.
  */
+function CaseMedia({ media, alt }: { media: HomeCaseMedia; alt: Record<string, string> }) {
+  switch (media.layout) {
+    case "lead":
+      return (
+        <div className="edh-demo">
+          <div className="edh-case-frame edh-demo-main">
+            <Image src={media.crm} alt={alt.crm} placeholder="blur" sizes="(min-width: 64rem) min(62vw, 52rem), calc(100vw - 2.5rem)" />
+          </div>
+          <div className="edh-demo-phone">
+            <Image src={media.chat} alt={alt.chat} placeholder="blur" sizes="(min-width: 64rem) 13rem, 34vw" />
+          </div>
+          <div className="edh-demo-ticket">
+            <Image src={media.ticket} alt={alt.ticket} placeholder="blur" sizes="(min-width: 64rem) 24rem, 58vw" />
+          </div>
+        </div>
+      );
+    case "system":
+    case "flow":
+      return (
+        <div className="edh-case-frame">
+          <Image src={media.main} alt={alt.main} placeholder="blur" sizes="(min-width: 80rem) 80rem, calc(100vw - 2.5rem)" />
+        </div>
+      );
+    case "product":
+      return (
+        <div className="edh-case-shots edh-case-shots--pair">
+          <div className="edh-case-frame">
+            <Image src={media.main} alt={alt.main} placeholder="blur" sizes="(min-width: 64rem) min(55vw, 46rem), calc(100vw - 2.5rem)" />
+          </div>
+          <div className="edh-case-frame edh-case-detail">
+            <Image src={media.detail} alt={alt.detail} placeholder="blur" sizes="(min-width: 64rem) 24rem, 72vw" />
+          </div>
+        </div>
+      );
+    case "store":
+      return (
+        // No celular a fileira rola na horizontal: focável para quem navega pelo teclado.
+        <div className="edh-store" tabIndex={0} role="group" aria-label={alt.group}>
+          {media.shots.map((shot) => (
+            <div key={shot.key} className="edh-case-frame edh-store-shot">
+              <Image src={shot.image} alt={alt[shot.key]} placeholder="blur" sizes="(min-width: 64rem) 27rem, 78vw" />
+            </div>
+          ))}
+        </div>
+      );
+  }
+}
+
 export default function HomeProjects({ copy, locale }: { copy: HomeCopy; locale: Locale }) {
   const t = copy.projects;
   const projects = getContent(locale).projects;
@@ -30,102 +79,49 @@ export default function HomeProjects({ copy, locale }: { copy: HomeCopy; locale:
             const project = projects.find((p) => p.id === id);
             if (!project) throw new Error(`Projeto ${id} não encontrado`);
             const c = t.cases[id];
-            const alt: Record<string, string> = c.alt;
             const href = `${prefix}/projetos/${id}`;
+            const flow = media.layout === "flow";
 
             return (
-              <article
-                key={id}
-                id={`caso-${id}`}
-                className={`edh-case edh-case--${media.layout}`}
-                aria-labelledby={`caso-${id}-title`}
-              >
+              <article key={id} id={`caso-${id}`} className={`edh-case edh-case--${media.layout}`} aria-labelledby={`caso-${id}-title`}>
                 <figure className="edh-case-media">
-                  {media.layout === "lead" ? (
-                    <div className="edh-demo">
-                      <div className="edh-case-frame edh-demo-main">
-                        <Image
-                          src={media.crm}
-                          alt={alt.crm}
-                          placeholder="blur"
-                          sizes="(min-width: 64rem) min(62vw, 52rem), calc(100vw - 2.5rem)"
-                        />
-                      </div>
-                      <div className="edh-demo-phone">
-                        <Image
-                          src={media.chat}
-                          alt={alt.chat}
-                          placeholder="blur"
-                          sizes="(min-width: 64rem) 13rem, 34vw"
-                        />
-                      </div>
-                      <div className="edh-demo-ticket">
-                        <Image
-                          src={media.ticket}
-                          alt={alt.ticket}
-                          placeholder="blur"
-                          sizes="(min-width: 64rem) 24rem, 58vw"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={media.detail ? "edh-case-shots edh-case-shots--pair" : "edh-case-shots"}>
-                      <div className="edh-case-frame">
-                        <Image
-                          src={media.main}
-                          alt={alt.main}
-                          placeholder="blur"
-                          sizes={
-                            media.layout === "compact"
-                              ? "(min-width: 64rem) 36rem, calc(100vw - 2.5rem)"
-                              : "(min-width: 64rem) min(55vw, 46rem), calc(100vw - 2.5rem)"
-                          }
-                        />
-                      </div>
-                      {media.detail ? (
-                        <div className="edh-case-frame edh-case-detail">
-                          <Image
-                            src={media.detail}
-                            alt={alt.detail}
-                            placeholder="blur"
-                            sizes="(min-width: 64rem) 24rem, 72vw"
-                          />
-                        </div>
-                      ) : null}
-                    </div>
-                  )}
+                  <CaseMedia media={media} alt={c.alt} />
+                  {media.layout === "store" ? (
+                    <ol className="edh-store-steps" aria-label={c.kind}>
+                      {c.look.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ol>
+                  ) : null}
                   <figcaption className="edh-case-note">{c.note}</figcaption>
                 </figure>
 
                 <div className="edh-case-body">
-                  <p className="edh-case-kicker">{project.title}</p>
+                  <p className="edh-case-kicker">{c.kind}</p>
                   <h3 id={`caso-${id}-title`} className="edh-case-title">
                     {c.title}
                   </h3>
-                  <dl className="edh-spec">
-                    <div>
-                      <dt>{t.spec.problem}</dt>
-                      <dd>{project.problem ?? project.description}</dd>
+                  <p className="edh-case-lede">{c.summary}</p>
+                  {flow ? (
+                    <ol className="edh-flow">
+                      {c.look.map((step) => (
+                        <li key={step}>{step}</li>
+                      ))}
+                    </ol>
+                  ) : media.layout !== "store" ? (
+                    <div className="edh-case-look">
+                      <p>{t.look}</p>
+                      <ul>
+                        {c.look.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
                     </div>
-                    <div>
-                      <dt>{t.spec.delivery}</dt>
-                      <dd>{project.approach ?? project.description}</dd>
-                    </div>
-                    <div>
-                      <dt>{t.spec.role}</dt>
-                      <dd>{c.role}</dd>
-                    </div>
-                    <div className="edh-spec-half">
-                      <dt>{t.spec.stack}</dt>
-                      <dd>{project.tech.join(", ")}</dd>
-                    </div>
-                    {project.year ? (
-                      <div className="edh-spec-half">
-                        <dt>{t.spec.year}</dt>
-                        <dd>{project.year}</dd>
-                      </div>
-                    ) : null}
-                  </dl>
+                  ) : null}
+                  <p className="edh-case-meta">
+                    {project.title}
+                    {project.year ? `, ${project.year}` : ""}. {c.role}.
+                  </p>
                   <Link href={href} className="edh-link edh-case-link">
                     {t.open}
                     <span className="edh-sr">: {project.title}</span>

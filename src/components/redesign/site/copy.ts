@@ -53,7 +53,7 @@ const pt = {
     next: "Próximo projeto",
     all: "Ver todos os projetos",
   },
-  footerTagline: "Software sob medida e IA em produção para operações reais.",
+  footerTagline: "Sistemas, produtos, lojas e integrações sob medida.",
 };
 
 type SiteCopy = typeof pt;
@@ -106,7 +106,7 @@ const en: SiteCopy = {
     next: "Next project",
     all: "See all projects",
   },
-  footerTagline: "Custom software and AI in production for real operations.",
+  footerTagline: "Custom systems, products, stores and integrations.",
 };
 
 export function getSiteCopy(locale: Locale): SiteCopy {

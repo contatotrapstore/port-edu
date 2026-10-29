@@ -118,7 +118,7 @@ const pt = {
   },
   footer: "Prévia local do redesign: abertura, primeiro case e fechamento. Não publicada.",
   studio: {
-    title: ["Software sob medida.", "IA em produção."],
+    title: ["Software sob medida.", "Engenharia que entra em uso."],
     lead: "Criamos sistemas, produtos e integrações para empresas que precisam fazer acontecer.",
     cta: "Conversar sobre um projeto",
     secondary: "Ver projetos entregues",
@@ -250,7 +250,7 @@ const en: RedesignCopy = {
   },
   footer: "Local redesign preview: opening, first case and closing. Not published.",
   studio: {
-    title: ["Custom software.", "AI in production."],
+    title: ["Custom software.", "Engineering that goes live."],
     lead: "We build systems, products and integrations for companies that need things to happen.",
     cta: "Talk about a project",
     secondary: "See delivered projects",

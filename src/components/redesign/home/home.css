@@ -200,15 +200,23 @@
   box-shadow: 0 -30px 60px -20px rgb(0 0 0 / 0.6);
 }
 
+/* minmax(0, 1fr): a fileira rolável da loja não pode alargar a coluna (e com
+   ela todos os cases) no celular. */
 .edh-cases {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(4.5rem, 2rem + 7vw, 9rem);
   margin-top: clamp(3rem, 1.5rem + 4vw, 5.5rem);
 }
 
 .edh-case {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+}
+
+.edh-case > * {
+  min-width: 0;
 }
 
 .edh-case-media {
@@ -440,37 +448,175 @@
     top: 2rem;
   }
 
-  /* Demais: alternam lado e escala. */
-  .edh-case--right .edh-case-media {
-    grid-column: 6 / -1;
+  /* Sistema: texto e o que observar à esquerda; a tela de operação à direita,
+     perto do tamanho original da captura (830 px), sem ampliar. */
+  .edh-case--system .edh-case-media {
+    grid-column: 5 / -1;
     grid-row: 1;
+    max-width: 52rem;
   }
 
-  .edh-case--right .edh-case-body {
+  .edh-case--system .edh-case-body {
     grid-column: 1 / span 4;
     grid-row: 1;
-    padding-top: 3rem;
+    padding-top: 1rem;
   }
 
-  .edh-case--left .edh-case-media {
+  /* Produto: as duas telas à esquerda, texto à direita. */
+  .edh-case--product .edh-case-media {
     grid-column: 1 / span 7;
   }
 
-  .edh-case--left .edh-case-body {
+  .edh-case--product .edh-case-body {
     grid-column: 9 / -1;
     padding-top: 3rem;
   }
 
-  /* Último: menor, texto primeiro, para fechar a sequência em outra escala. */
-  .edh-case--compact .edh-case-media {
-    grid-column: 7 / -1;
+  /* Loja: a sequência de páginas ocupa a largura; o texto vem antes. */
+  .edh-case--store .edh-case-body {
+    grid-column: 1 / span 7;
     grid-row: 1;
   }
 
-  .edh-case--compact .edh-case-body {
-    grid-column: 1 / span 5;
+  .edh-case--store .edh-case-media {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  /* Integração: as etapas que o fluxo executa à esquerda; o fluxo à direita. */
+  .edh-case--flow .edh-case-media {
+    grid-column: 6 / -1;
     grid-row: 1;
   }
+
+  .edh-case--flow .edh-case-body {
+    grid-column: 1 / span 4;
+    grid-row: 1;
+    padding-top: 2rem;
+  }
+}
+
+/* O que observar no sistema: lista curta, com fio, sem ficha técnica. */
+.edh-case-look {
+  margin-top: 1.5rem;
+}
+
+.edh-case-look p {
+  margin: 0 0 0.5rem;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-case-look ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-case-look li {
+  padding-block: 0.7rem;
+  border-bottom: 1px solid var(--rule-paper);
+  font-size: 0.9875rem;
+  line-height: 1.45;
+}
+
+.edh-case-meta {
+  margin: 1.25rem 0 0;
+  color: var(--moss);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+/* Loja: três páginas lado a lado, em alturas diferentes, como quem rola. */
+.edh-store {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(16rem, 78%);
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+}
+
+.edh-store-shot {
+  scroll-snap-align: start;
+}
+
+.edh-store-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: store;
+  color: var(--ink);
+  font: 400 0.8125rem/1.45 var(--font-mono);
+}
+
+.edh-store-steps li::before {
+  counter-increment: store;
+  content: counter(store) ". ";
+  color: var(--moss);
+}
+
+@media (width >= 64rem) {
+  .edh-store {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    overflow: visible;
+  }
+
+  .edh-store-shot:nth-child(2) {
+    margin-top: 3rem;
+  }
+
+  .edh-store-shot:nth-child(3) {
+    margin-top: 6rem;
+  }
+
+  .edh-store-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* Integração: as etapas do fluxo em sequência, ligadas por uma linha. */
+.edh-flow {
+  display: grid;
+  gap: 0;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-flow li {
+  position: relative;
+  padding: 0.65rem 0 0.65rem 1.75rem;
+  font-weight: 500;
+}
+
+.edh-flow li::before {
+  content: "";
+  position: absolute;
+  top: 1.05rem;
+  left: 0.2rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.edh-flow li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 1.75rem;
+  bottom: -0.35rem;
+  left: 0.48rem;
+  width: 1px;
+  background: var(--rule-paper-strong);
 }
 
 .edh-projects-foot {
@@ -1094,6 +1240,17 @@
 .edh-footer-lang {
   color: var(--dim);
   font-size: 0.8125rem;
+}
+
+.edh-footer-wordmark {
+  margin: clamp(2.5rem, 1rem + 4vw, 4.5rem) 0 0;
+  color: rgb(239 233 222 / 0.1);
+  font-size: clamp(4.25rem, 0.5rem + 17.5vw, 17rem);
+  font-weight: 600;
+  line-height: 0.8;
+  letter-spacing: -0.065em;
+  white-space: nowrap;
+  user-select: none;
 }
 
 .edh-footer-base {
