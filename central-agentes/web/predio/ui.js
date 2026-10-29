@@ -112,7 +112,7 @@ window.addEventListener('keydown', e => {
   else if (k === ']' || k === 'pageup') setView(Math.min(3, view.building ? 3 : view.floor + 1), false);
   else if (k === '[' || k === 'pagedown') setView(Math.max(0, view.building ? 0 : view.floor - 1), false);
   else if (k === 'b') setView(view.floor, true);
-  else if (k === '0') goFocus(null);
+  else if (k === '0' || k === 'c') centerView();
   else if (k >= '1' && k <= '8'){ const list = ROOMS.filter(R => R.f === view.floor).sort((x,y) => x.slot - y.slot); const R = list[+k - 1]; if (R) goRoom(R.i); }
   else if (k === '9') goFocus('copa');
   else if (k === 'r') toggleReplay();
@@ -260,6 +260,7 @@ document.addEventListener('click', e => {
   if (act === 'sendTask'){ if (!selected) return; const ta = $('taskText'), v = ta && ta.value.trim(); if (!v){ toast('Escreva a tarefa antes de enviar'); return; } assignTask(selected, v); ta.value = ''; }
   if (act === 'live') goLive();
   if (act === 'replay') toggleReplay();
+  if (act === 'center') centerView();
   dirty = true;
 });
 
@@ -323,6 +324,11 @@ scrub.addEventListener('input', () => {
   const d = new Date(SNAPS[i].t); $('scrubTime').textContent = d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 });
 // A linha do tempo continua gravando em segundo plano; a barra só aparece quando você pede
+// Volta a câmera para ver o andar inteiro (ou o prédio, na visão do prédio) e para de seguir agente
+function centerView(){
+  follow = false; syncFollow(); keys.clear(); rotQueue = 0; touched = false;
+  if (view.building) setView(view.floor, true); else goFocus(null);
+}
 function toggleReplay(force){
   const el = $('replay'), on = force ?? el.hidden;
   el.hidden = !on; $('btnReplay').classList.toggle('on', on);
