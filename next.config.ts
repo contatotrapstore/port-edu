@@ -33,6 +33,24 @@ const currentModules: Record<string, string> = {
   "@current/contratar-styles": "./src/app/(pt)/contratar/landing.css",
 };
 
+// Painel privado /central (login e aprovação de permissões): política fechada
+const centralCsp = {
+  key: "Content-Security-Policy",
+  value: [
+    "default-src 'self'",
+    "script-src 'self' https://cdn.jsdelivr.net",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob:",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    "worker-src 'self' blob:",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ].join("; "),
+};
+
 const nextConfig: NextConfig = {
   transpilePackages: ["three"],
   experimental: {
@@ -69,8 +87,9 @@ const nextConfig: NextConfig = {
     return [
       { source: "/:path*", headers: securityHeaders },
       // Painel privado da Central de Agentes: nunca indexar
-      { source: "/central", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
-      { source: "/central/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+      // CSP: sem script inline; só os scripts do próprio site e do jsDelivr (Supabase e Three.js com SRI)
+      { source: "/central", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }, centralCsp] },
+      { source: "/central/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }, centralCsp] },
       // Cinto e suspensório: qualquer host .vercel.app (inclusive previews) fica
       // fora do índice, mesmo que o redirect acima não pegue.
       {

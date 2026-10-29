@@ -103,8 +103,11 @@ function nextWaiting(){
   const a = w[(w.indexOf(selected)+1) % w.length]; a.pop = 1; goAgent(a); setTab('agente'); openDrawer(); dirty = true;
 }
 const keys = new Set();
+window.addEventListener('blur', () => keys.clear());
 window.addEventListener('keydown', e => {
-  if (e.target.closest && e.target.closest('input,textarea')) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest && e.target.closest('input,textarea,select,dialog')) return;
+  if (document.querySelector('dialog[open]')) return;
   const k = e.key.toLowerCase();
   if (['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(k)){ keys.add(k); fly = null; follow = false; syncFollow(); e.preventDefault(); return; }
   if (k === 'q') rotateBy(-1); else if (k === 'b' && view.building) setView(view.floor, false); else if (k === 'e') rotateBy(1);
@@ -132,7 +135,7 @@ function logItems(list, withWho){
   }).join('');
 }
 const barColor = p => p > 85 ? 'var(--err)' : p > 60 ? 'var(--amber)' : 'var(--ok)';
-function resetText(ts){ const ms = ts - Date.now(); if (ms < 24*3600e3) return 'Reinicia em ' + fmtSpan(ms); const d = new Date(ts); return 'Reinicia ' + d.toLocaleDateString('pt-BR',{weekday:'short'}) + ', às ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+function resetText(ts){ if (!ts || ts <= Date.now()) return 'Sem data de reinício'; const ms = ts - Date.now(); if (ms < 24*3600e3) return 'Reinicia em ' + fmtSpan(ms); const d = new Date(ts); return 'Reinicia ' + d.toLocaleDateString('pt-BR',{weekday:'short'}) + ', às ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
 const planPrice = p => p.brl == null ? 'a confirmar' : (p.approx ? '~' : '') + brl(p.brl);
 const subsTotal = () => PLANS.reduce((s,p) => s + (p.brl || 0), 0);
 function renderPlans(){
@@ -179,21 +182,21 @@ function renderAgentTab(now){
   if (agentShell !== a){
     agentShell = a; lastHTML.agDyn = lastHTML.agLog = null;
     pane.innerHTML = `<div id="agDyn"></div>
-      ${a.real && !NUVEM ? workCard(a) : `<div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
+      ${a.real && NUVEM ? '' : a.real ? workCard(a) : `<div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
         <div class="row"><small>${a.real ? 'Não dá para escrever numa sessão aberta: o texto vai para a área de transferência. Cole no terminal de ' + esc(a.proj || a.R.name) + '.' : 'O agente sai da convivência e volta pra mesa.'}</small><button class="btn solid" type="button" data-act="sendTask">${a.real ? 'Copiar' : 'Enviar'}</button></div></div>`}
       <div class="card"><div class="sec"><h2>Chat ao vivo</h2><small id="agCount"></small></div><ul class="log" id="agLog"></ul></div>`;
     lastHTML.pane = null;
   }
   const st = a.state, credits = a.kind === 'higgs' || a.kind === 'eleven', wt = whereText(a), lv = levelOf(a.xp), into = a.xp % 100;
-  let html = `<div class="card"><div class="ag-head"><span class="swatch" style="background:linear-gradient(180deg, ${a.hair} 0 18%, ${a.skin} 18% 42%, ${a.color} 42% 100%)"></span><div style="min-width:0"><div class="ag-name">${esc(a.name)}</div><div class="ag-proj">${esc(a.proj && a.proj !== a.R.name ? a.R.name + ' · ' + a.proj : a.R.name)} · ${esc(FLOORS[a.R.f].name)}</div></div><span class="model">${a.model}</span></div>
+  let html = `<div class="card"><div class="ag-head"><span class="swatch" style="background:linear-gradient(180deg, ${a.hair} 0 18%, ${a.skin} 18% 42%, ${a.color} 42% 100%)"></span><div style="min-width:0"><div class="ag-name">${esc(a.name)}</div><div class="ag-proj">${esc(a.proj && a.proj !== a.R.name ? a.R.name + ' · ' + a.proj : a.R.name)} · ${esc(FLOORS[a.R.f].name)}</div></div><span class="model">${esc(a.model)}</span></div>
     <span class="pill s-${st}"><i></i>${ST_LABEL[st]}${wt ? ' · ' + wt : ''}</span>`;
-  if (st === 'waiting') html += `<div class="perm"><span class="k" style="color:var(--wait)">Pedindo permissão há ${fmtDur(now - a.waitSince)}</span>Quer ${a.kind === 'code' ? 'executar' : 'fazer'}:<code>${esc(a.waitCmd)}</code>${permButtons(a)}</div>`;
+  if (st === 'waiting') html += `<div class="perm"><span class="k" style="color:var(--wait)">Pedindo permissão há ${fmtDur(now - a.waitSince)}</span>Quer ${a.kind === 'code' ? 'executar' : 'fazer'}:<code>${esc(a.waitCmd || TOOL_PT[a.tool] || a.tool || 'uma ação')}</code>${permButtons(a)}</div>`;
   else if (st === 'error') html += `<div class="now"><span class="k" style="color:var(--err)">Erro</span><code style="color:var(--err)">${esc(a.target)} → ${esc(a.errMsg)}</code></div>`;
-  else if (st === 'working') html += `<div class="now"><span class="k">Agora</span><code>${esc(TOOL_PT[a.tool] || a.tool)} · ${esc(a.target)}</code></div>`;
+  else if (st === 'working') html += `<div class="now"><span class="k">Agora</span><code>${esc(TOOL_PT[a.tool] || a.tool)}${a.target ? ' · ' + esc(a.target) : ''}</code></div>`;
   html += `<div class="prompt"><span class="k">${st === 'idle' ? 'Último prompt' : 'Prompt em andamento'}</span><p>${esc(a.prompt)}</p></div>
     <div class="ag-actions"><button class="btn" type="button" data-act="followSel">${follow ? 'Parar de seguir' : 'Seguir no escritório'}</button>${st === 'idle' && !a.real ? `<button class="btn" type="button" data-act="wake" data-arg="${a.id}">Chamar pra mesa</button>` : ''}</div>
     <div class="stats"><div class="stat"><span>Custo equivalente</span><b>${brlFromUsd(a.cost)}</b></div><div class="stat"><span>${st === 'idle' ? 'Parado há' : 'Na tarefa'}</span><b>${fmtDur(now - a.since)}</b></div>
-      <div class="stat"><span>${credits ? 'Créditos usados' : 'Tokens entrada'}</span><b>${credits ? num(a.units) : fmtTok(a.tin)}</b></div><div class="stat"><span>Nível ${lv} · ${a.tasksDone} tarefas</span><b>${num(a.xp)} XP</b><div class="xpbar"><i style="width:${into}%"></i></div></div></div></div>`;
+      <div class="stat"><span>${credits ? 'Créditos usados' : 'Tokens (entrada + cache)'}</span><b>${credits ? num(a.units) : fmtTok(a.tin)}</b></div>${a.real ? `<div class="stat"><span>Tarefas hoje</span><b>${a.tasksDone}</b>` : `<div class="stat"><span>Nível ${lv} · ${a.tasksDone} tarefas</span><b>${num(a.xp)} XP</b>`}<div class="xpbar"><i style="width:${into}%"></i></div></div></div></div>`;
   setHTML($('agDyn'), html);
   setHTML($('agLog'), logItems(a.log.slice(0,12), false));
   $('agCount').textContent = a.log.length + ' eventos';
@@ -209,8 +212,8 @@ function renderOps(){
   }
   html += `</div></div>` + orquestraCard() + costReport();
   const un = ACHIEVEMENTS.filter(A => COMPANY.unlocked.includes(A.id));
-  html += `<div class="card"><div class="sec"><h2>Conquistas</h2><small>nível ${companyLevel()} · ${num(COMPANY.xp)} XP</small></div>${un.length ? `<div class="trophies">${un.map(A => `<span class="trophy"><b>★</b>${esc(A.label)}</span>`).join('')}</div>` : '<p class="note">Nenhuma ainda hoje. Elas aparecem na estante de troféus da Diretoria.</p>'}
-    <p class="note" style="margin-top:8px">Top agentes: ${[...AGENTS].sort((x,y) => y.xp - x.xp).slice(0,3).map(a => `${esc(a.name)} (${esc(a.R.name)}) nível ${levelOf(a.xp)}`).join(' · ')}</p></div>`;
+  html += `<div class="card"><div class="sec"><h2>${REAL ? 'Marcos do dia' : 'Conquistas'}</h2><small>${REAL ? COMPANY.tasks + ' tarefas' : `nível ${companyLevel()} · ${num(COMPANY.xp)} XP`}</small></div>${un.length ? `<div class="trophies">${un.map(A => `<span class="trophy"><b>★</b>${esc(A.label)}</span>`).join('')}</div>` : '<p class="note">Nenhuma ainda hoje. Elas aparecem na estante de troféus da Diretoria.</p>'}
+    <p class="note" style="margin-top:8px">${REAL ? 'Mais tarefas hoje: ' + [...AGENTS].sort((x,y) => y.tasksDone - x.tasksDone).slice(0,3).filter(a => a.tasksDone).map(a => `${esc(a.R.name)} · ${esc(a.name)} (${a.tasksDone})`).join(' · ') : 'Top agentes: ' + [...AGENTS].sort((x,y) => y.xp - x.xp).slice(0,3).map(a => `${esc(a.name)} (${esc(a.R.name)}) nível ${levelOf(a.xp)}`).join(' · ')}</p></div>`;
   html += `<div class="card"><div class="sec"><h2>Atividade ao vivo</h2><small>${FEED.length} eventos</small></div><ul class="log">${logItems(FEED.slice(0,18), true)}</ul></div>`;
   return html;
 }
@@ -223,11 +226,11 @@ function renderPanel(now){
   $('kSubs').innerHTML = `${brl(subsTotal())} <small>/mês</small>`;
   const worstPlan = PLANS.filter(p => p.meters ? p.meters.length : p.credit && p.credit.total).map(p => p.meters ? [p.name, Math.max(...p.meters.map(m => m.used))] : [p.name, (p.credit.total-p.credit.left)/p.credit.total*100]).sort((a,b) => b[1]-a[1])[0];
   $('kSubsSub').textContent = `${PLANS.length} planos${worstPlan ? ` · mais usado: ${worstPlan[0]} ${Math.round(worstPlan[1])}%` : ''}`;
-  $('kLevel').textContent = 'Nível ' + companyLevel();
-  $('kXp').textContent = `${num(COMPANY.xp)} XP · ${COMPANY.tasks} tarefas hoje`;
+  if (REAL){ $('kLevel').textContent = `${COMPANY.tasks} tarefas`; $('kXp').textContent = `hoje · ${AGENTS.filter(a => a.state !== 'idle').length} de ${AGENTS.length} sessões ativas`; }
+  else { $('kLevel').textContent = 'Nível ' + companyLevel(); $('kXp').textContent = `${num(COMPANY.xp)} XP · ${COMPANY.tasks} tarefas hoje`; }
   const working = AGENTS.filter(x => x.state==='working').length, waiting = AGENTS.filter(x => x.state==='waiting').length, errors = AGENTS.filter(x => x.state==='error').length;
   setHTML($('chips'), `<span class="chip"><i style="background:var(--ok)"></i>Trabalhando <b>${working}</b></span><button class="chip ${waiting?'alert':''}" type="button" data-act="next-wait"><i style="background:var(--wait)"></i>Precisam de você <b>${waiting}</b></button><span class="chip"><i style="background:var(--err)"></i>Erros <b>${errors}</b></span><button class="chip" type="button" data-act="tab" data-arg="sugestoes"><i style="background:var(--amber)"></i>Sugestões <b>${SUGG.length}</b></button>`);
-  setHTML($('miniHud'), `<div><span>Consumo hoje</span><b>${brlFromUsd(totalCost())}</b></div><div><span>Sessão Claude</span><b>${PLAN.claude.meters[0] ? Math.round(PLAN.claude.meters[0].used) + '%' : '—'}</b></div><div><span>Precisam de você</span><b style="color:${waiting ? 'var(--wait)' : 'var(--fg)'}">${waiting}</b></div><div><span>Tarefas hoje</span><b>${COMPANY.tasks}</b></div>`);
+  setHTML($('miniHud'), `<div><span>Consumo hoje</span><b>${brlFromUsd(totalCost())}</b></div><div><span>Sessão Claude</span><b>${(() => { const m = PLAN.claude.meters.find(x => /sess/i.test(x.label)) || PLAN.claude.meters[0]; return m ? Math.round(m.used) + '%' : '—'; })()}</b></div><div><span>Precisam de você</span><b style="color:${waiting ? 'var(--wait)' : 'var(--fg)'}">${waiting}</b></div><div><span>Tarefas hoje</span><b>${COMPANY.tasks}</b></div>`);
   const h = totalHist, mn = Math.min(...h), mx = Math.max(...h);
   const pts = h.map((v,k) => `${(k*(110/(h.length-1))).toFixed(1)},${(29 - (v-mn)/((mx-mn)||1)*25).toFixed(1)}`).join(' ');
   setHTML($('spark'), `<polygon points="0,32 ${pts} 110,32" fill="rgba(245,185,53,.12)"/><polyline points="${pts}" fill="none" stroke="#F5B935" stroke-width="1.6"/>`);
@@ -278,10 +281,11 @@ function agentLabel(a, compact){
   if (a.state === 'error') return compact ? 'Erro' : 'Erro · ' + short(a.errMsg, 26);
   if (a.state === 'idle'){
     if (a.path.length) return compact ? 'Caminhando' : 'Caminhando · ' + a.name;
+    if (a.copa && REAL) return compact ? 'Ocioso' : 'Ocioso · ' + a.name;
     if (a.copa){ const w = COPA_LABEL[a.copa.kind].split(' '); return compact ? (/^(na|no)$/i.test(w[0]) ? w.slice(0, 2).join(' ') : w[0]) : COPA_LABEL[a.copa.kind] + ' · ' + a.name; }
     return compact ? 'Ocioso' : 'Ocioso · ' + a.name;
   }
-  return compact ? tp : tp + ' · ' + short(base(a.target || ''), 22);
+  return compact || !a.target ? tp : tp + ' · ' + short(base(a.target), 22);
 }
 function updateLabels(now, replaying){
   const r = stage.getBoundingClientRect(), w = r.width, h = r.height;
@@ -297,7 +301,7 @@ function updateLabels(now, replaying){
     lab.el.style.display = 'flex';
     const dist = camera.position.distanceTo(g.position), compact = dist > 26 || view.building;
     const col = ST[st], txt = a === DUDU ? (compact ? 'Você' : 'Você · Dudu') : agentLabel(a, compact);
-    const lv = a === DUDU || compact ? '' : `<span class="lv">Nv ${levelOf(a.xp)}</span>`;
+    const lv = a === DUDU || compact ? '' : (REAL ? '' : `<span class="lv">Nv ${levelOf(a.xp)}</span>`);
     const html = `<i></i>${esc(txt)}${lv}${st === 'waiting' ? '<span class="bang">!</span>' : ''}`;
     if (lab.pill.dataset.h !== html){ lab.pill.innerHTML = html; lab.pill.dataset.h = html; }
     lab.el.style.setProperty('--c', col);

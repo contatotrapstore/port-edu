@@ -8,6 +8,15 @@ import { JsonlTail, listFiles, promptText, targetOf, toolPt, isToday } from '../
 
 const DIR = path.join(CODEX_HOME, 'sessions');
 const tail = new JsonlTail();
+/** Primeira linha do arquivo (o cabeçalho session_meta), sem ler o resto. */
+function primeiraLinha(file) {
+  try {
+    const fd = fs.openSync(file, 'r'), buf = Buffer.alloc(256 * 1024);
+    const n = fs.readSync(fd, buf, 0, buf.length, 0); fs.closeSync(fd);
+    const s = buf.toString('utf8', 0, n), i = s.indexOf('\n');
+    return JSON.parse(i > 0 ? s.slice(0, i) : s);
+  } catch { return null; }
+}
 const meta = new Map(); // file -> { id, cwd, model, lastTotal }
 let lastLimitsAt = 0;
 
@@ -25,7 +34,13 @@ function limitMeter(label, r, t) {
 
 function handle(file, e) {
   const t = Date.parse(e.timestamp) || Date.now(), p = e.payload || {};
-  let m = meta.get(file); if (!m) { m = { id: path.basename(file, '.jsonl'), cwd: '', model: '', lastTotal: null }; meta.set(file, m); }
+  let m = meta.get(file);
+  if (!m) {
+    m = { id: path.basename(file, '.jsonl'), cwd: '', model: '', lastTotal: null, baseline: tail.startedMid(file) };
+    // Leitura começou no meio do arquivo: o cabeçalho (id e pasta da sessão) está na primeira linha
+    if (m.baseline) { const h = primeiraLinha(file); if (h?.type === 'session_meta') { m.id = h.payload?.id || m.id; m.cwd = h.payload?.cwd || ''; } }
+    meta.set(file, m);
+  }
   if (e.type === 'session_meta') { m.id = p.id || m.id; m.cwd = p.cwd || m.cwd; return; }
   if (e.type === 'turn_context') { m.cwd = p.cwd || m.cwd; m.model = p.model || m.model; }
   const a = store.agent('codex:' + m.id, { source: 'codex', sessionId: m.id, cwd: m.cwd, model: m.model, name: 'Principal' });
@@ -35,6 +50,8 @@ function handle(file, e) {
   if (e.type === 'response_item') {
     if (p.type === 'message' && p.role === 'user') {
       const text = promptText(p.content);
+      const delegado = /Pedido de (.+?) pela Central de Agentes \(projeto/.exec(text || '');
+      if (delegado && a.name === 'Principal') a.name = 'Delegado · ' + delegado[1];   // tarefa delegada (sobrevive a reinício)
       if (text && !text.startsWith('<')) { a.prompt = text.slice(0, 2000); if (fresh) { store.setState(a, 'working', t); store.event(a, 'prompt', 'Prompt', '"' + text.slice(0, 200) + '"', t); } }
     } else if (p.type === 'function_call' || p.type === 'custom_tool_call' || p.type === 'local_shell_call') {
       const name = p.name || 'shell', input = p.arguments || p.input || p.action;
@@ -51,7 +68,10 @@ function handle(file, e) {
     if (p.type === 'task_complete' && fresh) { store.setState(a, 'idle', t); store.event(a, 'done', 'Concluído', 'Turno concluído', t); }
     if (p.type === 'token_count') {
       const tot = p.info?.total_token_usage;
-      if (tot) {
+      // O Codex grava o total ACUMULADO da sessão. Se a leitura começou no meio, o primeiro total é só ponto de partida
+      // (senão tudo que a sessão gastou nos dias anteriores entraria como gasto de hoje)
+      if (tot && m.baseline && !m.lastTotal) { m.lastTotal = tot; m.baseline = false; }
+      else if (tot) {
         const prev = m.lastTotal || { input_tokens: 0, cached_input_tokens: 0, output_tokens: 0 };
         const dIn = Math.max(0, (tot.input_tokens || 0) - (prev.input_tokens || 0)), dCache = Math.max(0, (tot.cached_input_tokens || 0) - (prev.cached_input_tokens || 0));
         const dOut = Math.max(0, (tot.output_tokens || 0) - (prev.output_tokens || 0));

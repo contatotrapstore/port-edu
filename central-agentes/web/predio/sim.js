@@ -128,14 +128,17 @@ const ACHIEVEMENTS = [
   {id:'t60', label:'60 tarefas no dia', test:() => COMPANY.tasks >= 60},
   {id:'t80', label:'80 tarefas no dia', test:() => COMPANY.tasks >= 80},
   {id:'t120', label:'120 tarefas no dia', test:() => COMPANY.tasks >= 120},
-  {id:'deal', label:'Contrato fechado', test:() => BIZ.bell >= 1},
+  // marcos do protótipo (contratos e níveis inventados) só no modo simulado
+  ...(REAL ? [] : [{id:'deal', label:'Contrato fechado', test:() => BIZ.bell >= 1},
   {id:'deal3', label:'3 contratos no dia', test:() => BIZ.bell >= 3},
-  {id:'lv10', label:'Agente nível 6', test:() => AGENTS.some(a => levelOf(a.xp) >= 6)},
+  {id:'lv10', label:'Agente nível 6', test:() => AGENTS.some(a => levelOf(a.xp) >= 6)}]),
   {id:'perm', label:'10 permissões liberadas', test:() => COMPANY.perms >= 10},
 ];
 COMPANY.perms = 0;
+const MARCOS_KEY = 'edh-marcos-' + new Date().toDateString();
+try { if (REAL) COMPANY.unlocked = JSON.parse(localStorage.getItem(MARCOS_KEY) || '[]'); } catch { /* sem armazenamento */ }
 function checkAchievements(){
-  for (const A of ACHIEVEMENTS){ if (!COMPANY.unlocked.includes(A.id) && A.test()){ COMPANY.unlocked.push(A.id); toast('Conquista desbloqueada: ' + A.label); const d = AGENTS[0]; FEED.unshift({t:new Date(), a:d, kind:'xp', text:A.label, tag:KIND_TAG.xp}); dirty = true; } }
+  for (const A of ACHIEVEMENTS){ if (!COMPANY.unlocked.includes(A.id) && A.test()){ COMPANY.unlocked.push(A.id); try { if (REAL) localStorage.setItem(MARCOS_KEY, JSON.stringify(COMPANY.unlocked)); } catch {} toast('Marco do dia: ' + A.label); const d = AGENTS[0]; FEED.unshift({t:new Date(), a:d, kind:'xp', text:A.label, tag:KIND_TAG.xp}); dirty = true; } }
 }
 
 /* walking with floors and elevator */
@@ -240,14 +243,14 @@ function computeSuggestions(now){
   for (const a of AGENTS.filter(x => x.state === 'waiting')) out.push({sev:'alerta', short:'Liberar ' + a.R.name, title:`${a.R.name} parado esperando você`,
     body:`O agente ${a.name} pediu para ${a.kind === 'code' ? 'executar' : ''} "${a.waitCmd}" há ${fmtSpan(now - a.waitSince)}. Se esse tipo de ação é segura, crie uma regra de permissão e ele não para mais aqui.`,
     acts:[{label:'Permitir agora', act:'allow', arg:a.id, primary:true},{label:'Ver agente', act:'agent', arg:a.id}]});
-  for (const a of AGENTS.filter(x => x.state === 'error')) out.push({sev:'alerta', short:'Erro ' + a.R.name, title:`${a.R.name}: ${a.errMsg}`, body:'O agente já está tentando corrigir. Se falhar de novo, vale olhar antes de deixar ele seguir gastando.', acts:[{label:'Ver agente', act:'agent', arg:a.id}]});
+  for (const a of AGENTS.filter(x => x.state === 'error')) out.push({sev:'alerta', short:'Erro ' + a.R.name, title:`${a.R.name}: ${a.errMsg}`, body: REAL ? 'Veja o erro no painel do agente ou no terminal da sessão antes de deixar ele seguir gastando.' : 'O agente já está tentando corrigir. Se falhar de novo, vale olhar antes de deixar ele seguir gastando.', acts:[{label:'Ver agente', act:'agent', arg:a.id}]});
   for (const R of ROOMS.filter(R => R.budget)){
     const spent = roomCost(R)*CAMBIO, pct = spent / R.budget;
     if (pct > 1) out.push({sev:'alerta', short:'Orçamento ' + short(R.name, 12), title:`${R.name} passou do orçamento do dia`, body:`Já são ${brl(spent, 2)} de ${brl(R.budget)} previstos. Confira se o escopo mudou ou se algum agente está em loop.`, acts:[{label:'Abrir sala', act:'room', arg:R.i}]});
     else if (pct > .8) out.push({sev:'economia', short:'Orçamento ' + short(R.name, 12), title:`${R.name} em ${Math.round(pct*100)}% do orçamento do dia`, body:`São ${brl(spent, 2)} de ${brl(R.budget)}. Se ainda tiver tarefa pesada hoje, passe os subagentes para o Haiku.`, acts:[{label:'Abrir sala', act:'room', arg:R.i}]});
   }
   const cs = PLAN.claude.meters[0], ci = cs ? meterInfo(cs) : {};
-  if (cs && ci.over) out.push({sev:'alerta', short:'Sessão Claude', title:'A sessão do Claude vai acabar antes do reset', body:`Está em ${Math.round(cs.used)}% e reinicia em ${fmtSpan(cs.reset - Date.now())}. Passe os subagentes de testes e docs para o Haiku até lá.`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
+  if (cs && ci.over) out.push({sev:'alerta', short:'Sessão Claude', title:'A sessão do Claude vai acabar antes do reset', body:`Está em ${Math.round(cs.used)}% e reinicia em ${fmtSpan(cs.reset - Date.now())}. ${REAL ? 'Segure as tarefas pesadas ou delegue ao Codex até lá.' : 'Passe os subagentes de testes e docs para o Haiku até lá.'}`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
   const claudeAgents = AGENTS.filter(a => a.prov === 'claude'), claudeCost = claudeAgents.reduce((s,a) => s + a.cost, 0), opus = claudeAgents.filter(a => (a.family || a.model) === 'Opus');
   const opusShare = opus.reduce((s,a) => s + a.cost, 0) / (claudeCost || 1);
   if (opusShare > .5) out.push({sev:'economia', short:`Opus ${Math.round(opusShare*100)}%`, title:`O Opus responde por ${Math.round(opusShare*100)}% do uso do Claude`, body:`As sessões de ${[...new Set(opus.map(a => a.R.name))].join(', ')} rodam no Opus. No Max 20x isso não vira conta extra, mas come a sessão mais rápido. Build, testes e ajustes rodam bem no Sonnet.`, acts:[{label:'Ver operação', act:'tab', arg:'operacao'}]});
@@ -261,7 +264,7 @@ function computeSuggestions(now){
   const el = creditInfo(PLAN.eleven.credit);
   if (el.short) out.push({sev:'alerta', short:'ElevenLabs acaba', title:`ElevenLabs Starter acaba em ~${Math.max(1,Math.round(el.runout))} dias`, body:`Restam ${num(PLAN.eleven.credit.left)} créditos e renova em ${PLAN.eleven.credit.daysLeft} dias. Deixe as URAs para depois da renovação ou suba de plano só neste mês.`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
   const gw = PLAN.gpt.meters.find(m => /semanal/i.test(m.label)) || PLAN.gpt.meters[1], gi = gw ? meterInfo(gw) : {};
-  if (gw && gw.used < 35 && gi.elapsed > .3) out.push({sev:'economia', short:'Codex sobrando', title:`ChatGPT 5x em ${Math.round(gw.used)}% na semana`, body:`São ${brl(PLAN.gpt.brl)} por mês com bastante Codex sobrando. Coloque o Codex para revisar os PRs no QA em paralelo.`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
+  if (gw && gw.used < 35 && gi.elapsed > .3) out.push({sev:'economia', short:'Codex sobrando', title:`${PLAN.gpt.name} ${String(PLAN.gpt.tierBase || PLAN.gpt.tier).split(' ·')[0]} em ${Math.round(gw.used)}% na semana`, body:`São ${brl(PLAN.gpt.brl)} por mês com bastante Codex sobrando. ${REAL ? 'Delegue revisões e investigações ao Codex (aba Agente → Delegar ao Codex).' : 'Coloque o Codex para revisar os PRs no QA em paralelo.'}`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
   if (REAL){
     const ti = ROOMS.find(R => R.type === 'infra');
     for (const d of window.EDH_DEPLOYS || []){ const e = (d.producao && d.producao.estado) || d.estado;

@@ -48,10 +48,13 @@ export function listFiles(dir, test, maxAgeMs) {
 
 /** Lê só as linhas novas de arquivos JSONL (guarda posição e linha parcial). */
 export class JsonlTail {
-  constructor({ maxInitialBytes = 8 * 1024 * 1024 } = {}) { this.pos = new Map(); this.partial = new Map(); this.maxInitial = maxInitialBytes; }
+  // 64 MB: sessões longas passam de 10-20 MB; começar pelo meio perde o cabeçalho e o histórico do dia
+  constructor({ maxInitialBytes = 64 * 1024 * 1024 } = {}) { this.pos = new Map(); this.partial = new Map(); this.maxInitial = maxInitialBytes; this.mid = new Set(); }
+  /** true se a primeira leitura deste arquivo começou no meio (arquivo maior que o limite). */
+  startedMid(file) { return this.mid.has(file); }
   read(file, size, onLine) {
     let start = this.pos.get(file);
-    if (start === undefined) start = Math.max(0, size - this.maxInitial);
+    if (start === undefined) { start = Math.max(0, size - this.maxInitial); if (start > 0) this.mid.add(file); }
     if (size < start) start = 0; // arquivo truncado/recriado
     if (size === start) return 0;
     const fd = fs.openSync(file, 'r');
@@ -59,9 +62,11 @@ export class JsonlTail {
       const len = size - start, buf = Buffer.alloc(len);
       fs.readSync(fd, buf, 0, len, start);
       this.pos.set(file, size);
-      const text = (this.partial.get(file) || '') + buf.toString('utf8');
-      const lines = text.split('\n');
-      this.partial.set(file, lines.pop());
+      // a sobra da leitura anterior fica em bytes: um acento cortado no meio não vira "�"
+      const all = Buffer.concat([this.partial.get(file) || Buffer.alloc(0), buf]);
+      const fim = all.lastIndexOf(10);
+      this.partial.set(file, fim < 0 ? all : all.subarray(fim + 1));
+      const lines = fim < 0 ? [] : all.subarray(0, fim).toString('utf8').split('\n');
       let n = 0;
       for (const line of lines) { if (!line.trim()) continue; try { onLine(JSON.parse(line)); n++; } catch { /* linha cortada no início da leitura */ } }
       return n;

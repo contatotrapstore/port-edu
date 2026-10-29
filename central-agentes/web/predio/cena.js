@@ -285,13 +285,29 @@ function statusTex(R){
     ['working','waiting','error','idle'].forEach((s,k) => { const n = R.agents.filter(a => a.state === s).length; g.fillStyle = ST[s]; g.fillRect(16 + k*58, 62, 12, 12); g.fillStyle = '#EDE6D6'; g.font = font(700, 30); g.fillText(String(n), 34 + k*58, 80); });
   });
 }
+const quebrar = (t, n) => { const out = []; let l = ''; for (const w of String(t || '').split(/\s+/)){ if ((l + ' ' + w).trim().length > n){ if (l) out.push(l); l = w; } else l = (l + ' ' + w).trim(); } if (l) out.push(l); return out; };
+function kanbanReal(R, g, w, h){
+  g.fillStyle = '#2B302D'; g.font = font(700, 24); g.fillText(short('AGORA · ' + R.name.toUpperCase(), 40), 30, 46);
+  g.fillStyle = '#5C625D'; g.font = font(600, 20); g.fillText('Fazendo', 30, 84); g.fillText('Feito hoje', 520, 84);
+  g.fillStyle = 'rgba(43,48,45,.25)'; g.fillRect(500, 64, 3, 270);
+  const ativos = R.agents.filter(a => a.state !== 'idle').slice(0, 3);
+  if (!ativos.length){ g.fillStyle = '#8C8F8A'; g.font = font(500, 20); g.fillText('Ninguém trabalhando agora', 30, 130); }
+  ativos.forEach((a, j) => { const y = 100 + j*82; g.fillStyle = a.state === 'waiting' ? '#F5D76E' : a.state === 'error' ? '#F2A28E' : '#A8D5A2'; g.fillRect(30, y, 450, 72);
+    g.fillStyle = '#1E1E1E'; g.font = font(700, 16); g.fillText(short(a.name, 40), 42, y + 22);
+    g.font = font(500, 15); quebrar(a.prompt || (TOOL_PT[a.tool] || a.tool), 52).slice(0, 2).forEach((l, i) => g.fillText(l, 42, y + 44 + i*18)); });
+  g.fillStyle = '#2B302D'; g.font = font(700, 72); g.fillText(String(R.done), 520, 170);
+  g.fillStyle = '#5C625D'; g.font = font(500, 18); g.fillText(R.done === 1 ? 'tarefa concluída' : 'tarefas concluídas', 520, 198);
+  const feitos = R.agents.filter(a => a.state === 'idle' && a.prompt).slice(0, 3);
+  feitos.forEach((a, j) => { g.fillStyle = '#1E1E1E'; g.font = font(500, 15); g.fillText('✓ ' + short(a.prompt.replace(/^["\s]+/, ''), 26), 520, 236 + j*26); });
+}
 function kanbanTex(R, title){
   return canvasTex(768, 360, (g, w, h) => {
     g.fillStyle = '#E4DED0'; g.fillRect(0,0,w,h); g.strokeStyle = '#8C8F8A'; g.lineWidth = 8; g.strokeRect(4,4,w-8,h-8);
+    if (REAL){ kanbanReal(R, g, w, h); return; }
     g.fillStyle = '#2B302D'; g.font = font(700, 24); g.fillText(title, 30, 46);
     ['A fazer','Fazendo','Feito'].forEach((c, k) => { g.fillStyle = '#5C625D'; g.font = font(600, 20); g.fillText(c, 30 + k*245, 84); if (k){ g.fillStyle = 'rgba(43,48,45,.25)'; g.fillRect(k*245 + 12, 64, 3, 270); } });
     const doing = R.agents.filter(a => a.state !== 'idle').map(a => a.name.replace('Sub · ',''));
-    const cols = [R.tasks.slice(0, Math.min(4, R.todo)), doing.slice(0,4), R.tasks.slice(-Math.min(4, R.done))];
+    const cols = [R.tasks.slice(0, Math.min(4, R.todo)), doing.slice(0,4), R.done ? R.tasks.slice(-Math.min(4, R.done)) : []];
     const colors = [['#F5D76E','#9EC5E8','#F2A28E','#F5D76E'], ['#A8D5A2','#F5D76E','#9EC5E8','#F2A28E'], ['#A8D5A2','#A8D5A2','#A8D5A2','#A8D5A2']];
     cols.forEach((list, k) => list.forEach((t, j) => { const x = 30 + k*245 + (j%2)*110, y = 106 + Math.floor(j/2)*110; g.fillStyle = 'rgba(0,0,0,.12)'; g.fillRect(x+4, y+4, 100, 90); g.fillStyle = colors[k][j]; g.fillRect(x, y, 100, 90); g.fillStyle = '#1E1E1E'; g.font = font(600, 16); g.fillText(short(t, 11), x+8, y+30); }));
   });
@@ -309,7 +325,7 @@ function projectRoom(R){
   buildShell(R);
   R.big = bigScreenTex(R, (g) => {
     const working = R.agents.filter(a => a.state === 'working').length;
-    g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText(`${R.agents.length} agente${R.agents.length>1?'s':''} · ${working} em execução · ${R.done} concluídas hoje`, 34, 92);
+    g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText(`${R.agents.length} ${R.agents.length === 1 ? 'sessão' : 'sessões'} · ${working} em execução · ${R.done} concluídas hoje`, 34, 92);
     g.fillStyle = '#EDE6D6'; g.font = font(700, 60); g.fillText(brlFromUsd(roomCost(R)), 34, 172);
     sparkOn(g, R.hist, 560, 60, 420, 70, '#F5B935'); budgetLine(g, R, 168);
   });
@@ -400,7 +416,7 @@ function studioRoom(R){
       g.fillStyle = '#EDE6D6'; g.font = font(700, 56); g.fillText(`${m.publicadosHoje} hoje`, 34, 160);
       g.fillStyle = '#8E9A92'; g.font = font(500, 20); g.fillText(`${m.agendados} agendados · ${m.emRevisao} em revisão · ${m.publicados7d} na semana`, 34, 194);
       g.fillStyle = m.erroPublicador || (m.saudeInstagram && m.saudeInstagram !== 'verified') ? '#FF6B5E' : '#5BD69E'; g.beginPath(); g.arc(300, 140, 9, 0, 7); g.fill();
-      if (marcas.length > 1){ g.fillStyle = '#8E9A92'; g.font = font(500, 18); g.fillText('+ ' + marcas.slice(1).map(x => '@' + (x.instagram || x.marca) + ' ' + x.publicadosHoje + ' hoje').join(' · '), 330, 150); }
+      if (marcas.length > 1){ g.fillStyle = '#8E9A92'; g.font = font(500, 18); g.fillText(short('+ ' + marcas.slice(1).map(x => '@' + (x.instagram || x.marca) + ' ' + x.publicadosHoje + ' hoje').join(' · '), 30), 330, 150); }
       g.fillStyle = '#8E9A92'; g.font = font(500, 20); g.fillText('ElevenLabs', 640, 98); g.fillText('Higgsfield', 840, 98);
       g.fillStyle = '#EDE6D6'; g.font = font(700, 38); g.fillText(left(E), 640, 150); g.fillText(left(H), 840, 150);
       g.fillStyle = '#1F2C27'; g.fillRect(640, 172, 170, 10); g.fillRect(840, 172, 140, 10);
@@ -461,7 +477,7 @@ function controlRoom(R){
   R.tvs.forEach((t, i) => wallScreen(R.sides.N.tall, 2.08, 1.2, -3.6 + i*2.4, 1.7, t));
   R.board = canvasTex(768, 360, (g, w, h) => {
     g.fillStyle = '#5A3B22'; g.fillRect(0,0,w,h); g.fillStyle = '#B79A72'; g.fillRect(14,14,w-28,h-28);
-    g.fillStyle = '#2B302D'; g.font = font(700, 24); g.fillText('SUGESTÕES DA SEMANA', 34, 52);
+    g.fillStyle = '#2B302D'; g.font = font(700, 24); g.fillText(REAL ? 'SUGESTÕES AGORA' : 'SUGESTÕES DA SEMANA', 34, 52);
     SUGG.slice(0,6).forEach((s, k) => { const x = 34 + (k%3)*240, y = 80 + Math.floor(k/3)*130, r = ((k*37)%9 - 4)/120;
       g.save(); g.translate(x+100, y+55); g.rotate(r); g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(-96, -46, 200, 110);
       g.fillStyle = s.sev === 'alerta' ? '#F2A28E' : s.sev === 'economia' ? '#F5D76E' : '#A8D5A2'; g.fillRect(-100, -52, 200, 110);
@@ -540,8 +556,10 @@ function deploysTex(R){
 function infraRoom(R){
   buildShell(R); R.accent = '#9EC5E8';
   R.big = bigScreenTex(R, (g) => {
+    // PC sem internet: os sites não foram conferidos (não é queda deles)
+    if (REAL && typeof realState !== 'undefined' && realState && realState.semInternet){ g.fillStyle = '#FF6B5E'; g.font = font(700, 24); g.textAlign = 'right'; g.fillText('PC SEM INTERNET · SITES NÃO CONFERIDOS', 990, 56); g.textAlign = 'left'; }
     if (REAL && !BIZ.uptime.length){ g.fillStyle = '#8E9A92'; g.font = font(500, 24); g.fillText('Conferindo os sites…', 34, 110); }
-    BIZ.uptime.forEach(([site, up, ok], i) => { const x = 34 + (i%2)*480, y = 100 + Math.floor(i/2)*56; g.fillStyle = ok === false ? '#FF6B5E' : up >= 99.95 ? '#5BD69E' : '#F5B935'; g.beginPath(); g.arc(x + 8, y - 8, 8, 0, 7); g.fill(); g.fillStyle = '#EDE6D6'; g.font = font(600, 26); g.fillText(site, x + 28, y); g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText(up.toFixed(2).replace('.',',') + '%', x + 330, y); });
+    BIZ.uptime.slice(0, 6).forEach(([site, up, ok], i) => { const x = 34 + (i%2)*480, y = 92 + Math.floor(i/2)*46; g.fillStyle = ok === false ? '#FF6B5E' : up >= 99.95 ? '#5BD69E' : '#F5B935'; g.beginPath(); g.arc(x + 8, y - 8, 8, 0, 7); g.fill(); g.fillStyle = '#EDE6D6'; g.font = font(600, 26); g.fillText(site, x + 28, y); g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText(up.toFixed(2).replace('.',',') + '%', x + 330, y); });
   });
   wallScreen(R.sides.N.tall, 5.2, 1.12, -1.6, 1.75, R.big);
   R.status = statusTex(R); wallScreen(R.sides.N.tall, 2.0, .94, 2.7, 1.72, R.status);
@@ -566,7 +584,7 @@ function callsRoom(R){
   mergeStatic(R.st);
 }
 const BUILD = {project:projectRoom, qa:qaRoom, sales:salesRoom, social:socialRoom, ads:adsRoom, studio:studioRoom, control:controlRoom, reception:receptionRoom, meeting:meetingRoom, infra:infraRoom, calls:callsRoom};
-ROOMS.forEach(R => BUILD[R.type](R));
+ROOMS.forEach(R => (BUILD[R.type] || projectRoom)(R));
 // Uma cor por cliente, na ordem em que aparecem no config (sem repetir até 12 clientes)
 const CORES_CLIENTE = ['#F5B935','#5BD69E','#9EC5E8','#C8B6F0','#F2A28E','#7FD1C7','#E39B6B','#D9C27A','#8FB8FF','#F08BB4','#B5D96B','#FFB86B'];
 const ORDEM_CLIENTES = [...new Set(ROOMS.map(R => R.cliente).filter(Boolean))];
@@ -575,7 +593,7 @@ if (REAL) ROOMS.forEach(R => {
   if (R.type === 'reception') return;
   R.cor = corCliente(R.cliente || R.name);
   const tex = canvasTex(512, 112, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = R.cor; c.fillRect(0,0,14,h);
-    c.fillStyle = '#EDE6D6'; c.font = font(700, 40); c.fillText(short(R.name, 22), 32, 50); c.fillStyle = R.cor; c.font = font(600, 26); c.fillText(short(R.cliente || R.stack || '', 30), 32, 92); });
+    c.fillStyle = '#EDE6D6'; c.font = font(700, 40); c.fillText(short(R.name, 20), 32, 50); c.fillStyle = R.cor; c.font = font(600, 26); c.fillText(short(R.cliente || R.stack || '', 30), 32, 92); });
   add(FLOORS[R.f].g, geo('placa', () => new THREE.PlaneGeometry(5.2, 1.13)), new THREE.MeshBasicMaterial({map: tex, toneMapped: false}), R.ox + RW/2, .03, R.oz + RD + .95, {rx: -Math.PI/2, cast: false, recv: false});
 });
 
@@ -642,7 +660,7 @@ function openArea(f){
     for (let s=0;s<3;s++){ rbox(b, 6, .4, .9, .04, M.woodDesk, 0, .2 + s*.4, -.9*s, {}); box(b, 6, .4*(s+1), .9, M.woodDark, 0, .2*(s+1), -.9*s); }
     for (let k=0;k<5;k++) rbox(b, .7, .1, .55, .05, mat(['#F5B935','#3E5A44','#C26B3A','#8E5BC2','#EDE6D6'][k], {r:.9}), -2.4 + k*1.2, .45 + (k%2)*.4, -.9*(k%2));
     const screen = canvasTex(1024, 400, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = '#F5B935'; c.font = font(700, 52); c.fillText(REAL ? 'HOJE NA EDEVSHUB' : 'ALL-HANDS · SEXTA 17H', 50, 110); c.fillStyle = '#EDE6D6'; c.font = font(500, 36); c.fillText(REAL ? `${brlFromUsd(totalCost())} de API · ${AGENTS.filter(a => a.state !== 'idle').length} agentes ativos agora` : 'Resultados da semana e próximos projetos', 50, 190);
-      c.fillStyle = '#8E9A92'; c.font = font(500, 30); c.fillText(`${COMPANY.tasks} tarefas concluídas hoje · nível ${companyLevel()}`, 50, 280); });
+      c.fillStyle = '#8E9A92'; c.font = font(500, 30); c.fillText(REAL ? `${COMPANY.tasks} tarefas concluídas hoje · ${AGENTS.length} sessões abertas` : `${COMPANY.tasks} tarefas concluídas hoje · nível ${companyLevel()}`, 50, 280); });
     OPEN_GROUPS.screens = [screen];
     const sp = new THREE.Group(); sp.position.set(30, 0, 10.9); st.add(sp); cyl(sp, .04, .04, 2.6, M.charcoal, -2.4, 1.3, 0); cyl(sp, .04, .04, 2.6, M.charcoal, 2.4, 1.3, 0);
     rbox(sp, 5.0, 2.0, .1, .03, M.bezel, 0, 2.2, 0); plane(sp, 4.8, 1.88, screenMat(screen), 0, 2.2, .06, Math.PI);
@@ -896,5 +914,6 @@ function pose(a, dt, snap){
 function poseDudu(){
   const b = DUDU.body; b.legs.forEach(l => l.rotation.set(-Math.PI/2.1, 0, 0));
   const k = RM ? 0 : Math.sin(T*12)*.07; b.arms[0].rotation.set(-1.15 + k, 0, .12); b.arms[1].rotation.set(-1.15 - k, 0, -.12);
-  b.g.position.set(DUDU.pos.x, .03, DUDU.pos.z + .05); b.g.rotation.y = Math.PI;
+  b.g.position.set(DUDU.pos.x, FLOORS[DUDU.f].y + .03, DUDU.pos.z + .05); b.g.rotation.y = Math.PI;
+  if (BOSS_ROOM.type !== 'control') b.g.visible = false;
 }

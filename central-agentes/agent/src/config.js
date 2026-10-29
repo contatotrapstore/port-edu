@@ -33,12 +33,12 @@ const compileRoom = r => ({ ...r, re: r.match ? new RegExp(r.match, 'i') : null 
 /** Troca salas e andares em uso (editor de salas) e grava no config.json, preservando o resto do arquivo. */
 export function aplicarSalas(rooms, floors) {
   const salas = rooms.map(r => { const o = { ...r }; delete o.re; delete o.noSlot; return o; });
-  for (const r of salas) if (r.match) new RegExp(r.match, 'i');   // erro aqui = expressão inválida, nada é gravado
+  for (const r of salas) if (r.match) { if (String(r.match).length > 200) throw new Error('expressão longa demais'); new RegExp(r.match, 'i'); }   // inválida: nada é gravado
   const file = path.join(AGENT_DIR, 'config.json');
   const raw = JSON.parse(fs.readFileSync(fs.existsSync(file) ? file : path.join(AGENT_DIR, 'config.example.json'), 'utf8'));
   raw.rooms = salas; if (floors) raw.floors = floors;
   if (fs.existsSync(file)) fs.copyFileSync(file, file + '.bak');
-  fs.writeFileSync(file, JSON.stringify(raw, null, 2) + '\n');
+  fs.writeFileSync(file + '.tmp', JSON.stringify(raw, null, 2) + '\n'); fs.renameSync(file + '.tmp', file);   // gravação atômica
   config.rooms = salas.map(compileRoom); if (floors) config.floors = floors;
   config.layout = buildLayout(config);
   return config.layout;

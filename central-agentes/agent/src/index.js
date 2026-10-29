@@ -1,5 +1,7 @@
 // Ponto de entrada do agente local da Central de Agentes EDevsHub.
-import { config } from './config.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { config, DATA_DIR } from './config.js';
 import { store } from './store.js';
 import { startServer } from './server.js';
 import { startClaudeSessions } from './collectors/claude-sessions.js';
@@ -19,6 +21,8 @@ import { startVercel } from './collectors/vercel.js';
 const [maj] = process.versions.node.split('.').map(Number);
 if (maj < 20) { console.error(`Node ${process.versions.node} é antigo. Instale o Node 20 ou mais novo.`); process.exit(1); }
 
+// log do início automático: guarda só o último ciclo grande
+try { const LOG = path.join(DATA_DIR, 'agente.log'); if (fs.statSync(LOG).size > 5 * 1024 * 1024) fs.renameSync(LOG, LOG + '.old'); } catch { /* sem log ainda */ }
 console.log('Central de Agentes · EDevsHub');
 console.log(`[config] ${config._file}${config._file.endsWith('example.json') ? '  (copie para config.json e ajuste as salas)' : ''}`);
 

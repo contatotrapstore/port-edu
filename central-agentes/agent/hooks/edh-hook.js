@@ -5,6 +5,11 @@
 import http from 'node:http';
 
 const PORT = Number(process.env.EDH_PORT || 4321);
+// Token do agente (agent/data/mcp-token): sem ele o agente recusa o evento (proteção contra sites fingindo ser o hook)
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+const TOKEN = (() => { try { return fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data', 'mcp-token'), 'utf8').trim(); } catch { return ''; } })();
 const done = (out) => { if (out) process.stdout.write(JSON.stringify(out)); process.exit(0); };
 
 let raw = '';
@@ -17,7 +22,7 @@ process.stdin.on('end', () => {
   const timeout = isPerm ? 10 * 60e3 : 1500;
   const body = Buffer.from(JSON.stringify(h));
   const req = http.request({ host: '127.0.0.1', port: PORT, path: '/hook' + (isPerm ? '?wait=1' : ''), method: 'POST', timeout,
-    headers: { 'Content-Type': 'application/json', 'Content-Length': body.length } }, res => {
+    headers: { 'Content-Type': 'application/json', 'Content-Length': body.length, 'X-EDH-Token': TOKEN } }, res => {
     let out = ''; res.setEncoding('utf8');
     res.on('data', c => { out += c; });
     res.on('end', () => {

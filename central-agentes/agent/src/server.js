@@ -18,6 +18,9 @@ const MCP_TOKEN = (() => {
   try { return fs.readFileSync(f, 'utf8').trim(); } catch { fs.mkdirSync(DATA_DIR, { recursive: true }); const t = crypto.randomBytes(24).toString('hex'); fs.writeFileSync(f, t); return t; }
 })();
 const authed = req => [TOKEN, MCP_TOKEN].includes(req.headers['x-edh-token']);
+// Pedido vindo de uma página de outro site: recusado (o navegador sempre manda Origin em POST)
+const origemOk = req => !req.headers.origin || /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(req.headers.origin);
+const jsonOk = req => /application\/json/i.test(req.headers['content-type'] || '');
 /** Sessão interativa nova num terminal próprio, na pasta do projeto. O texto vai por variável de ambiente, nunca pela linha de comando. */
 function abrirSessao(cwd, para, prompt) {
   const cmd = para === 'codex' ? 'codex' : 'claude';
@@ -79,7 +82,10 @@ const server = http.createServer(async (req, res) => {
       res.write('event: state\ndata: ' + JSON.stringify(store.snapshot()) + '\n\n');
       clients.add(res); req.on('close', () => clients.delete(res)); return;
     }
+    // Qualquer POST: só de origem local e com corpo JSON (bloqueia formulários e fetch "no-cors" de outros sites)
+    if (req.method === 'POST' && (!origemOk(req) || !jsonOk(req))) return send(res, 403, { erro: 'origem ou tipo de conteúdo não permitido' });
     if (req.method === 'POST' && p === '/hook') {
+      if (req.headers['x-edh-token'] !== MCP_TOKEN) return send(res, 403, { erro: 'token do hook inválido' });
       const h = await readBody(req);
       if (h.hook_event_name === 'PermissionRequest') {
         const a = store.applyHook({ ...h, hook_event_name: 'Notification', message: '' }) || null;
@@ -93,7 +99,10 @@ const server = http.createServer(async (req, res) => {
           return send(res, 200, { decision: null });
         }
         const secs = store.away && !panelVisible ? (ra.timeoutAusenteSeconds || 300) : (ra.timeoutSeconds || 45);
-        const r = await store.requestPermission(a, h.tool_name, h.tool_input, secs * 1000);
+        const pr = store.requestPermission(a, h.tool_name, h.tool_input, secs * 1000);
+        // Claude Code desistiu (Esc, timeout do hook): encerra o pedido em vez de deixá-lo pendurado
+        res.on('close', () => { if (!res.writableEnded) store.resolvePermission(pr.id, null); });
+        const r = await pr;
         return send(res, 200, r || { decision: null });
       }
       store.applyHook(h);
@@ -105,7 +114,11 @@ const server = http.createServer(async (req, res) => {
     const pastaDe = b => {
       if (b.agente) { const a = store.agents.get(b.agente); if (a?.cwd) return a.cwd; }
       if (b.projeto) { const c = pastaDoProjeto(b.projeto); if (c) return c; }
-      if (b.cwd && fs.existsSync(b.cwd)) return b.cwd;
+      if (b.cwd && fs.existsSync(b.cwd)) {
+        const alvo = path.resolve(b.cwd).toLowerCase();
+        const conhecida = [...store.agents.values()].find(a => a.cwd && path.resolve(a.cwd).toLowerCase() === alvo);
+        if (conhecida) return conhecida.cwd;
+      }
       return null;
     };
     if (p === '/api/quadro' && req.method === 'GET') return send(res, 200, lerQuadro(url.searchParams.get('projeto') || '', Number(url.searchParams.get('limite')) || 30));
@@ -144,7 +157,10 @@ const server = http.createServer(async (req, res) => {
         }
         const cwd = pastaDe(b);
         if (!cwd) return send(res, 400, { erro: 'não sei a pasta desse projeto: abra uma sessão nele antes ou informe a pasta' });
-        if (p === '/api/tarefas') return send(res, 200, delegar({ para: b.para, modo: b.modo, tarefa: b.tarefa, cwd, de: b.de || 'painel', profundidade: Number(b.profundidade) || 0 }));
+        // tarefa delegada não delega de novo: o MCP manda o id da tarefa em que roda
+        const prof = b.job || Number(b.profundidade) ? 1 : 0;
+        if (p === '/api/tarefas') return send(res, 200, delegar({ para: b.para, modo: b.modo, tarefa: b.tarefa, cwd, de: b.de || 'painel', profundidade: prof }));
+        if (p === '/api/fluxos' && prof) return send(res, 400, { erro: 'tarefa delegada não pode iniciar fluxo' });
         if (p === '/api/fluxos') return send(res, 200, iniciarFluxo({ modelo: b.modelo, objetivo: b.objetivo, cwd, de: b.de || 'painel' }));
         if (p === '/api/sessao') { abrirSessao(cwd, b.para, String(b.prompt || '').slice(0, 8000)); return send(res, 200, { ok: true, pasta: cwd }); }
       } catch (err) { return send(res, 400, { erro: err.message }); }
@@ -169,7 +185,7 @@ const server = http.createServer(async (req, res) => {
       if (p === '/predio') { res.writeHead(302, { Location: '/predio/' + url.search }); return res.end(); }
       if (p === '/predio/') return serveFile(res, path.join(WEB, 'predio', 'index.html'));
       const file = path.normalize(path.join(WEB, p));
-      if (!file.startsWith(WEB)) return send(res, 403, { erro: 'caminho inválido' });
+      if (file !== WEB && !file.startsWith(WEB + path.sep)) return send(res, 403, { erro: 'caminho inválido' });
       return serveFile(res, file);
     }
     send(res, 404, { erro: 'rota não encontrada' });

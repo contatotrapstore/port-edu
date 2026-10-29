@@ -90,6 +90,16 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [x] Atalho na Área de Trabalho abre como app (Chrome `--app`); o /central também instala como app no celular
 - [ ] Bot do Telegram (Eduardo cria no @BotFather)
 
+## Fase 2.8 — auditoria completa (29/10/2026)
+- [x] Segurança do agente: `/hook` só com o token (`X-EDH-Token`, lido de `data/mcp-token` pelo hook); POST de outro site recusado (Origin) e só com JSON; pasta de tarefa só de sessão conhecida
+- [x] Estado certo: Stop volta para ocioso com "Concluído"; ferramenta aberta não vira ocioso; sessão retomada reaparece; contadores zeram à meia-noite; leitura do Codex no meio do arquivo sem duplicar custo
+- [x] Painel avisando presença (o pedido de permissão só espera o painel quando ele está aberto) voltou a funcionar (faltava JSON no POST)
+- [x] Prédio recarrega sozinho quando o mapa de salas muda; TI mostra "PC sem internet"; textos de tarefas escapados
+- [x] /central: script externo + CSP fechada; contagem regressiva nos pedidos (some faltando 5 s); resumo seguro do pedido (programa ou tipo de arquivo); aviso "PC sem sinal há X"; modo ausente mostra "aplicando…" até o PC confirmar; acesso conferido por `is_central_admin()`; mensagem de login que não revela e-mails; PWA com escopo `/central`
+- [x] Supabase: coluna `resumo`; resposta só com pedido válido e `decided_by` = quem respondeu
+- [x] MCP: token relido, projeto achado sem diferença de maiúsculas/subpasta, mensagens em paralelo, versão do protocolo negociada; instalador com bloco marcado no `config.toml` do Codex
+- [x] Testes: `npm test` = estado (hooks, custo, permissão, salas) + Telegram + nuvem; `node scripts/teste-mcp.mjs`
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)
