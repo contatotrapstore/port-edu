@@ -40,6 +40,26 @@
   "_obsUptime": "Sites conferidos a cada 5 min pelo agente (tela da sala de TI).",
   "uptime": ["https://www.edevshub.com", "https://kingprime.com.br", "https://beeder.me", "https://useconvoo.com.br"],
 
+  "orquestra": {
+    "_obs": "Agentes conversando: quadro por projeto + tarefas delegadas (claude -p / codex exec na pasta do projeto). maxTarefas = quantas rodam juntas; maxUsdClaude = teto de gasto por tarefa do Claude (equivalente em API). modeloClaude = modelo das tarefas delegadas ao Claude (ex.: \"sonnet\" gasta menos da janela; null = o padrão do Claude Code). Nos prompts dos fluxos: {{objetivo}}, {{anterior}} (saída do passo anterior), {{passo1}}, {{passo2}}…",
+    "maxTarefas": 2, "minutosMax": 30, "maxUsdClaude": 3, "modeloClaude": null,
+    "fluxos": [
+      { "id": "planejar-executar-revisar", "nome": "Planejar → Executar → Revisar", "passos": [
+        { "para": "claude", "modo": "ler", "prompt": "Você é o líder técnico deste projeto. Leia o código e escreva um plano curto e concreto (arquivos, passos, testes) para: {{objetivo}}. Não edite nada." },
+        { "para": "codex", "modo": "editar", "prompt": "Execute este plano neste projeto. Siga o padrão do código existente e rode os testes que houver.\n\nObjetivo: {{objetivo}}\n\nPlano:\n{{anterior}}" },
+        { "para": "claude", "modo": "ler", "prompt": "Revise o que foi feito (veja o git diff) contra o plano. Aponte bugs e o que faltou, em ordem de gravidade. Não edite.\n\nObjetivo: {{objetivo}}\n\nPlano:\n{{passo1}}\n\nRelato de quem executou:\n{{anterior}}" }
+      ] },
+      { "id": "segunda-opiniao", "nome": "Segunda opinião (Codex revisa)", "passos": [
+        { "para": "codex", "modo": "ler", "prompt": "Faça uma revisão crítica e independente deste projeto focada em: {{objetivo}}. Liste problemas concretos com arquivo e linha. Não edite." }
+      ] },
+      { "id": "investigar-corrigir", "nome": "Investigar → Corrigir → Conferir", "passos": [
+        { "para": "codex", "modo": "ler", "prompt": "Investigue a causa raiz deste problema sem editar: {{objetivo}}. Mostre a evidência (arquivo, linha, log)." },
+        { "para": "claude", "modo": "editar", "prompt": "Corrija a causa raiz encontrada abaixo, com a menor mudança segura, e rode os testes.\n\nProblema: {{objetivo}}\n\nInvestigação:\n{{anterior}}" },
+        { "para": "codex", "modo": "ler", "prompt": "Confira se a correção resolve a causa raiz e não quebra nada (veja o git diff). Problema: {{objetivo}}\n\nRelato da correção:\n{{anterior}}" }
+      ] }
+    ]
+  },
+
   "pricing": {
     "_obs": "US$ por milhão de tokens, por prefixo do modelo (vence o prefixo mais longo). Claude conferido em 29/10/2026. cacheWrite = cache de 5 min (1,25x a entrada); cacheWrite1h = cache de 1h (2x), que é o que o Claude Code usa.",
     "claude-opus-5-5": { "in": 4, "out": 20, "cacheRead": 0.2, "cacheWrite": 5, "cacheWrite1h": 8 },

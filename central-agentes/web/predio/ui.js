@@ -179,8 +179,8 @@ function renderAgentTab(now){
   if (agentShell !== a){
     agentShell = a; lastHTML.agDyn = lastHTML.agLog = null;
     pane.innerHTML = `<div id="agDyn"></div>
-      <div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
-        <div class="row"><small>${a.real ? 'Não dá para escrever numa sessão aberta: o texto vai para a área de transferência. Cole no terminal de ' + esc(a.proj || a.R.name) + '.' : 'O agente sai da convivência e volta pra mesa.'}</small><button class="btn solid" type="button" data-act="sendTask">${a.real ? 'Copiar' : 'Enviar'}</button></div></div>
+      ${a.real && !NUVEM ? workCard(a) : `<div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
+        <div class="row"><small>${a.real ? 'Não dá para escrever numa sessão aberta: o texto vai para a área de transferência. Cole no terminal de ' + esc(a.proj || a.R.name) + '.' : 'O agente sai da convivência e volta pra mesa.'}</small><button class="btn solid" type="button" data-act="sendTask">${a.real ? 'Copiar' : 'Enviar'}</button></div></div>`}
       <div class="card"><div class="sec"><h2>Chat ao vivo</h2><small id="agCount"></small></div><ul class="log" id="agLog"></ul></div>`;
     lastHTML.pane = null;
   }
@@ -207,7 +207,7 @@ function renderOps(){
     for (const R of rooms){ const w = worstState(R), c = roomCost(R)*CAMBIO, pct = R.budget ? c / R.budget : 0;
       html += `<button class="prow ${focus===R.i?'on':''}" type="button" data-act="room" data-arg="${R.i}"><span class="dot" style="background:${ST[w]};box-shadow:0 0 8px ${ST[w]}"></span><span style="min-width:0"><span class="pn">${esc(R.name)}</span><br><span class="ps">${esc(R.stack)} · ${R.agents.length} agente${R.agents.length !== 1 ? 's' : ''} · ${R.done} concluídas</span></span><span class="pc">${brl(c, 2)}${R.budget ? `<small>de ${brl(R.budget)}/dia</small>` : ''}</span>${R.budget ? `<span class="bar"><i class="${pct > 1 ? 'over' : ''}" style="width:${Math.min(100, pct*100).toFixed(1)}%"></i></span>` : ''}</button>`; }
   }
-  html += `</div></div>` + costReport();
+  html += `</div></div>` + orquestraCard() + costReport();
   const un = ACHIEVEMENTS.filter(A => COMPANY.unlocked.includes(A.id));
   html += `<div class="card"><div class="sec"><h2>Conquistas</h2><small>nível ${companyLevel()} · ${num(COMPANY.xp)} XP</small></div>${un.length ? `<div class="trophies">${un.map(A => `<span class="trophy"><b>★</b>${esc(A.label)}</span>`).join('')}</div>` : '<p class="note">Nenhuma ainda hoje. Elas aparecem na estante de troféus da Diretoria.</p>'}
     <p class="note" style="margin-top:8px">Top agentes: ${[...AGENTS].sort((x,y) => y.xp - x.xp).slice(0,3).map(a => `${esc(a.name)} (${esc(a.R.name)}) nível ${levelOf(a.xp)}`).join(' · ')}</p></div>`;
@@ -257,6 +257,7 @@ document.addEventListener('click', e => {
   if (act === 'tv') toggleTV();
   if (act === 'light'){ lightMode = lightMode === 'auto' ? 'day' : lightMode === 'day' ? 'night' : 'auto'; $('lightLbl').textContent = {auto:'Hora real', day:'Dia', night:'Noite'}[lightMode]; lastDay = -1; applyLight(); if (view.building) hemi.intensity += .35; }
   if (act === 'wake'){ const a = agentBy(+arg); if (a && a.state === 'idle') assignTask(a, pick(a.prompts)); }
+  if (act === 'delegar' || act === 'fluxo' || act === 'sessao'){ if (selected) realTrabalho(act, arg, selected); return; }
   if (act === 'sendTask'){ if (!selected) return; const ta = $('taskText'), v = ta && ta.value.trim(); if (!v){ toast('Escreva a tarefa antes de enviar'); return; } assignTask(selected, v); ta.value = ''; }
   if (act === 'live') goLive();
   if (act === 'replay') toggleReplay();

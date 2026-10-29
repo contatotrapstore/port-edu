@@ -29,6 +29,7 @@ class Store extends EventEmitter {
     this._t = null;
     // Modo ausente: pedidos de permissão esperam resposta pelo celular (Telegram ou site) mesmo sem painel aberto
     this.away = loadAway();
+    this.jobSessions = new Map();   // sessão criada por tarefa delegada -> nome do boneco ("Delegado · …")
   }
 
   setAway(on, origem = '') {
@@ -70,6 +71,8 @@ class Store extends EventEmitter {
     }
     if (base.model) a.model = base.model;
     if (base.name && a.name === 'Principal') a.name = base.name;
+    const job = this.jobSessions.get(a.sessionId);
+    if (job && a.name === 'Principal') a.name = job;
     return a;
   }
 
@@ -235,7 +238,7 @@ class Store extends EventEmitter {
     const { rooms, projects } = this.dayTotals();
     return {
       updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans, planInfo: PLAN_INFO,
-      rooms, projects, layout: config.layout, uptime: this.uptime || [], content: this.content || null,
+      rooms, projects, layout: config.layout, uptime: this.uptime || [], content: this.content || null, ...(this.extras ? this.extras() : {}),
       pending: [...this.pending.values()].map(({ resolve, timer, ...p }) => p), feed: this.feed.slice(0, 80),
       remoteApproval: !!config.remoteApproval?.enabled, away: this.away,
       roomBudgets: Object.fromEntries((config.rooms || []).filter(r => r.budgetBrl).map(r => [r.room, r.budgetBrl])),

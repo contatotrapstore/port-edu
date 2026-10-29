@@ -168,10 +168,11 @@ function realApply(s, first){
   // Quadro de cada sala: o que as sessões de lá estão fazendo (começo do último prompt)
   for (const R of ROOMS) R.tasks = [...new Set(R.agents.map(a => a.prompt).filter(Boolean).map(p => p.replace(/^["\s]+/, '').split(/\s+/).slice(0, 2).join(' ')))];
   BIZ.uptime = (s.uptime || []).map(u => [u.site, u.upPct, u.ok]);
-  window.EDH_CONTENT = s.content || null;   // posts e reels do Content Studio (Estúdio e sugestões)
+  window.EDH_CONTENT = s.content || null;
+  if (first) lastQuadroT = Math.max(0, ...(s.quadro || []).map(m => m.t)); else quadroBaloes(s);   // posts e reels do Content Studio (Estúdio e sugestões)
 
   FEED.length = 0;
-  for (const f of s.feed || []) FEED.push(toEv(f, REAL_AGENTS.get(f.agentId) || {R: {name: REAL_ROOM.get(f.agentId) || 'Sessão encerrada'}, name: ''}));
+  for (const f of s.feed || []) FEED.push(toEv(f, REAL_AGENTS.get(f.agentId) || {R: {name: f.room || REAL_ROOM.get(f.agentId) || 'Sessão encerrada'}, name: ''}));
 
   realPlans(s);
   if (!selected) selected = AGENTS.find(a => a.state === 'waiting') || AGENTS[0] || null;
@@ -210,7 +211,7 @@ function startReal(){
   es.addEventListener('state', ev => {
     try {
       realApply(JSON.parse(ev.data), first);
-      if (first){ first = false; loadHistory(); loadCosts(); setInterval(loadCosts, 60e3); }
+      if (first){ first = false; loadHistory(); loadCosts(); setInterval(loadCosts, 60e3); fetch('/api/fluxos').then(r => r.json()).then(f => { FLUXOS = f; agentShell = null; dirty = true; }).catch(() => {}); }
     } catch (err) { console.error('[fonte]', err); }
   });
   es.onerror = () => { $('simTag').textContent = 'Agente local fora do ar · tentando reconectar'; };
@@ -324,4 +325,55 @@ function startNuvemFront(){
   if (window.EDH_FIRST_STATE) apply(window.EDH_FIRST_STATE);
   else $('simTag').textContent = window.EDH_NUVEM_ERRO || 'Sem dados ainda: o agente do PC está ligado?';
   SB.channel('predio').on('postgres_changes', {event: '*', schema: 'public', table: 'office_state', filter: 'id=eq.principal'}, p => { if (p.new && p.new.state) apply(p.new.state); }).subscribe();
+}
+
+/* =========================== orquestra: agentes conversando =========================== */
+let FLUXOS = [], lastQuadroT = 0;
+const modoSel = () => (document.querySelector('input[name="modoTrab"]:checked') || {}).value || 'ler';
+function workCard(a){
+  return `<div class="card task"><span class="k">Trabalho em ${esc(a.proj || a.R.name)}</span>
+    <textarea id="taskText" placeholder="O que fazer neste projeto (o outro agente não vê esta conversa: dê o contexto)"></textarea>
+    <div class="row" style="gap:12px;margin:6px 0"><label><input type="radio" name="modoTrab" value="ler" checked> Só ler (revisar, investigar, planejar)</label><label><input type="radio" name="modoTrab" value="editar"> Pode editar esta pasta</label></div>
+    <div class="row" style="flex-wrap:wrap;gap:6px">
+      <button class="btn solid" type="button" data-act="delegar" data-arg="claude">Delegar ao Claude</button>
+      <button class="btn solid" type="button" data-act="delegar" data-arg="codex">Delegar ao Codex</button>
+      ${FLUXOS.length ? `<select id="fluxoSel" class="btn" aria-label="Fluxo">${FLUXOS.map(f => `<option value="${esc(f.id)}">${esc(f.nome)}</option>`).join('')}</select><button class="btn" type="button" data-act="fluxo">Rodar fluxo</button>` : ''}
+      <button class="btn" type="button" data-act="sessao" data-arg="claude">Abrir Claude aqui</button>
+      <button class="btn" type="button" data-act="sessao" data-arg="codex">Abrir Codex aqui</button>
+    </div>
+    <small class="note">Delegar e fluxo rodam em segundo plano nesta pasta; o resultado cai no quadro (aba Operação). "Abrir" abre um terminal novo com o texto como primeiro pedido.</small></div>`;
+}
+async function realTrabalho(act, arg, a){
+  const ta = $('taskText'), texto = ta ? ta.value.trim() : '';
+  if (act !== 'sessao' && !texto){ toast('Escreva a tarefa primeiro'); return; }
+  const rota = act === 'delegar' ? '/api/tarefas' : act === 'fluxo' ? '/api/fluxos' : '/api/sessao';
+  const corpo = act === 'delegar' ? {agente: a.key, para: arg, modo: modoSel(), tarefa: texto, de: 'Eduardo'}
+    : act === 'fluxo' ? {agente: a.key, modelo: ($('fluxoSel') || {}).value, objetivo: texto, de: 'Eduardo'}
+    : {agente: a.key, para: arg, prompt: texto};
+  try {
+    const r = await fetch(rota, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify(corpo)});
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.erro || r.status);
+    toast(act === 'delegar' ? `Delegado ao ${arg === 'claude' ? 'Claude' : 'Codex'} (${modoSel() === 'ler' ? 'só ler' : 'pode editar'}). Resultado no quadro.` : act === 'fluxo' ? `Fluxo "${j.nome}" iniciado (${j.passos} passos)` : 'Terminal aberto na pasta do projeto');
+    if (ta && act !== 'sessao') ta.value = '';
+  } catch (err) { toast('Não deu: ' + err.message); }
+}
+const ST_TAREFA = {'na fila': '⏳', 'rodando': '🟢', 'concluída': '✅', 'falhou': '❌'};
+function orquestraCard(){
+  if (!REAL || !realState) return '';
+  const ts = realState.tarefas || [], q = (realState.quadro || []).slice(-12).reverse();
+  if (NUVEM) return ts.length ? `<div class="card"><div class="sec"><h2>Tarefas entre agentes</h2></div><ul class="sessions">${ts.slice(0, 8).map(t => `<li><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${esc(t.projeto)} · ${t.para} (${t.modo})</span><em>${t.status}</em></li>`).join('')}</ul></div>` : '';
+  return `<div class="card"><div class="sec"><h2>Agentes conversando</h2><small>${ts.filter(t => t.status === 'rodando').length} rodando</small></div>
+    ${ts.length ? `<ul class="sessions">${ts.slice(0, 6).map(t => `<li title="${esc(t.tarefa)}"><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${esc(t.projeto)} · ${t.para === 'claude' ? 'Claude' : 'Codex'} (${t.modo}) · ${esc(short(t.tarefa, 40))}</span><em>${t.custoUsd ? brlFromUsd(t.custoUsd) : t.status}</em></li>`).join('')}</ul>` : '<p class="note">Nenhuma tarefa delegada ainda. Selecione um agente e use "Delegar", ou peça numa sessão: "use o central_delegar para o Codex revisar isso".</p>'}
+    <div class="sec" style="margin-top:10px"><h2>Quadro</h2><small>recados entre sessões</small></div>
+    ${q.length ? `<ul class="log">${q.map(m => `<li><time>${fmtTime(new Date(m.t))}</time><span class="who">${esc(short(m.projeto, 13))}</span><span class="x"><b>${esc(m.de)} → ${esc(m.para)}</b> · ${esc(short(m.texto, 160))}</span></li>`).join('')}</ul>` : '<p class="note">Quadro vazio.</p>'}</div>`;
+}
+// Recado novo no quadro vira balão num boneco da sala
+function quadroBaloes(s){
+  for (const m of s.quadro || []){
+    if (m.t <= lastQuadroT) continue;
+    lastQuadroT = m.t;
+    const a = AGENTS.find(x => x.proj === m.projeto || x.R.name === m.sala);
+    if (a){ a.bubble = {text: `${m.de}: ${short(m.texto, 70)}`, until: performance.now() + 6000}; a.pop = 1; }
+  }
 }

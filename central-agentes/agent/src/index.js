@@ -13,6 +13,7 @@ import { startAlertas } from './alertas.js';
 import { startNuvem } from './nuvem.js';
 import { startUptime } from './uptime.js';
 import { startConteudo } from './collectors/conteudo.js';
+import { startOrquestra, lerQuadro, listaTarefas } from './orquestra.js';
 
 const [maj] = process.versions.node.split('.').map(Number);
 if (maj < 20) { console.error(`Node ${process.versions.node} é antigo. Instale o Node 20 ou mais novo.`); process.exit(1); }
@@ -32,6 +33,8 @@ startAlertas();
 startNuvem();
 startUptime();
 startConteudo();
+startOrquestra();
+store.extras = () => ({ quadro: lerQuadro('', 40), tarefas: listaTarefas().slice(0, 15) });
 setInterval(() => store.sweep(), 5000);
 store.sweep();
 

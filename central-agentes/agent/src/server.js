@@ -3,11 +3,27 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { ROOT_DIR, PORT, config } from './config.js';
+import { ROOT_DIR, PORT, config, DATA_DIR, roomFor } from './config.js';
 import { store } from './store.js';
 import { readHistory, readCosts, dayKey } from './history.js';
+import { spawn } from 'node:child_process';
+import { postar, lerQuadro, delegar, tarefa, listaTarefas, modelosFluxo, iniciarFluxo, pastaDoProjeto } from './orquestra.js';
 
 const TOKEN = crypto.randomBytes(16).toString('hex');
+// Token fixo do MCP "central" (as sessões do Claude/Codex usam para falar com o agente). Fica em data/, fora do git.
+const MCP_TOKEN = (() => {
+  const f = path.join(DATA_DIR, 'mcp-token');
+  try { return fs.readFileSync(f, 'utf8').trim(); } catch { fs.mkdirSync(DATA_DIR, { recursive: true }); const t = crypto.randomBytes(24).toString('hex'); fs.writeFileSync(f, t); return t; }
+})();
+const authed = req => [TOKEN, MCP_TOKEN].includes(req.headers['x-edh-token']);
+/** Sessão interativa nova num terminal próprio, na pasta do projeto. O texto vai por variável de ambiente, nunca pela linha de comando. */
+function abrirSessao(cwd, para, prompt) {
+  const cmd = para === 'codex' ? 'codex' : 'claude';
+  const script = `Set-Location -LiteralPath $env:EDH_CWD; $host.UI.RawUI.WindowTitle = 'Central · ' + $env:EDH_TITULO; if ($env:EDH_PROMPT) { ${cmd} $env:EDH_PROMPT } else { ${cmd} }`;
+  const p = spawn('powershell.exe', ['-NoExit', '-NoProfile', '-Command', script], { cwd, detached: true, stdio: 'ignore', windowsHide: false,
+    env: { ...process.env, EDH_CWD: cwd, EDH_PROMPT: prompt || '', EDH_TITULO: roomFor(cwd).project } });
+  p.unref();
+}
 const WEB = path.join(ROOT_DIR, 'web');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon' };
 const clients = new Set();
@@ -82,6 +98,35 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, { ok: true });
     }
     // Modo ausente: { "on": true | false }
+    /* ---- orquestra: quadro, tarefas delegadas, fluxos e sessões novas (painel e MCP) ---- */
+    // Pasta do pedido: da sessão escolhida no painel (agente), do nome do projeto, ou a pasta de onde o MCP chamou (cwd)
+    const pastaDe = b => {
+      if (b.agente) { const a = store.agents.get(b.agente); if (a?.cwd) return a.cwd; }
+      if (b.projeto) { const c = pastaDoProjeto(b.projeto); if (c) return c; }
+      if (b.cwd && fs.existsSync(b.cwd)) return b.cwd;
+      return null;
+    };
+    if (p === '/api/quadro' && req.method === 'GET') return send(res, 200, lerQuadro(url.searchParams.get('projeto') || '', Number(url.searchParams.get('limite')) || 30));
+    if (p.startsWith('/api/tarefas') && req.method === 'GET') {
+      const id = p.split('/')[3];
+      return send(res, 200, id ? (tarefa(id) || { erro: 'não encontrada' }) : listaTarefas());
+    }
+    if (p === '/api/fluxos' && req.method === 'GET') return send(res, 200, modelosFluxo());
+    if (req.method === 'POST' && ['/api/quadro', '/api/tarefas', '/api/fluxos', '/api/sessao'].includes(p)) {
+      if (!authed(req)) return send(res, 403, { erro: 'token inválido' });
+      const b = await readBody(req);
+      try {
+        if (p === '/api/quadro') {
+          const cwd = pastaDe(b), r = cwd ? roomFor(cwd) : { room: b.projeto, project: b.projeto };
+          return send(res, 200, postar({ projeto: r.project, sala: r.room, de: b.de, para: b.para, texto: b.texto }) || { erro: 'mensagem vazia' });
+        }
+        const cwd = pastaDe(b);
+        if (!cwd) return send(res, 400, { erro: 'não sei a pasta desse projeto: abra uma sessão nele antes ou informe a pasta' });
+        if (p === '/api/tarefas') return send(res, 200, delegar({ para: b.para, modo: b.modo, tarefa: b.tarefa, cwd, de: b.de || 'painel', profundidade: Number(b.profundidade) || 0 }));
+        if (p === '/api/fluxos') return send(res, 200, iniciarFluxo({ modelo: b.modelo, objetivo: b.objetivo, cwd, de: b.de || 'painel' }));
+        if (p === '/api/sessao') { abrirSessao(cwd, b.para, String(b.prompt || '').slice(0, 8000)); return send(res, 200, { ok: true, pasta: cwd }); }
+      } catch (err) { return send(res, 400, { erro: err.message }); }
+    }
     if (req.method === 'POST' && p === '/api/away') {
       if (req.headers['x-edh-token'] !== TOKEN) return send(res, 403, { erro: 'token inválido' });
       const b = await readBody(req); store.setAway(!!b.on, 'painel'); return send(res, 200, { away: store.away });

@@ -17,6 +17,8 @@
     "autostart:off": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/autostart-windows.ps1 -Remover",
     "telegram:parear": "node scripts/parear-telegram.js",
     "site:sync": "node scripts/site-sync.js",
-    "test": "node scripts/teste-telegram.mjs && node scripts/teste-nuvem.mjs"
+    "test": "node scripts/teste-telegram.mjs && node scripts/teste-nuvem.mjs",
+    "mcp:install": "node scripts/mcp-install.js",
+    "mcp:uninstall": "node scripts/mcp-install.js --remover"
   }
 }
