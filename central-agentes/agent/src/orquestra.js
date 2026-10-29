@@ -20,7 +20,11 @@ function matar(p) {
 }
 // Com shell (Windows), argumentos com espaço ou símbolos precisam de aspas
 const q = a => process.platform === 'win32' && /[\s()*&|<>^]/.test(a) ? '"' + a + '"' : a;
-const LEITURA = ['Read', 'Grep', 'Glob', 'WebSearch', 'WebFetch', 'Bash(git diff:*)', 'Bash(git log:*)', 'Bash(git status:*)', 'Bash(git show:*)'];
+// Modo "ler": sem WebFetch (um texto malicioso lido no projeto poderia mandar dados para fora pela URL) e git só nas
+// formas exatas abaixo (diff/log/show aceitam --output=arquivo, que escreveria no disco). Status não escreve nada.
+const LEITURA = ['Read', 'Grep', 'Glob', 'WebSearch', 'Bash(git status:*)',
+  'Bash(git diff)', 'Bash(git diff --stat)', 'Bash(git diff --cached)', 'Bash(git diff --cached --stat)', 'Bash(git diff HEAD)', 'Bash(git diff HEAD --stat)',
+  'Bash(git log --oneline -20)', 'Bash(git log --oneline -50)', 'Bash(git log -5 --stat)', 'Bash(git show HEAD)', 'Bash(git show --stat HEAD)'];
 const TESTES = ['Bash(npm test:*)', 'Bash(npm run test:*)', 'Bash(npm run lint:*)', 'Bash(npm run build:*)', 'Bash(npx vitest:*)', 'Bash(npx jest:*)', 'Bash(npx tsc:*)', 'Bash(pnpm test:*)', 'Bash(node --test:*)'];
 import { store } from './store.js';
 

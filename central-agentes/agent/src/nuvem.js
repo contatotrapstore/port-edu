@@ -73,7 +73,13 @@ export function startNuvem() {
   if (!BASE || !KEY) { console.log('[nuvem] sem SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY no .env, painel do site desligado'); return; }
   store.on('change', () => { if (!pushTimer) pushTimer = setTimeout(push, 3000); });
   store.on('permission', p => {
-    const resumo = /^(Bash|PowerShell)$/.test(p.tool) ? String(p.text || '').trim().split(/\s+/)[0].replace(/^.*[\\/]/, '').slice(0, 30)
+    // Só o nome do programa: pula atribuições (TOKEN=... cmd) e descarta o que não parecer nome de programa ($env:, aspas etc.)
+    const programa = () => {
+      const w = String(p.text || '').trim().split(/\s+/).find(x => !/^[A-Za-z_][A-Za-z0-9_]*=/.test(x)) || '';
+      const n = w.replace(/^.*[\\/]/, '');
+      return /^[A-Za-z0-9._-]{1,30}$/.test(n) ? n : '';
+    };
+    const resumo = /^(Bash|PowerShell)$/.test(p.tool) ? programa()
       : /Edit|Write/.test(p.tool) ? (String(p.text || '').match(/\.[A-Za-z0-9]{1,6}$/) || [''])[0] : '';
     rest('POST', 'permission_requests', [{ id: p.id, room: p.room, tool: p.tool, resumo, status: 'pending', expires_at: new Date(Date.now() + p.timeoutMs).toISOString() }])
       .then(() => mirrored.add(p.id)).catch(err => console.log('[nuvem]', err.message));
