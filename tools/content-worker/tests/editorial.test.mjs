@@ -49,7 +49,7 @@ test('draft input rejects unsafe source schemes, huge captions and invalid slide
 });
 
 test('save failure returns an error without navigating away from the unsaved draft', async () => {
-  const api = load('../../app/admin/actions', {
+  const api = load('../../app/(pt)/admin/actions', {
     'next/headers': {}, 'next/navigation': { redirect: () => { throw Error('Unexpected navigation'); } },
     'next/cache': {}, '@/lib/content/auth': {}, '@/lib/content/review': {}, '@/lib/content/render': {},
     '@/lib/content/input': { parseDraft: () => ({}) },
