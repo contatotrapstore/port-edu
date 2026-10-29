@@ -60,9 +60,9 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 
 ### Para ligar a Fase 2 (só o Eduardo)
 - [ ] Telegram: @BotFather → /newbot → colar `TELEGRAM_BOT_TOKEN` no agent/.env → `npm run telegram:parear` → mandar /start → reiniciar o agente
-- [ ] Supabase: criar o projeto → SQL Editor → rodar `supabase/central-agentes.sql` → Authentication → URL Configuration: incluir `https://www.edevshub.com/central` nos redirects
-- [ ] agent/.env: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (secreta, só no PC) e `SUPABASE_ANON_KEY` (pública) → reiniciar o agente
-- [ ] `npm run site:sync` → commit e push do site → abrir /central no celular, entrar pelo link do e-mail → rodar o insert de `central_admins` que a página mostra
+- [x] Supabase: projeto do Content Studio (`kcjshrnjkrmtzgpwnygc`), SQL aplicado e `/central` nos redirects (29/10/2026, pela API de gerenciamento). Admins do Content Studio entram direto
+- [x] agent/.env com `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` e `SUPABASE_ANON_KEY` (copiadas do Content Studio); agente espelhando
+- [x] `npm run site:sync` + push: https://www.edevshub.com/central no ar (login pelo link no e-mail, mesma conta do admin de conteúdo)
 - [ ] Orçamento do dia por projeto: `budgetBrl` nas salas do config.json (opcional)
 
 ## Fase 2.5 — tudo ligado aos projetos reais (29/10/2026)
