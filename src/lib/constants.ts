@@ -48,6 +48,8 @@ export interface SiteConfig {
     email: string;
     /** E.164 sem símbolos, ex.: 5511999999999. Vazio = a /contratar esconde o botão. */
     whatsapp: string;
+    /** Perfil oficial da marca. Fica fora da zona Workana (o guard do build confere). */
+    instagram: string;
   };
 }
 
@@ -64,49 +66,62 @@ export const siteConfig: SiteConfig = {
     // (/workana, home, cases) nunca renderiza contato: scripts/check-workana-
     // isolation.mjs quebra o build se um wa.me aparecer lá.
     whatsapp: "5541988970309",
+    // Informado pelo proprietário em 29/10/2026.
+    instagram: "https://www.instagram.com/edevshub/",
   },
 };
 
-export const workanaStats = {
-  // Snapshot legado consumido pela landing de anúncios, fora desta revisão.
-  projectsCompleted: 176,
-  projectsRunning: 11,
-  clientReviews: 179,
-  recurringClients: 37,
-  rating: 4.74,
+/**
+ * Números do perfil público na Workana: a única fonte de prova do site.
+ *
+ * Conferidos no perfil público em 29/10/2026 (capturas e extração em
+ * output/redesign-previa-2026-10-29-site/evidencia/). Cada campo repete um
+ * rótulo do perfil:
+ *   projectsCompleted  "Projetos realizados"
+ *   projectsRunning    "Projetos em execução"
+ *   clientReviews      "Classificações dos clientes" (quantidade de avaliações)
+ *   rating             média das classificações, de 0 a 5
+ *   recurringClients   "N clientes contrataram Eduardo G. mais de uma vez"
+ *   certifications     "Certificações"
+ *   hourlyRate         valor por hora, em reais
+ *   level              nível na Workana
+ *   overallRank        "Ranking Workana", posição atual entre totalProfessionals
+ *                      (muda toda semana; não exibir como prova)
+ * Para atualizar: conferir todos os campos no perfil e trocar a data junto.
+ * Antes havia dois snapshots (01/09 e 21/09) e a /contratar mostrava o antigo.
+ */
+export const workanaProfile = {
+  verifiedAt: "2026-10-29",
+  verifiedAtLabel: "29/10/2026",
+  projectsCompleted: 187,
+  projectsRunning: 8,
+  clientReviews: 187,
+  recurringClients: 43,
+  rating: 4.76,
   ratingMax: 5,
   certifications: 7,
   hourlyRate: 200,
-  peakRankITBrazil: 1,
-  peakRankITGlobal: 3,
-  overallRank: 6,
-  totalProfessionals: "14.78M",
+  overallRank: 30,
+  totalProfessionals: "15.29M",
   level: "HERO",
   memberSince: "Fev/2023",
   workanaProfileUrl: "https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6",
 };
 
-export const portfolioWorkanaStats = {
-  // Snapshot do perfil público. Conferir antes de atualizar e manter a data.
-  verifiedAt: "2026-09-21",
-  verifiedAtLabel: "21/09/2026",
-  projectsCompleted: 180,
-  projectsRunning: 13,
-  clientReviews: 181,
-  recurringClients: 37,
-  rating: 4.75,
-  ratingMax: 5,
-  certifications: 7,
-  hourlyRate: 200,
-  // Ranking de TI é volátil — exibir sempre como pico de carreira, nunca como posição atual
+/**
+ * Pico histórico em TI que o próprio perfil declara no texto "Sobre mim". A
+ * Workana não mostra histórico de ranking, então nenhuma captura da plataforma
+ * confirma esse pico (auditoria de 21/09/2026). As páginas novas e os metadados
+ * não o exibem; a /workana e a home antiga ainda exibem.
+ */
+const selfDeclaredPeak = {
   peakRankITBrazil: 1,
   peakRankITGlobal: 3,
-  overallRank: 33,
-  totalProfessionals: "15.02M",
-  level: "HERO",
-  memberSince: "Fev/2023",
-  workanaProfileUrl: "https://www.workana.com/freelancer/89c9896a5874018ef858f71acf0f5dc6",
 };
+
+/** Nomes antigos do snapshot: todas as páginas leem os mesmos números. */
+export const portfolioWorkanaStats = { ...workanaProfile, ...selfDeclaredPeak };
+export const workanaStats = portfolioWorkanaStats;
 
 // Prova pública, sem inferir resultados financeiros ou técnicos dos clientes.
 export const resultMetrics = [
@@ -227,7 +242,7 @@ testimonials.push(
     author: "NATÁLIA D.",
     project: "Desenvolvimento de Plataforma Web de Estudo Inteligente com Banco de Questões e Dashboard",
     projectType: "Plataforma web",
-    date: `Conferido em ${portfolioWorkanaStats.verifiedAtLabel}`,
+    date: "Conferido em 21/09/2026", // conferência das avaliações (auditoria de 21/09)
     verified: true,
     recurring: false,
     rating: 5,
@@ -237,7 +252,7 @@ testimonials.push(
     author: "P. M. C.",
     project: "Desenvolvimento de Plataforma Web Completa para Gestão de Mesa Proprietária de Day Trade",
     projectType: "Sistema de gestão",
-    date: `Conferido em ${portfolioWorkanaStats.verifiedAtLabel}`,
+    date: "Conferido em 21/09/2026", // conferência das avaliações (auditoria de 21/09)
     verified: true,
     recurring: false,
     rating: 5,

@@ -546,8 +546,8 @@ const testimonialMetaEN: Array<{ projectType: string; date: string }> = [
   { projectType: "News Portal + AI", date: "Apr/2026" },
   { projectType: "GPT Platform", date: "Sep/2025" },
   { projectType: "Corporate Website", date: "2025" },
-  { projectType: "Web Platform", date: `Checked on ${workanaStats.verifiedAtLabel}` },
-  { projectType: "Management System", date: `Checked on ${workanaStats.verifiedAtLabel}` },
+  { projectType: "Web Platform", date: "Checked on 21/09/2026" },
+  { projectType: "Management System", date: "Checked on 21/09/2026" },
 ];
 
 export const testimonialsEN: typeof testimonials = testimonials.map((tm, i) => ({

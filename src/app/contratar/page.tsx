@@ -203,7 +203,7 @@ export default function ContratarPage() {
                 <p>
                   <strong>Eduardo Gouveia</strong>
                   <span>
-                    {workanaStats.projectsCompleted} sistemas entregues · nota{" "}
+                    {workanaStats.projectsCompleted} projetos realizados · nota{" "}
                     {workanaStats.rating} em {workanaStats.clientReviews} avaliações
                     verificadas
                   </span>
