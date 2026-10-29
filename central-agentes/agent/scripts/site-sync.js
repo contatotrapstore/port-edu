@@ -34,6 +34,10 @@ for (const f of fs.readdirSync(path.join(ROOT_DIR, 'web', 'predio'))) {
   fs.writeFileSync(path.join(DEST, 'predio', f), buf);
 }
 fs.cpSync(path.join(ROOT_DIR, 'web', 'icones'), path.join(DEST, 'icones'), { recursive: true });
+fs.cpSync(path.join(ROOT_DIR, 'web', 'marcas'), path.join(DEST, 'marcas'), { recursive: true });
+// ícone da Higgsfield (imagem) mora em /central/marcas no site
+const marcas = path.join(DEST, 'predio', 'marcas.js');
+fs.writeFileSync(marcas, fs.readFileSync(marcas, 'utf8').replaceAll("'/marcas/", "'/central/marcas/"));
 fs.writeFileSync(path.join(DEST, 'manifest.webmanifest'), JSON.stringify({
   name: 'Central de Agentes · EDevsHub', short_name: 'Central', lang: 'pt-BR', start_url: '/central/', scope: '/central/', display: 'standalone',
   background_color: '#0B1210', theme_color: '#0B1210',

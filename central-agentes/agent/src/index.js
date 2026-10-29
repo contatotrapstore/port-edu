@@ -11,6 +11,7 @@ import { startHistory } from './history.js';
 import { startTelegram } from './telegram.js';
 import { startAlertas } from './alertas.js';
 import { startNuvem } from './nuvem.js';
+import { startUptime } from './uptime.js';
 
 const [maj] = process.versions.node.split('.').map(Number);
 if (maj < 20) { console.error(`Node ${process.versions.node} é antigo. Instale o Node 20 ou mais novo.`); process.exit(1); }
@@ -28,6 +29,7 @@ startHistory();
 startTelegram();
 startAlertas();
 startNuvem();
+startUptime();
 setInterval(() => store.sweep(), 5000);
 store.sweep();
 

@@ -69,7 +69,7 @@ function permNote(){
 
 function realUpdate(a, x, first){
   const prev = a.state;
-  a.name = x.name || 'Principal'; a.proj = x.room; a.model = modelLabel(x.model); a.family = familyOf(x.model);
+  a.name = x.name || 'Principal'; a.proj = x.project || x.room; a.model = modelLabel(x.model); a.family = familyOf(x.model);
   a.tool = prettyTool(x.tool); a.target = x.target || ''; if (x.prompt) a.prompt = x.prompt;
   const tk = x.tokens || {};
   a.cost = x.costUsdToday || 0; a.tin = (tk.in || 0) + (tk.cacheRead || 0) + (tk.cacheWrite || 0); a.tout = tk.out || 0;
@@ -130,8 +130,11 @@ function realPlans(s){
       p.sourceNote = src.source === 'sem chave' ? 'Sem chave da ElevenLabs. Coloque ELEVENLABS_API_KEY (só leitura) em agent/.env.' : 'ElevenLabs: ' + (src.source || 'sem leitura');
     } else if (p.id === 'higgs'){
       const tot = i.manualCreditsTotal, left = i.manualCreditsLeft;
-      p.credit = tot && left != null ? {total: tot, left, unit: 'créditos', daysLeft: i.renewInDays ?? 30, cycle: 30, mix: {}} : null;
-      p.sourceNote = 'Plano e créditos a confirmar. Preencha manualCreditsTotal e manualCreditsLeft em config.json → plans.higgs.';
+      const tier = String(i.tier || p.tier).split(' ·')[0];
+      p.credit = tot > 0 && left != null ? {total: tot, left, unit: 'créditos', daysLeft: i.renewInDays ?? 30, cycle: 30, mix: {}}
+        : tot === 0 ? {total: 0, left: 0, unit: 'créditos', label: `${tier} · 0 créditos`} : null;
+      p.sourceNote = tot === 0 ? `Plano ${tier}, 0 créditos (conferido na conta). A Higgsfield não tem API de saldo: atualize em config.json → plans.higgs quando mudar.`
+        : 'Plano e créditos a confirmar. Preencha manualCreditsTotal e manualCreditsLeft em config.json → plans.higgs.';
     }
   }
 }
@@ -159,15 +162,19 @@ function realApply(s, first){
     if (first) R.hist = Array(30).fill(roomCost(R));
   }
   if (first) totalHist.fill(totalCost());
+  if (!first && tasks > COMPANY.tasks) ringBell();   // sino das entregas: toca a cada tarefa concluída
   COMPANY.tasks = tasks; COMPANY.xp = tasks * 25;
+  // Quadro de cada sala: o que as sessões de lá estão fazendo (começo do último prompt)
+  for (const R of ROOMS) R.tasks = [...new Set(R.agents.map(a => a.prompt).filter(Boolean).map(p => p.replace(/^["\s]+/, '').split(/\s+/).slice(0, 2).join(' ')))];
+  BIZ.uptime = (s.uptime || []).map(u => [u.site, u.upPct, u.ok]);
 
   FEED.length = 0;
   for (const f of s.feed || []) FEED.push(toEv(f, REAL_AGENTS.get(f.agentId) || {R: {name: REAL_ROOM.get(f.agentId) || 'Sessão encerrada'}, name: ''}));
 
   realPlans(s);
   if (!selected) selected = AGENTS.find(a => a.state === 'waiting') || AGENTS[0] || null;
-  if (NUVEM) costDays = {[dayKeyLocal(new Date())]: Object.fromEntries((s.rooms || []).map(r => [r.room, {costUsd: r.costUsdToday, tasks: r.tasksToday}]))};
-  $('simTag').textContent = NUVEM ? `Nuvem · resumo sem prompts nem comandos · atualizado às ${new Date(s.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'})}` : `Dados reais · agente local · US$ 1 = R$ ${CAMBIO.toFixed(2).replace('.', ',')} · números do Comercial e Marketing ainda simulados`;
+  if (NUVEM) costDays = {[dayKeyLocal(new Date())]: Object.fromEntries((s.projects || s.rooms || []).map(r => [r.project || r.room, {room: r.room, costUsd: r.costUsdToday, tasks: r.tasksToday}]))};
+  $('simTag').textContent = NUVEM ? `Nuvem · resumo sem prompts nem comandos · atualizado às ${new Date(s.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'})}` : `Dados reais · agente local · US$ 1 = R$ ${CAMBIO.toFixed(2).replace('.', ',')}`;
   checkAchievements();
   dirty = true;
 }
@@ -213,6 +220,11 @@ function startReal(){
 /* =========================== histórico (fase 1.6) =========================== */
 const GHOSTS = new Map();   // sessão que já fechou -> boneco que só aparece no replay
 let costDays = {}, costPeriod = 1;
+// Custo em API do mês corrente (custos.json do agente; na nuvem, só o dia de hoje)
+function monthApiUsd(){
+  const mk = dayKeyLocal(new Date()).slice(0, 7);
+  return Object.entries(costDays).filter(([d]) => d.startsWith(mk)).reduce((t, [, rooms]) => t + Object.values(rooms).reduce((u, v) => u + (v.costUsd || 0), 0), 0);
+}
 const dayKeyLocal = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 // Posição fixa de uma sessão num instante do histórico: mesa se estava ativa, sofá/puff se estava ociosa
@@ -300,20 +312,14 @@ async function realToggleAway(on){
 
 /* =========================== nuvem (site, fase 2) =========================== */
 // Servido pelo site em /central/predio?fonte=nuvem. Login e config ficam em /central/ (index.html e config.json).
+// O boot.js já fez login, buscou o estado (o layout das salas vem nele) e deixou o cliente em window.EDH_SB
 let SB = null;
-const loadScript = (src, integrity) => new Promise((ok, bad) => { const s = document.createElement('script'); s.src = src; if (integrity){ s.integrity = integrity; s.crossOrigin = 'anonymous'; } s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
-async function startNuvemFront(){
-  $('simTag').textContent = 'Conectando à nuvem…';
-  const cfg = await fetch('/central/config.json', {cache: 'no-store'}).then(r => r.json()).catch(() => null);
-  if (!cfg || !cfg.supabaseUrl){ $('simTag').textContent = 'Central sem Supabase configurado'; return; }
-  await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js', 'sha384-UagCvVPT5XXA0Hx+nJYUAGBFseHT9zBgpJMSebsAxl9lciTwbT+39j5VfRjdP5Tp');
-  SB = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-  const {data: {session}} = await SB.auth.getSession();
-  if (!session){ location.href = '/central'; return; }
+function startNuvemFront(){
+  SB = window.EDH_SB || null;
+  if (!SB){ $('simTag').textContent = window.EDH_NUVEM_ERRO || 'Central sem Supabase configurado'; return; }
   let first = true;
   const apply = st => { try { realApply(st, first); first = false; } catch (err) { console.error('[nuvem]', err); } };
-  const {data, error} = await SB.from('office_state').select('state').eq('id', 'principal').maybeSingle();
-  if (error || !data) $('simTag').textContent = error ? 'Sem acesso: ' + error.message : 'Sem dados ainda: o agente do PC está ligado?';
-  else apply(data.state);
+  if (window.EDH_FIRST_STATE) apply(window.EDH_FIRST_STATE);
+  else $('simTag').textContent = window.EDH_NUVEM_ERRO || 'Sem dados ainda: o agente do PC está ligado?';
   SB.channel('predio').on('postgres_changes', {event: '*', schema: 'public', table: 'office_state', filter: 'id=eq.principal'}, p => { if (p.new && p.new.state) apply(p.new.state); }).subscribe();
 }

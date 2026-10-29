@@ -65,6 +65,13 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [ ] `npm run site:sync` → commit e push do site → abrir /central no celular, entrar pelo link do e-mail → rodar o insert de `central_admins` que a página mostra
 - [ ] Orçamento do dia por projeto: `budgetBrl` nas salas do config.json (opcional)
 
+## Fase 2.5 — tudo ligado aos projetos reais (29/10/2026)
+- [x] Salas montadas a partir do config (20 salas: térreo de apoio, 1º projetos ativos, 2º clientes, 3º EDevsHub e produtos, com sala de avulsos que mostra o nome da pasta)
+- [x] Custo e tarefas por projeto (avulsos separados por pasta); sessão que gasta antes de saber a pasta leva o custo junto
+- [x] Ícones das marcas nos planos; ElevenLabs real (chave do Content Studio); Higgsfield Free · 0 créditos (manual, sem API)
+- [x] Telas reais: recepção, telão do térreo, daily do 1º, sino das entregas e "o que os planos renderam no mês" no 2º, monitor dos sites na TI (+ alerta de site fora do ar)
+- [ ] useconvoo.com.br não resolve no DNS (NXDOMAIN em 29/10/2026): conferir o domínio
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)

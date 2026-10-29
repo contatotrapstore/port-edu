@@ -22,12 +22,13 @@ export function sanitize(s) {
   return {
     updatedAt: s.updatedAt, usdBrl: s.usdBrl, away: s.away, remoteApproval: s.remoteApproval,
     agents: s.agents.map(a => ({
-      id: hid(a.id), source: a.source, room: a.room, floor: a.floor, name: /^Sub/.test(a.name) ? 'Subagente' : a.name,
+      id: hid(a.id), source: a.source, room: a.room, project: a.project, floor: a.floor, name: /^Sub/.test(a.name) ? 'Subagente' : a.name,
       model: a.model, state: a.state, tool: a.tool, since: a.since, lastActivity: a.lastActivity, pendingId: a.pendingId,
       costUsdToday: a.costUsdToday, tasksToday: a.tasksToday, tokens: a.tokens,
       log: a.log.slice(0, 8).map(e => ({ t: e.t, kind: e.kind, tag: e.tag, text: '' })),
     })),
-    plans: s.plans, planInfo: s.planInfo, rooms: s.rooms, roomBudgets: s.roomBudgets,
+    plans: s.plans, planInfo: s.planInfo, rooms: s.rooms, projects: s.projects, roomBudgets: s.roomBudgets, layout: s.layout,
+    uptime: (s.uptime || []).map(({ site, ok, status, ms, upPct, at }) => ({ site, ok, status, ms, upPct, at })),
     pending: s.pending.map(p => ({ id: p.id, agentId: hid(p.agentId), tool: p.tool, at: p.at })),
     feed: s.feed.slice(0, 40).map(e => ({ t: e.t, agentId: hid(e.agentId), kind: e.kind, tag: e.tag, text: '' })),
   };

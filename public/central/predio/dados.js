@@ -15,7 +15,9 @@ const MOBILE = matchMedia('(max-width: 700px), (pointer: coarse)').matches;
 const FONTE = new URLSearchParams(location.search).get('fonte') || (window.EDH_TOKEN ? 'real' : 'simulada');
 const NUVEM = FONTE === 'nuvem';            // site (/central/predio): resumo sanitizado do Supabase, com login
 const REAL = FONTE === 'real' || NUVEM;
-const AVULSOS = 'Projetos avulsos';
+// Layout real (salas do config.json): o agente injeta em window.EDH_LAYOUT; na nuvem vem do estado (boot.js)
+const LAYOUT = REAL && window.EDH_LAYOUT && (window.EDH_LAYOUT.rooms || []).length ? window.EDH_LAYOUT : null;
+const AVULSOS = ((LAYOUT && LAYOUT.rooms.find(r => r.fallback)) || {}).room || 'Projetos avulsos';
 const RW = 10, RD = 8, GAP = 2.5, WH = 2.6, COLS = 4, PLAZA = 6.5, FH = 4.2;
 const WW = COLS*RW + (COLS-1)*GAP, WD = 2*RD + GAP;
 const WALK = WD + 1.5, DOOR_X = 8.4, AISLE = 4.7, BACK = 7.3;
@@ -52,6 +54,7 @@ const FLOORS = [
   {i:3, name:'Marketing', short:'3º', desc:'EDevsHub, Revix, estúdio e tráfego'},
 ];
 FLOORS.forEach(F => F.y = F.i*FH);
+if (LAYOUT) (LAYOUT.floors || []).forEach((x, i) => { if (FLOORS[i] && x){ FLOORS[i].name = x.name || FLOORS[i].name; FLOORS[i].desc = x.desc || ''; } });
 
 const CODE = {
   planet:{name:'PlanetShake', stack:'Capacitor · Android', budget:45, files:['android/app/build.gradle','src/pages/Checkout.tsx','capacitor.config.ts','src/lib/deeplink.ts','android/app/src/main/AndroidManifest.xml'], cmds:['npx cap sync android','./gradlew bundleRelease','npm run build'], prompts:['Configura o Capacitor pra gerar o AAB de release e ajusta o splash','Corrige o deep link do checkout no Android','Revisa as permissões do manifest antes de subir pra Play'], tasks:['Splash','Ícone','Política','Deep link','AAB release','Manifest','Checkout']},
@@ -77,10 +80,12 @@ const KINDS = {
 };
 const SOCIAL_PROMPTS = {edevshub:['Cria o carrossel da semana sobre automação com IA','Escreve o post de case do PlanetShake','Prepara o reels de bastidores do escritório'], revix:['Monta o post do próximo encontro em Curitiba','Responde os comentários do último evento']};
 
-const ROOM_DEFS = [
+// Sala real a partir do config.json: tipo do prédio + "kind" usado nas telas e animações
+const REAL_KIND = {control: 'fin', reception: 'recep', infra: 'ops'};
+const realRoomDef = r => ({f: r.floor, slot: r.slot, type: r.type || 'project', name: r.room, stack: r.stack || '', kind: r.type === 'studio' ? undefined : (REAL_KIND[r.type] || 'code'), files: [], cmds: [], prompts: [], tasks: [], budget: r.budgetBrl || 0, fallback: !!r.fallback});
+const ROOM_DEFS = LAYOUT ? LAYOUT.rooms.map(realRoomDef) : [
   {f:0, slot:0, type:'reception', name:'Recepção', stack:'Atendimento e agenda', kind:'recep'},
-  // No modo real, a sala de reunião recebe as pastas que não têm sala no config.json
-  REAL ? {f:0, slot:1, type:'project', name:AVULSOS, stack:'Pastas sem sala no config.json', kind:'code', files:[], cmds:[], prompts:[], tasks:[]} : {f:0, slot:1, type:'meeting', name:'Sala de reunião', stack:'Calls com clientes'},
+  {f:0, slot:1, type:'meeting', name:'Sala de reunião', stack:'Calls com clientes'},
   {f:0, slot:2, type:'infra', name:'TI · Infra', stack:'Servidores, deploys e domínios', kind:'ops'},
   {f:0, slot:3, type:'control', name:'Diretoria', stack:'Planos, custos e metas', kind:'fin'},
   ...['planet','ligou','organzza','qa','revix','meta','fisko'].map((k, i) => ({f:1, slot:[0,1,2,3,4,5,6][i], type: k === 'qa' ? 'qa' : 'project', key:k, kind:'code', ...CODE[k]})),
@@ -102,7 +107,7 @@ const ROOMS = ROOM_DEFS.map((d, i) => {
   const K = KINDS[d.kind] || {};
   R.files = R.files || []; R.cmds = R.cmds || K.waits || []; R.prompts = R.prompts || K.prompts || []; R.tasks = R.tasks || K.tasks || ['Tarefa'];
   if (d.type === 'studio') R.cmds = KINDS.higgs.waits;
-  if (REAL){ R.tasks = []; R.budget = 0; } // quadro só com quem está trabalhando; orçamentos do protótipo eram inventados
+  if (REAL){ R.tasks = []; R.budget = d.budget || 0; } // quadro com os prompts reais (fonte.js); orçamento só se vier do config
   return R;
 });
 const roomAt = (f, slot) => ROOMS.find(R => R.f === f && R.slot === slot);
@@ -175,7 +180,7 @@ function meterInfo(m){
   return {elapsed, proj, cls, over: cls === 'bad'};
 }
 function creditInfo(c){
-  if (!c) return {usedPct: 0, elapsed: 0, leftover: 0, proj: 'Sem fonte de dados', cls: '', short: false, rate: 0};
+  if (!c || !c.total) return {usedPct: 0, elapsed: 0, leftover: 0, proj: (c && c.label) || 'Sem fonte de dados', cls: '', short: false, rate: 0};
   const elapsedD = c.cycle - c.daysLeft, usedC = c.total - c.left, rate = usedC / Math.max(1, elapsedD), need = rate * c.daysLeft, usedPct = usedC / c.total * 100;
   if (need <= c.left) return {usedPct, elapsed: elapsedD/c.cycle, leftover: c.left - need, proj:`No ritmo atual, sobram ~${num(c.left-need)} ${c.unit} na renovação`, cls:'good', short:false, rate};
   return {usedPct, elapsed: elapsedD/c.cycle, leftover:0, runout: c.left/rate, proj:`No ritmo atual, acaba em ~${Math.max(1,Math.round(c.left/rate))} dias (renova em ${c.daysLeft})`, cls:'bad', short:true, rate};

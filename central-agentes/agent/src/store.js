@@ -48,9 +48,9 @@ class Store extends EventEmitter {
   agent(id, base = {}) {
     let a = this.agents.get(id);
     if (!a) {
-      const { room, floor } = roomFor(base.cwd);
+      const { room, floor, project } = roomFor(base.cwd);
       a = {
-        id, source: base.source || 'claude', sessionId: base.sessionId || id, cwd: base.cwd || '', room, floor,
+        id, source: base.source || 'claude', sessionId: base.sessionId || id, cwd: base.cwd || '', room, floor, project,
         name: base.name || 'Principal', model: base.model || '', state: 'idle', tool: '', target: '', prompt: '',
         since: Date.now(), lastActivity: 0, waitCmd: null, pendingId: null, errMsg: null,
         tokens: { in: 0, out: 0, cacheRead: 0, cacheWrite: 0 }, costUsdToday: 0, tasksToday: 0, log: [],
@@ -58,19 +58,40 @@ class Store extends EventEmitter {
       };
       this.agents.set(id, a);
     }
-    if (base.cwd && base.cwd !== a.cwd) { a.cwd = base.cwd; Object.assign(a, roomFor(base.cwd)); }
+    if (base.cwd && base.cwd !== a.cwd) {
+      // Sessão que gastou antes de a pasta aparecer: leva o custo do dia junto para a sala certa
+      const before = !a.cwd && (a.costUsdToday || a.tasksToday) ? this.roomDay(a) : null;
+      a.cwd = base.cwd; Object.assign(a, roomFor(base.cwd));
+      if (before) {
+        const now = this.roomDay(a);
+        before.costUsdToday = Math.max(0, before.costUsdToday - a.costUsdToday); before.tasksToday = Math.max(0, before.tasksToday - a.tasksToday);
+        now.costUsdToday += a.costUsdToday; now.tasksToday += a.tasksToday;
+      }
+    }
     if (base.model) a.model = base.model;
     if (base.name && a.name === 'Principal') a.name = base.name;
     return a;
   }
 
-  /** Acumulado do dia da sala do agente. */
+  /** Acumulado do dia por projeto (sala + pasta, para a sala de avulsos separar cada pasta). */
   roomDay(a) {
     const key = new Date().toDateString();
     if (this.day.key !== key) this.day = { key, rooms: new Map() };
-    let r = this.day.rooms.get(a.room);
-    if (!r) { r = { room: a.room, floor: a.floor, costUsdToday: 0, tasksToday: 0 }; this.day.rooms.set(a.room, r); }
+    const k = a.room + '|' + (a.project || a.room);
+    let r = this.day.rooms.get(k);
+    if (!r) { r = { room: a.room, project: a.project || a.room, floor: a.floor, costUsdToday: 0, tasksToday: 0 }; this.day.rooms.set(k, r); }
     return r;
+  }
+
+  /** Totais do dia agrupados por sala (prédio) e por projeto (relatório de custo). */
+  dayTotals() {
+    if (this.day.key !== new Date().toDateString()) return { rooms: [], projects: [] };
+    const projects = [...this.day.rooms.values()].filter(p => p.costUsdToday > 0 || p.tasksToday > 0), rooms = new Map();
+    for (const p of projects) {
+      const r = rooms.get(p.room) || { room: p.room, floor: p.floor, costUsdToday: 0, tasksToday: 0 };
+      r.costUsdToday += p.costUsdToday; r.tasksToday += p.tasksToday; rooms.set(p.room, r);
+    }
+    return { rooms: [...rooms.values()], projects };
   }
 
   taskDone(a) { a.tasksToday++; this.roomDay(a).tasksToday++; }
@@ -211,9 +232,10 @@ class Store extends EventEmitter {
     const agents = [...this.agents.values()].filter(a => !a.ended && now - a.lastActivity < hideMs)
       .sort((x, y) => x.floor - y.floor || x.room.localeCompare(y.room) || (x.name === 'Principal' ? -1 : 1))
       .map(({ _seen, _hook, ended, ...rest }) => rest);
+    const { rooms, projects } = this.dayTotals();
     return {
       updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans, planInfo: PLAN_INFO,
-      rooms: this.day.key === new Date().toDateString() ? [...this.day.rooms.values()] : [],
+      rooms, projects, layout: config.layout, uptime: this.uptime || [],
       pending: [...this.pending.values()].map(({ resolve, timer, ...p }) => p), feed: this.feed.slice(0, 80),
       remoteApproval: !!config.remoteApproval?.enabled, away: this.away,
       roomBudgets: Object.fromEntries((config.rooms || []).filter(r => r.budgetBrl).map(r => [r.room, r.budgetBrl])),

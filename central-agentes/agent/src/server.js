@@ -32,7 +32,8 @@ function serveFile(res, file) {
   fs.readFile(file, (err, buf) => {
     if (err) return send(res, 404, 'Não encontrado', 'text/plain; charset=utf-8');
     const ext = path.extname(file);
-    if (ext === '.html') buf = Buffer.from(buf.toString('utf8').replace('</head>', `<script>window.EDH_TOKEN=${JSON.stringify(TOKEN)}</script>\n</head>`));
+    // Token da API e layout do prédio (salas do config.json) vão junto com a página
+    if (ext === '.html') buf = Buffer.from(buf.toString('utf8').replace('</head>', `<script>window.EDH_TOKEN=${JSON.stringify(TOKEN)};window.EDH_LAYOUT=${JSON.stringify(config.layout).replace(/</g, '\\u003c')}</script>\n</head>`));
     send(res, 200, buf, TYPES[ext] || 'application/octet-stream');
   });
 }

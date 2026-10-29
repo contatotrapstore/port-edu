@@ -107,6 +107,8 @@ pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 "JetBrains Mono",mon
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script>let dirty = false;</script>
+<script src="/central/predio/marcas.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js" integrity="sha384-UagCvVPT5XXA0Hx+nJYUAGBFseHT9zBgpJMSebsAxl9lciTwbT+39j5VfRjdP5Tp" crossorigin="anonymous"></script>
 <script>
 (async () => {
@@ -147,9 +149,14 @@ pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 "JetBrains Mono",mon
     $('awayBtn').textContent = state.away ? 'Desligar' : 'Ligar'; $('awayBtn').className = state.away ? '' : 'solid';
     const order = {waiting: 0, error: 1, working: 2, idle: 3};
     $('agents').innerHTML = [...ag].sort((a, b) => order[a.state] - order[b.state]).map(a => `<li class="ag"><i class="dot" style="background:${ST[a.state][0]}"></i><span class="t"><b>${esc(a.room)}</b><small>${esc(a.name)} · ${ST[a.state][1]}${a.state === 'working' && a.tool ? ' · ' + esc(a.tool) : ''}</small></span><em>${brl(a.costUsdToday || 0)}</em></li>`).join('') || '<li class="note">Nenhuma sessão aberta.</li>';
-    const names = {claude: 'Claude', gpt: 'Codex'};
-    $('plans').innerHTML = Object.entries(names).map(([k, n]) => (state.plans?.[k]?.meters || []).map(m => { const p = Math.round(m.usedPct), c = p > 85 ? 'var(--err)' : p > 60 ? 'var(--amber)' : 'var(--ok)';
-      return `<div class="meter"><div class="top"><span>${n} · ${esc(String(m.label).replace(/^Codex · /, ''))}</span><b>${p}%</b></div><div class="bar"><i style="width:${Math.min(100, p)}%;background:${c}"></i></div><p class="note">${resetTxt(m.resetAt)}</p></div>`; }).join('')).join('') || '<p class="note">Sem leitura dos planos ainda.</p>';
+    const info = state.planInfo || {}, plans = state.plans || {};
+    const head = (k, n) => `<div class="row" style="margin:12px 0 2px">${window.brandIcon ? brandIcon(k, 28) : ''}<b style="flex:1">${esc(n)}</b><span class="note" style="margin:0">${esc(info[k]?.tier || '')}</span></div>`;
+    const meter = m => { const p = Math.round(m.usedPct), c = p > 85 ? 'var(--err)' : p > 60 ? 'var(--amber)' : 'var(--ok)';
+      return `<div class="meter"><div class="top"><span>${esc(String(m.label).replace(/^Codex · /, ''))}</span><b>${p}%</b></div><div class="bar"><i style="width:${Math.min(100, p)}%;background:${c}"></i></div><p class="note">${resetTxt(m.resetAt)}</p></div>`; };
+    const el = plans.eleven || {}, hg = info.higgs || {};
+    $('plans').innerHTML = [['claude', 'Claude'], ['gpt', 'ChatGPT']].map(([k, n]) => head(k, n) + ((plans[k]?.meters || []).map(meter).join('') || '<p class="note">Sem leitura ainda.</p>')).join('')
+      + head('eleven', 'ElevenLabs') + (el.limit ? meter({label: `${(el.limit - el.used).toLocaleString('pt-BR')} créditos restantes`, usedPct: el.used / el.limit * 100, resetAt: el.resetAt}) : `<p class="note">${esc(el.source || 'sem leitura')}</p>`)
+      + head('higgs', 'Higgsfield') + `<p class="note">${hg.manualCreditsTotal ? `${hg.manualCreditsLeft} de ${hg.manualCreditsTotal} créditos` : `Plano ${esc(hg.tier || '—')} · ${hg.manualCreditsLeft ?? 0} créditos`}</p>`;
     const open = perms.filter(p => p.status === 'pending' && (!p.expires_at || Date.parse(p.expires_at) > Date.now()));
     $('cPerm').hidden = !open.length;
     $('perms').innerHTML = open.map(p => `<div class="perm"><p><b>${esc(p.room)}</b> quer usar <b>${esc(p.tool)}</b>.<br><span class="note">O comando completo fica no PC e no Telegram.</span></p><div class="row"><button class="ok" type="button" data-id="${esc(p.id)}" data-d="allow">Permitir</button><button class="no" type="button" data-id="${esc(p.id)}" data-d="deny">Negar</button></div></div>`).join('');

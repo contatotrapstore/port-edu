@@ -135,9 +135,9 @@ function resetText(ts){ const ms = ts - Date.now(); if (ms < 24*3600e3) return '
 const planPrice = p => p.brl == null ? 'a confirmar' : (p.approx ? '~' : '') + brl(p.brl);
 const subsTotal = () => PLANS.reduce((s,p) => s + (p.brl || 0), 0);
 function renderPlans(){
-  let html = awayCard() + `<div class="card"><div class="sec"><h2>Assinaturas</h2><small>${brl(subsTotal())}/mês + Higgsfield</small></div><p class="note">O traço branco em cada barra marca quanto da janela já passou. Barra à frente do traço significa ritmo acima do plano.</p></div>`;
+  let html = awayCard() + `<div class="card"><div class="sec"><h2>Assinaturas</h2><small>${brl(subsTotal())}/mês${REAL ? '' : ' + Higgsfield'}</small></div><p class="note">O traço branco em cada barra marca quanto da janela já passou. Barra à frente do traço significa ritmo acima do plano.</p></div>`;
   for (const p of PLANS){
-    html += `<div class="card"><div class="plan-head"><span class="mono" style="--c:${p.color}">${p.mono}</span><div><b>${esc(p.name)}</b><small>Plano ${esc(p.tier)}</small></div><div class="plan-cost">${planPrice(p)}<small class="note">por mês</small></div></div>`;
+    html += `<div class="card"><div class="plan-head">${brandIcon(p.id, 36) || `<span class="mono" style="--c:${p.color}">${p.mono}</span>`}<div><b>${esc(p.name)}</b><small>Plano ${esc(p.tier)}</small></div><div class="plan-cost">${planPrice(p)}<small class="note">por mês</small></div></div>`;
     if (p.meters){
       if (!p.meters.length) html += `<p class="note">${esc(p.sourceNote || 'Aguardando leitura.')}</p>`;
       for (const m of p.meters){ const info = meterInfo(m), used = Math.round(m.used);
@@ -145,7 +145,7 @@ function renderPlans(){
       const sess = AGENTS.filter(a => a.prov === p.prov);
       html += `<ul class="sessions">${sess.slice(0,6).map(a => `<li><i style="background:${ST[a.state]}"></i><span>${esc(a.R.name)} · ${esc(a.name)}</span><em>${a.model}</em></li>`).join('')}${sess.length > 6 ? `<li><span style="color:var(--muted)">e mais ${sess.length-6}</span></li>` : ''}</ul>`;
     } else {
-      if (!p.credit){ html += `<p class="note">${esc(p.sourceNote || 'Sem fonte de dados ainda.')}</p></div>`; continue; }
+      if (!p.credit || !p.credit.total){ html +=`<p class="note">${esc(p.sourceNote || 'Sem fonte de dados ainda.')}</p></div>`; continue; }
       const c = p.credit, info = creditInfo(c), used = c.total - c.left;
       html += `<div class="meter"><div class="m-top"><span>Créditos do ciclo</span><small>Renova em ${c.daysLeft} dias</small></div><div class="mbar"><i style="width:${info.usedPct.toFixed(1)}%;background:${barColor(info.usedPct)}"></i><b style="left:calc(${(info.elapsed*100).toFixed(1)}% - 1px)"></b></div><div class="m-foot">${num(used)} usados · ${num(c.left)} de ${num(c.total)} restantes</div><div class="m-proj ${info.cls}">${esc(info.proj)}</div></div>
         <div class="meter"><div class="m-top"><span>Uso no ciclo</span><small>~${num(info.rate)} por dia</small></div><div class="m-foot">${Object.entries(c.mix).map(([k,v]) => `${esc(k)}: ${num(v)}`).join(' · ')}</div></div>`;
@@ -220,7 +220,7 @@ function renderPanel(now){
   else { agentShell = null; setHTML($('pane'), tab === 'planos' ? renderPlans() : tab === 'sugestoes' ? renderSuggestions() : renderOps()); }
   $('kSpend').textContent = brlFromUsd(totalCost());
   $('kSubs').innerHTML = `${brl(subsTotal())} <small>/mês</small>`;
-  const worstPlan = PLANS.filter(p => p.meters ? p.meters.length : p.credit).map(p => p.meters ? [p.name, Math.max(...p.meters.map(m => m.used))] : [p.name, (p.credit.total-p.credit.left)/p.credit.total*100]).sort((a,b) => b[1]-a[1])[0];
+  const worstPlan = PLANS.filter(p => p.meters ? p.meters.length : p.credit && p.credit.total).map(p => p.meters ? [p.name, Math.max(...p.meters.map(m => m.used))] : [p.name, (p.credit.total-p.credit.left)/p.credit.total*100]).sort((a,b) => b[1]-a[1])[0];
   $('kSubsSub').textContent = `${PLANS.length} planos${worstPlan ? ` · mais usado: ${worstPlan[0]} ${Math.round(worstPlan[1])}%` : ''}`;
   $('kLevel').textContent = 'Nível ' + companyLevel();
   $('kXp').textContent = `${num(COMPANY.xp)} XP · ${COMPANY.tasks} tarefas hoje`;
@@ -271,7 +271,7 @@ function agentLabel(a, compact){
   if (a.state === 'error') return compact ? 'Erro' : 'Erro · ' + short(a.errMsg, 26);
   if (a.state === 'idle'){
     if (a.path.length) return compact ? 'Caminhando' : 'Caminhando · ' + a.name;
-    if (a.copa) return compact ? COPA_LABEL[a.copa.kind].split(' ')[0] : COPA_LABEL[a.copa.kind] + ' · ' + a.name;
+    if (a.copa){ const w = COPA_LABEL[a.copa.kind].split(' '); return compact ? (/^(na|no)$/i.test(w[0]) ? w.slice(0, 2).join(' ') : w[0]) : COPA_LABEL[a.copa.kind] + ' · ' + a.name; }
     return compact ? 'Ocioso' : 'Ocioso · ' + a.name;
   }
   return compact ? tp : tp + ' · ' + short(base(a.target || ''), 22);

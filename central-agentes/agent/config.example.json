@@ -3,23 +3,42 @@
   "idleAfterSeconds": 90,
   "idleHideMinutes": 240,
   "remoteApproval": { "enabled": true, "timeoutSeconds": 45, "timeoutAusenteSeconds": 300, "_obs": "Só espera resposta remota se o painel estiver aberto e visível (aviso a cada 10 s) ou se o modo ausente estiver ligado (/fora no Telegram ou botão no site); aí espera timeoutAusenteSeconds. Senão o pedido vai direto para o terminal. Mudou os tempos? Rode npm run hooks:install de novo." },
-  "_obsRooms": "Cada sala aceita budgetBrl (orçamento do dia em R$, equivalente em API). Passou: alerta no Telegram e barra no prédio.",
-
-  "rooms": [
-    { "match": "planet", "room": "PlanetShake", "floor": 1 },
-    { "match": "ligou", "room": "Ligou Chegou", "floor": 1 },
-    { "match": "organzza|kommo", "room": "Organzza · Kommo", "floor": 1 },
-    { "match": "revix", "room": "Revix", "floor": 1 },
-    { "match": "meta-coleta|marcelo", "room": "Meta Coleta IA", "floor": 1 },
-    { "match": "fisko", "room": "Fisko", "floor": 1 },
-    { "match": "kingprime|beeder|useconvoo|infra", "room": "TI · Infra", "floor": 0 },
-    { "match": "central-agentes", "room": "Diretoria", "floor": 0 },
-    { "match": "workana|propostas", "room": "Workana", "floor": 2 },
-    { "match": "prospec|leads", "room": "Prospecção", "floor": 2 },
-    { "match": "edevshub-site|edevshub\\.com|/port edu($|/)", "room": "Tráfego & Site", "floor": 3 },
-    { "match": "elyvra", "room": "Estúdio criativo", "floor": 3 }
+  "_obsRooms": "O prédio é montado a partir daqui. match = expressão sobre a pasta da sessão (barras normais, sem diferença de maiúsculas), testada na ordem da lista. slot = vaga no andar (térreo 0-3, 1º 0-6, 2º 0-4, 3º 0-3). type: project (padrão), control (Diretoria, térreo vaga 3, mesa do Dudu), reception, infra, studio. fallback: true recebe as pastas sem sala. budgetBrl = orçamento do dia em R$ (equivalente em API): passou, alerta no Telegram e barra no prédio.",
+  "floors": [
+    { "name": "Térreo", "desc": "Recepção, TI, estúdio e Diretoria" },
+    { "name": "Projetos ativos", "desc": "Clientes com sessões nos últimos dias" },
+    { "name": "Clientes", "desc": "Outros projetos de clientes" },
+    { "name": "EDevsHub e produtos", "desc": "Site, vendas, produtos próprios e avulsos" }
   ],
-  "defaultFloor": 1,
+  "rooms": [
+    { "room": "Recepção", "floor": 0, "slot": 0, "type": "reception", "stack": "Resumo do dia" },
+    { "room": "TI · Infra", "floor": 0, "slot": 1, "type": "infra", "stack": "Hospedagens, domínios e servidores", "match": "/downloads/hospedagens(/|$)" },
+    { "room": "Estúdio criativo", "floor": 0, "slot": 2, "type": "studio", "stack": "Content Studio · ElevenLabs · Higgsfield", "match": "/worktrees/content-studio/|/port edu/kit-conteudo" },
+    { "room": "Diretoria", "floor": 0, "slot": 3, "type": "control", "stack": "Central de Agentes, planos e custos", "match": "/port edu/central-agentes(/|$)|^c:/users/gouveiarx$" },
+
+    { "room": "Meta Coleta IA", "floor": 1, "slot": 0, "stack": "Marcelo", "match": "/downloads/marcelo(-wt)?(/|$)" },
+    { "room": "Organzza · Kommo", "floor": 1, "slot": 1, "stack": "Kommo CRM", "match": "/downloads/(kommo|organzza)" },
+    { "room": "PlanetShake", "floor": 1, "slot": 2, "stack": "App Android", "match": "/downloads/planet(shake)?(/|$)" },
+    { "room": "Beeder", "floor": 1, "slot": 3, "stack": "beeder.me", "match": "/downloads/beeder(/|$)" },
+    { "room": "Renato", "floor": 1, "slot": 4, "stack": "Cliente", "match": "/downloads/renato(/|$)" },
+    { "room": "Financeiro", "floor": 1, "slot": 5, "stack": "Sistema financeiro", "match": "/downloads/financeiro(/|$)" },
+    { "room": "Revix", "floor": 1, "slot": 6, "stack": "App de eventos", "match": "/downloads/revix(/|$)|/documents/revix" },
+
+    { "room": "AntiCassino", "floor": 2, "slot": 0, "stack": "Cliente", "match": "/downloads/anticassino(/|$)" },
+    { "room": "Alberto", "floor": 2, "slot": 1, "stack": "Cliente", "match": "/downloads/alberto(/|$)" },
+    { "room": "Fernando", "floor": 2, "slot": 2, "stack": "Plataforma e site", "match": "/downloads/(plat )?fernando(/|$)" },
+    { "room": "Danyllo", "floor": 2, "slot": 3, "stack": "Cliente", "match": "/downloads/danyllo(/|$)" },
+    { "room": "Elyndra Market", "floor": 2, "slot": 4, "stack": "Loja", "match": "/downloads/elyndra" },
+
+    { "room": "EDevsHub · Site e vendas", "floor": 3, "slot": 0, "stack": "Site, Workana e Meta Ads", "match": "/downloads/port edu(/|$)" },
+    { "room": "Valoran", "floor": 3, "slot": 1, "stack": "Jogo em Unreal", "match": "/(downloads|documents)/valoran(/|$)|/unreal projects/" },
+    { "room": "Conversas do Codex", "floor": 3, "slot": 2, "stack": "Pesquisas e conversas soltas", "match": "/documents/codex/" },
+    { "room": "Projetos avulsos", "floor": 3, "slot": 3, "stack": "Pastas sem sala própria", "fallback": true }
+  ],
+  "defaultFloor": 3,
+
+  "_obsUptime": "Sites conferidos a cada 5 min pelo agente (tela da sala de TI).",
+  "uptime": ["https://www.edevshub.com", "https://kingprime.com.br", "https://beeder.me", "https://useconvoo.com.br"],
 
   "pricing": {
     "_obs": "US$ por milhão de tokens, por prefixo do modelo (vence o prefixo mais longo). Claude conferido em 29/10/2026. cacheWrite = cache de 5 min (1,25x a entrada); cacheWrite1h = cache de 1h (2x), que é o que o Claude Code usa.",
@@ -49,6 +68,6 @@
     },
     "gpt": { "name": "ChatGPT", "tier": "5x", "brl": 550 },
     "eleven": { "name": "ElevenLabs", "tier": "Starter", "brl": 33 },
-    "higgs": { "name": "Higgsfield", "tier": "a confirmar", "brl": null, "manualCreditsLeft": null, "manualCreditsTotal": null }
+    "higgs": { "name": "Higgsfield", "tier": "Free", "brl": 0, "manualCreditsLeft": 0, "manualCreditsTotal": 0, "_obs": "Conferido na conta em 29/10/2026: plano Free, 0 créditos. A Higgsfield não tem API pública de saldo; atualize à mão." }
   }
 }

@@ -24,8 +24,25 @@ function loadConfig() {
   const file = fs.existsSync(own) ? own : example;
   const cfg = JSON.parse(fs.readFileSync(file, 'utf8'));
   cfg._file = file;
-  cfg.rooms = (cfg.rooms || []).map(r => ({ ...r, re: new RegExp(r.match, 'i') }));
+  cfg.rooms = (cfg.rooms || []).map(r => ({ ...r, re: r.match ? new RegExp(r.match, 'i') : null }));
+  cfg.layout = buildLayout(cfg);
   return cfg;
+}
+
+// Vagas de sala por andar no prédio 3D (o resto do andar é área de convivência)
+const SLOTS = [[0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4], [0, 1, 2, 3]];
+/** Layout do prédio: andares + salas com vaga. Sala sem vaga livre no andar fica de fora (aviso no log). */
+function buildLayout(cfg) {
+  const used = SLOTS.map(() => new Set()), rooms = [];
+  for (const r of cfg.rooms) if (Number.isInteger(r.slot) && SLOTS[r.floor]?.includes(r.slot)) used[r.floor].add(r.slot);
+  for (const r of cfg.rooms) {
+    let slot = Number.isInteger(r.slot) && SLOTS[r.floor]?.includes(r.slot) ? r.slot : SLOTS[r.floor]?.find(s => !used[r.floor].has(s));
+    if (slot == null) { console.log(`[config] sem vaga no andar ${r.floor} para a sala "${r.room}"; as sessões dela vão para a sala de projetos avulsos`); r.noSlot = true; continue; }
+    used[r.floor].add(slot);
+    rooms.push({ room: r.room, floor: r.floor, slot, type: r.type || 'project', stack: r.stack || '', budgetBrl: r.budgetBrl || 0, fallback: !!r.fallback });
+  }
+  if (!rooms.some(r => r.floor === 0 && r.slot === 3 && r.type === 'control')) console.log('[config] a Diretoria (type "control") precisa ficar no térreo, vaga 3: é a mesa do Dudu');
+  return { floors: cfg.floors || [], rooms };
 }
 
 loadEnv();
@@ -38,9 +55,11 @@ export const CODENOTCH_FRESH_MS = 30 * 60e3; // medidor do Codenotch mais velho 
 
 export function roomFor(cwd) {
   const norm = String(cwd || '').replace(/\\/g, '/');
-  for (const r of config.rooms) if (r.re.test(norm)) return { room: r.room, floor: r.floor };
   const base = norm.split('/').filter(Boolean).pop() || 'Sem pasta';
-  return { room: base, floor: config.defaultFloor ?? 1 };
+  for (const r of config.rooms) if (r.re && !r.noSlot && r.re.test(norm)) return { room: r.room, floor: r.floor, project: r.fallback ? base : r.room };
+  // Pasta sem sala: vai para a sala de projetos avulsos, com o nome da pasta como projeto
+  const fb = config.rooms.find(r => r.fallback && !r.noSlot);
+  return fb ? { room: fb.room, floor: fb.floor, project: base } : { room: base, floor: config.defaultFloor ?? 1, project: base };
 }
 
 export function priceFor(model) {

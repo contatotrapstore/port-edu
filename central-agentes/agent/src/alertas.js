@@ -1,6 +1,7 @@
 // Alertas para o celular (Telegram; sem bot configurado, vão para o log):
 // - plano em 90% ou que, no ritmo atual, acaba antes do reinício (só com leitura confiável: Codenotch, Codex, conta)
 // - projeto que passou do orçamento do dia (config.json → rooms[].budgetBrl)
+// - site fora do ar (config.json → uptime), uma vez por site por dia
 // Cada alerta sai uma vez por janela (ou por dia, no orçamento). As chaves já enviadas ficam em data/alertas.json.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -47,6 +48,10 @@ function check() {
     }
   }
   const usdBrl = config.usdBrl || 5.4, today = dayKey();
+  for (const u of s.uptime || []) {
+    const key = `site|${u.site}|${today}`;
+    if (!u.ok && !sent.has(key)) { mark(key); notify(`🌐 <b>${esc(u.site)}</b> fora do ar (${u.status ? 'HTTP ' + u.status : esc(u.erro || 'sem resposta')}).`); }
+  }
   for (const r of config.rooms || []) {
     if (!r.budgetBrl) continue;
     const d = s.rooms.find(x => x.room === r.room); if (!d) continue;

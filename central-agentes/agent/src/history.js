@@ -26,9 +26,9 @@ function tick() {
 
 function saveCosts() {
   const k = dayKey(), today = { ...(costs[k] || {}) };
-  for (const r of store.snapshot().rooms) {
-    // custo: o agente recalcula lendo as sessões ao subir, então o valor atual vale; tarefas antigas do dia não voltam, então guarda o maior
-    today[r.room] = { floor: r.floor, costUsd: Math.round(r.costUsdToday * 1e4) / 1e4, tasks: Math.max(r.tasksToday, today[r.room]?.tasks || 0) };
+  for (const p of store.dayTotals().projects) {
+    // por projeto (na sala de avulsos, cada pasta separada). O custo é recalculado das sessões ao subir; tarefas: guarda o maior
+    today[p.project] = { room: p.room, floor: p.floor, costUsd: Math.round(p.costUsdToday * 1e4) / 1e4, tasks: Math.max(p.tasksToday, today[p.project]?.tasks || 0) };
   }
   costs[k] = today;
   fs.writeFile(COSTS_FILE, JSON.stringify(costs, null, 1), () => {});

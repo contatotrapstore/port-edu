@@ -45,7 +45,9 @@ agent/                    agente local (Node 20+, ES modules, zero dependências
 ## Regras do projeto
 - **PT-BR e R$ em tudo** que o usuário vê. Datas no formato brasileiro.
 - **Marca:** identidade EDevsHub (petróleo/verde-escuro `#0B1210`, creme `#EDE6D6`, âmbar `#F5B935`, madeira). Ver `docs/MARCA.md`.
-- **Nada de logos ou marcas de terceiros** no cenário (ex.: Monster, Red Bull, Coca). O expositor de bebidas usa latas com a marca EDevsHub ("EDEVS", "ZERO", "MATE", "CAFÉ"). Isso já foi decidido; não reintroduzir.
+- **Nada de logos ou marcas de terceiros no cenário** (ex.: Monster, Red Bull, Coca). O expositor de bebidas usa latas com a marca EDevsHub ("EDEVS", "ZERO", "MATE", "CAFÉ"). Isso já foi decidido; não reintroduzir.
+- **Exceção pedida pelo Eduardo (29/10/2026):** os ícones dos provedores (Claude, ChatGPT, ElevenLabs, Higgsfield) aparecem nos cartões de planos, nas TVs da Diretoria e no /central, só para identificar o plano. Ficam em `web/predio/marcas.js` (Simple Icons, CC0) e `web/marcas/`.
+- **Salas = projetos reais.** O prédio é montado a partir de `agent/config.json → rooms/floors` (o agente injeta em `window.EDH_LAYOUT`; na nuvem vem no estado). Nenhuma tela mostra número inventado no modo real: recepção, telão do térreo, daily, sino das entregas, meta do mês, TI (monitor real dos sites) e estúdio usam dados do agente. Projeto novo: adicione a sala no config e reinicie o agente (`node scripts/teste-salas.mjs` mostra para onde cada pasta vai).
 - **Segredos só em `agent/.env`** (gitignored). Nunca colar chave em código, log, commit ou chat. Chave da ElevenLabs deve ser só de leitura.
 - O servidor do agente escuta **apenas em `127.0.0.1`**. Acesso externo só pelo Supabase (resumo sanitizado, login + RLS) e pelo Telegram (só o chat pareado).
 - Para a nuvem nunca vai: prompt, comando pedido, caminho de pasta, texto do feed, nome de subagente. Se mudar `sanitize()` em `nuvem.js`, rode `npm test`.

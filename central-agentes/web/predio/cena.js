@@ -390,11 +390,12 @@ function studioRoom(R){
   buildShell(R); R.accent = '#C8B6F0';
   R.big = bigScreenTex(R, (g) => {
     const NONE = {left: 0, total: 1, none: true}, H = PLAN.higgs.credit || NONE, E = PLAN.eleven.credit || NONE;
-    const left = c => c.none ? 'sem fonte' : num(c.left);
+    const left = c => c.label ? c.label.split(' ·')[0] : c.none ? 'sem fonte' : num(c.left);
+    const frac = c => c.total ? c.left / c.total : 0;
     g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText('Higgsfield · créditos', 34, 98); g.fillText('ElevenLabs · créditos', 540, 98);
     g.fillStyle = '#EDE6D6'; g.font = font(700, 56); g.fillText(left(H), 34, 160); g.fillText(left(E), 540, 160);
     g.fillStyle = '#1F2C27'; g.fillRect(34, 180, 440, 12); g.fillRect(540, 180, 440, 12);
-    g.fillStyle = '#C8B6F0'; g.fillRect(34, 180, 440*H.left/H.total, 12); g.fillStyle = E.left/E.total < .35 ? '#FF6B5E' : '#F0E2B6'; g.fillRect(540, 180, 440*E.left/E.total, 12);
+    g.fillStyle = '#C8B6F0'; g.fillRect(34, 180, 440*frac(H), 12); g.fillStyle = E.total && frac(E) < .35 ? '#FF6B5E' : '#F0E2B6'; g.fillRect(540, 180, 440*frac(E), 12);
   });
   wallScreen(R.sides.N.tall, 5.2, 1.12, -1.6, 1.75, R.big);
   const mood = canvasTex(768, 300, (g, w, h) => {
@@ -428,10 +429,10 @@ function controlRoom(R){
   R.tvs = PLANS.map(p => canvasTex(512, 300, (g, w, h) => {
     g.fillStyle = '#0B1210'; g.fillRect(0,0,w,h); let pct, big, sub;
     if (p.meters){ const m = p.meters[0]; if (m){ pct = m.used; big = Math.round(m.used) + '%'; sub = m.label.toLowerCase(); } else { pct = 0; big = '—'; sub = 'aguardando leitura'; } }
-    else { const c = p.credit; if (c){ pct = (c.total - c.left)/c.total*100; big = num(c.left); sub = c.unit + ' restantes'; } else { pct = 0; big = '—'; sub = 'sem fonte de dados'; } }
+    else { const c = p.credit; if (c && c.total){ pct = (c.total - c.left)/c.total*100; big = num(c.left); sub = c.unit + ' restantes'; } else if (c){ pct = 0; big = num(c.left); sub = 'créditos · ' + (c.label || 'sem saldo'); } else { pct = 0; big = '—'; sub = 'sem fonte de dados'; } }
     const col = pct > 85 ? '#FF6B5E' : pct > 60 ? '#F5B935' : p.color;
     g.strokeStyle = col; g.lineWidth = 6; g.strokeRect(3,3,w-6,h-6);
-    g.fillStyle = p.color; rr(g, 28, 28, 44, 44, 9); g.fill(); g.fillStyle = '#0B1210'; g.font = font(700, 26); g.textAlign = 'center'; g.fillText(p.mono, 50, 60); g.textAlign = 'left';
+    if (!drawBrand(g, p.id, 28, 28, 44)){ g.fillStyle = p.color; rr(g, 28, 28, 44, 44, 9); g.fill(); g.fillStyle = '#0B1210'; g.font = font(700, 26); g.textAlign = 'center'; g.fillText(p.mono, 50, 60); g.textAlign = 'left'; }
     g.fillStyle = '#EDE6D6'; g.font = font(700, 30); g.fillText(p.name, 86, 50); g.fillStyle = '#8E9A92'; g.font = font(500, 18); g.fillText('Plano ' + p.tier, 86, 74);
     g.fillStyle = '#EDE6D6'; g.font = font(700, 76); g.fillText(big, 28, 176); g.fillStyle = '#8E9A92'; g.font = font(500, 20); g.fillText(sub, 28, 214);
     g.fillStyle = '#1F2C27'; g.fillRect(28, 246, w-56, 14); g.fillStyle = col; g.fillRect(28, 246, (w-56)*Math.min(1, pct/100), 14);
@@ -477,7 +478,10 @@ function receptionRoom(R){
   });
   plane(R.sides.N.tall, 5.6, 1.6, screenMat(logo), -.6, 1.6, .07);
   R.board = canvasTex(768, 360, (g, w, h) => { g.fillStyle = '#0B1210'; g.fillRect(0,0,w,h); g.strokeStyle = '#F5B935'; g.lineWidth = 5; g.strokeRect(3,3,w-6,h-6);
-    g.fillStyle = '#F5B935'; g.font = font(700, 30); g.fillText('BEM-VINDO', 34, 64); g.fillStyle = '#EDE6D6'; g.font = font(600, 24); g.fillText('Agenda de hoje', 34, 120);
+    g.fillStyle = '#F5B935'; g.font = font(700, 30); g.fillText('BEM-VINDO', 34, 64); g.fillStyle = '#EDE6D6'; g.font = font(600, 24); g.fillText(REAL ? 'Hoje na Central' : 'Agenda de hoje', 34, 120);
+    if (REAL){ const n = st => AGENTS.filter(a => a.state === st).length, busy = [...new Set(AGENTS.filter(a => a.state !== 'idle').map(a => a.R.name))];
+      [`${n('working')} trabalhando · ${n('waiting')} esperando você · ${n('error')} com erro`, `${COMPANY.tasks} tarefas · ${brlFromUsd(totalCost())} em API`, busy.length ? 'Agora: ' + short(busy.join(', '), 44) : 'Ninguém trabalhando agora'].forEach((t, i) => { g.fillStyle = '#CFC9BB'; g.font = font(500, 22); g.fillText(t, 34, 170 + i*48); });
+      return; }
     ['10:00 · briefing com lead do site','14:00 · call de proposta','16:30 · entrega de sprint'].forEach((t, i) => { g.fillStyle = '#CFC9BB'; g.font = font(500, 22); g.fillText(t, 34, 170 + i*48); }); });
   wallScreen(R.sides.W.tall, 3.2, 1.5, 1.6, 1.6, R.board);
   R.desks = [];
@@ -502,7 +506,8 @@ function meetingRoom(R){
 function infraRoom(R){
   buildShell(R); R.accent = '#9EC5E8';
   R.big = bigScreenTex(R, (g) => {
-    BIZ.uptime.forEach(([site, up], i) => { const x = 34 + (i%2)*480, y = 100 + Math.floor(i/2)*56; g.fillStyle = up >= 99.95 ? '#5BD69E' : '#F5B935'; g.beginPath(); g.arc(x + 8, y - 8, 8, 0, 7); g.fill(); g.fillStyle = '#EDE6D6'; g.font = font(600, 26); g.fillText(site, x + 28, y); g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText(up.toFixed(2).replace('.',',') + '%', x + 330, y); });
+    if (REAL && !BIZ.uptime.length){ g.fillStyle = '#8E9A92'; g.font = font(500, 24); g.fillText('Conferindo os sites…', 34, 110); }
+    BIZ.uptime.forEach(([site, up, ok], i) => { const x = 34 + (i%2)*480, y = 100 + Math.floor(i/2)*56; g.fillStyle = ok === false ? '#FF6B5E' : up >= 99.95 ? '#5BD69E' : '#F5B935'; g.beginPath(); g.arc(x + 8, y - 8, 8, 0, 7); g.fill(); g.fillStyle = '#EDE6D6'; g.font = font(600, 26); g.fillText(site, x + 28, y); g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText(up.toFixed(2).replace('.',',') + '%', x + 330, y); });
   });
   wallScreen(R.sides.N.tall, 5.2, 1.12, -1.6, 1.75, R.big);
   R.status = statusTex(R); wallScreen(R.sides.N.tall, 2.0, .94, 2.7, 1.72, R.status);
@@ -591,7 +596,7 @@ function openArea(f){
     const b = new THREE.Group(); b.position.set(30, 0, 13.8); st.add(b);
     for (let s=0;s<3;s++){ rbox(b, 6, .4, .9, .04, M.woodDesk, 0, .2 + s*.4, -.9*s, {}); box(b, 6, .4*(s+1), .9, M.woodDark, 0, .2*(s+1), -.9*s); }
     for (let k=0;k<5;k++) rbox(b, .7, .1, .55, .05, mat(['#F5B935','#3E5A44','#C26B3A','#8E5BC2','#EDE6D6'][k], {r:.9}), -2.4 + k*1.2, .45 + (k%2)*.4, -.9*(k%2));
-    const screen = canvasTex(1024, 400, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = '#F5B935'; c.font = font(700, 52); c.fillText('ALL-HANDS · SEXTA 17H', 50, 110); c.fillStyle = '#EDE6D6'; c.font = font(500, 36); c.fillText('Resultados da semana e próximos projetos', 50, 190);
+    const screen = canvasTex(1024, 400, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = '#F5B935'; c.font = font(700, 52); c.fillText(REAL ? 'HOJE NA EDEVSHUB' : 'ALL-HANDS · SEXTA 17H', 50, 110); c.fillStyle = '#EDE6D6'; c.font = font(500, 36); c.fillText(REAL ? `${brlFromUsd(totalCost())} de API · ${AGENTS.filter(a => a.state !== 'idle').length} agentes ativos agora` : 'Resultados da semana e próximos projetos', 50, 190);
       c.fillStyle = '#8E9A92'; c.font = font(500, 30); c.fillText(`${COMPANY.tasks} tarefas concluídas hoje · nível ${companyLevel()}`, 50, 280); });
     OPEN_GROUPS.screens = [screen];
     const sp = new THREE.Group(); sp.position.set(30, 0, 10.9); st.add(sp); cyl(sp, .04, .04, 2.6, M.charcoal, -2.4, 1.3, 0); cyl(sp, .04, .04, 2.6, M.charcoal, 2.4, 1.3, 0);
@@ -641,7 +646,11 @@ function openArea(f){
   if (f === 1){
     const wb = new THREE.Group(); wb.position.set(44.1, 0, 13.8); st.add(wb);
     for (const lx of [-1.0, 1.0]) cyl(wb, .02, .02, 1.9, M.steel, lx, .95, 0);
-    const daily = canvasTex(768, 400, (c, w, h) => { c.fillStyle = '#F2EFE6'; c.fillRect(0,0,w,h); c.fillStyle = '#2B302D'; c.font = font(700, 34); c.fillText('DAILY · DESENVOLVIMENTO', 30, 56); ['Ontem: deep link e SDK 35','Hoje: AAB release e IVA PDF','Bloqueios: aprovação do build'].forEach((s, i) => { c.font = font(500, 28); c.fillText('• ' + s, 30, 130 + i*70); }); });
+    const daily = canvasTex(768, 400, (c, w, h) => { c.fillStyle = '#F2EFE6'; c.fillRect(0,0,w,h); c.fillStyle = '#2B302D'; c.font = font(700, 34); c.fillText('DAILY · ' + FLOORS[1].name.toUpperCase(), 30, 56);
+      const lines = REAL ? (() => { const fl = ROOMS.filter(R => R.f === 1), on = fl.filter(R => R.agents.some(a => a.state !== 'idle')).map(R => R.name), wait = fl.filter(R => R.agents.some(a => a.state === 'waiting' || a.state === 'error')).map(R => R.name);
+        return ['Agora: ' + (on.length ? short(on.join(', '), 34) : 'ninguém'), 'Hoje: ' + fl.reduce((t, R) => t + R.done, 0) + ' tarefas no andar', 'Bloqueios: ' + (wait.length ? short(wait.join(', '), 30) : 'nenhum')]; })() : ['Ontem: deep link e SDK 35','Hoje: AAB release e IVA PDF','Bloqueios: aprovação do build'];
+      lines.forEach((s, i) => { c.font = font(500, 28); c.fillText('• ' + s, 30, 130 + i*70); }); });
+    OPEN_GROUPS.daily = daily;
     rbox(wb, 2.2, 1.2, .05, .02, M.white, 0, 1.4, 0); plane(wb, 2.1, 1.1, new THREE.MeshStandardMaterial({map:daily, roughness:.4}), 0, 1.4, .03);
     cyl(st, .4, .4, .05, M.woodDesk, 44.1, 1.05, 15.2); cyl(st, .04, .04, 1.03, M.steel, 44.1, .52, 15.2);
     [[20.0,'#F5B935'],[22.0,'#3E5A44']].forEach(([x, c]) => bean(st, x, WD + 3.65, c));
@@ -652,10 +661,12 @@ function openArea(f){
     cyl(bg, .05, .07, 1.5, M.woodDark, 0, .75, 0); box(bg, .8, .06, .06, M.woodDark, 0, 1.52, 0);
     bellG = new THREE.Group(); bellG.position.set(0, 1.5, 0); bg.add(bellG); bellG.userData.dyn = true;
     add(bellG, geo('bell', () => new THREE.CylinderGeometry(.08, .22, .32, 20, 1, true)), new THREE.MeshStandardMaterial({color:'#C9A04A', roughness:.3, metalness:1, envMapIntensity:.6, side:THREE.DoubleSide}), 0, -.2, 0, {dyn:true});
-    const sign = canvasTex(512, 128, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = '#F5B935'; c.font = font(700, 44); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('SINO DE VENDAS', w/2, h/2); });
+    const sign = canvasTex(512, 128, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = '#F5B935'; c.font = font(700, 44); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(REAL ? 'SINO DAS ENTREGAS' : 'SINO DE VENDAS', w/2, h/2); });
     cyl(st, .02, .02, 1.6, M.charcoal, 25.0, .8, 11.4); cyl(st, .02, .02, 1.6, M.charcoal, 27.0, .8, 11.4); plane(st, 2.1, .5, screenMat(sign), 26, 1.85, 11.4);
     rug(st, 5, 3, 31, 15.8); sofa(st, 31, 15.6, 0, M.leather, 3.2); bean(st, 44, 15.6, '#C26B3A');
-    const goal = canvasTex(1024, 300, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = '#F5B935'; c.font = font(700, 46); c.fillText('META DE CONTRATOS DO MÊS', 40, 80); const W = BIZ.workana, pct = Math.min(1, W.contratos/W.metaContratos); c.fillStyle = '#1F2C27'; c.fillRect(40, 130, 940, 50); c.fillStyle = '#5BD69E'; c.fillRect(40, 130, 940*pct, 50); c.fillStyle = '#EDE6D6'; c.font = font(700, 40); c.fillText(`${W.contratos} de ${W.metaContratos} contratos`, 40, 250); });
+    const goal = canvasTex(1024, 300, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = '#F5B935'; c.font = font(700, 46); c.fillText(REAL ? 'O QUE OS PLANOS RENDERAM NO MÊS' : 'META DE CONTRATOS DO MÊS', 40, 80);
+      if (REAL){ const mes = typeof monthApiUsd === 'function' ? monthApiUsd() : 0, subs = PLANS.reduce((t, p) => t + (p.brl || 0), 0), pct = Math.min(1, mes*CAMBIO/Math.max(1, subs)); c.fillStyle = '#1F2C27'; c.fillRect(40, 130, 940, 50); c.fillStyle = '#5BD69E'; c.fillRect(40, 130, 940*pct, 50); c.fillStyle = '#EDE6D6'; c.font = font(700, 40); c.fillText(`${brlFromUsd(mes)} de API por ${brl(subs)} de assinatura`, 40, 250); return; }
+      const W = BIZ.workana, pct = Math.min(1, W.contratos/W.metaContratos); c.fillStyle = '#1F2C27'; c.fillRect(40, 130, 940, 50); c.fillStyle = '#5BD69E'; c.fillRect(40, 130, 940*pct, 50); c.fillStyle = '#EDE6D6'; c.font = font(700, 40); c.fillText(`${W.contratos} de ${W.metaContratos} contratos`, 40, 250); });
     OPEN_GROUPS.goal = goal;
     const gp = new THREE.Group(); gp.position.set(18, 0, 11.0); st.add(gp); cyl(gp, .04, .04, 2.4, M.charcoal, -2.2, 1.2, 0); cyl(gp, .04, .04, 2.4, M.charcoal, 2.2, 1.2, 0);
     rbox(gp, 4.6, 1.4, .08, .03, M.bezel, 0, 1.9, 0); plane(gp, 4.4, 1.3, screenMat(goal), 0, 1.9, .05);
@@ -778,7 +789,8 @@ function mkLabel(a){
   return {el, bubble: el.querySelector('.bubble'), pill: el.querySelector('.pillx')};
 }
 AGENTS.forEach(a => { a.body = person(a); scene.add(a.body.g); a.lab = mkLabel(a); });
-const DUDU = {id:'dudu', name:'Dudu', color:AMBER, skin:'#E2BB96', hair:'#1A1412', hoodie:true, R:roomAt(0,3), f:0, pos:SEAT(roomAt(0,3), 0), state:'boss'};
+const BOSS_ROOM = ROOMS.find(R => R.type === 'control') || ROOMS[0];
+const DUDU = {id:'dudu', name:'Dudu', color:AMBER, skin:'#E2BB96', hair:'#1A1412', hoodie:true, R:BOSS_ROOM, f:BOSS_ROOM.f, pos:SEAT(BOSS_ROOM, 0), state:'boss'};
 DUDU.body = person(DUDU); scene.add(DUDU.body.g); DUDU.lab = mkLabel(DUDU);
 
 /* poses */
