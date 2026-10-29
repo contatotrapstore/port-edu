@@ -61,6 +61,7 @@ function finishPath(a){
 }
 
 function permNote(){
+  if (NUVEM) return realState && realState.away ? 'O pedido está no terminal do PC e não chegou à nuvem.' : 'Ligue o modo ausente (aba Planos) para aprovar pelo celular. Sem ele, o pedido fica no terminal do PC.';
   return realState && realState.remoteApproval
     ? 'O pedido foi para o terminal. Para aprovar por aqui, deixe este painel aberto e visível quando o pedido chegar.'
     : 'Aprovação pelo painel desligada (config.json → remoteApproval). Responda no terminal.';
@@ -147,11 +148,13 @@ function realApply(s, first){
   for (const [k, a] of REAL_AGENTS) if (!seen.has(k)) realRemove(a);
 
   // Custo e tarefas do dia por sala, incluindo sessões que já fecharam
+  window.EDH_DAY_TOTAL = (s.rooms || []).reduce((t, r) => t + (r.costUsdToday || 0), 0);
   const day = new Map();
   for (const r of s.rooms || []){ const R = roomOfReal(r), d = day.get(R) || {cost: 0, tasks: 0}; d.cost += r.costUsdToday || 0; d.tasks += r.tasksToday || 0; day.set(R, d); }
   let tasks = 0;
   for (const R of ROOMS){
     const d = day.get(R) || {cost: 0, tasks: 0}, live = R.agents.reduce((t, a) => t + a.cost, 0);
+    R.budget = (s.roomBudgets || {})[R.name] || 0;   // config.json → rooms[].budgetBrl
     R.base = Math.max(0, d.cost - live); R.done = Math.max(d.tasks, R.agents.reduce((t, a) => t + a.tasksDone, 0)); tasks += R.done;
     if (first) R.hist = Array(30).fill(roomCost(R));
   }
@@ -163,13 +166,19 @@ function realApply(s, first){
 
   realPlans(s);
   if (!selected) selected = AGENTS.find(a => a.state === 'waiting') || AGENTS[0] || null;
-  $('simTag').textContent = `Dados reais · agente local · US$ 1 = R$ ${CAMBIO.toFixed(2).replace('.', ',')} · números do Comercial e Marketing ainda simulados`;
+  if (NUVEM) costDays = {[dayKeyLocal(new Date())]: Object.fromEntries((s.rooms || []).map(r => [r.room, {costUsd: r.costUsdToday, tasks: r.tasksToday}]))};
+  $('simTag').textContent = NUVEM ? `Nuvem · resumo sem prompts nem comandos · atualizado às ${new Date(s.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'})}` : `Dados reais · agente local · US$ 1 = R$ ${CAMBIO.toFixed(2).replace('.', ',')} · números do Comercial e Marketing ainda simulados`;
   checkAchievements();
   dirty = true;
 }
 
 async function realPermission(a, ok){
   if (!a.pendingId){ toast(a.permNote || 'Responda no terminal'); return; }
+  if (NUVEM){
+    const {error, count} = await SB.from('permission_requests').update({decision: ok ? 'allow' : 'deny', status: 'decided', decided_at: new Date().toISOString()}, {count: 'exact'}).eq('id', a.pendingId).eq('status', 'pending');
+    toast(error ? 'Não consegui responder: ' + error.message : count ? (ok ? 'Permitido. Chega no PC em poucos segundos.' : 'Negado.') : 'Esse pedido já foi respondido ou expirou');
+    return;
+  }
   try {
     const r = await fetch('/api/permission/' + encodeURIComponent(a.pendingId), {method: 'POST',
       headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''},
@@ -185,6 +194,7 @@ async function realAssignTask(a, text){
 }
 
 function startReal(){
+  if (NUVEM) return startNuvemFront();
   $('simTag').textContent = 'Conectando ao agente local…';
   let first = true;
   const es = new EventSource('/api/events');   // reconecta sozinho se o agente reiniciar
@@ -264,4 +274,46 @@ function costReport(){
     <div style="display:flex;gap:6px;margin:6px 0 4px">${btn(1, 'Hoje')}${btn(7, '7 dias')}${btn(30, '30 dias')}</div>
     ${rows.length ? `<ul class="sessions">${rows.map(([room, v]) => `<li><i style="background:var(--amber)"></i><span>${esc(room)}</span><em>${brlFromUsd(v.cost)} · ${v.tasks} tarefa${v.tasks !== 1 ? 's' : ''}</em></li>`).join('')}</ul>` : '<p class="note">Sem custo registrado no período.</p>'}
     <p class="note" style="margin-top:6px">Equivalente em API, por pasta do projeto. Atualiza a cada minuto.</p></div>`;
+}
+
+/* =========================== modo ausente =========================== */
+function awayCard(){
+  if (!REAL || !realState) return '';
+  const on = !!realState.away;
+  return `<div class="card"><div class="sec"><h2>Modo ausente</h2><small>${on ? 'ligado' : 'desligado'}</small></div>
+    <p class="note">${on ? 'Pedidos de permissão esperam resposta pelo celular (Telegram ou site) por até 5 min antes de voltar ao terminal.' : 'Ligue quando sair do PC: os pedidos de permissão passam a chegar no celular.'}</p>
+    <div style="margin-top:8px"><button class="act ${on ? '' : 'primary'}" type="button" data-act="away" data-arg="${on ? 0 : 1}">${on ? 'Desligar' : 'Ligar modo ausente'}</button></div></div>`;
+}
+async function realToggleAway(on){
+  try {
+    if (NUVEM){
+      const {error} = await SB.from('office_control').upsert({id: 'principal', away: on, updated_at: new Date().toISOString()});
+      if (error) throw error;
+      toast(on ? 'Modo ausente ligado. O PC aplica em até 10 s.' : 'Modo ausente desligado. O PC aplica em até 10 s.');
+    } else {
+      const r = await fetch('/api/away', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify({on})});
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      toast(on ? 'Modo ausente ligado' : 'Modo ausente desligado');
+    }
+  } catch (err) { toast('Não consegui mudar: ' + (err.message || err)); }
+}
+
+/* =========================== nuvem (site, fase 2) =========================== */
+// Servido pelo site em /central/predio?fonte=nuvem. Login e config ficam em /central/ (index.html e config.json).
+let SB = null;
+const loadScript = (src, integrity) => new Promise((ok, bad) => { const s = document.createElement('script'); s.src = src; if (integrity){ s.integrity = integrity; s.crossOrigin = 'anonymous'; } s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
+async function startNuvemFront(){
+  $('simTag').textContent = 'Conectando à nuvem…';
+  const cfg = await fetch('/central/config.json', {cache: 'no-store'}).then(r => r.json()).catch(() => null);
+  if (!cfg || !cfg.supabaseUrl){ $('simTag').textContent = 'Central sem Supabase configurado'; return; }
+  await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js', 'sha384-UagCvVPT5XXA0Hx+nJYUAGBFseHT9zBgpJMSebsAxl9lciTwbT+39j5VfRjdP5Tp');
+  SB = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  const {data: {session}} = await SB.auth.getSession();
+  if (!session){ location.href = '/central'; return; }
+  let first = true;
+  const apply = st => { try { realApply(st, first); first = false; } catch (err) { console.error('[nuvem]', err); } };
+  const {data, error} = await SB.from('office_state').select('state').eq('id', 'principal').maybeSingle();
+  if (error || !data) $('simTag').textContent = error ? 'Sem acesso: ' + error.message : 'Sem dados ainda: o agente do PC está ligado?';
+  else apply(data.state);
+  SB.channel('predio').on('postgres_changes', {event: '*', schema: 'public', table: 'office_state', filter: 'id=eq.principal'}, p => { if (p.new && p.new.state) apply(p.new.state); }).subscribe();
 }

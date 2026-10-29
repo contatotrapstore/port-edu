@@ -135,7 +135,7 @@ function resetText(ts){ const ms = ts - Date.now(); if (ms < 24*3600e3) return '
 const planPrice = p => p.brl == null ? 'a confirmar' : (p.approx ? '~' : '') + brl(p.brl);
 const subsTotal = () => PLANS.reduce((s,p) => s + (p.brl || 0), 0);
 function renderPlans(){
-  let html = `<div class="card"><div class="sec"><h2>Assinaturas</h2><small>${brl(subsTotal())}/mês + Higgsfield</small></div><p class="note">O traço branco em cada barra marca quanto da janela já passou. Barra à frente do traço significa ritmo acima do plano.</p></div>`;
+  let html = awayCard() + `<div class="card"><div class="sec"><h2>Assinaturas</h2><small>${brl(subsTotal())}/mês + Higgsfield</small></div><p class="note">O traço branco em cada barra marca quanto da janela já passou. Barra à frente do traço significa ritmo acima do plano.</p></div>`;
   for (const p of PLANS){
     html += `<div class="card"><div class="plan-head"><span class="mono" style="--c:${p.color}">${p.mono}</span><div><b>${esc(p.name)}</b><small>Plano ${esc(p.tier)}</small></div><div class="plan-cost">${planPrice(p)}<small class="note">por mês</small></div></div>`;
     if (p.meters){
@@ -242,6 +242,7 @@ document.addEventListener('click', e => {
   if (act === 'agent'){ const a = agentBy(+arg); if (!a) return; a.pop = 1; goAgent(a); setTab('agente'); }
   if (act === 'tab') setTab(arg);
   if (act === 'costp') costPeriod = +arg;
+  if (act === 'away') realToggleAway(arg === '1');
   if (act === 'room') goRoom(+arg);
   if (act === 'copa') goFocus('copa');
   if (act === 'floor') setView(+arg, false);

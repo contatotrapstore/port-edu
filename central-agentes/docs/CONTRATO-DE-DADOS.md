@@ -55,6 +55,12 @@ O front (debug e prédio 3D) só conhece isto. Se mudar aqui, mude nos dois lado
 Header `X-EDH-Token: <token>` (o agente injeta em `window.EDH_TOKEN` nas páginas que serve).
 Body `{ "decision": "allow" }` ou `{ "decision": "deny", "message": "motivo" }`.
 
+## POST /api/away
+Header `X-EDH-Token`. Body `{ "on": true | false }`. Liga/desliga o modo ausente (também por `/fora` e `/voltei` no Telegram e pelo site). O estado traz `away` e `roomBudgets` (`{ sala: R$ }` do config).
+
+## Nuvem (Supabase, Fase 2)
+`office_state.state` tem o mesmo formato do `/api/state`, sanitizado por `nuvem.js`: ids de sessão viram hash, `prompt`/`target`/`cwd`/`waitCmd`/`errMsg` não existem, `log` e `feed` vêm sem `text`, subagentes se chamam "Subagente". O prédio lê isso com `?fonte=nuvem`.
+
 ## POST /api/presence
 Header `X-EDH-Token`. A página manda a cada 10 s enquanto está visível. Um `PermissionRequest` só espera a resposta do painel se houve aviso nos últimos 25 s; senão vai direto para o terminal.
 

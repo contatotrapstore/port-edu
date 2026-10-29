@@ -14,6 +14,9 @@
     "hooks:uninstall": "node scripts/uninstall-hooks.js",
     "check": "node --check src/index.js && node --check hooks/edh-hook.js",
     "autostart:on": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/autostart-windows.ps1 -IniciarAgora",
-    "autostart:off": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/autostart-windows.ps1 -Remover"
+    "autostart:off": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/autostart-windows.ps1 -Remover",
+    "telegram:parear": "node scripts/parear-telegram.js",
+    "site:sync": "node scripts/site-sync.js",
+    "test": "node scripts/teste-telegram.mjs && node scripts/teste-nuvem.mjs"
   }
 }

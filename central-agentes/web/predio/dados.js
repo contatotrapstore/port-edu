@@ -13,7 +13,8 @@ const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MOBILE = matchMedia('(max-width: 700px), (pointer: coarse)').matches;
 // Fonte dos dados: 'real' (agente local, padrão quando a página vem dele) ou 'simulada' (protótipo). Troque com ?fonte=simulada
 const FONTE = new URLSearchParams(location.search).get('fonte') || (window.EDH_TOKEN ? 'real' : 'simulada');
-const REAL = FONTE === 'real';
+const NUVEM = FONTE === 'nuvem';            // site (/central/predio): resumo sanitizado do Supabase, com login
+const REAL = FONTE === 'real' || NUVEM;
 const AVULSOS = 'Projetos avulsos';
 const RW = 10, RD = 8, GAP = 2.5, WH = 2.6, COLS = 4, PLAZA = 6.5, FH = 4.2;
 const WW = COLS*RW + (COLS-1)*GAP, WD = 2*RD + GAP;

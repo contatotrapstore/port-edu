@@ -1,10 +1,14 @@
 // Estado em memória: agentes, feed, pedidos de permissão e planos.
 // Coletores e hooks escrevem aqui; o servidor lê snapshot() e escuta 'change'.
 import { EventEmitter } from 'node:events';
-import { config, roomFor, priceFor, CODENOTCH_FRESH_MS } from './config.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { config, roomFor, priceFor, CODENOTCH_FRESH_MS, DATA_DIR } from './config.js';
 import { toolPt, targetOf, isToday } from './util.js';
 
 const H5 = 5 * 3600e3, D7 = 7 * 86400e3;
+const AWAY_FILE = path.join(DATA_DIR, 'modo-ausente.json');
+function loadAway() { try { return !!JSON.parse(fs.readFileSync(AWAY_FILE, 'utf8')).away; } catch { return false; } }
 // Nome, plano e mensalidade (config.json → plans), sem os campos internos
 const PLAN_INFO = Object.fromEntries(Object.entries(config.plans || {}).map(([k, p]) => [k, Object.fromEntries(Object.entries(p).filter(([f]) => !f.startsWith('_') && !/Budget|Reset|experimental/.test(f)))]));
 
@@ -23,6 +27,17 @@ class Store extends EventEmitter {
       higgs: { used: null, limit: config.plans?.higgs?.manualCreditsTotal ?? null, left: config.plans?.higgs?.manualCreditsLeft ?? null, source: 'manual' },
     };
     this._t = null;
+    // Modo ausente: pedidos de permissão esperam resposta pelo celular (Telegram ou site) mesmo sem painel aberto
+    this.away = loadAway();
+  }
+
+  setAway(on, origem = '') {
+    on = !!on;
+    if (this.away === on) return;
+    this.away = on;
+    try { fs.mkdirSync(DATA_DIR, { recursive: true }); fs.writeFileSync(AWAY_FILE, JSON.stringify({ away: on, at: Date.now(), origem })); } catch { /* sem disco: vale só até reiniciar */ }
+    this.emit('away', on, origem);
+    this.changed();
   }
 
   changed() {
@@ -66,6 +81,7 @@ class Store extends EventEmitter {
     const e = { t, agentId: a.id, kind, tag, text: String(text || '').slice(0, 240) };
     a.log.unshift(e); if (a.log.length > 20) a.log.length = 20;
     this.feed.unshift(e); if (this.feed.length > 200) this.feed.length = 200;
+    this.emit('event', e, a);
     this.changed();
   }
 
@@ -132,6 +148,7 @@ class Store extends EventEmitter {
     return new Promise(resolve => {
       const timer = setTimeout(() => this.resolvePermission(id, null), timeoutMs);
       this.pending.set(id, { id, agentId: a.id, tool, text, at: Date.now(), resolve, timer });
+      this.emit('permission', { id, agentId: a.id, room: a.room, name: a.name, tool, text, timeoutMs });
       this.changed();
     });
   }
@@ -147,6 +164,7 @@ class Store extends EventEmitter {
       else this.event(a, 'wait', 'Permissão', 'Sem resposta no painel, pedido voltou para o terminal');
     }
     p.resolve(decision ? { decision, message } : null);
+    this.emit('permission-resolved', { id, decision, room: a?.room, text: p.text });
     this.changed();
     return true;
   }
@@ -197,7 +215,8 @@ class Store extends EventEmitter {
       updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans, planInfo: PLAN_INFO,
       rooms: this.day.key === new Date().toDateString() ? [...this.day.rooms.values()] : [],
       pending: [...this.pending.values()].map(({ resolve, timer, ...p }) => p), feed: this.feed.slice(0, 80),
-      remoteApproval: !!config.remoteApproval?.enabled,
+      remoteApproval: !!config.remoteApproval?.enabled, away: this.away,
+      roomBudgets: Object.fromEntries((config.rooms || []).filter(r => r.budgetBrl).map(r => [r.room, r.budgetBrl])),
     };
   }
 }

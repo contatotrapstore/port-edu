@@ -22,7 +22,9 @@ if (fs.existsSync(SETTINGS)) {
   fs.writeFileSync(bak, raw); console.log('Backup:', bak);
 }
 settings.hooks ||= {};
-const permTimeout = Math.max(60, (config.remoteApproval?.timeoutSeconds || 45) + 15);
+// O Claude Code precisa esperar o hook pelo menos o tempo que o pedido fica aberto (no modo ausente, o maior)
+const ra = config.remoteApproval || {};
+const permTimeout = Math.max(60, Math.max(ra.timeoutSeconds || 45, ra.timeoutAusenteSeconds || 300) + 15);
 
 for (const ev of [...TOOL_EVENTS, ...OTHER_EVENTS]) {
   const list = (settings.hooks[ev] ||= []);

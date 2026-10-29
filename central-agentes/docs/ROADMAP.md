@@ -51,11 +51,19 @@ Marque `[x]` ao concluir. Faça na ordem; cada item diz como saber que terminou.
 - [x] Custo por projeto por dia em `agent/data/custos.json` (sem prazo), `GET /api/costs`, card na aba Operação com Hoje / 7 dias / 30 dias. Tarefas do Claude contadas pelo fim de turno nos arquivos de sessão (sobrevive a reinício)
 
 ## Fase 2 — celular e site
-- [ ] Supabase: tabela `office_state` e `permission_requests` (RLS: só o usuário dele)
-- [ ] Agente envia resumo sanitizado (sem prompt completo, sem caminhos, sem código)
-- [ ] `/admin` no site no Vercel (Next.js) com login, prédio 3D lendo do Supabase Realtime
-- [ ] Bot do Telegram: avisa "precisa de você" com botões Permitir/Negar; decisão volta ao agente local
-- [ ] Alerta quando plano vai estourar antes do reset ou projeto passa do orçamento
+Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Telegram e da nuvem com APIs falsas). Fica inativo até as chaves entrarem no `agent/.env`.
+- [x] Supabase: `supabase/central-agentes.sql` cria `office_state`, `permission_requests`, `office_control` e `central_admins` (RLS: só quem está em central_admins lê e responde; o agente escreve com a service_role, que fica só no PC) + Realtime
+- [x] Agente envia resumo sanitizado (`agent/src/nuvem.js`): sem prompt, comando, caminho, texto do feed nem nome de subagente. Testado contra o estado real: nenhum vazamento
+- [x] `/central` no site (`/admin` redireciona): página estática em `public/central`, gerada por `npm run site:sync`. Login por link no e-mail, painel do celular (gasto, modo ausente, Permitir/Negar, agentes, planos) e o prédio 3D com `?fonte=nuvem` (Realtime). `noindex` + robots. Sem dependência nova no Next
+- [x] Bot do Telegram (`agent/src/telegram.js`): `/status`, `/fora` e `/voltei` (modo ausente). No modo ausente, pedido de permissão chega com Permitir/Negar e espera até 5 min; também avisa erro e fim de turno
+- [x] Alertas (`agent/src/alertas.js`): plano em 90% ou que acaba antes do reinício no ritmo atual; projeto acima de `budgetBrl` no dia. Uma vez por janela
+
+### Para ligar a Fase 2 (só o Eduardo)
+- [ ] Telegram: @BotFather → /newbot → colar `TELEGRAM_BOT_TOKEN` no agent/.env → `npm run telegram:parear` → mandar /start → reiniciar o agente
+- [ ] Supabase: criar o projeto → SQL Editor → rodar `supabase/central-agentes.sql` → Authentication → URL Configuration: incluir `https://www.edevshub.com/central` nos redirects
+- [ ] agent/.env: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (secreta, só no PC) e `SUPABASE_ANON_KEY` (pública) → reiniciar o agente
+- [ ] `npm run site:sync` → commit e push do site → abrir /central no celular, entrar pelo link do e-mail → rodar o insert de `central_admins` que a página mostra
+- [ ] Orçamento do dia por projeto: `budgetBrl` nas salas do config.json (opcional)
 
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)

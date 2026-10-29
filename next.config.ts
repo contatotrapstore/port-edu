@@ -21,11 +21,22 @@ const nextConfig: NextConfig = {
         destination: `https://www.edevshub.com/:path*`,
         permanent: true,
       },
+      { source: "/admin", destination: "/central", permanent: false },
+    ];
+  },
+  async rewrites() {
+    return [
+      // Central de Agentes (painel privado, arquivos estáticos em public/central, gerados por central-agentes: npm run site:sync)
+      { source: "/central", destination: "/central/index.html" },
+      { source: "/central/predio", destination: "/central/predio/index.html" },
     ];
   },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
+      // Painel privado da Central de Agentes: nunca indexar
+      { source: "/central", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+      { source: "/central/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
       // Cinto e suspensório: qualquer host .vercel.app (inclusive previews) fica
       // fora do índice, mesmo que o redirect acima não pegue.
       {

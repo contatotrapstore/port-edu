@@ -116,7 +116,8 @@ AGENTS.forEach(a => {
 });
 FEED.sort((x,y) => y.t - x.t);
 const roomCost = R => R.base + R.agents.reduce((s,a) => s + a.cost, 0);
-const totalCost = () => ROOMS.reduce((s,R) => s + roomCost(R), 0);
+// No modo real o total vem da soma por sala do agente (uma sessão que muda de pasta não conta duas vezes)
+const totalCost = () => REAL && window.EDH_DAY_TOTAL != null ? window.EDH_DAY_TOTAL : ROOMS.reduce((s,R) => s + roomCost(R), 0);
 ROOMS.forEach(R => { const end = roomCost(R); R.hist = []; let v = end*.35; for (let k=0;k<30;k++){ R.hist.push(v); v += (end - v)/(30-k)*rand(.4,1.6); } R.hist[29] = end; });
 const totalHist = []; for (let k=0;k<30;k++) totalHist.push(ROOMS.reduce((s,R) => s + R.hist[k], 0));
 

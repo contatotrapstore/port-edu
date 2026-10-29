@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Central de Agentes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="manifest" href="/central/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/central/icones/icone-192.png">
+<link rel="apple-touch-icon" href="/central/icones/icone-192.png">
+<meta name="theme-color" content="#0B1210">
+</head>
+<link rel="stylesheet" href="/central/predio/predio.css">
+<body>
+
+<div class="app">
+  <header class="hud">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="3" y="3" width="5" height="24" rx="2.5" fill="#EDE6D6"/><rect x="22" y="3" width="5" height="24" rx="2.5" fill="#EDE6D6"/><rect x="8" y="13.5" width="3" height="3" fill="#EDE6D6"/><rect x="19" y="13.5" width="3" height="3" fill="#EDE6D6"/><circle cx="15" cy="15" r="2.6" fill="#F5B935"/></svg>
+      <div class="brand-name">EDevsHub</div>
+      <div class="brand-sub"><b>Central de agentes</b>Software, sistemas e IA</div>
+    </div>
+    <div class="spendrow">
+      <div class="kpi"><span class="kpi-label">Consumo hoje</span><span class="kpi-value" id="kSpend">R$ 0,00</span><span class="kpi-sub">equivalente em API</span></div>
+      <svg class="spark" id="spark" viewBox="0 0 110 32" preserveAspectRatio="none" aria-hidden="true"></svg>
+    </div>
+    <div class="kpi"><span class="kpi-label">Assinaturas</span><span class="kpi-value" id="kSubs">R$ 0 <small>/mês</small></span><span class="kpi-sub" id="kSubsSub"></span></div>
+    <div class="kpi"><span class="kpi-label">Empresa</span><span class="kpi-value" id="kLevel">Nível 1</span><span class="kpi-sub" id="kXp"></span></div>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <div class="main">
+    <section class="stage" id="stage">
+      <canvas id="gl" aria-label="Prédio 3D da EDevsHub com os agentes de IA em cada andar"></canvas>
+      <div class="labels" id="labels"></div>
+      <div class="ov ov-tl">
+        <div class="floor-title"><span id="floorName">Térreo</span> · <b id="roomName">visão do andar</b></div>
+        <div class="legend"><span><i style="background:var(--ok)"></i>Trabalhando</span><span><i style="background:var(--wait)"></i>Precisa de você</span><span><i style="background:var(--err)"></i>Erro</span><span><i style="background:var(--idle)"></i>Ocioso</span></div>
+        <div class="mini-hud" id="miniHud"></div>
+      </div>
+      <div class="ov floors" id="floors"></div>
+      <div class="ov ov-tr">
+        <button class="btn" type="button" data-act="rot" data-arg="-1" aria-label="Girar para a esquerda" title="Girar (Q)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8a5 5 0 1 0 1.6-3.7"/><path d="M3 2.5v3h3"/></svg></button>
+        <button class="btn" type="button" data-act="rot" data-arg="1" aria-label="Girar para a direita" title="Girar (E)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 8a5 5 0 1 1-1.6-3.7"/><path d="M13 2.5v3h-3"/></svg></button>
+        <button class="btn" type="button" data-act="follow" id="btnFollow" title="Seguir o agente selecionado (F)"><span class="lbl">Seguir</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3"/></svg></button>
+        <button class="btn" type="button" data-act="light" id="btnLight" title="Iluminação"><span class="lbl" id="lightLbl">Hora real</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6L13 13M3 13l1.4-1.4M11.6 4.4L13 3"/></svg></button>
+        <button class="btn" type="button" data-act="tv" title="Modo TV (V)"><span class="lbl">Modo TV</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1.5" y="3" width="13" height="8.5" rx="1.5"/><path d="M5 14h6"/></svg></button>
+        <button class="btn only-imm" type="button" data-act="drawer" title="Painel (P)"><span class="lbl">Painel</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M10 3v10"/></svg></button>
+        <button class="btn solid" type="button" data-act="immersive" title="Tela cheia (T)"><span class="lbl" id="immLabel">Tela cheia</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg></button>
+      </div>
+      <div class="ov ov-bl">
+        <div class="keys"><span><kbd>Q</kbd> <kbd>E</kbd> girar</span><span><kbd>WASD</kbd> mover</span><span><kbd>[</kbd> <kbd>]</kbd> trocar de andar</span><span><kbd>B</kbd> prédio</span><span><kbd>1</kbd>–<kbd>8</kbd> salas</span><span><kbd>9</kbd> convivência</span><span><kbd>N</kbd> próximo pedindo você</span><span><kbd>V</kbd> modo TV</span></div>
+        <span class="mhint">Um dedo move · dois dedos giram e dão zoom · toque num agente</span>
+        <span class="sim" id="simTag">Protótipo com dados simulados · US$ 1 = R$ 5,40</span>
+      </div>
+      <div class="ov zoombar"><button class="btn" type="button" data-act="zoom" data-arg="1" aria-label="Aproximar">+</button><button class="btn" type="button" data-act="zoom" data-arg="-1" aria-label="Afastar">−</button></div>
+      <div class="ov replay" id="replay">
+        <button class="live" type="button" data-act="live" id="liveBtn"><i></i><span id="liveLbl">Ao vivo</span></button>
+        <input type="range" id="scrub" min="0" max="0" value="0" step="1" aria-label="Voltar no tempo">
+        <time id="scrubTime">agora</time>
+      </div>
+      <button class="btn tv-exit" type="button" data-act="tv">Sair do modo TV</button>
+      <div class="toast" id="toast"></div>
+      <div class="loading" id="loading">Montando o prédio…</div>
+    </section>
+
+    <aside class="side" id="side">
+      <div class="side-head"><b>Painel</b><button class="btn" type="button" data-act="drawer">Fechar</button></div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" type="button" data-tab="planos">Planos</button>
+        <button class="tab" role="tab" type="button" data-tab="sugestoes">Sugestões <span class="badge" id="sugCount">0</span></button>
+        <button class="tab" role="tab" type="button" data-tab="agente">Agente</button>
+        <button class="tab" role="tab" type="button" data-tab="operacao">Operação</button>
+      </div>
+      <div class="pane" id="pane"></div>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.145.0/build/three.min.js" integrity="sha384-+SwWbnsGY/t3OXVAS6HjMD17NY002cJxCjst/IgjKrteM33IUnwAA2E1g9GAJH2f" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/controls/OrbitControls.js" integrity="sha384-JgJ+i2aY66WOpoy8gaHf9qPa7F0njVMMU5PHiyp3XNS/xUhDow/9zampfl1dXLAz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/environments/RoomEnvironment.js" integrity="sha384-HJRlYmJzuQkyhPWqzC/8C/pv28F4tPiBOSlei1Wu20mY45L8WsSvMpZtBG3m4y3k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/geometries/RoundedBoxGeometry.js" integrity="sha384-/2vAvGG5mTproqC9m0U2VMsMbXnRGfA2Cbfb7n81+56Kn9Sri96dR3PsM/o/8zSh" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.145.0/examples/js/utils/BufferGeometryUtils.js" integrity="sha384-vCJlyUe8wOyBulxgEiTH9tIilkmrsnpyOC5Qyoe1QFHaGVp04xYi3YcI0+mUZg0F" crossorigin="anonymous"></script>
+<script src="/central/predio/dados.js"></script>
+<script src="/central/predio/sim.js"></script>
+<script src="/central/predio/cena.js"></script>
+<script src="/central/predio/ui.js"></script>
+<script src="/central/predio/fonte.js"></script>
+<script src="/central/predio/app.js"></script>
+
+</body>
+</html>

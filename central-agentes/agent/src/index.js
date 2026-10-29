@@ -8,6 +8,9 @@ import { startElevenLabs } from './collectors/elevenlabs.js';
 import { startClaudePlan } from './collectors/claude-plan.js';
 import { startCodenotch } from './collectors/codenotch.js';
 import { startHistory } from './history.js';
+import { startTelegram } from './telegram.js';
+import { startAlertas } from './alertas.js';
+import { startNuvem } from './nuvem.js';
 
 const [maj] = process.versions.node.split('.').map(Number);
 if (maj < 20) { console.error(`Node ${process.versions.node} é antigo. Instale o Node 20 ou mais novo.`); process.exit(1); }
@@ -22,6 +25,9 @@ startElevenLabs();
 startClaudePlan();
 startCodenotch();
 startHistory();
+startTelegram();
+startAlertas();
+startNuvem();
 setInterval(() => store.sweep(), 5000);
 store.sweep();
 

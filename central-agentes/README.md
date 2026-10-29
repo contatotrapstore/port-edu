@@ -37,6 +37,12 @@ npm run autostart:off    # remove o atalho
 ```
 Para parar o agente que está rodando: Gerenciador de Tarefas → node.exe, ou feche pela porta 4321.
 
+## Celular (Fase 2)
+- **Telegram:** crie o bot no @BotFather, coloque `TELEGRAM_BOT_TOKEN` no `agent/.env`, rode `npm run telegram:parear` e mande /start. Comandos: /status, /fora (modo ausente: pedidos de permissão chegam com botões) e /voltei.
+- **Site:** rode o SQL de `supabase/central-agentes.sql`, preencha as chaves do Supabase no `.env`, rode `npm run site:sync` e publique o site. Painel em https://www.edevshub.com/central (login por link no e-mail).
+- Passo a passo completo: `docs/ROADMAP.md`, "Para ligar a Fase 2".
+- Testes sem rede: `npm test`.
+
 ## Histórico
 O agente grava em `agent/data/` (fora do git): a linha do tempo do dia (`AAAA-MM-DD.jsonl`, 7 dias) usada no replay do prédio e o custo por projeto por dia (`custos.json`), que aparece na aba Operação.
 

@@ -2,7 +2,8 @@
   "usdBrl": 5.4,
   "idleAfterSeconds": 90,
   "idleHideMinutes": 240,
-  "remoteApproval": { "enabled": true, "timeoutSeconds": 45, "_obs": "Só espera o painel se ele estiver aberto e visível (aviso a cada 10 s). Painel fechado ou em outra aba: o pedido vai direto para o terminal." },
+  "remoteApproval": { "enabled": true, "timeoutSeconds": 45, "timeoutAusenteSeconds": 300, "_obs": "Só espera resposta remota se o painel estiver aberto e visível (aviso a cada 10 s) ou se o modo ausente estiver ligado (/fora no Telegram ou botão no site); aí espera timeoutAusenteSeconds. Senão o pedido vai direto para o terminal. Mudou os tempos? Rode npm run hooks:install de novo." },
+  "_obsRooms": "Cada sala aceita budgetBrl (orçamento do dia em R$, equivalente em API). Passou: alerta no Telegram e barra no prédio.",
 
   "rooms": [
     { "match": "planet", "room": "PlanetShake", "floor": 1 },

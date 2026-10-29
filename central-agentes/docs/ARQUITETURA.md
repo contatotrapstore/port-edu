@@ -41,7 +41,10 @@ Atenção: enquanto o hook espera, o terminal fica aguardando. Por isso o timeou
 ### Sala de cada agente
 `config.json → rooms[]`: cada item tem `match` (texto ou regex que casa com o `cwd` da sessão), `room`, `floor`. Sem casamento, a sala vira o nome da pasta.
 
-## Fase 2 — painel no site (depois)
+## Fase 2 — painel no site (código pronto; ver ROADMAP "Para ligar a Fase 2")
+Como ficou: o agente espelha o resumo sanitizado a cada mudança (no máximo a cada 3 s) em `office_state`; o site serve uma página estática em `/central` (login por link no e-mail do Supabase Auth) e o mesmo prédio 3D com `?fonte=nuvem`, sem dependência nova no Next. Pedidos de permissão só existem quando alguém pode responder: painel aberto e visível no PC, ou modo ausente ligado (Telegram `/fora` ou botão no site). O Telegram fala direto com o agente por long polling, então funciona mesmo sem o Supabase.
+
+Desenho original:
 - O agente envia a cada 10–15 s um **resumo sanitizado** para o Supabase (tabela `office_state`, uma linha por agente + uma linha de planos). Sem prompts completos, sem caminhos de arquivo de cliente, sem código. Prompt vira um título curto, opcionalmente.
 - Rota `/admin` no site (Vercel, Next.js), protegida por login do Supabase Auth, só o e-mail do Eduardo. Lê com Realtime.
 - Pedidos de permissão vão para um bot (Telegram é o mais simples; WhatsApp via API oficial ou Baileys). O botão do bot grava a decisão no Supabase; o agente local escuta e responde ao hook.

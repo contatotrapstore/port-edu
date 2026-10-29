@@ -66,16 +66,24 @@ const server = http.createServer(async (req, res) => {
         const a = store.applyHook({ ...h, hook_event_name: 'Notification', message: '' }) || null;
         if (!a) return send(res, 200, { decision: null });
         const ra = config.remoteApproval || {};
-        if (!ra.enabled || Date.now() - panelSeenAt > PANEL_FRESH_MS) {
+        // Espera resposta remota se o painel está à vista ou se o modo ausente está ligado (celular); senão, terminal
+        const panelVisible = Date.now() - panelSeenAt <= PANEL_FRESH_MS;
+        if (!ra.enabled || (!panelVisible && !store.away)) {
           const text = (h.tool_name || '') + ' ' + JSON.stringify(h.tool_input || {}).slice(0, 120);
           store.setState(a, 'waiting'); a.waitCmd = text; store.event(a, 'wait', 'Permissão', 'Pede permissão no terminal: ' + text);
           return send(res, 200, { decision: null });
         }
-        const r = await store.requestPermission(a, h.tool_name, h.tool_input, (ra.timeoutSeconds || 45) * 1000);
+        const secs = store.away && !panelVisible ? (ra.timeoutAusenteSeconds || 300) : (ra.timeoutSeconds || 45);
+        const r = await store.requestPermission(a, h.tool_name, h.tool_input, secs * 1000);
         return send(res, 200, r || { decision: null });
       }
       store.applyHook(h);
       return send(res, 200, { ok: true });
+    }
+    // Modo ausente: { "on": true | false }
+    if (req.method === 'POST' && p === '/api/away') {
+      if (req.headers['x-edh-token'] !== TOKEN) return send(res, 403, { erro: 'token inválido' });
+      const b = await readBody(req); store.setAway(!!b.on, 'painel'); return send(res, 200, { away: store.away });
     }
     if (req.method === 'POST' && p === '/api/presence') {
       if (req.headers['x-edh-token'] !== TOKEN) return send(res, 403, { erro: 'token inválido' });
