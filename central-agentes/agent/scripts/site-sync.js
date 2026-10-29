@@ -1,5 +1,5 @@
 // Copia o painel da Central para o site (Port Edu/public/central), que a Vercel publica em /central.
-// - site/central/index.html  → public/central/index.html (login + painel do celular)
+// - site/central/*           → public/central/ (login + painel do celular: index.html e central.js)
 // - web/predio/*             → public/central/predio/   (o mesmo prédio 3D, aberto com ?fonte=nuvem)
 // - web/icones/*             → public/central/icones/
 // - config.json com SUPABASE_URL e SUPABASE_ANON_KEY (chaves públicas). A service_role NUNCA vai para o site.
@@ -22,7 +22,7 @@ const DEST = path.join(SITE, 'public', 'central');
 fs.rmSync(DEST, { recursive: true, force: true });
 fs.mkdirSync(path.join(DEST, 'predio'), { recursive: true });
 
-fs.copyFileSync(path.join(ROOT_DIR, 'site', 'central', 'index.html'), path.join(DEST, 'index.html'));
+for (const f of fs.readdirSync(path.join(ROOT_DIR, 'site', 'central'))) fs.copyFileSync(path.join(ROOT_DIR, 'site', 'central', f), path.join(DEST, f));   // index.html + central.js
 for (const f of fs.readdirSync(path.join(ROOT_DIR, 'web', 'predio'))) {
   let buf = fs.readFileSync(path.join(ROOT_DIR, 'web', 'predio', f));
   // O Next tira a barra do fim da URL (/central/predio), então caminhos relativos quebrariam: tudo absoluto
@@ -39,9 +39,10 @@ fs.cpSync(path.join(ROOT_DIR, 'web', 'marcas'), path.join(DEST, 'marcas'), { rec
 const marcas = path.join(DEST, 'predio', 'marcas.js');
 fs.writeFileSync(marcas, fs.readFileSync(marcas, 'utf8').replaceAll("'/marcas/", "'/central/marcas/"));
 fs.writeFileSync(path.join(DEST, 'manifest.webmanifest'), JSON.stringify({
-  name: 'Central de Agentes · EDevsHub', short_name: 'Central', lang: 'pt-BR', start_url: '/central/', scope: '/central/', display: 'standalone',
+  name: 'Central de Agentes · EDevsHub', short_name: 'Central', lang: 'pt-BR', start_url: '/central', scope: '/central',   // sem barra no fim: o Next tira a barra e /central precisa caber no escopo display: 'standalone',
   background_color: '#0B1210', theme_color: '#0B1210',
-  icons: [192, 512].map(s => ({ src: `/central/icones/icone-${s}.png`, sizes: `${s}x${s}`, type: 'image/png', purpose: 'any maskable' })),
+  // "any" e "maskable" separados: o mesmo arquivo nos dois corta as bordas do ícone em alguns celulares
+  icons: [192, 512].flatMap(s => ['any', 'maskable'].map(purpose => ({ src: `/central/icones/icone-${s}.png`, sizes: `${s}x${s}`, type: 'image/png', purpose }))),
 }, null, 2) + '\n');
 fs.writeFileSync(path.join(DEST, 'config.json'), JSON.stringify({ supabaseUrl: url || null, supabaseAnonKey: anon || null }, null, 2) + '\n');
 

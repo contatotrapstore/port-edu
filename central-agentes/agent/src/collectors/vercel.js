@@ -21,9 +21,13 @@ async function poll() {
   const tk = token(); if (!tk) return;
   const h = { Authorization: 'Bearer ' + tk }, alvo = mapa(), visto = new Set(), out = [];
   try {
-    const teams = (await (await fetch('https://api.vercel.com/v2/teams', { headers: h, signal: AbortSignal.timeout(20e3) })).json()).teams || [];
+    const rt = await fetch('https://api.vercel.com/v2/teams', { headers: h, signal: AbortSignal.timeout(20e3) });
+    if (!rt.ok) { console.log('[vercel] login da CLI recusado (' + rt.status + '): rode "vercel login"'); store.deploysErro = 'login da Vercel expirado'; return; }
+    const teams = (await rt.json()).teams || [];
     for (const scope of [null, ...teams]) {
-      const j = await (await fetch('https://api.vercel.com/v9/projects?limit=100' + (scope ? '&teamId=' + scope.id : ''), { headers: h, signal: AbortSignal.timeout(20e3) })).json();
+      const rp = await fetch('https://api.vercel.com/v9/projects?limit=100' + (scope ? '&teamId=' + scope.id : ''), { headers: h, signal: AbortSignal.timeout(20e3) });
+      if (!rp.ok) continue;
+      const j = await rp.json();
       for (const p of j.projects || []) {
         if (visto.has(p.id)) continue; visto.add(p.id);
         const sala = alvo.get(p.name.toLowerCase()); if (!sala) continue;
@@ -32,7 +36,7 @@ async function poll() {
         out.push({ sala, projeto: p.name, estado: d?.readyState || 'sem deploy', alvo: d?.target || '', quando: d?.createdAt || 0, url: prod?.alias?.[0] || d?.url || '', producao: prod ? { estado: prod.readyState, quando: prod.createdAt, id: prod.id } : null });
       }
     }
-    store.deploys = out.sort((a, b) => b.quando - a.quando); store.changed();
+    store.deploys = out.sort((a, b) => b.quando - a.quando); store.deploysErro = null; store.changed();
   } catch (err) { console.log('[vercel] ' + err.message); }
 }
 

@@ -219,7 +219,7 @@ body.tv .mini-hud b{font-size:26px}
   .main{grid-template-columns:1fr}
   .side{height:auto;min-height:0}
   .pane{overflow:visible}
-  .stage{height:70vh;min-height:380px}
+  .stage{height:70vh;height:70svh;min-height:380px}
   .chips{margin-left:0}
   body.immersive .pane{overflow:auto}
 }

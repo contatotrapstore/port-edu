@@ -51,9 +51,12 @@ alter table public.permission_requests enable row level security;
 drop policy if exists "admins leem pedidos" on public.permission_requests;
 create policy "admins leem pedidos" on public.permission_requests for select to authenticated using (public.is_central_admin());
 drop policy if exists "admins respondem pedidos pendentes" on public.permission_requests;
+-- só pedido ainda válido (sobra de 5 s antes de expirar) e quem respondeu fica registrado como o próprio usuário
 create policy "admins respondem pedidos pendentes" on public.permission_requests for update to authenticated
-  using (public.is_central_admin() and status = 'pending')
-  with check (public.is_central_admin() and status = 'decided' and decision in ('allow', 'deny'));
+  using (public.is_central_admin() and status = 'pending' and (expires_at is null or expires_at > now() + interval '5 seconds'))
+  with check (public.is_central_admin() and status = 'decided' and decision in ('allow', 'deny') and decided_by = auth.uid());
+-- resumo seguro do pedido para o celular: só o programa (ex.: "git") ou o tipo de arquivo (ex.: ".ts"), nunca argumentos
+alter table public.permission_requests add column if not exists resumo text;
 
 -- 4) Comandos do site para o PC (modo ausente)
 create table if not exists public.office_control (

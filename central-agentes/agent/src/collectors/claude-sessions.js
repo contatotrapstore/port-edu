@@ -42,6 +42,8 @@ function handle(file, e) {
 
   if (e.type === 'user') {
     const text = promptText(content);
+    const delegado = /Pedido de (.+?) pela Central de Agentes \(projeto/.exec(text || '');
+    if (delegado && a.name === 'Principal') a.name = 'Delegado · ' + delegado[1];   // tarefa delegada (sobrevive a reinício)
     if (text && !text.startsWith('<') && !e.isMeta) {
       a.prompt = text.slice(0, 2000);
       if (fresh && Date.now() - a._hook > 5000) { a.tool = 'Pensando'; a.target = 'lendo o contexto'; store.setState(a, 'working', t); store.event(a, 'prompt', 'Prompt', '"' + text.slice(0, 200) + '"', t); }
@@ -59,7 +61,7 @@ function handle(file, e) {
   store.addUsage(a, e.message?.id || e.uuid, e.message?.model, e.message?.usage, t);
   // Fim de turno = tarefa concluída. Conta pelo arquivo (e não pelo hook Stop) para o total do dia sobreviver a um reinício do agente
   const mid = e.message?.id;
-  if (e.message?.stop_reason === 'end_turn' && mid && !turnSeen.has(mid) && isToday(t)) { turnSeen.add(mid); store.taskDone(a); }
+  if (e.message?.stop_reason === 'end_turn' && mid && !sub && !turnSeen.has(mid) && isToday(t)) { turnSeen.add(mid); if (turnSeen.size > 50000) turnSeen.clear(); store.taskDone(a); }
   if (!Array.isArray(content)) return;
   for (const c of content) {
     if (c?.type === 'tool_use') {
@@ -71,8 +73,12 @@ function handle(file, e) {
 
 export function startClaudeSessions() {
   if (!fs.existsSync(DIR)) { console.log(`[claude] pasta não encontrada: ${DIR} (defina CLAUDE_HOME no .env se usar WSL)`); return; }
+  // Varredura completa (8 mil+ arquivos) a cada 20 s; nos intervalos, só confere os arquivos recentes já conhecidos
+  let recentes = [], ultimaCompleta = 0;
+  const ler = f => { try { tail.read(f.file, f.size, e => handle(f.file, e)); } catch { /* arquivo ocupado: tenta na próxima */ } };
   const scan = () => {
-    for (const f of listFiles(DIR, n => n.endsWith('.jsonl'), WEEK)) tail.read(f.file, f.size, e => handle(f.file, e));
+    if (Date.now() - ultimaCompleta > 20e3) { ultimaCompleta = Date.now(); recentes = listFiles(DIR, n => n.endsWith('.jsonl'), WEEK).map(f => f.file); }
+    for (const file of recentes) { try { const st = fs.statSync(file); ler({ file, size: st.size }); } catch { /* removido */ } }
   };
   scan();
   console.log(`[claude] lendo ${DIR}`);

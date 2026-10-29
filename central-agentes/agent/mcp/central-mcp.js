@@ -9,19 +9,27 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
-const BASE = `http://127.0.0.1:${process.env.EDH_PORT || 4321}`;
-const TOKEN = (() => { try { return fs.readFileSync(path.join(DIR, '..', 'data', 'mcp-token'), 'utf8').trim(); } catch { return ''; } })();
-const QUEM = process.env.EDH_CLIENTE === 'codex' ? 'Codex' : process.env.CLAUDECODE ? 'Claude' : Object.keys(process.env).some(k => k.startsWith('CODEX')) ? 'Codex' : 'Agente';
+const PORTA = process.env.EDH_PORT || 4321, BASE = `http://127.0.0.1:${PORTA}`;
+// Token relido se ainda não existia quando a sessão abriu (agente subiu depois)
+let TOKEN = '';
+const token = () => TOKEN || (TOKEN = (() => { try { return fs.readFileSync(path.join(DIR, '..', 'data', 'mcp-token'), 'utf8').trim(); } catch { return ''; } })());
+const JOB = process.env.EDH_JOB_ID || '';
+const QUEM = process.env.EDH_CLIENTE === 'codex' ? 'Codex' : process.env.EDH_CLIENTE === 'claude' || process.env.CLAUDECODE ? 'Claude' : Object.keys(process.env).some(k => k.startsWith('CODEX')) ? 'Codex' : 'Agente';
 const PROFUNDIDADE = Number(process.env.EDH_JOB_DEPTH || 0);
 const CWD = process.env.CLAUDE_PROJECT_DIR || process.cwd();
 
 async function api(method, p, body) {
-  const r = await fetch(BASE + p, { method, headers: { 'Content-Type': 'application/json', 'X-EDH-Token': TOKEN }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(15e3) });
+  const r = await fetch(BASE + p, { method, headers: { 'Content-Type': 'application/json', 'X-EDH-Token': token() }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(15e3) });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.erro || `Central respondeu ${r.status}`);
   return j;
 }
-const projetoAqui = async () => (await api('GET', '/api/state')).agents.find(a => a.cwd && path.resolve(a.cwd) === path.resolve(CWD))?.project;
+const norm = p => path.resolve(p).toLowerCase().replace(/[\\/]+$/, '');
+async function projetoAqui() {
+  const aqui = norm(CWD), ags = (await api('GET', '/api/state')).agents.filter(a => a.cwd);
+  const a = ags.find(x => norm(x.cwd) === aqui) || ags.find(x => aqui.startsWith(norm(x.cwd) + path.sep) || norm(x.cwd).startsWith(aqui + path.sep));
+  return a?.project || null;
+}
 const linha = m => `[${new Date(m.t).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}] ${m.de} → ${m.para}: ${m.texto}`;
 const resumoTarefa = t => `Tarefa ${t.id} · ${t.para} (${t.modo}) · ${t.status}${t.custoUsd ? ` · US$ ${t.custoUsd.toFixed(2)}` : ''}${t.erro ? `\nErro: ${t.erro}` : ''}${t.resultado ? `\n\nResultado:\n${t.resultado}` : ''}`;
 
@@ -42,7 +50,8 @@ const TOOLS = [
 
 async function call(name, a = {}) {
   if (name === 'central_quadro_ler') {
-    const projeto = a.projeto || await projetoAqui() || '';
+    const projeto = a.projeto || await projetoAqui();
+    if (!projeto) throw new Error('não achei o projeto desta pasta na Central (a sessão acabou de abrir?). Informe "projeto" com o nome da sala.');
     const ms = await api('GET', `/api/quadro?projeto=${encodeURIComponent(projeto)}&limite=${Math.min(100, a.limite || 20)}`);
     return ms.length ? `Quadro de ${projeto || 'todos os projetos'}:\n` + ms.map(linha).join('\n') : `Quadro de ${projeto || 'todos'} vazio.`;
   }
@@ -52,7 +61,7 @@ async function call(name, a = {}) {
   }
   if (name === 'central_delegar') {
     if (PROFUNDIDADE >= 1) throw new Error('Esta sessão já é uma tarefa delegada; não pode delegar de novo.');
-    let t = await api('POST', '/api/tarefas', { cwd: CWD, de: QUEM, para: a.para, modo: a.modo, tarefa: a.tarefa, profundidade: PROFUNDIDADE });
+    let t = await api('POST', '/api/tarefas', { cwd: CWD, de: QUEM, para: a.para, modo: a.modo, tarefa: a.tarefa, profundidade: PROFUNDIDADE, job: JOB });
     const ate = Date.now() + Math.min(600, Math.max(0, a.esperar_segundos || 0)) * 1000;
     while (Date.now() < ate && !['concluída', 'falhou'].includes(t.status)) { await new Promise(r => setTimeout(r, 5000)); t = await api('GET', '/api/tarefas/' + t.id); }
     return resumoTarefa(t) + (['concluída', 'falhou'].includes(t.status) ? '' : '\n\nAinda rodando: consulte com central_tarefa.');
@@ -60,7 +69,7 @@ async function call(name, a = {}) {
   if (name === 'central_tarefa') return resumoTarefa(await api('GET', '/api/tarefas/' + encodeURIComponent(a.id)));
   if (name === 'central_fluxo') {
     if (PROFUNDIDADE >= 1) throw new Error('Esta sessão já é uma tarefa delegada; não pode iniciar fluxo.');
-    const f = await api('POST', '/api/fluxos', { cwd: CWD, de: QUEM, modelo: a.modelo, objetivo: a.objetivo });
+    const f = await api('POST', '/api/fluxos', { cwd: CWD, de: QUEM, modelo: a.modelo, objetivo: a.objetivo, job: JOB });
     return `Fluxo "${f.nome}" iniciado (${f.passos} passos). Os resultados de cada passo vão para o quadro (central_quadro_ler).`;
   }
   if (name === 'central_agentes') {
@@ -80,19 +89,23 @@ process.stdin.on('data', async chunk => {
   while ((i = buf.indexOf('\n')) >= 0) {
     const raw = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
     if (!raw) continue;
-    let msg; try { msg = JSON.parse(raw); } catch { continue; }
+    let msg; try { msg = JSON.parse(raw); } catch { send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'JSON inválido' } }); continue; }
+    responder(msg);
+  }
+});
+const VERSOES = ['2025-06-18', '2025-03-26', '2024-11-05'];
+async function responder(msg) {
     const { id, method, params } = msg;
-    if (id === undefined) continue; // notificações
+    if (id === undefined) return; // notificações
     try {
-      if (method === 'initialize') send({ jsonrpc: '2.0', id, result: { protocolVersion: params?.protocolVersion || '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'central', version: '1.0.0' },
+      if (method === 'initialize') send({ jsonrpc: '2.0', id, result: { protocolVersion: VERSOES.includes(params?.protocolVersion) ? params.protocolVersion : VERSOES[0], capabilities: { tools: {} }, serverInfo: { name: 'central', version: '1.0.0' },
         instructions: 'Central de Agentes da EDevsHub: quadro de recados por projeto e delegação de tarefas entre Claude e Codex nesta pasta. Comece lendo o quadro; registre decisões e entregas nele.' } });
       else if (method === 'ping') send({ jsonrpc: '2.0', id, result: {} });
       else if (method === 'tools/list') send({ jsonrpc: '2.0', id, result: { tools: TOOLS } });
       else if (method === 'tools/call') {
         try { send({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: await call(params.name, params.arguments) }] } }); }
-        catch (err) { send({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: 'Erro: ' + (err.cause?.code === 'ECONNREFUSED' ? 'a Central (localhost:4321) está desligada' : err.message) }], isError: true } }); }
+        catch (err) { send({ jsonrpc: '2.0', id, result: { content: [{ type: 'text', text: 'Erro: ' + (err.cause?.code === 'ECONNREFUSED' ? `a Central (localhost:${PORTA}) está desligada` : err.message) }], isError: true } }); }
       }
       else send({ jsonrpc: '2.0', id, error: { code: -32601, message: 'método não suportado: ' + method } });
     } catch (err) { send({ jsonrpc: '2.0', id, error: { code: -32603, message: err.message } }); }
-  }
-});
+}

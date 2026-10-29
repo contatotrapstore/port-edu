@@ -82,8 +82,12 @@ const SOCIAL_PROMPTS = {edevshub:['Cria o carrossel da semana sobre automação 
 
 // Sala real a partir do config.json: tipo do prédio + "kind" usado nas telas e animações
 const REAL_KIND = {control: 'fin', reception: 'recep', infra: 'ops'};
-const realRoomDef = r => ({f: r.floor, slot: r.slot, type: r.type || 'project', name: r.room, stack: r.stack || '', cliente: r.cliente || null, kind: r.type === 'studio' ? undefined : (REAL_KIND[r.type] || 'code'), files: [], cmds: [], prompts: [], tasks: [], budget: r.budgetBrl || 0, fallback: !!r.fallback});
-const ROOM_DEFS = LAYOUT ? LAYOUT.rooms.map(realRoomDef) : [
+const TIPOS_REAIS = ['project', 'control', 'reception', 'infra', 'studio'];
+const realRoomDef = r => ({f: r.floor, slot: r.slot, type: TIPOS_REAIS.includes(r.type) ? r.type : 'project', name: r.room, stack: r.stack || '', cliente: r.cliente || null, kind: r.type === 'studio' ? undefined : (REAL_KIND[r.type] || 'code'), files: [], cmds: [], prompts: [], tasks: [], budget: r.budgetBrl || 0, fallback: !!r.fallback});
+const ROOM_DEFS = LAYOUT ? LAYOUT.rooms.map(realRoomDef) : REAL ? [
+  realRoomDef({room: 'Diretoria', floor: 0, slot: 3, type: 'control', stack: 'Central de Agentes'}),
+  realRoomDef({room: AVULSOS, floor: 0, slot: 0, stack: 'Salas ainda não carregadas do config', fallback: true}),
+] : [
   {f:0, slot:0, type:'reception', name:'Recepção', stack:'Atendimento e agenda', kind:'recep'},
   {f:0, slot:1, type:'meeting', name:'Sala de reunião', stack:'Calls com clientes'},
   {f:0, slot:2, type:'infra', name:'TI · Infra', stack:'Servidores, deploys e domínios', kind:'ops'},
@@ -195,6 +199,6 @@ const BIZ = {
   funnel:{Novo:14, Contato:9, Proposta:5, Negociação:3, Fechado:2},
   ads:{cliques:312, leads:11, cpc:.82, gasto:38},
   social:{edevshub:{seguidores:1240, semana:[1,1,0,0,0], alcance:5800}, revix:{seguidores:3480, semana:[1,0,1,0,0], alcance:18400}},
-  uptime:[['kingprime.com.br',99.98],['beeder.me',100],['useconvoo.com.br',99.91],['edevshub.com',100]],
+  uptime: REAL ? [] : [['kingprime.com.br',99.98],['beeder.me',100],['useconvoo.com.br',99.91],['edevshub.com',100]],
   bell:0,
 };

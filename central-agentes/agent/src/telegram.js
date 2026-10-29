@@ -16,7 +16,8 @@ let offset = 0;
 export const telegramReady = () => !!(TOKEN && CHAT);
 
 async function call(method, body) {
-  const r = await fetch(`https://api.telegram.org/bot${TOKEN}/${method}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  // long polling espera até 50 s; o resto, 20 s (depois de o PC hibernar a conexão pode ficar presa)
+  const r = await fetch(`https://api.telegram.org/bot${TOKEN}/${method}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(method === 'getUpdates' ? 70e3 : 20e3) });
   const j = await r.json().catch(() => ({}));
   if (!j.ok) throw Object.assign(new Error(j.description || 'HTTP ' + r.status), { code: j.error_code || r.status });
   return j.result;

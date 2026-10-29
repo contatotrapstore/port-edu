@@ -10,6 +10,18 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { config, DATA_DIR, roomFor } from './config.js';
+const TAREFAS_FILE = path.join(DATA_DIR, 'tarefas.json');
+const salvarTarefas = () => fs.writeFile(TAREFAS_FILE, JSON.stringify([...tarefas.values()].slice(-100).map(pub)), () => {});
+/** Encerra o processo e os filhos (no Windows, matar só o cmd.exe deixa o node do claude/codex rodando). */
+function matar(p) {
+  if (!p || p.exitCode !== null) return;
+  if (process.platform === 'win32') spawn('taskkill', ['/pid', String(p.pid), '/T', '/F'], { windowsHide: true, stdio: 'ignore' });
+  else p.kill();
+}
+// Com shell (Windows), argumentos com espaço ou símbolos precisam de aspas
+const q = a => process.platform === 'win32' && /[\s()*&|<>^]/.test(a) ? '"' + a + '"' : a;
+const LEITURA = ['Read', 'Grep', 'Glob', 'WebSearch', 'WebFetch', 'Bash(git diff:*)', 'Bash(git log:*)', 'Bash(git status:*)', 'Bash(git show:*)'];
+const TESTES = ['Bash(npm test:*)', 'Bash(npm run test:*)', 'Bash(npm run lint:*)', 'Bash(npm run build:*)', 'Bash(npx vitest:*)', 'Bash(npx jest:*)', 'Bash(npx tsc:*)', 'Bash(pnpm test:*)', 'Bash(node --test:*)'];
 import { store } from './store.js';
 
 const CFG = { maxTarefas: 2, minutosMax: 30, maxUsdClaude: 3, ...(config.orquestra || {}) };
@@ -38,7 +50,7 @@ export function lerQuadro(projeto, limite = 30) {
 }
 
 /* ------------------------------- tarefas ------------------------------- */
-const pub = t => ({ id: t.id, para: t.para, modo: t.modo, projeto: t.projeto, sala: t.sala, de: t.de, tarefa: t.tarefa.slice(0, 300), status: t.status, criadaEm: t.criadaEm, inicio: t.inicio, fim: t.fim, custoUsd: t.custoUsd, resultado: t.resultado, erro: t.erro, fluxo: t.fluxo });
+const pub = t => t.criadaEm && !t.cwd ? t : ({ id: t.id, para: t.para, modo: t.modo, projeto: t.projeto, sala: t.sala, de: t.de, tarefa: t.tarefa.slice(0, 300), status: t.status, criadaEm: t.criadaEm, inicio: t.inicio, fim: t.fim, custoUsd: t.custoUsd, resultado: t.resultado, erro: t.erro, fluxo: t.fluxo });
 
 /** Cria uma tarefa delegada. `cwd` = pasta do projeto (onde o trabalhador roda). */
 export function delegar({ para, modo = 'ler', tarefa, cwd, de = 'painel', profundidade = 0, fluxo = null }) {
@@ -46,10 +58,11 @@ export function delegar({ para, modo = 'ler', tarefa, cwd, de = 'painel', profun
   if (!['ler', 'editar'].includes(modo)) throw new Error('modo deve ser "ler" ou "editar"');
   if (!tarefa || !String(tarefa).trim()) throw new Error('tarefa vazia');
   if (!cwd || !fs.existsSync(cwd) || !fs.statSync(cwd).isDirectory()) throw new Error('pasta do projeto não encontrada');
+  if (fila.length >= 10) throw new Error('fila cheia (10 tarefas esperando): aguarde as atuais terminarem');
   if (profundidade >= 1) throw new Error('tarefa delegada não pode delegar de novo (evita cadeia sem fim)');
   const { room, project } = roomFor(cwd);
   const t = { id: 'j_' + Date.now().toString(36) + crypto.randomBytes(2).toString('hex'), para, modo, tarefa: String(tarefa).slice(0, 20000), cwd, projeto: project, sala: room, de, status: 'na fila', criadaEm: Date.now(), custoUsd: 0, resultado: '', erro: '', fluxo };
-  tarefas.set(t.id, t); fila.push(t);
+  tarefas.set(t.id, t); fila.push(t); salvarTarefas();
   postar({ projeto: t.projeto, sala: t.sala, de, para: para === 'claude' ? 'Claude' : 'Codex', texto: `Tarefa (${modo}): ${t.tarefa.slice(0, 500)}` });
   proxima();
   return pub(t);
@@ -72,14 +85,17 @@ function executar(t) {
   if (t.para === 'claude') {
     t.sessionId = crypto.randomUUID();
     store.jobSessions.set(t.sessionId, `Delegado · ${t.de}`);
-    args = ['-p', '--output-format', 'json', '--session-id', t.sessionId, '--permission-mode', t.modo === 'ler' ? 'plan' : 'acceptEdits', '--max-budget-usd', String(CFG.maxUsdClaude)];
+    // ler: só ferramentas de leitura e git (o resto é negado sem perguntar); editar: edita + roda testes/build
+    args = ['-p', '--output-format', 'json', '--session-id', t.sessionId, '--permission-mode', t.modo === 'ler' ? 'dontAsk' : 'acceptEdits', '--max-budget-usd', String(CFG.maxUsdClaude),
+      '--allowedTools', ...(t.modo === 'ler' ? LEITURA : [...LEITURA, ...TESTES])].map(q);
     if (/^[\w.-]+$/.test(CFG.modeloClaude || '')) args.push('--model', CFG.modeloClaude);   // ex.: "sonnet" para gastar menos da janela
   } else {
     saidaFinal = path.join(os.tmpdir(), `edh-${t.id}.txt`);
-    args = ['exec', '--json', '--skip-git-repo-check', '-s', t.modo === 'ler' ? 'read-only' : 'workspace-write', '-o', saidaFinal, '-'];
+    args = ['exec', '--json', '--skip-git-repo-check', '-s', t.modo === 'ler' ? 'read-only' : 'workspace-write', '-o', q(saidaFinal), '-'];
   }
   // .cmd do npm precisa de shell no Windows; os argumentos são fixos e o texto vai pela entrada padrão
   const p = spawn(t.para, args, { cwd: t.cwd, env, shell: process.platform === 'win32', windowsHide: true });
+  t._proc = p;
   let out = '', errOut = '';
   p.stdout.on('data', d => {
     out += d; if (out.length > 4e6) out = out.slice(-2e6);
@@ -87,7 +103,7 @@ function executar(t) {
   });
   p.stderr.on('data', d => { errOut += d; if (errOut.length > 2e5) errOut = errOut.slice(-1e5); });
   p.stdin.end(prompt);
-  const limite = setTimeout(() => { t.erro = `passou de ${CFG.minutosMax} min`; p.kill(); }, CFG.minutosMax * 60e3);
+  const limite = setTimeout(() => { t.erro = `passou de ${CFG.minutosMax} min`; matar(p); }, CFG.minutosMax * 60e3);
   p.on('close', code => {
     clearTimeout(limite); rodando--; t.fim = Date.now();
     try {
@@ -101,7 +117,7 @@ function executar(t) {
       }
     } catch { t.resultado = t.resultado || out.slice(-4000); }
     if (code !== 0 && !t.erro) t.erro = (errOut.trim().split('\n').pop() || `saiu com código ${code}`).slice(0, 300);
-    t.status = t.erro ? 'falhou' : 'concluída';
+    t.status = t.erro ? 'falhou' : 'concluída'; t._proc = null; salvarTarefas();
     postar({ projeto: t.projeto, sala: t.sala, de: t.para === 'claude' ? 'Claude' : 'Codex', para: t.de, texto: t.erro ? `Falhou: ${t.erro}` : `Pronto. ${t.resultado.slice(0, 1500)}` });
     store.emit('tarefa', pub(t));
     store.changed();
@@ -142,7 +158,13 @@ export function pastaDoProjeto(nome) {
   return a ? a.cwd : null;
 }
 
+/** Encerra todas as tarefas em andamento (agente desligando). */
+export function encerrarTarefas() { for (const t of tarefas.values()) if (t._proc) matar(t._proc); }
+
 export function startOrquestra() {
+  // tarefas da execução anterior: as que estavam rodando ou na fila foram interrompidas pelo reinício
+  try { for (const t of JSON.parse(fs.readFileSync(TAREFAS_FILE, 'utf8'))) { if (['rodando', 'na fila'].includes(t.status)) { t.status = 'interrompida'; t.erro = 'o agente reiniciou'; } tarefas.set(t.id, t); } } catch { /* primeiro uso */ }
+  process.on('exit', encerrarTarefas);
   try { for (const l of fs.readFileSync(QUADRO_FILE, 'utf8').split('\n').slice(-2000)) if (l) quadro.push(JSON.parse(l)); } catch { /* primeiro uso */ }
   console.log(`[orquestra] quadro e tarefas prontos (até ${CFG.maxTarefas} tarefas juntas, ${CFG.minutosMax} min cada)`);
 }

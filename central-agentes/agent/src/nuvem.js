@@ -12,7 +12,7 @@ const mirrored = new Set();   // pedidos de permissão que estão no Supabase
 let pushTimer = null, lastControlAt = null;
 
 async function rest(method, pathQ, body, prefer = 'return=minimal') {
-  const r = await fetch(`${BASE}/rest/v1/${pathQ}`, { method, headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json', Prefer: prefer }, body: body ? JSON.stringify(body) : undefined });
+  const r = await fetch(`${BASE}/rest/v1/${pathQ}`, { method, headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json', Prefer: prefer }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20e3) });
   if (!r.ok) throw new Error(`${method} ${pathQ.split('?')[0]}: ${r.status} ${(await r.text()).slice(0, 160)}`);
   return r.status === 204 ? null : r.json().catch(() => null);
 }
@@ -28,7 +28,7 @@ export function sanitize(s) {
       log: a.log.slice(0, 8).map(e => ({ t: e.t, kind: e.kind, tag: e.tag, text: '' })),
     })),
     plans: s.plans, planInfo: s.planInfo, rooms: s.rooms, projects: s.projects, roomBudgets: s.roomBudgets, layout: s.layout,
-    content: s.content,
+    content: s.content ? { ...s.content, marcas: (s.content.marcas || []).map(m => ({ ...m, proximos: (m.proximos || []).map(p => ({ quando: p.quando })) })) } : null,
     deploys: (s.deploys || []).map(({ sala, projeto, estado, quando, url }) => ({ sala, projeto, estado, quando, url })),
     // tarefas delegadas: só situação (o texto da tarefa e o resultado ficam no PC); quadro não sobe
     tarefas: (s.tarefas || []).map(({ id, para, modo, projeto, status, criadaEm, fim, custoUsd }) => ({ id, para, modo, projeto, status, criadaEm, fim, custoUsd })),   // contagens e temas dos posts públicos do Instagram (sem tokens)
@@ -38,16 +38,21 @@ export function sanitize(s) {
   };
 }
 
+let enviando = false;
 async function push() {
   pushTimer = null;
+  if (enviando) { pushTimer = setTimeout(push, 2000); return; }   // um envio por vez: o mais novo nunca é sobrescrito pelo antigo
+  enviando = true;
   try { await rest('POST', 'office_state?on_conflict=id', [{ id: 'principal', state: sanitize(store.snapshot()), updated_at: new Date().toISOString() }], 'resolution=merge-duplicates,return=minimal'); }
   catch (err) { console.log('[nuvem]', err.message); }
+  finally { enviando = false; }
 }
 
 async function pollDecisions() {
   if (!mirrored.size) return;
   try {
-    const rows = await rest('GET', 'permission_requests?status=eq.decided&select=id,decision', null, '');
+    const ids = [...mirrored].map(encodeURIComponent).join(',');
+    const rows = await rest('GET', `permission_requests?status=eq.decided&id=in.(${ids})&select=id,decision`, null, '');
     for (const r of rows || []) {
       if (!mirrored.has(r.id)) continue;
       store.resolvePermission(r.id, r.decision, r.decision === 'deny' ? 'Negado pelo site' : undefined);
@@ -68,7 +73,9 @@ export function startNuvem() {
   if (!BASE || !KEY) { console.log('[nuvem] sem SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY no .env, painel do site desligado'); return; }
   store.on('change', () => { if (!pushTimer) pushTimer = setTimeout(push, 3000); });
   store.on('permission', p => {
-    rest('POST', 'permission_requests', [{ id: p.id, room: p.room, tool: p.tool, status: 'pending', expires_at: new Date(Date.now() + p.timeoutMs).toISOString() }])
+    const resumo = /^(Bash|PowerShell)$/.test(p.tool) ? String(p.text || '').trim().split(/\s+/)[0].replace(/^.*[\\/]/, '').slice(0, 30)
+      : /Edit|Write/.test(p.tool) ? (String(p.text || '').match(/\.[A-Za-z0-9]{1,6}$/) || [''])[0] : '';
+    rest('POST', 'permission_requests', [{ id: p.id, room: p.room, tool: p.tool, resumo, status: 'pending', expires_at: new Date(Date.now() + p.timeoutMs).toISOString() }])
       .then(() => mirrored.add(p.id)).catch(err => console.log('[nuvem]', err.message));
   });
   store.on('permission-resolved', ({ id, decision }) => {
@@ -81,6 +88,10 @@ export function startNuvem() {
     rest('POST', 'office_control?on_conflict=id', [{ id: 'principal', away: on, updated_at: at }], 'resolution=merge-duplicates,return=minimal').catch(err => console.log('[nuvem]', err.message));
   });
   setInterval(pollDecisions, 3000);
+  setInterval(() => { if (!pushTimer) push(); }, 60e3);   // sinal de vida: o celular sabe se o PC está ligado
+  // limpeza: pedidos que ficaram pendentes de uma execução anterior expiram; os com mais de 7 dias saem
+  rest('PATCH', 'permission_requests?status=eq.pending', { status: 'expired' }).catch(() => {});
+  rest('DELETE', `permission_requests?created_at=lt.${new Date(Date.now() - 7 * 86400e3).toISOString()}`).catch(() => {});
   setInterval(pollControl, 10e3); pollControl();
   push();
   console.log('[nuvem] espelhando resumo sanitizado no Supabase');

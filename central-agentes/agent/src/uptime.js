@@ -14,13 +14,17 @@ async function checkOne(url) {
   } catch (err) { return { ok: false, status: 0, ms: Date.now() - t0, erro: err.name === 'TimeoutError' ? 'sem resposta em 15 s' : 'sem conexão' }; }
 }
 
+const falhas = new Map();   // url -> falhas seguidas
 async function check() {
   const out = [];
   for (const url of config.uptime || []) {
     const r = await checkOne(url), now = Date.now();
     const h = (hist.get(url) || []).filter(([t]) => now - t < KEEP); h.push([now, r.ok]); hist.set(url, h);
-    out.push({ site: url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), ...r, upPct: Math.round(h.filter(([, ok]) => ok).length / h.length * 1e4) / 100, at: now });
+    falhas.set(url, r.ok ? 0 : (falhas.get(url) || 0) + 1);
+    out.push({ site: url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), ...r, falhasSeguidas: falhas.get(url), upPct: Math.round(h.filter(([, ok]) => ok).length / h.length * 1e4) / 100, at: now });
   }
+  // todos fora ao mesmo tempo = o PC está sem internet, não os sites
+  store.semInternet = out.length > 1 && out.every(u => !u.ok && !u.status);
   store.uptime = out; store.changed();
 }
 

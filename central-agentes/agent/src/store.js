@@ -97,9 +97,20 @@ class Store extends EventEmitter {
     return { rooms: [...rooms.values()], projects };
   }
 
-  taskDone(a) { a.tasksToday++; this.roomDay(a).tasksToday++; }
+  /** Zera os contadores "de hoje" da sessão quando o dia vira. */
+  virarDia(a) {
+    const k = new Date().toDateString();
+    if (a.dayKey === k) return;
+    if (a.dayKey) { a.costUsdToday = 0; a.tasksToday = 0; a.tokens = { in: 0, out: 0, cacheRead: 0, cacheWrite: 0 }; }
+    a.dayKey = k;
+  }
 
-  touch(a, t = Date.now()) { if (t > a.lastActivity) a.lastActivity = t; }
+  taskDone(a) { this.virarDia(a); a.tasksToday++; this.roomDay(a).tasksToday++; }
+
+  touch(a, t = Date.now()) {
+    if (t > a.lastActivity) a.lastActivity = t;
+    if (a.ended && t > (a.endedAt || 0) + 2000) a.ended = false;   // sessão retomada (--resume) volta a aparecer
+  }
 
   event(a, kind, tag, text, t = Date.now()) {
     const e = { t, agentId: a.id, kind, tag, text: String(text || '').slice(0, 240) };
@@ -124,6 +135,7 @@ class Store extends EventEmitter {
     const w1h = Math.min(u.cacheWrite, usage.cache_creation?.ephemeral_1h_input_tokens || 0); // o resto é cache de 5 min
     if (a.source === 'claude' && Date.now() - t < D7 + 86400e3) this.claudeUsage.push([t, u.in + u.out]);
     if (!isToday(t)) return;
+    this.virarDia(a);
     for (const k in u) a.tokens[k] += u[k];
     const p = priceFor(model || a.model);
     // fator: regra de contexto longo da OpenAI (acima de ~272 mil tokens de entrada: entrada 2x, saída 1,5x)
@@ -142,13 +154,15 @@ class Store extends EventEmitter {
     switch (ev) {
       case 'SessionStart': this.event(a, 'done', 'Sessão', 'Sessão iniciada'); break;
       case 'UserPromptSubmit':
+        if (this.away && !process.env.EDH_JOB_ID) this.setAway(false, 'pc');
         a.prompt = String(h.prompt || '').slice(0, 2000); a.tool = 'Pensando'; a.target = 'lendo o contexto';
         this.setState(a, 'working'); this.event(a, 'prompt', 'Prompt', '"' + a.prompt.slice(0, 200) + '"'); break;
       case 'PreToolUse':
-        a.tool = h.tool_name; a.target = targetOf(h.tool_name, h.tool_input);
+        a.tool = h.tool_name; a.target = targetOf(h.tool_name, h.tool_input); a._toolOpen = now;
         if (a.state !== 'waiting') this.setState(a, 'working');
         this.event(a, 'tool', toolPt(h.tool_name), a.target); break;
       case 'PostToolUse':
+        a._toolOpen = 0;
         if (a.state === 'waiting') this.setState(a, 'working'); break;
       case 'Notification': {
         const msg = String(h.message || '');
@@ -157,9 +171,10 @@ class Store extends EventEmitter {
         break;
       }
       case 'Stop':
-        a.tool = ''; a.target = ''; // a tarefa é contada pelo fim de turno no arquivo da sessão (claude-sessions.js) this.setState(a, 'idle'); this.event(a, 'done', 'Concluído', 'Turno concluído'); break;
+        // a tarefa é contada pelo fim de turno no arquivo da sessão (claude-sessions.js)
+        a.tool = ''; a.target = ''; a._toolOpen = 0; this.setState(a, 'idle'); this.event(a, 'done', 'Concluído', 'Turno concluído'); break;
       case 'SubagentStop': this.event(a, 'done', 'Subagente', 'Subagente terminou'); break;
-      case 'SessionEnd': this.setState(a, 'idle'); a.ended = true; this.event(a, 'done', 'Sessão', 'Sessão encerrada'); break;
+      case 'SessionEnd': this.setState(a, 'idle'); a.ended = true; a.endedAt = now; this.event(a, 'done', 'Sessão', 'Sessão encerrada'); break;
     }
     this.changed();
     return a;
@@ -171,12 +186,14 @@ class Store extends EventEmitter {
     const text = targetOf(tool, input) || tool;
     a.tool = tool; a.target = text; a.waitCmd = text; this.setState(a, 'waiting'); a.waitCmd = text; a.pendingId = id;
     this.event(a, 'wait', 'Permissão', 'Pede permissão: ' + text);
-    return new Promise(resolve => {
+    const pr = new Promise(resolve => {
       const timer = setTimeout(() => this.resolvePermission(id, null), timeoutMs);
       this.pending.set(id, { id, agentId: a.id, tool, text, at: Date.now(), resolve, timer });
       this.emit('permission', { id, agentId: a.id, room: a.room, name: a.name, tool, text, timeoutMs });
       this.changed();
     });
+    pr.id = id;
+    return pr;
   }
 
   resolvePermission(id, decision, message) {
@@ -198,6 +215,7 @@ class Store extends EventEmitter {
   /** Estimativa do medidor do Claude pelos tokens (quando não há fonte melhor). */
   estimateClaudePlan() {
     const cfg = config.plans?.claude || {}, now = Date.now();
+    if (this.claudeUsage.length > 5000 || this.claudeUsage.some(([t]) => now - t > D7 + 86400e3)) this.claudeUsage = this.claudeUsage.filter(([t]) => now - t < D7 + 86400e3);
     if (this.plans.claude.source === 'oauth' && now - (this.plans.claude.at || 0) < 15 * 60e3) return;
     if (this.plans.claude.source === 'codenotch' && now - (this.plans.claude.at || 0) < CODENOTCH_FRESH_MS) return;
     this.claudeUsage = this.claudeUsage.filter(([t]) => now - t < D7 + 86400e3).sort((x, y) => x[0] - y[0]);
@@ -224,7 +242,8 @@ class Store extends EventEmitter {
   sweep() {
     const now = Date.now(), idleMs = (config.idleAfterSeconds || 90) * 1000, hideMs = (config.idleHideMinutes || 240) * 60e3;
     for (const a of this.agents.values()) {
-      if (a.state === 'working' && now - a.lastActivity > idleMs && now - a._hook > idleMs) { this.setState(a, 'idle'); }
+      const toolAberta = a._toolOpen && now - a._toolOpen < 30 * 60e3;   // ferramenta ainda rodando (até 30 min)
+      if (a.state === 'working' && !toolAberta && now - a.lastActivity > idleMs && now - a._hook > idleMs) { this.setState(a, 'idle'); }
       if (a.state === 'waiting' && !a.pendingId && now - a.lastActivity > 30 * 60e3) this.setState(a, 'idle');
     }
     for (const [id, a] of this.agents) if (now - a.lastActivity > hideMs && a.state !== 'waiting') this.agents.delete(id);
@@ -240,7 +259,7 @@ class Store extends EventEmitter {
     const { rooms, projects } = this.dayTotals();
     return {
       updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans, planInfo: PLAN_INFO,
-      rooms, projects, layout: config.layout, uptime: this.uptime || [], content: this.content || null, deploys: this.deploys || [], ...(this.extras ? this.extras() : {}),
+      rooms, projects, layout: config.layout, uptime: this.uptime || [], content: this.content || null, deploys: this.deploys || [], semInternet: !!this.semInternet, ...(this.extras ? this.extras() : {}),
       pending: [...this.pending.values()].map(({ resolve, timer, ...p }) => p), feed: this.feed.slice(0, 80),
       remoteApproval: !!config.remoteApproval?.enabled, away: this.away,
       roomBudgets: Object.fromEntries((config.rooms || []).filter(r => r.budgetBrl).map(r => [r.room, r.budgetBrl])),

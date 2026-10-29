@@ -19,7 +19,7 @@ const when = ts => new Date(ts).toLocaleString('pt-BR', { weekday: 'short', hour
 const span = ms => { const m = Math.max(1, Math.round(ms / 60e3)); return m < 60 ? m + ' min' : m < 2880 ? Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0') : Math.round(m / 1440) + ' dias'; };
 
 let sent = new Set();
-function mark(key) { sent.add(key); try { fs.writeFileSync(FILE, JSON.stringify([...sent].slice(-500))); } catch { /* ok */ } }
+function mark(key) { sent.add(key); try { fs.writeFileSync(FILE, JSON.stringify([...sent].slice(-5000))); } catch { /* ok */ } }
 
 /** Projeção de um medidor: usado agora e quando acaba no ritmo atual (null se não acaba antes do reinício). */
 export function projectMeter(m, now = Date.now()) {
@@ -74,7 +74,7 @@ function check() {
   }
   for (const u of s.uptime || []) {
     const key = `site|${u.site}|${today}`;
-    if (!u.ok && !sent.has(key)) { mark(key); notify(`🌐 <b>${esc(u.site)}</b> fora do ar (${u.status ? 'HTTP ' + u.status : esc(u.erro || 'sem resposta')}).`); }
+    if (!u.ok && !s.semInternet && (u.falhasSeguidas || 0) >= 2 && !sent.has(key)) { mark(key); notify(`🌐 <b>${esc(u.site)}</b> fora do ar (${u.status ? 'HTTP ' + u.status : esc(u.erro || 'sem resposta')}).`); }
   }
   for (const r of config.rooms || []) {
     if (!r.budgetBrl) continue;

@@ -34,7 +34,7 @@ function familyOf(m){
 // Sala do prédio pelo nome que o agente mandou; pasta sem sala no config.json vai para "Projetos avulsos"
 function roomOfReal(x){
   const n = String(x.room || '').toLowerCase();
-  return ROOMS.find(R => R.name.toLowerCase() === n) || ROOMS.find(R => R.name === AVULSOS);
+  return ROOMS.find(R => R.name.toLowerCase() === n) || ROOMS.find(R => R.name === AVULSOS) || ROOMS.find(R => R.fallback) || ROOMS.find(R => R.type !== 'control') || ROOMS[0];
 }
 // Mesas livres por tipo de sala. Na Diretoria a mesa 0 é do Dudu. Quem não tem mesa fica no sofá da sala.
 function seatsOf(R){
@@ -49,7 +49,7 @@ function realGo(a){
   if (a.state === 'idle') return goIdle(a);
   if (a.desk != null) return goSeat(a);
   releaseSpot(a);
-  const s = idleFor(a.R)[a.ov % 3]; a.spot = s;
+  const s = idleFor(a.R)[a.ov % 3]; a.spot = s;   // sem mesa livre: trabalha no sofá da sala
   a.path = planPath(a, {x: a.R.ox + s.x, z: a.R.oz + s.z}, s.via, a.R.f); a.yawEnd = s.yaw;
 }
 // Na primeira carga todo mundo já aparece no lugar, sem fila no elevador
@@ -80,8 +80,8 @@ function realUpdate(a, x, first){
   const newest = (x.log || [])[0];
   if (!first && newest && newest.t > a.lastLogT){
     if (['wait','err','done'].includes(newest.kind)) a.pop = 1;
-    if (newest.kind === 'prompt') a.bubble = {text: short(newest.text, 70), until: performance.now() + 5000};
-    else if (newest.kind === 'tool') a.bubble = {text: newest.tag + ' · ' + short(base(newest.text), 40), until: performance.now() + 3500};
+    if (newest.kind === 'prompt' && newest.text) a.bubble = {text: short(newest.text, 70), until: performance.now() + 5000};
+    else if (newest.kind === 'tool' && newest.text) a.bubble = {text: newest.tag + ' · ' + short(base(newest.text), 40), until: performance.now() + 3500};
   }
   if (newest) a.lastLogT = Math.max(a.lastLogT, newest.t);
   a.state = x.state;
@@ -110,7 +110,9 @@ function realCreate(x, first){
 }
 
 function realRemove(a){
-  releaseSpot(a); scene.remove(a.body.g); a.lab.el.remove();
+  releaseSpot(a); a.lab.el.remove(); a.body.g.visible = false;
+  if (typeof GHOSTS !== 'undefined') GHOSTS.set(a.key, {id: a.id, key: a.key, ghost: true, R: a.R, name: a.name, color: a.color, skin: a.skin, hair: a.hair, body: a.body, pop: 0, path: [], log: []});
+  else scene.remove(a.body.g);
   AGENTS.splice(AGENTS.indexOf(a), 1); a.R.agents.splice(a.R.agents.indexOf(a), 1); REAL_AGENTS.delete(a.key);
   if (selected === a){ selected = null; follow = false; syncFollow(); agentShell = null; }
 }
@@ -120,7 +122,7 @@ function realPlans(s){
   for (const p of PLANS){
     const i = info[p.id] || {}, src = plans[p.id] || {};
     if (i.name) p.name = i.name;
-    p.tier = (i.tier || p.tier) + (SOURCE_LABEL[src.source] ? ' · ' + SOURCE_LABEL[src.source] : '');
+    p.tierBase = i.tier || p.tierBase || p.tier; p.tier = p.tierBase + (SOURCE_LABEL[src.source] ? ' · ' + SOURCE_LABEL[src.source] : '');
     if ('brl' in i) p.brl = i.brl; p.approx = false;
     if (p.meters){
       p.meters = (src.meters || []).map(m => ({label: m.label, used: m.usedPct || 0, reset: m.resetAt || 0, win: /semanal|dias/i.test(m.label) ? D7 : H5}));
@@ -140,7 +142,17 @@ function realPlans(s){
   }
 }
 
+// Assinatura das salas: se o agente passou a ter outro mapa (editor de salas, ou a nuvem abriu sem mapa), recarrega o prédio
+const assinaturaSalas = L => JSON.stringify(((L && L.rooms) || []).map(r => [r.room, r.floor, r.slot, r.type, r.cliente]));
+function conferirLayout(s){
+  if (!s.layout || !(s.layout.rooms || []).length || assinaturaSalas(s.layout) === assinaturaSalas(LAYOUT)) return;
+  let ultimo = 0; try { ultimo = +sessionStorage.getItem('edh-recarregou') || 0; } catch {}
+  if (Date.now() - ultimo < 60e3) return;   // trava contra recarregar em loop
+  try { sessionStorage.setItem('edh-recarregou', String(Date.now())); } catch {}
+  location.reload();
+}
 function realApply(s, first){
+  conferirLayout(s);
   realState = s; CAMBIO = s.usdBrl || CAMBIO;
   const seen = new Set();
   for (const x of s.agents || []){
@@ -160,9 +172,9 @@ function realApply(s, first){
     const d = day.get(R) || {cost: 0, tasks: 0}, live = R.agents.reduce((t, a) => t + a.cost, 0);
     R.budget = (s.roomBudgets || {})[R.name] || 0;   // config.json → rooms[].budgetBrl
     R.base = Math.max(0, d.cost - live); R.done = Math.max(d.tasks, R.agents.reduce((t, a) => t + a.tasksDone, 0)); tasks += R.done;
-    if (first) R.hist = Array(30).fill(roomCost(R));
+
   }
-  if (first) totalHist.fill(totalCost());
+  atualizarSeries();
   if (!first && tasks > COMPANY.tasks) ringBell();   // sino das entregas: toca a cada tarefa concluída
   COMPANY.tasks = tasks; COMPANY.xp = tasks * 25;
   // Quadro de cada sala: o que as sessões de lá estão fazendo (começo do último prompt)
@@ -217,7 +229,7 @@ function startReal(){
   });
   es.onerror = () => { $('simTag').textContent = 'Agente local fora do ar · tentando reconectar'; };
   // Avisa o agente que o painel está aberto e visível: só assim um pedido de permissão espera a resposta daqui
-  const ping = () => { if (document.visibilityState === 'visible') fetch('/api/presence', {method: 'POST', headers: {'X-EDH-Token': window.EDH_TOKEN || ''}}).catch(() => {}); };
+  const ping = () => { if (document.visibilityState === 'visible') fetch('/api/presence', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: '{}'}).catch(() => {}); };
   ping(); setInterval(ping, 10e3); document.addEventListener('visibilitychange', ping);
 }
 
@@ -275,7 +287,14 @@ function poseGhosts(dt, replaying){
   }
 }
 
-async function loadCosts(){ try { costDays = await (await fetch('/api/costs')).json(); dirty = true; } catch { /* agente fora do ar */ } }
+async function loadCosts(){ try { costDays = await (await fetch('/api/costs')).json(); atualizarSeries(); dirty = true; } catch { /* agente fora do ar */ } }
+function atualizarSeries(){
+  const dias = []; for (let i = 6; i >= 0; i--){ const d = new Date(); d.setDate(d.getDate() - i); dias.push(dayKeyLocal(d)); }
+  const doDia = (d, filtro) => Object.entries(costDays[d] || {}).reduce((t, [k, v]) => t + (filtro(k, v) ? (v.costUsd || 0) : 0), 0);
+  const tot = dias.map((d, i) => i === 6 ? totalCost() : doDia(d, () => true));
+  totalHist.length = 0; totalHist.push(...tot);
+  for (const R of ROOMS) R.hist = dias.map((d, i) => i === 6 ? roomCost(R) : doDia(d, (k, v) => (v.room ? v.room === R.name : k === R.name)));
+}
 // Custo por projeto (sala ou pasta) no período: base do relatório por cliente
 function costReport(){
   if (!REAL) return '';
@@ -287,7 +306,7 @@ function costReport(){
   const rows = [...agg].sort((a, b) => b[1].cost - a[1].cost), total = rows.reduce((t, [, v]) => t + v.cost, 0);
   const btn = (n, l) => `<button class="act ${costPeriod === n ? 'primary' : ''}" type="button" data-act="costp" data-arg="${n}">${l}</button>`;
   return `<div class="card"><div class="sec"><h2>Custo por projeto</h2><small>${brlFromUsd(total)}</small></div>
-    <div style="display:flex;gap:6px;margin:6px 0 4px">${btn(1, 'Hoje')}${btn(7, '7 dias')}${btn(30, '30 dias')}</div>
+    <div style="display:flex;gap:6px;margin:6px 0 4px">${btn(1, 'Hoje')}${NUVEM ? '' : btn(7, '7 dias') + btn(30, '30 dias')}</div>
     ${rows.length ? `<ul class="sessions">${rows.map(([room, v]) => `<li><i style="background:var(--amber)"></i><span>${esc(room)}</span><em>${brlFromUsd(v.cost)} · ${v.tasks} tarefa${v.tasks !== 1 ? 's' : ''}</em></li>`).join('')}</ul>` : '<p class="note">Sem custo registrado no período.</p>'}
     <p class="note" style="margin-top:6px">Equivalente em API, por pasta do projeto. Atualiza a cada minuto.</p></div>`;
 }
@@ -363,9 +382,9 @@ const ST_TAREFA = {'na fila': '⏳', 'rodando': '🟢', 'concluída': '✅', 'fa
 function orquestraCard(){
   if (!REAL || !realState) return '';
   const ts = realState.tarefas || [], q = (realState.quadro || []).slice(-12).reverse();
-  if (NUVEM) return ts.length ? `<div class="card"><div class="sec"><h2>Tarefas entre agentes</h2></div><ul class="sessions">${ts.slice(0, 8).map(t => `<li><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${esc(t.projeto)} · ${t.para} (${t.modo})</span><em>${t.status}</em></li>`).join('')}</ul></div>` : '';
+  if (NUVEM) return ts.length ? `<div class="card"><div class="sec"><h2>Tarefas entre agentes</h2></div><ul class="sessions">${ts.slice(0, 8).map(t => `<li><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${esc(t.projeto)} · ${esc(t.para)} (${esc(t.modo)})</span><em>${esc(t.status)}</em></li>`).join('')}</ul></div>` : '';
   return `<div class="card"><div class="sec"><h2>Agentes conversando</h2><small>${ts.filter(t => t.status === 'rodando').length} rodando</small></div>
-    ${ts.length ? `<ul class="sessions">${ts.slice(0, 6).map(t => `<li title="${esc(t.tarefa)}"><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${esc(t.projeto)} · ${t.para === 'claude' ? 'Claude' : 'Codex'} (${t.modo}) · ${esc(short(t.tarefa, 40))}</span><em>${t.custoUsd ? brlFromUsd(t.custoUsd) : t.status}</em></li>`).join('')}</ul>` : '<p class="note">Nenhuma tarefa delegada ainda. Selecione um agente e use "Delegar", ou peça numa sessão: "use o central_delegar para o Codex revisar isso".</p>'}
+    ${ts.length ? `<ul class="sessions">${ts.slice(0, 6).map(t => `<li title="${esc(t.tarefa)}"><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${esc(t.projeto)} · ${t.para === 'claude' ? 'Claude' : 'Codex'} (${esc(t.modo)}) · ${esc(short(t.tarefa, 40))}</span><em>${t.custoUsd ? brlFromUsd(t.custoUsd) : esc(t.status)}</em></li>`).join('')}</ul>` : '<p class="note">Nenhuma tarefa delegada ainda. Selecione um agente e use "Delegar", ou peça numa sessão: "use o central_delegar para o Codex revisar isso".</p>'}
     <div class="sec" style="margin-top:10px"><h2>Quadro</h2><small>recados entre sessões</small></div>
     ${q.length ? `<ul class="log">${q.map(m => `<li><time>${fmtTime(new Date(m.t))}</time><span class="who">${esc(short(m.projeto, 13))}</span><span class="x"><b>${esc(m.de)} → ${esc(m.para)}</b> · ${esc(short(m.texto, 160))}</span></li>`).join('')}</ul>` : '<p class="note">Quadro vazio.</p>'}</div>`;
 }
@@ -402,7 +421,7 @@ function renderProjeto(){
   if (p.erro) return '<div class="card"><p class="note">' + esc(p.erro) + '</p></div>';
   const R = ROOMS.find(x => x.name === p.sala) || {};
   const custo = (rot, c) => `<div class="stat"><span>${rot}</span><b>${brlFromUsd(c.usd)}</b><small class="note">${c.tarefas} tarefas${c.dias ? ' · ' + c.dias + ' dias' : ''}</small></div>`;
-  const mes = new Date().toISOString().slice(0, 7);
+  const mes = dayKeyLocal(new Date()).slice(0, 7);
   let html = `<div class="card"><div class="ag-head"><span class="swatch" style="background:${R.cor || 'var(--amber)'}"></span><div style="min-width:0"><div class="ag-name">${esc(p.sala)}</div><div class="ag-proj">${esc(p.cliente ? 'Cliente: ' + p.cliente : '')}${p.descricao ? ' · ' + esc(p.descricao) : ''}</div></div></div>
     <div class="stats">${custo('Hoje', p.custos.hoje)}${custo('7 dias', p.custos.semana)}${custo('Mês', p.custos.mes)}</div>
     <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">
@@ -418,7 +437,7 @@ function renderProjeto(){
     return `<li><i style="background:${e[0]}"></i><span>${esc(d.projeto)} · ${e[1]}${d.url ? ` · <a href="https://${esc(d.url)}" target="_blank" rel="noopener">${esc(d.url)}</a>` : ''}</span><em>${d.quando ? fmtSpan(Date.now() - d.quando) + ' atrás' : ''}</em></li>`; }).join('')}</ul></div>`;
   if (p.prompts.length) html += `<div class="card"><div class="sec"><h2>Últimos pedidos</h2></div><ul class="log">${p.prompts.map(x => `<li><time>${fmtTime(new Date(x.t))}</time><span class="x">${esc(short(x.texto.replace(/^"|"$/g, ''), 160))}</span></li>`).join('')}</ul></div>`;
   if (p.sessoes.length) html += `<div class="card"><div class="sec"><h2>Sessões</h2></div><ul class="sessions">${p.sessoes.map(s => `<li><i style="background:${ST[s.estado] || 'var(--idle)'}"></i><span>${esc(s.nome)}${s.projeto && s.projeto !== p.sala ? ' · ' + esc(s.projeto) : ''}</span><em>${brlFromUsd(s.custoUsdHoje || 0)}</em></li>`).join('')}</ul></div>`;
-  if (p.tarefas.length) html += `<div class="card"><div class="sec"><h2>Tarefas entre agentes</h2></div><ul class="sessions">${p.tarefas.map(t => `<li title="${esc(t.tarefa)}"><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${t.para === 'claude' ? 'Claude' : 'Codex'} (${t.modo}) · ${esc(short(t.tarefa, 50))}</span><em>${t.status}</em></li>`).join('')}</ul></div>`;
+  if (p.tarefas.length) html += `<div class="card"><div class="sec"><h2>Tarefas entre agentes</h2></div><ul class="sessions">${p.tarefas.map(t => `<li title="${esc(t.tarefa)}"><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${t.para === 'claude' ? 'Claude' : 'Codex'} (${esc(t.modo)}) · ${esc(short(t.tarefa, 50))}</span><em>${esc(t.status)}</em></li>`).join('')}</ul></div>`;
   return html;
 }
 async function realAbrirProj(para){
