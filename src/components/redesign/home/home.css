@@ -729,31 +729,26 @@
 
 /* --- Método --------------------------------------------------------------------- */
 
-/* Processo: cada etapa com o que o cliente recebe e decide; ao lado, um
-   exemplo ilustrativo do que é entregue. Sem JavaScript, o exemplo vem logo
-   abaixo da etapa; com JavaScript, no desktop, um painel fixo acompanha a
-   etapa em leitura. */
+/* Processo: cada etapa com o que o cliente recebe e decide e, ao lado, o
+   exemplo do que é entregue. Altura natural, sem animação de rolagem. */
 .edh-process {
-  display: grid;
-  margin-top: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
-}
-
-.edh-process-steps {
-  margin: 0;
+  margin: clamp(2.5rem, 1.5rem + 3vw, 4rem) 0 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--rule-strong);
 }
 
 .edh-pstep {
-  padding-block: clamp(2rem, 1.5rem + 1.5vw, 2.75rem);
+  display: grid;
+  gap: 1.5rem;
+  padding-block: clamp(1.75rem, 1.25rem + 1.5vw, 2.5rem);
   border-bottom: 1px solid var(--rule);
 }
 
 .edh-pstep-title {
   margin: 0;
   color: var(--ivory);
-  font-size: clamp(1.625rem, 1.15rem + 1.6vw, 2.5rem);
+  font-size: clamp(1.5rem, 1.15rem + 1.2vw, 2.25rem);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.03em;
@@ -762,7 +757,7 @@
 .edh-pstep-pair {
   display: grid;
   gap: 1rem 2rem;
-  margin: 1.25rem 0 0;
+  margin: 1.1rem 0 0;
 }
 
 .edh-pstep-pair dt {
@@ -776,14 +771,6 @@
   line-height: 1.55;
 }
 
-.edh-pstep-art {
-  margin-top: 1.75rem;
-}
-
-.edh-process-stage {
-  display: none;
-}
-
 @media (width >= 40rem) {
   .edh-pstep-pair {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -791,61 +778,10 @@
 }
 
 @media (width >= 64rem) {
-  .edh-process.is-enhanced {
+  .edh-pstep {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    column-gap: clamp(3rem, 1rem + 4vw, 6rem);
-    align-items: start;
-  }
-
-  /* A etapa ativa fica clara; as outras recuam, sem sumir. */
-  .is-enhanced .edh-pstep {
-    display: grid;
-    align-content: center;
-    min-height: 46vh;
-    opacity: 0.42;
-    transition: opacity 0.35s ease;
-  }
-
-  .is-enhanced .edh-pstep.is-active {
-    opacity: 1;
-  }
-
-  /* O exemplo continua acessível na etapa; só sai da vista. */
-  .is-enhanced .edh-pstep-art {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  .is-enhanced .edh-process-stage {
-    position: sticky;
-    top: max(6rem, calc(50vh - 15rem));
-    display: grid;
-  }
-
-  .edh-stage-item {
-    grid-area: 1 / 1;
-    opacity: 0;
-    translate: 0 0.75rem;
-    transition:
-      opacity 0.35s ease,
-      translate 0.35s ease;
-  }
-
-  .edh-stage-item.is-active {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .is-enhanced .edh-pstep,
-  .edh-stage-item {
-    transition: none;
-    translate: none;
+    column-gap: clamp(2.5rem, 1rem + 3vw, 4.5rem);
+    align-items: center;
   }
 }
 

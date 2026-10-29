@@ -32,12 +32,13 @@ export default function CasePage({ project, locale }: { project: Project; locale
   // Ordem do catálogo: anterior e próximo ficam, em geral, no mesmo tipo de trabalho.
   const cases = catalogOrder(getContent(locale).projects.filter((item) => item.overview));
   const index = cases.findIndex((item) => item.id === project.id);
-  const prev = cases[(index - 1 + cases.length) % cases.length];
-  const next = cases[(index + 1) % cases.length];
+  // Sem voltas: no começo e no fim do catálogo, o lugar vira "Voltar aos projetos".
+  const prev = index > 0 ? cases[index - 1] : null;
+  const next = index < cases.length - 1 ? cases[index + 1] : null;
   const entry = entryFor(project.id);
   const cover = coverFor(project);
   const coverSize = cover.width && cover.height ? { width: cover.width, height: cover.height } : projectImageSize(cover.src);
-  const sameKind = cases.filter((item) => item.id !== project.id && item.id !== prev.id && item.id !== next.id && entryFor(item.id).kind === entry.kind).slice(0, 3);
+  const sameKind = cases.filter((item) => item.id !== project.id && item.id !== prev?.id && item.id !== next?.id && entryFor(item.id).kind === entry.kind).slice(0, 3);
   const role = project.role ?? getPortfolioRole(project.id, locale);
   const insights = getCaseInsights(project.id, locale);
   const capabilities = project.portfolioOutput ?? project.output;
@@ -285,8 +286,19 @@ export default function CasePage({ project, locale }: { project: Project; locale
       <nav className="edh-ch edh-ch--paper" aria-label={c.all}>
         <div className="edh-frame">
           <div className="edh-casenav">
-            <ProjectCard project={prev} locale={locale} href={`${base}/${prev.id}`} label={c.prev} />
-            <ProjectCard project={next} locale={locale} href={`${base}/${next.id}`} label={c.next} />
+            {[
+              { item: prev, label: c.prev, edge: en ? "Start of the catalog" : "Início do catálogo" },
+              { item: next, label: c.next, edge: en ? "End of the catalog" : "Fim do catálogo" },
+            ].map(({ item, label, edge }) =>
+              item ? (
+                <ProjectCard key={label} project={item} locale={locale} href={`${base}/${item.id}`} label={label} />
+              ) : (
+                <Link key={label} href={base} className="edh-casenav-back">
+                  <span className="edh-pcard-label">{edge}</span>
+                  <span className="edh-pcard-name">{en ? "Back to projects" : "Voltar aos projetos"}</span>
+                </Link>
+              ),
+            )}
           </div>
           {sameKind.length ? (
             <section className="edh-samekind" aria-labelledby="edh-samekind-title">

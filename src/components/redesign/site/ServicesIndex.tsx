@@ -1,7 +1,8 @@
 import Link from "next/link";
 import WorkanaLink from "@/components/workana/WorkanaLink";
 import type { Locale } from "@/lib/locale";
-import { getServiceCases, getServices } from "@/lib/services.en";
+import { getServices } from "@/lib/services.en";
+import { getServiceCases } from "./service-cases";
 import { siteUrl } from "@/lib/site";
 import SitePage from "./SitePage";
 import ServiceCrop from "./ServiceCrop";

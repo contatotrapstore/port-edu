@@ -1,7 +1,4 @@
-"use client";
-
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
 import passagensCrm from "../../../../public/images/redesign/passagens-crm-demo.webp";
 import type { HomeCopy } from "./copy";
 
@@ -9,11 +6,10 @@ type Method = HomeCopy["method"];
 
 /**
  * Como um projeto anda: cada etapa diz o que o cliente recebe e o que decide,
- * com um exemplo ilustrativo do que é entregue (escopo, prévia, validação,
- * operação). No desktop, o exemplo fica num painel fixo que acompanha a etapa
- * em leitura; sem JavaScript, ou no celular, cada exemplo aparece junto da sua
- * etapa. Nenhum exemplo é documento de cliente: o escopo e os critérios usam
- * o texto das páginas de serviço, e a prévia é a recriação com dados fictícios.
+ * com o exemplo ilustrativo do que é entregue ao lado (escopo, prévia,
+ * validação, operação), na altura natural do conteúdo. Nenhum exemplo é
+ * documento de cliente: o escopo e os critérios usam o texto das páginas de
+ * serviço, e a prévia é a recriação com dados fictícios.
  */
 function Artifact({ t, index }: { t: Method; index: number }) {
   const a = t.artifacts;
@@ -89,28 +85,7 @@ function Artifact({ t, index }: { t: Method; index: number }) {
   );
 }
 
-// Recebe só o bloco do método: componente de cliente serializa as props na página.
 export default function HomeMethod({ method: t }: { method: Method }) {
-  const [active, setActive] = useState(0);
-  const root = useRef<HTMLDivElement>(null);
-  const steps = useRef<(HTMLLIElement | null)[]>([]);
-
-  useEffect(() => {
-    // Com JavaScript, o painel fixo assume no desktop (ver home.css).
-    root.current?.classList.add("is-enhanced");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(Number((entry.target as HTMLElement).dataset.index));
-        }
-      },
-      // A etapa vira a ativa quando cruza a faixa central da tela.
-      { rootMargin: "-45% 0px -45% 0px" },
-    );
-    for (const step of steps.current) if (step) observer.observe(step);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section id="metodo" className="edh-ch edh-ch--ink" aria-labelledby="edh-method-title">
       <div className="edh-frame">
@@ -121,17 +96,10 @@ export default function HomeMethod({ method: t }: { method: Method }) {
           <p className="edh-ch-intro">{t.intro}</p>
         </div>
 
-        <div ref={root} className="edh-process">
-          <ol className="edh-process-steps">
-            {t.steps.map((step, i) => (
-              <li
-                key={step.id}
-                ref={(node) => {
-                  steps.current[i] = node;
-                }}
-                data-index={i}
-                className={i === active ? "edh-pstep is-active" : "edh-pstep"}
-              >
+        <ol className="edh-process">
+          {t.steps.map((step, i) => (
+            <li key={step.id} className="edh-pstep">
+              <div className="edh-pstep-text">
                 <h3 className="edh-pstep-title">{step.title}</h3>
                 <dl className="edh-pstep-pair">
                   <div>
@@ -143,21 +111,13 @@ export default function HomeMethod({ method: t }: { method: Method }) {
                     <dd>{step.decide}</dd>
                   </div>
                 </dl>
-                <div className="edh-pstep-art">
-                  <Artifact t={t} index={i} />
-                </div>
-              </li>
-            ))}
-          </ol>
-          {/* Painel do desktop: repete os exemplos acima, por isso fica fora da árvore de acessibilidade. */}
-          <div className="edh-process-stage" aria-hidden="true">
-            {t.steps.map((step, i) => (
-              <div key={step.id} className={i === active ? "edh-stage-item is-active" : "edh-stage-item"}>
+              </div>
+              <div className="edh-pstep-art">
                 <Artifact t={t} index={i} />
               </div>
-            ))}
-          </div>
-        </div>
+            </li>
+          ))}
+        </ol>
 
         <p className="edh-method-note">{t.note}</p>
       </div>
