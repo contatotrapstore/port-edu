@@ -46,7 +46,7 @@ Como ficou: o agente espelha o resumo sanitizado a cada mudança (no máximo a c
 
 Desenho original:
 - O agente envia a cada 10–15 s um **resumo sanitizado** para o Supabase (tabela `office_state`, uma linha por agente + uma linha de planos). Sem prompts completos, sem caminhos de arquivo de cliente, sem código. Prompt vira um título curto, opcionalmente.
-- Rota `/admin` no site (Vercel, Next.js), protegida por login do Supabase Auth, só o e-mail do Eduardo. Lê com Realtime.
+- Rota `/central` no site (Vercel), login do Supabase Auth. Usa **o mesmo projeto Supabase do Content Studio** (`kcjshrnjkrmtzgpwnygc`): quem é admin lá (`content_studio.admin_users`) entra na Central. Lê com Realtime.
 - Pedidos de permissão vão para um bot (Telegram é o mais simples; WhatsApp via API oficial ou Baileys). O botão do bot grava a decisão no Supabase; o agente local escuta e responde ao hook.
 - Nunca expor a porta local para a internet. Se quiser acesso remoto direto ao local, usar Tailscale.
 

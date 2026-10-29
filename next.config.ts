@@ -20,9 +20,7 @@ const nextConfig: NextConfig = {
         has: [{ type: "host", value: vercelAliasHost }],
         destination: `https://www.edevshub.com/:path*`,
         permanent: true,
-      },
-      { source: "/admin", destination: "/central", permanent: false },
-    ];
+      },    ];
   },
   async rewrites() {
     return [

@@ -54,7 +54,7 @@ Marque `[x]` ao concluir. Faça na ordem; cada item diz como saber que terminou.
 Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Telegram e da nuvem com APIs falsas). Fica inativo até as chaves entrarem no `agent/.env`.
 - [x] Supabase: `supabase/central-agentes.sql` cria `office_state`, `permission_requests`, `office_control` e `central_admins` (RLS: só quem está em central_admins lê e responde; o agente escreve com a service_role, que fica só no PC) + Realtime
 - [x] Agente envia resumo sanitizado (`agent/src/nuvem.js`): sem prompt, comando, caminho, texto do feed nem nome de subagente. Testado contra o estado real: nenhum vazamento
-- [x] `/central` no site (`/admin` redireciona): página estática em `public/central`, gerada por `npm run site:sync`. Login por link no e-mail, painel do celular (gasto, modo ausente, Permitir/Negar, agentes, planos) e o prédio 3D com `?fonte=nuvem` (Realtime). `noindex` + robots. Sem dependência nova no Next
+- [x] `/central` no site (o `/admin` é do Content Studio, não mexer): página estática em `public/central`, gerada por `npm run site:sync`. Login por link no e-mail, painel do celular (gasto, modo ausente, Permitir/Negar, agentes, planos) e o prédio 3D com `?fonte=nuvem` (Realtime). `noindex` + robots. Sem dependência nova no Next
 - [x] Bot do Telegram (`agent/src/telegram.js`): `/status`, `/fora` e `/voltei` (modo ausente). No modo ausente, pedido de permissão chega com Permitir/Negar e espera até 5 min; também avisa erro e fim de turno
 - [x] Alertas (`agent/src/alertas.js`): plano em 90% ou que acaba antes do reinício no ritmo atual; projeto acima de `budgetBrl` no dia. Uma vez por janela
 

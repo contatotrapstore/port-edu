@@ -124,7 +124,7 @@ pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 "JetBrains Mono",mon
   $('fLogin').addEventListener('submit', async e => {
     e.preventDefault();
     const btn = e.submitter; btn.disabled = true;
-    const {error} = await sb.auth.signInWithOtp({email: $('email').value.trim(), options: {emailRedirectTo: location.origin + '/central'}});
+    const {error} = await sb.auth.signInWithOtp({email: $('email').value.trim(), options: {shouldCreateUser: false, emailRedirectTo: location.origin + '/central'}});   // só contas que já existem (mesmo Supabase do Content Studio)
     btn.disabled = false;
     $('loginMsg').textContent = error ? 'Não consegui mandar: ' + error.message : 'Link enviado. Abra o e-mail neste aparelho.';
   });

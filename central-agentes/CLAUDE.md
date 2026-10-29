@@ -21,7 +21,7 @@ Este arquivo é o contexto principal. Leia também `docs/ROADMAP.md` antes de co
 ## Arquitetura (decidida)
 **Fase 1 — local primeiro.** Tudo roda no PC do Eduardo. O agente lê os arquivos de sessão e recebe os hooks; o navegador abre `http://localhost:4321`. Motivos: os dados estão no PC, aprovar permissão precisa estar perto do Claude Code, e prompts/código de cliente não saem da máquina.
 
-**Fase 2 — painel no site.** O agente envia um **resumo sanitizado** (sem prompts completos nem código) ao Supabase; uma rota `/admin` com login no site (Vercel) mostra o prédio pelo celular. Aprovação pelo celular via bot de Telegram/WhatsApp. Detalhes em `docs/ARQUITETURA.md`.
+**Fase 2 — painel no site.** O agente envia um **resumo sanitizado** (sem prompts completos nem código) ao Supabase; a página `/central` com login no site (Vercel) mostra o prédio pelo celular. Supabase compartilhado com o Content Studio (mesmo login de admin); a rota `/admin` do site é do Content Studio. Aprovação pelo celular via bot de Telegram/WhatsApp. Detalhes em `docs/ARQUITETURA.md`.
 
 Não usar Electron/Tauri por enquanto: o painel é instalável como PWA. Reavaliar só se ele quiser ícone na bandeja.
 

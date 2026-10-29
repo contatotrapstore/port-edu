@@ -12,10 +12,18 @@ alter table public.central_admins enable row level security;
 drop policy if exists "admin vê o próprio cadastro" on public.central_admins;
 create policy "admin vê o próprio cadastro" on public.central_admins for select to authenticated using (user_id = auth.uid());
 
+-- Admin da Central = quem está em central_admins OU já é admin do Content Studio (mesmo projeto Supabase)
 create or replace function public.is_central_admin() returns boolean
-language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.central_admins where user_id = auth.uid());
-$$;
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if exists (select 1 from public.central_admins where user_id = auth.uid()) then return true; end if;
+  begin
+    return exists (select 1 from content_studio.admin_users where user_id = auth.uid());
+  exception when undefined_table or invalid_schema_name then return false;
+  end;
+end $$;
+revoke all on function public.is_central_admin() from public;
+grant execute on function public.is_central_admin() to authenticated;
 
 -- 2) Estado do escritório (uma linha, id = 'principal'): resumo sem prompts, comandos nem caminhos
 create table if not exists public.office_state (
@@ -71,5 +79,5 @@ do $$ begin
   begin alter publication supabase_realtime add table public.office_control; exception when duplicate_object then null; end;
 end $$;
 
--- 6) Liberar o seu acesso: entre uma vez em /central (link por e-mail), depois rode a linha abaixo trocando o e-mail.
+-- 6) Quem já é admin do Content Studio entra direto. Para liberar outra conta: entre uma vez em /central e rode a linha abaixo trocando o e-mail.
 -- insert into public.central_admins (user_id) select id from auth.users where email = 'SEU-EMAIL-AQUI' on conflict do nothing;
