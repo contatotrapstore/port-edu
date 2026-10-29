@@ -2,7 +2,7 @@
   "usdBrl": 5.4,
   "idleAfterSeconds": 90,
   "idleHideMinutes": 240,
-  "remoteApproval": { "enabled": false, "timeoutSeconds": 45 },
+  "remoteApproval": { "enabled": true, "timeoutSeconds": 45, "_obs": "Só espera o painel se ele estiver aberto e visível (aviso a cada 10 s). Painel fechado ou em outra aba: o pedido vai direto para o terminal." },
 
   "rooms": [
     { "match": "planet", "room": "PlanetShake", "floor": 1 },

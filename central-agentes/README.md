@@ -14,8 +14,10 @@ copy config.example.json config.json      # no macOS/Linux: cp
 copy .env.example .env                    # coloque a chave da ElevenLabs aqui (opcional)
 npm start
 ```
-Abra http://localhost:4321 — painel de depuração ao vivo.
-O protótipo 3D (ainda simulado) fica em http://localhost:4321/predio.
+Abra http://localhost:4321/predio — o prédio 3D com os agentes ao vivo.
+Painel de depuração (lista simples): http://localhost:4321. Protótipo com dados simulados: http://localhost:4321/predio/?fonte=simulada.
+
+No Chrome ou Edge dá para instalar como app: ícone de instalar na barra de endereço.
 
 ## Ligar os eventos ao vivo do Claude Code
 ```bash
@@ -26,10 +28,17 @@ Depois abra uma nova sessão do Claude Code. Para remover: `npm run hooks:uninst
 Sem os hooks o agente ainda funciona lendo os arquivos de sessão, só que com alguns segundos de atraso e sem os pedidos de permissão.
 
 ## Aprovar permissões pelo painel
-Em `config.json`, `remoteApproval.enabled: true`. Quando o Claude Code pedir permissão, o pedido aparece no painel com Permitir/Negar. Se ninguém responder em `timeoutSeconds`, o pedido volta para o terminal normalmente.
+Vem ligado (`config.json` → `remoteApproval.enabled`). Quando o Claude Code pedir permissão **e o painel estiver aberto e visível**, o pedido aparece com Permitir/Negar. Se ninguém responder em `timeoutSeconds`, ou se o painel estiver fechado ou em outra aba, o pedido fica no terminal como sempre.
 
 ## Deixar ligado com o Windows
-Ver `docs/ROADMAP.md`, tarefa 1.5.
+```bash
+npm run autostart:on     # atalho na pasta Inicializar + já inicia o agente sem janela (log em agent/data/agente.log)
+npm run autostart:off    # remove o atalho
+```
+Para parar o agente que está rodando: Gerenciador de Tarefas → node.exe, ou feche pela porta 4321.
+
+## Histórico
+O agente grava em `agent/data/` (fora do git): a linha do tempo do dia (`AAAA-MM-DD.jsonl`, 7 dias) usada no replay do prédio e o custo por projeto por dia (`custos.json`), que aparece na aba Operação.
 
 ## Documentação
 - `CLAUDE.md` — contexto completo do projeto (comece por aqui)

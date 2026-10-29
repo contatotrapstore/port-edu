@@ -5,12 +5,16 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { ROOT_DIR, PORT, config } from './config.js';
 import { store } from './store.js';
+import { readHistory, readCosts, dayKey } from './history.js';
 
 const TOKEN = crypto.randomBytes(16).toString('hex');
 const WEB = path.join(ROOT_DIR, 'web');
-const PROTO = path.join(ROOT_DIR, 'prototipo');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon' };
 const clients = new Set();
+// Último aviso de "painel aberto e visível" (POST /api/presence). Pedido de permissão só espera o painel
+// se alguém está olhando para ele; senão cai direto no terminal, sem atraso.
+let panelSeenAt = 0;
+const PANEL_FRESH_MS = 25e3;
 
 function send(res, code, body, type = 'application/json; charset=utf-8') {
   res.writeHead(code, { 'Content-Type': type, 'Cache-Control': 'no-store' });
@@ -47,6 +51,10 @@ const server = http.createServer(async (req, res) => {
   const p = url.pathname;
   try {
     if (req.method === 'GET' && p === '/api/state') return send(res, 200, store.snapshot());
+    // Linha do tempo do dia para o replay: ?date=AAAA-MM-DD (padrão hoje) &since=ms
+    if (req.method === 'GET' && p === '/api/history') return send(res, 200, readHistory(url.searchParams.get('date') || dayKey(), Number(url.searchParams.get('since')) || 0));
+    // Custo e tarefas por sala por dia: { "AAAA-MM-DD": { sala: { floor, costUsd, tasks } } }
+    if (req.method === 'GET' && p === '/api/costs') return send(res, 200, readCosts());
     if (req.method === 'GET' && p === '/api/events') {
       res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store', Connection: 'keep-alive' });
       res.write('event: state\ndata: ' + JSON.stringify(store.snapshot()) + '\n\n');
@@ -58,7 +66,7 @@ const server = http.createServer(async (req, res) => {
         const a = store.applyHook({ ...h, hook_event_name: 'Notification', message: '' }) || null;
         if (!a) return send(res, 200, { decision: null });
         const ra = config.remoteApproval || {};
-        if (!ra.enabled) {
+        if (!ra.enabled || Date.now() - panelSeenAt > PANEL_FRESH_MS) {
           const text = (h.tool_name || '') + ' ' + JSON.stringify(h.tool_input || {}).slice(0, 120);
           store.setState(a, 'waiting'); a.waitCmd = text; store.event(a, 'wait', 'Permissão', 'Pede permissão no terminal: ' + text);
           return send(res, 200, { decision: null });
@@ -69,6 +77,10 @@ const server = http.createServer(async (req, res) => {
       store.applyHook(h);
       return send(res, 200, { ok: true });
     }
+    if (req.method === 'POST' && p === '/api/presence') {
+      if (req.headers['x-edh-token'] !== TOKEN) return send(res, 403, { erro: 'token inválido' });
+      panelSeenAt = Date.now(); return send(res, 200, { ok: true, remoteApproval: !!config.remoteApproval?.enabled });
+    }
     if (req.method === 'POST' && p.startsWith('/api/permission/')) {
       if (req.headers['x-edh-token'] !== TOKEN) return send(res, 403, { erro: 'token inválido' });
       const id = decodeURIComponent(p.split('/').pop()), b = await readBody(req);
@@ -77,7 +89,9 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === 'GET') {
       if (p === '/' || p === '/index.html') return serveFile(res, path.join(WEB, 'index.html'));
-      if (p === '/predio' || p === '/predio/') return serveFile(res, fs.existsSync(path.join(WEB, 'predio', 'index.html')) ? path.join(WEB, 'predio', 'index.html') : path.join(PROTO, 'predio.html'));
+      // Com barra no fim, os scripts relativos do prédio (dados.js, cena.js…) resolvem dentro de /predio/
+      if (p === '/predio') { res.writeHead(302, { Location: '/predio/' + url.search }); return res.end(); }
+      if (p === '/predio/') return serveFile(res, path.join(WEB, 'predio', 'index.html'));
       const file = path.normalize(path.join(WEB, p));
       if (!file.startsWith(WEB)) return send(res, 403, { erro: 'caminho inválido' });
       return serveFile(res, file);

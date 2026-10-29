@@ -4,12 +4,16 @@
   "private": true,
   "description": "Agente local da Central de Agentes EDevsHub: lê sessões do Claude Code e Codex, recebe hooks e serve o painel em 127.0.0.1:4321",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "hooks:install": "node scripts/install-hooks.js",
     "hooks:uninstall": "node scripts/uninstall-hooks.js",
-    "check": "node --check src/index.js && node --check hooks/edh-hook.js"
+    "check": "node --check src/index.js && node --check hooks/edh-hook.js",
+    "autostart:on": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/autostart-windows.ps1 -IniciarAgora",
+    "autostart:off": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/autostart-windows.ps1 -Remover"
   }
 }

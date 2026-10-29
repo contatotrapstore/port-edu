@@ -45,6 +45,10 @@ ul.feed li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:6px;padding
 ul.feed time{color:var(--muted)}
 .empty{color:var(--muted);padding:12px 0}
 </style>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" href="/icones/icone-192.png">
+<link rel="apple-touch-icon" href="/icones/icone-192.png">
+<meta name="theme-color" content="#0B1210">
 </head>
 <body>
 <div class="wrap">
@@ -129,6 +133,9 @@ function connect(){
 }
 connect();
 setInterval(() => last && render(last), 15000);
+// Avisa o agente que o painel está aberto e visível: só assim um pedido de permissão espera a resposta daqui
+const ping = () => { if (document.visibilityState === 'visible') fetch('/api/presence', {method:'POST', headers:{'X-EDH-Token': window.EDH_TOKEN || ''}}).catch(() => {}); };
+ping(); setInterval(ping, 10000); document.addEventListener('visibilitychange', ping);
 </script>
 </body>
 </html>

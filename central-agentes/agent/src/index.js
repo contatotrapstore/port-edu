@@ -7,6 +7,7 @@ import { startCodexSessions } from './collectors/codex-sessions.js';
 import { startElevenLabs } from './collectors/elevenlabs.js';
 import { startClaudePlan } from './collectors/claude-plan.js';
 import { startCodenotch } from './collectors/codenotch.js';
+import { startHistory } from './history.js';
 
 const [maj] = process.versions.node.split('.').map(Number);
 if (maj < 20) { console.error(`Node ${process.versions.node} é antigo. Instale o Node 20 ou mais novo.`); process.exit(1); }
@@ -20,6 +21,7 @@ startCodexSessions();
 startElevenLabs();
 startClaudePlan();
 startCodenotch();
+startHistory();
 setInterval(() => store.sweep(), 5000);
 store.sweep();
 

@@ -38,6 +38,9 @@ O front (debug e prédio 3D) só conhece isto. Se mudar aqui, mude nos dois lado
     "eleven": { "used": 20600, "limit": 30000, "resetAt": 1762300000000, "tier": "starter", "source": "api" },
     "higgs":  { "used": null, "limit": null, "source": "manual" }
   },
+  "planInfo": { "claude": { "name": "Claude", "tier": "Max 20x", "brl": 1100 }, "higgs": { "manualCreditsTotal": null, "manualCreditsLeft": null } },
+  "rooms": [ { "room": "PlanetShake", "floor": 1, "costUsdToday": 6.55, "tasksToday": 4 } ],   // acumulado do dia, inclui sessões que já fecharam
+  "remoteApproval": true,
   "pending": [ { "id": "p_17…", "agentId": "claude:3f2a…", "tool": "Bash", "text": "npm run deploy", "at": 1761766812000 } ],
   "feed": [ { "t": 1761766812000, "agentId": "claude:3f2a…", "kind": "wait", "tag": "Permissão", "text": "Pede permissão: npm run deploy" } ]
 }
@@ -52,10 +55,19 @@ O front (debug e prédio 3D) só conhece isto. Se mudar aqui, mude nos dois lado
 Header `X-EDH-Token: <token>` (o agente injeta em `window.EDH_TOKEN` nas páginas que serve).
 Body `{ "decision": "allow" }` ou `{ "decision": "deny", "message": "motivo" }`.
 
+## POST /api/presence
+Header `X-EDH-Token`. A página manda a cada 10 s enquanto está visível. Um `PermissionRequest` só espera a resposta do painel se houve aviso nos últimos 25 s; senão vai direto para o terminal.
+
+## GET /api/history?date=AAAA-MM-DD&since=ms
+Linhas `{ "t": ms, "a": [[id, room, floor, state, name, model], …] }` do dia (padrão hoje). Usado pelo replay.
+
+## GET /api/costs
+`{ "AAAA-MM-DD": { "<sala>": { "floor": 1, "costUsd": 6.55, "tasks": 4 } } }`. Usado pelo card "Custo por projeto".
+
 ## Mapeamento para o prédio 3D
-- `floor` + `room` → sala do `ROOM_DEFS`. Sala sem par no protótipo → criar sala genérica no andar (o prédio tem 8 vagas por andar; ver `slot`).
+- `room` → sala do `ROOM_DEFS` com o mesmo nome. Sem par → **Projetos avulsos** (térreo), e o painel do agente mostra o nome da pasta.
 - `state` → igual ao protótipo.
 - `tool` → `TOOL_PT` do protótipo (Edit → Editando etc.).
-- Cada sessão ativa = um boneco. Subagentes sentam nas mesas 2 e 3 da mesma sala. Mais de 3 → excedentes ficam no sofá da sala com etiqueta.
+- Cada sessão = um boneco. Mesas por tipo de sala (projeto 3, estúdio 2, TI e recepção 1, Diretoria 1 porque a outra é do Dudu); quem sobra trabalha no sofá da sala.
 - Agente `idle` vai para a convivência (mesma lógica de hoje).
 - O que continuar simulado (funil, Workana, tráfego) fica com rótulo "simulado" até ter fonte real.

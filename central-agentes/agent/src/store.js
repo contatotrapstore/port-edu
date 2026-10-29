@@ -5,6 +5,8 @@ import { config, roomFor, priceFor, CODENOTCH_FRESH_MS } from './config.js';
 import { toolPt, targetOf, isToday } from './util.js';
 
 const H5 = 5 * 3600e3, D7 = 7 * 86400e3;
+// Nome, plano e mensalidade (config.json → plans), sem os campos internos
+const PLAN_INFO = Object.fromEntries(Object.entries(config.plans || {}).map(([k, p]) => [k, Object.fromEntries(Object.entries(p).filter(([f]) => !f.startsWith('_') && !/Budget|Reset|experimental/.test(f)))]));
 
 class Store extends EventEmitter {
   constructor() {
@@ -13,6 +15,7 @@ class Store extends EventEmitter {
     this.feed = [];
     this.pending = new Map();      // id -> { id, agentId, tool, text, at, resolve, timer }
     this.claudeUsage = [];         // [t, tokens] para estimar o medidor do plano Claude
+    this.day = { key: '', rooms: new Map() }; // custo e tarefas do dia por sala (não some quando a sessão fecha)
     this.plans = {
       claude: { meters: [], source: 'estimado' },
       gpt: { meters: [], source: 'aguardando sessão do Codex' },
@@ -46,6 +49,17 @@ class Store extends EventEmitter {
     return a;
   }
 
+  /** Acumulado do dia da sala do agente. */
+  roomDay(a) {
+    const key = new Date().toDateString();
+    if (this.day.key !== key) this.day = { key, rooms: new Map() };
+    let r = this.day.rooms.get(a.room);
+    if (!r) { r = { room: a.room, floor: a.floor, costUsdToday: 0, tasksToday: 0 }; this.day.rooms.set(a.room, r); }
+    return r;
+  }
+
+  taskDone(a) { a.tasksToday++; this.roomDay(a).tasksToday++; }
+
   touch(a, t = Date.now()) { if (t > a.lastActivity) a.lastActivity = t; }
 
   event(a, kind, tag, text, t = Date.now()) {
@@ -72,7 +86,8 @@ class Store extends EventEmitter {
     if (!isToday(t)) return;
     for (const k in u) a.tokens[k] += u[k];
     const p = priceFor(model || a.model);
-    a.costUsdToday += (u.in * p.in + u.out * p.out + u.cacheRead * (p.cacheRead || 0) + (u.cacheWrite - w1h) * (p.cacheWrite || 0) + w1h * (p.cacheWrite1h ?? p.cacheWrite ?? 0)) / 1e6;
+    const cost = (u.in * p.in + u.out * p.out + u.cacheRead * (p.cacheRead || 0) + (u.cacheWrite - w1h) * (p.cacheWrite || 0) + w1h * (p.cacheWrite1h ?? p.cacheWrite ?? 0)) / 1e6;
+    a.costUsdToday += cost; this.roomDay(a).costUsdToday += cost;
     this.changed();
   }
 
@@ -100,7 +115,7 @@ class Store extends EventEmitter {
         break;
       }
       case 'Stop':
-        a.tasksToday++; a.tool = ''; a.target = ''; this.setState(a, 'idle'); this.event(a, 'done', 'Concluído', 'Turno concluído'); break;
+        a.tool = ''; a.target = ''; // a tarefa é contada pelo fim de turno no arquivo da sessão (claude-sessions.js) this.setState(a, 'idle'); this.event(a, 'done', 'Concluído', 'Turno concluído'); break;
       case 'SubagentStop': this.event(a, 'done', 'Subagente', 'Subagente terminou'); break;
       case 'SessionEnd': this.setState(a, 'idle'); a.ended = true; this.event(a, 'done', 'Sessão', 'Sessão encerrada'); break;
     }
@@ -179,7 +194,8 @@ class Store extends EventEmitter {
       .sort((x, y) => x.floor - y.floor || x.room.localeCompare(y.room) || (x.name === 'Principal' ? -1 : 1))
       .map(({ _seen, _hook, ended, ...rest }) => rest);
     return {
-      updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans,
+      updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans, planInfo: PLAN_INFO,
+      rooms: this.day.key === new Date().toDateString() ? [...this.day.rooms.values()] : [],
       pending: [...this.pending.values()].map(({ resolve, timer, ...p }) => p), feed: this.feed.slice(0, 80),
       remoteApproval: !!config.remoteApproval?.enabled,
     };

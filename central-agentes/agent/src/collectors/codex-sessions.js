@@ -4,7 +4,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { CODEX_HOME, CODENOTCH_FRESH_MS } from '../config.js';
 import { store } from '../store.js';
-import { JsonlTail, listFiles, promptText, targetOf, toolPt } from '../util.js';
+import { JsonlTail, listFiles, promptText, targetOf, toolPt, isToday } from '../util.js';
 
 const DIR = path.join(CODEX_HOME, 'sessions');
 const tail = new JsonlTail();
@@ -47,7 +47,8 @@ function handle(file, e) {
 
   if (e.type === 'event_msg') {
     if (p.type === 'user_message' && p.message && fresh) { a.prompt = String(p.message).slice(0, 2000); store.setState(a, 'working', t); }
-    if (p.type === 'task_complete' && fresh) { a.tasksToday++; store.setState(a, 'idle', t); store.event(a, 'done', 'Concluído', 'Turno concluído', t); }
+    if (p.type === 'task_complete' && isToday(t)) store.taskDone(a);
+    if (p.type === 'task_complete' && fresh) { store.setState(a, 'idle', t); store.event(a, 'done', 'Concluído', 'Turno concluído', t); }
     if (p.type === 'token_count') {
       const tot = p.info?.total_token_usage;
       if (tot) {

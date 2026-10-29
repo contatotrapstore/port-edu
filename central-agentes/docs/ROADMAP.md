@@ -23,32 +23,32 @@ Marque `[x]` ao concluir. Faça na ordem; cada item diz como saber que terminou.
 - [x] Estado muda na hora (working/idle) ao mandar prompt e ao terminar (testado com `claude -p`: SessionStart → prompt → ferramenta → Stop → SessionEnd)
 - [x] Com o agente **desligado**, o Claude Code continua funcionando normal (hook sai com 0, sem saída, ~140 ms)
 - [x] `PermissionRequest` existe (Claude Code 2.1.170, formato conferido na doc). Testado com o hook real + API: Permitir e Negar chegam certos; sem token dá 403. `remoteApproval` fica **desligado** por padrão: ligado, todo pedido de permissão espera o painel até `timeoutSeconds` antes de cair no terminal
-- [ ] Melhoria: só esperar o painel se houver um painel aberto (cliente SSE conectado); aí dá para deixar `remoteApproval` sempre ligado
+- [x] Melhoria: só espera o painel se ele estiver aberto **e visível** (a página avisa `POST /api/presence` a cada 10 s). `remoteApproval` agora vem ligado
 
 ### 1.3 Ligar o prédio 3D aos dados reais (tarefa principal)
-- [ ] Mover `prototipo/predio.html` para `web/predio.html` e separar em `web/predio/{index.html, app.js, cena.js, sim.js, ui.js}` (o arquivo único passou de 2.000 linhas)
-- [ ] Criar `web/predio/fonte.js` com duas fontes: `simulada` (o `sim` atual) e `real` (SSE `/api/events`). Chave na URL: `?fonte=real` (padrão quando servido pelo agente)
-- [ ] Gerar `ROOMS` a partir de `config.rooms` + salas fixas (Recepção, Reunião, Diretoria, Cabines, Estúdio)
-- [ ] Criar/remover bonecos conforme as sessões entram e saem (animação de entrar pelo elevador)
-- [ ] Botões Permitir/Negar chamam `POST /api/permission/:id`
-- [ ] "Mandar tarefa" no modo real: por enquanto copia o texto e mostra "cole no terminal da sala X" (não dá para injetar prompt numa sessão aberta). Ver 3.x
-- [ ] Planos: usar `state.plans`; esconder campos sem fonte
-- [ ] Remover o rótulo "dados simulados" das partes que vierem do agente
+- [x] Mover `prototipo/predio.html` para `web/predio/` e separar em `index.html, predio.css, dados.js, sim.js, cena.js, ui.js, app.js` (corte mecânico, scripts clássicos com escopo global compartilhado)
+- [x] Criar `web/predio/fonte.js` com duas fontes: `simulada` (o `sim` atual) e `real` (SSE `/api/events`). Chave na URL: `?fonte=simulada` / `?fonte=real` (real é o padrão quando servido pelo agente)
+- [x] Salas: o prédio mantém as salas fixas e casa pelo nome que o `config.rooms` gera. Pasta sem sala vai para **Projetos avulsos** (a antiga Sala de reunião, no térreo); o painel do agente mostra o nome da pasta
+- [x] Criar/remover bonecos conforme as sessões entram e saem (sessão nova chega pelo elevador do térreo; na primeira carga todos já aparecem no lugar). Mesas por tipo de sala; quem sobra senta no sofá
+- [x] Botões Permitir/Negar chamam `POST /api/permission/:id` (testado com o hook real: `allow` voltou para o Claude Code). Sem pedido pendente no agente, o painel diz para responder no terminal
+- [x] "Mandar tarefa" no modo real copia o texto e mostra "cole no terminal de X" (não dá para injetar prompt numa sessão aberta). Ver Fase 3
+- [x] Planos: usam `state.plans` + `state.planInfo` (nome, plano, mensalidade do config). Sem fonte → "sem fonte de dados" com o que falta configurar
+- [x] Rótulo agora diz "Dados reais · agente local", avisando que os números do Comercial e do Marketing ainda são simulados. Orçamentos inventados das salas desligados no modo real
 
 ### 1.4 Medidores dos planos
-- [ ] Codex: pelos `rate_limits` dos JSONL
+- [x] Codex: Codenotch; sem ele, pelos `rate_limits` dos JSONL
 - [x] Claude: lido do Codenotch (sessão, semanal e semanal por modelo); a estimativa por tokens só entra se o Codenotch estiver parado há mais de 30 min
-- [ ] ElevenLabs: API
-- [ ] Higgsfield: manual em `config.json` até ter API
+- [x] ElevenLabs: API pronta no agente e no prédio — **falta a chave** (só leitura) em `agent/.env`
+- [x] Higgsfield: manual em `config.json` (`manualCreditsTotal`, `manualCreditsLeft`, `renewInDays`) até ter API — **falta preencher**
 
 ### 1.5 Ligar com o Windows
-- [ ] Script `agent/scripts/autostart-windows.ps1` que cria um atalho na pasta Inicializar rodando `node src/index.js` minimizado (ou usar `pm2` + `pm2-windows-startup`)
-- [ ] Manifest PWA + ícone EDevsHub em `web/` para instalar como app
+- [x] `npm run autostart:on` / `autostart:off`: `agent/scripts/autostart-windows.ps1` cria o atalho na pasta Inicializar, que roda `iniciar-oculto.vbs` (sem janela, log em `agent/data/agente.log`)
+- [x] Manifest PWA + ícone EDevsHub (`web/manifest.webmanifest`, `web/icones/`), abre direto no prédio
 
 ### 1.6 Histórico
-- [ ] Gravar snapshot a cada 2 s em `agent/data/AAAA-MM-DD.jsonl` (rotacionar por dia, manter 7 dias)
-- [ ] Replay do prédio lê esse histórico (hoje só guarda em memória)
-- [ ] Custo por projeto por dia/semana/mês, para relatório por cliente
+- [x] Linha do tempo em `agent/data/AAAA-MM-DD.jsonl` (confere a cada 2 s, grava quando muda ou a cada 60 s, para o arquivo não crescer à toa; mantém 7 dias). `GET /api/history`
+- [x] Replay do prédio carrega as últimas 8 h do histórico; sessões que já fecharam aparecem como bonecos só durante o replay
+- [x] Custo por projeto por dia em `agent/data/custos.json` (sem prazo), `GET /api/costs`, card na aba Operação com Hoje / 7 dias / 30 dias. Tarefas do Claude contadas pelo fim de turno nos arquivos de sessão (sobrevive a reinício)
 
 ## Fase 2 — celular e site
 - [ ] Supabase: tabela `office_state` e `permission_requests` (RLS: só o usuário dele)

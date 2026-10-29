@@ -13,10 +13,10 @@ Este arquivo é o contexto principal. Leia também `docs/ROADMAP.md` antes de co
 ## Estado atual
 | Parte | Status |
 |---|---|
-| `prototipo/predio.html` | Pronto, com **dados simulados**. Prédio 3D (Three.js r145) de 4 andares + elevador, painéis, sugestões, XP, replay, modo TV. Abra direto no navegador. |
-| `agent/` | Agente local em Node (sem dependências). Lê sessões reais do Claude Code e do Codex, recebe hooks, lê os medidores do Codenotch, consulta ElevenLabs, expõe API + SSE em `127.0.0.1:4321`. **Validado com os dados reais do PC em 29/10/2026** (Fases 1.1 e 1.2). Hooks instalados no `~/.claude/settings.json`. |
-| `web/index.html` | Painel de depuração simples (lista ao vivo + Permitir/Negar) servido pelo agente. Serve para validar os dados antes de ligar o 3D. |
-| Ligar o 3D aos dados reais | **Próxima grande tarefa** (ver ROADMAP, Fase 1.3). |
+| `web/predio/` | Prédio 3D (Three.js r145) **com dados reais** do agente (Fase 1.3): um boneco por sessão, entra pelo elevador, Permitir/Negar de verdade, planos do Codenotch, custo por projeto, replay com o histórico do dia. `?fonte=simulada` mostra o protótipo antigo. Números do Comercial e do Marketing (Workana, funil, tráfego, redes) ainda simulados e rotulados. |
+| `agent/` | Agente local em Node (sem dependências). Lê sessões reais do Claude Code e do Codex, recebe hooks, lê os medidores do Codenotch, consulta ElevenLabs, grava histórico em `agent/data`, expõe API + SSE em `127.0.0.1:4321`. **Fase 1 concluída em 29/10/2026.** Hooks instalados no `~/.claude/settings.json`; sobe sozinho com o Windows (`npm run autostart:on`). |
+| `web/index.html` | Painel de depuração simples (lista ao vivo + Permitir/Negar) servido pelo agente. |
+| Próximo passo | **Fase 2** (painel no site + celular). Ver ROADMAP. |
 
 ## Arquitetura (decidida)
 **Fase 1 — local primeiro.** Tudo roda no PC do Eduardo. O agente lê os arquivos de sessão e recebe os hooks; o navegador abre `http://localhost:4321`. Motivos: os dados estão no PC, aprovar permissão precisa estar perto do Claude Code, e prompts/código de cliente não saem da máquina.
@@ -34,8 +34,9 @@ docs/FONTES-DE-DADOS.md   formato dos JSONL do Claude Code e do Codex, hooks, AP
 docs/CONTRATO-DE-DADOS.md formato do /api/state e dos eventos SSE (o front consome isto)
 docs/ROADMAP.md           tarefas em ordem, com checklist
 docs/MARCA.md             cores, tipografia, regras visuais
-prototipo/predio.html     o escritório 3D (simulado)
+web/predio/               o escritório 3D: index.html, predio.css, dados.js, sim.js, cena.js, ui.js, fonte.js (dados reais), app.js
 web/index.html            painel de depuração ao vivo
+web/manifest.webmanifest  PWA (ícones em web/icones)
 agent/                    agente local (Node 20+, ES modules, zero dependências)
 ```
 

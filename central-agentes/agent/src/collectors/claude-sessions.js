@@ -4,10 +4,11 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { CLAUDE_HOME } from '../config.js';
 import { store } from '../store.js';
-import { JsonlTail, listFiles, promptText, targetOf, toolPt } from '../util.js';
+import { JsonlTail, listFiles, promptText, targetOf, toolPt, isToday } from '../util.js';
 
 const DIR = path.join(CLAUDE_HOME, 'projects');
 const tail = new JsonlTail();
+const turnSeen = new Set();   // message.id que já contou como tarefa (a mesma resposta vem em várias linhas)
 const WEEK = 8 * 86400e3;
 
 function agentIdFor(file, entry) {
@@ -56,6 +57,9 @@ function handle(file, e) {
 
   // assistant
   store.addUsage(a, e.message?.id || e.uuid, e.message?.model, e.message?.usage, t);
+  // Fim de turno = tarefa concluída. Conta pelo arquivo (e não pelo hook Stop) para o total do dia sobreviver a um reinício do agente
+  const mid = e.message?.id;
+  if (e.message?.stop_reason === 'end_turn' && mid && !turnSeen.has(mid) && isToday(t)) { turnSeen.add(mid); store.taskDone(a); }
   if (!Array.isArray(content)) return;
   for (const c of content) {
     if (c?.type === 'tool_use') {
