@@ -6,7 +6,6 @@ import Link from "next/link";
 import DirectContact from "@/components/contact/DirectContact";
 import { getRedesignCopy } from "@/components/redesign/copy";
 import { plexMono, plexSans } from "@/components/redesign/fonts";
-import HtmlLang from "@/components/redesign/site/HtmlLang";
 import { localePath } from "@/components/redesign/site/paths";
 import { siteConfig } from "@/lib/constants";
 import { getContent } from "@/lib/content.en";
@@ -53,7 +52,6 @@ export default function HirePage({ locale }: { locale: Locale }) {
   return (
     <div id="topo" className={`edh edh-home edh-site edh-hire ${plexSans.variable} ${plexMono.variable}`} lang={copy.lang} data-scroll-page>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <HtmlLang lang={en ? "en" : "pt-BR"} />
       <a href="#conteudo" className="edh-skip">
         {copy.skip}
       </a>

@@ -27,17 +27,37 @@ const fail = (msg) => {
   process.exit(1);
 };
 
+// Grupos de rotas, como app/(pt) e app/(en), não fazem parte da URL: todas as
+// checagens comparam caminhos sem eles, para continuarem valendo se as pastas
+// forem reorganizadas.
+const withoutGroups = (p) =>
+  p
+    .split(/[\\/]/)
+    .filter((segment) => !/^\(.+\)$/.test(segment))
+    .join(path.sep);
+
+// HTML pré-renderizado do build, indexado pelo caminho da rota.
+const appDir = path.join(ROOT, ".next", "server", "app");
+const htmlFiles = new Map();
+const collect = (dir) => {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) collect(full);
+    else if (entry.name.endsWith(".html")) htmlFiles.set(withoutGroups(path.relative(appDir, full)), full);
+  }
+};
+collect(appDir);
+
 // --- Checagem 1: HTML renderizado da /workana ---------------------------
-const candidates = [
-  ".next/server/app/workana.html",
-  ".next/server/app/workana/index.html",
-];
-const htmlPath = candidates.map((p) => path.join(ROOT, p)).find(fs.existsSync);
+const candidates = ["workana.html", path.join("workana", "index.html")];
+const htmlPath = candidates.map((p) => htmlFiles.get(p)).find(Boolean);
 
 if (!htmlPath) {
   console.warn(
     "⚠ check-workana-isolation: HTML da /workana não encontrado no build " +
-      `(procurei em ${candidates.join(", ")}). Pulando a checagem de HTML.`
+      `(procurei ${candidates.join(" e ")} em .next/server/app, com ou sem grupo de rotas). ` +
+      "Pulando a checagem de HTML."
   );
 } else {
   const html = fs.readFileSync(htmlPath, "utf8");
@@ -103,7 +123,7 @@ const walk = (dir) => {
       walk(full);
     } else if (/\.tsx?$/.test(entry.name)) {
       const src = fs.readFileSync(full, "utf8");
-      const rel = path.relative(ROOT, full);
+      const rel = withoutGroups(path.relative(ROOT, full));
       for (const guard of GUARDED) {
         if (guard.re.test(src) && !guard.allowed.some((p) => rel.startsWith(p))) offenders.push(`${rel} (${guard.name})`);
       }
@@ -123,22 +143,12 @@ if (offenders.length) {
 // --- Checagem 2b: link de WhatsApp só nas páginas de contratação -----------
 // Home, cases e demais páginas circulam junto da zona Workana: nenhuma pode
 // sair do build com wa.me, mesmo que um componente novo burle a checagem 2.
-const appDir = path.join(ROOT, ".next", "server", "app");
 const CONTACT_PAGES = [/^contratar\.html$/, /^en[\\/]contratar\.html$/, /^solucoes[\\/]/];
 const leaks = [];
-const scan = (dir) => {
-  if (!fs.existsSync(dir)) return;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) scan(full);
-    else if (entry.name.endsWith(".html")) {
-      const rel = path.relative(appDir, full);
-      if (CONTACT_PAGES.some((re) => re.test(rel))) continue;
-      if (/wa\.me|api\.whatsapp\.com|web\.whatsapp\.com/i.test(fs.readFileSync(full, "utf8"))) leaks.push(rel);
-    }
-  }
-};
-scan(appDir);
+for (const [rel, full] of htmlFiles) {
+  if (CONTACT_PAGES.some((re) => re.test(rel))) continue;
+  if (/wa\.me|api\.whatsapp\.com|web\.whatsapp\.com/i.test(fs.readFileSync(full, "utf8"))) leaks.push(rel);
+}
 if (leaks.length) {
   fail(
     "Link de WhatsApp fora das páginas de contratação:\n" +

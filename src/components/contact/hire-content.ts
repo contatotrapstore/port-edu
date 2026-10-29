@@ -3,7 +3,7 @@ import type { Locale } from "@/lib/locale";
 
 /**
  * Conteúdo da página de contratação no design novo. Em português, o mesmo
- * texto publicado hoje em src/app/contratar/page.tsx (necessidades, ofertas,
+ * texto publicado hoje em src/app/(pt)/contratar/page.tsx (necessidades, ofertas,
  * cases, trechos de avaliação, etapas, recusas e perguntas); em inglês, a
  * tradução. Valores e prazos vêm de `offers`, aprovados pelo Eduardo.
  *

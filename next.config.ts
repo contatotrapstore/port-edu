@@ -30,11 +30,17 @@ const siteModules: Record<string, string> = {
  * novo ele sai, e /contratar e /en/contratar recebem o mesmo CSS.
  */
 const currentModules: Record<string, string> = {
-  "@current/contratar-styles": "./src/app/contratar/landing.css",
+  "@current/contratar-styles": "./src/app/(pt)/contratar/landing.css",
 };
 
 const nextConfig: NextConfig = {
   transpilePackages: ["three"],
+  experimental: {
+    // O site tem dois layouts raiz, app/(pt) e app/(en), para o <html lang> já
+    // sair certo do servidor. Sem um layout no topo, o 404 de endereços que não
+    // existem vem de app/global-not-found.tsx.
+    globalNotFound: true,
+  },
   turbopack: {
     resolveAlias: {
       ...Object.fromEntries(Object.entries(siteModules).map(([name, file]) => [name, newSite ? file : off])),

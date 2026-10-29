@@ -8,7 +8,6 @@ import { getRedesignCopy } from "../copy";
 import { plexMono, plexSans } from "../fonts";
 import HomeFooter from "../home/HomeFooter";
 import { getHomeCopy } from "../home/copy";
-import HtmlLang from "./HtmlLang";
 import { getSiteCopy } from "./copy";
 import { hireHref, localePath, otherLocaleHref } from "./paths";
 
@@ -42,7 +41,6 @@ export default function SitePage({
 
   return (
     <div className={`edh edh-home edh-site ${plexSans.variable} ${plexMono.variable}`} lang={copy.lang} data-scroll-page>
-      <HtmlLang lang={copy.lang === "en" ? "en" : "pt-BR"} />
       <a href="#conteudo" className="edh-skip">
         {copy.skip}
       </a>

@@ -14,7 +14,6 @@ import HomeMethod from "./home/HomeMethod";
 import HomeProjects from "./home/HomeProjects";
 import HomeSolutions from "./home/HomeSolutions";
 import { getHomeCopy } from "./home/copy";
-import HtmlLang from "./site/HtmlLang";
 import { hireHref } from "./site/paths";
 import StationHero, { type StationHeroCopy } from "./station/StationHero";
 
@@ -77,7 +76,6 @@ export default function BrandHome({ locale, variant }: { locale: Locale; variant
       lang={copy.lang}
       data-scroll-page
     >
-      <HtmlLang lang={en ? "en" : "pt-BR"} />
       <a href="#conteudo" className="edh-skip">
         {copy.skip}
       </a>

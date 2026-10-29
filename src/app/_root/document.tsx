@@ -2,11 +2,20 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import PublicTracking from "@/components/analytics/PublicTracking";
 import SiteStructuredData from "@/components/analytics/SiteStructuredData";
-import "./globals.css";
 import { workanaProfile as stats } from "@/lib/constants";
 import { siteUrl } from "@/lib/site";
 
-export const viewport: Viewport = {
+/**
+ * Documento raiz do site. Há dois layouts raiz, app/(pt) e app/(en), para que
+ * o HTML de cada página já saia do servidor com o idioma certo no <html lang>,
+ * sem depender de JavaScript. Os dois usam este documento, então fontes,
+ * metadados, dados estruturados e medição são os mesmos.
+ *
+ * Trocar de um grupo para o outro (português ↔ inglês) recarrega a página
+ * inteira: é o comportamento do Next.js entre layouts raiz diferentes.
+ */
+
+export const rootViewport: Viewport = {
   themeColor: "#0a0a0a",
   colorScheme: "dark",
 };
@@ -29,7 +38,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "700"],
 });
 
-export const metadata: Metadata = {
+export const rootMetadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "EDevsHub | Eduardo Gouveia — Full Stack Sênior · Workana HERO",
   description:
@@ -150,14 +159,16 @@ const structuredData = {
   ],
 };
 
-export default function RootLayout({
+export default function RootDocument({
+  lang,
   children,
 }: Readonly<{
+  lang: "pt-BR" | "en";
   children: React.ReactNode;
 }>) {
   return (
     <html
-      lang="pt-BR"
+      lang={lang}
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <head>

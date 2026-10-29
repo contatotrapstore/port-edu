@@ -11,7 +11,7 @@ import WorkanaLink from "@/components/workana/WorkanaLink";
 /**
  * ÚNICO componente do site com canal de contato direto.
  *
- * Só pode ser importado em src/app/contratar e src/app/solucoes —
+ * Só pode ser importado nas rotas /contratar, /en/contratar e /solucoes —
  * `scripts/check-workana-isolation.mjs` quebra o build se sair daí. A zona
  * Workana (/workana, cases, home) nunca expõe WhatsApp, e-mail ou telefone,
  * porque essas páginas circulam dentro de propostas da plataforma.
