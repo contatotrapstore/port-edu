@@ -2,7 +2,7 @@
 // Também extrai rate_limits → medidor do ChatGPT/Codex. Ver docs/FONTES-DE-DADOS.md §3.
 import path from 'node:path';
 import fs from 'node:fs';
-import { CODEX_HOME, CODENOTCH_FRESH_MS } from '../config.js';
+import { CODEX_HOME, CODENOTCH_FRESH_MS, config } from '../config.js';
 import { store } from '../store.js';
 import { JsonlTail, listFiles, promptText, targetOf, toolPt, isToday } from '../util.js';
 
@@ -58,7 +58,10 @@ function handle(file, e) {
         const dWrite = Math.max(0, (tot.cache_write_input_tokens || 0) - (prev.cache_write_input_tokens || 0));
         m.lastTotal = tot;
         // input_tokens do Codex já inclui os tokens lidos e gravados no cache
-        store.addUsage(a, null, m.model, { input_tokens: Math.max(0, dIn - dCache - dWrite), cache_read_input_tokens: dCache, cache_creation_input_tokens: dWrite, output_tokens: dOut }, t);
+        // Contexto longo (OpenAI): requisição com mais de ~272 mil tokens de entrada custa 2x na entrada e 1,5x na saída
+        const ultima = p.info?.last_token_usage?.input_tokens || 0;
+        const longo = ultima > (config.pricing?.limiteContextoLongo || 272000) ? { in: 2, out: 1.5 } : null;
+        store.addUsage(a, null, m.model, { input_tokens: Math.max(0, dIn - dCache - dWrite), cache_read_input_tokens: dCache, cache_creation_input_tokens: dWrite, output_tokens: dOut }, t, longo);
       }
       const rl = p.rate_limits;
       const codenotchFresh = store.plans.gpt?.source === 'codenotch' && Date.now() - (store.plans.gpt.at || 0) < CODENOTCH_FRESH_MS;

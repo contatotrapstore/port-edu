@@ -25,6 +25,9 @@ Este arquivo é o contexto principal. Leia também `docs/ROADMAP.md` antes de co
 
 Não usar Electron/Tauri por enquanto: o painel é instalável como PWA. Reavaliar só se ele quiser ícone na bandeja.
 
+## Orquestra (agentes conversando)
+`agent/src/orquestra.js` + `agent/mcp/central-mcp.js`. O texto de uma tarefa delegada vai pela entrada padrão (nunca vira argumento de linha de comando); tarefa delegada não delega de novo (`EDH_JOB_DEPTH`, repassado ao MCP do Codex por `env_vars`); o Codex precisa de `default_tools_approval_mode = "approve"` no servidor central para usar as ferramentas em `codex exec`. Token fixo do MCP em `agent/data/mcp-token`.
+
 ## Estrutura
 ```
 CLAUDE.md                 este arquivo

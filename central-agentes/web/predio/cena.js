@@ -266,7 +266,7 @@ function buildShell(R){
   box(E.tall, 5.3, .05, .05, M.charcoal, .4, .83, .07); box(E.tall, 5.3, .05, .05, M.charcoal, .4, 2.27, .07);
   for (const fx of [-2.2, -.9, .4, 1.7, 3.0]) box(E.tall, .04, 1.44, .05, M.charcoal, fx, 1.55, .07);
   for (const lx of [1.7, 4.8, 7.9]){ cyl(st, .18, .18, .03, M.neon, lx, WH + .3, 3.0, {cast:false}); cyl(st, .006, .006, .5, M.charcoal, lx, WH + .57, 3.0, {cast:false}); }
-  const l = new THREE.PointLight('#FFB547', 2.3, 10, 2); l.position.set(RW/2, 2.5, 3.4); g.add(l); ROOM_LIGHTS.push(l);
+  const l = new THREE.PointLight('#FFB547', 2.3, 10, 2); l.position.set(RW/2, 2.5, 3.4); g.add(l); ROOM_LIGHTS.push(l); R.light = l;
   return g;
 }
 function wallScreen(parent, w, h, x, y, tex){ rbox(parent, w + .1, h + .1, .06, .02, M.bezel, x, y, .1); plane(parent, w, h, screenMat(tex), x, y, .135); }
@@ -524,6 +524,19 @@ function meetingRoom(R){
   plant(R.st, .7, 7.3, 1.3); plant(R.st, 9.3, 7.2, 1.1); plant(R.st, 9.3, .8, 1);
   mergeStatic(R.st);
 }
+function deploysTex(R){
+  const COR = {READY: '#5BD69E', ERROR: '#FF6B5E', BLOCKED: '#FF6B5E', BUILDING: '#F5B935', QUEUED: '#F5B935', CANCELED: '#6F837B'};
+  return canvasTex(768, 360, (g, w, h) => {
+    g.fillStyle = '#0B1210'; g.fillRect(0,0,w,h); g.strokeStyle = '#9EC5E8'; g.lineWidth = 5; g.strokeRect(3,3,w-6,h-6);
+    g.fillStyle = '#9EC5E8'; g.font = font(700, 24); g.fillText('DEPLOYS · VERCEL', 26, 44);
+    const ds = window.EDH_DEPLOYS || [];
+    if (!ds.length){ g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText('Sem projetos ligados à Vercel', 26, 100); return; }
+    ds.slice(0, 7).forEach((d, i) => { const y = 88 + i*38, e = (d.producao && d.producao.estado) || d.estado;
+      g.fillStyle = COR[e] || '#8E9A92'; g.beginPath(); g.arc(36, y - 7, 8, 0, 7); g.fill();
+      g.fillStyle = '#EDE6D6'; g.font = font(600, 22); g.fillText(short(d.projeto, 22), 54, y);
+      g.fillStyle = '#8E9A92'; g.font = font(500, 18); g.fillText(short(d.sala, 18), 340, y); g.fillText(d.quando ? fmtSpan(Date.now() - d.quando) : '', 600, y); });
+  });
+}
 function infraRoom(R){
   buildShell(R); R.accent = '#9EC5E8';
   R.big = bigScreenTex(R, (g) => {
@@ -532,7 +545,7 @@ function infraRoom(R){
   });
   wallScreen(R.sides.N.tall, 5.2, 1.12, -1.6, 1.75, R.big);
   R.status = statusTex(R); wallScreen(R.sides.N.tall, 2.0, .94, 2.7, 1.72, R.status);
-  R.board = kanbanTex(R, 'INFRA · ROTINAS'); wallBoard(R.sides.W.tall, 3.6, 1.7, 1.6, 1.55, R.board);
+  R.board = REAL ? deploysTex(R) : kanbanTex(R, 'INFRA · ROTINAS'); wallBoard(R.sides.W.tall, 3.6, 1.7, 1.6, 1.55, R.board);
   R.desks = [desk(R.st, 1.7, 2.6, {screen:'idle', monitors:2, headphones:true})]; chair(R.st, 1.7, 3.45, 0);
   R.rackTex = canvasTex(64, 200, (g, w, h) => { g.fillStyle = '#0A0D0C'; g.fillRect(0,0,w,h); for (let i=0;i<9;i++){ g.fillStyle = '#1C2321'; g.fillRect(4, 8 + i*21, w-8, 16); for (let k=0;k<4;k++){ g.fillStyle = Math.random() < .55 ? '#5BD69E' : (Math.random() < .5 ? '#F5B935' : '#16211D'); g.fillRect(8 + k*6, 13 + i*21, 3, 3); } } });
   const rackM = screenMat(R.rackTex);
@@ -554,6 +567,15 @@ function callsRoom(R){
 }
 const BUILD = {project:projectRoom, qa:qaRoom, sales:salesRoom, social:socialRoom, ads:adsRoom, studio:studioRoom, control:controlRoom, reception:receptionRoom, meeting:meetingRoom, infra:infraRoom, calls:callsRoom};
 ROOMS.forEach(R => BUILD[R.type](R));
+const CORES_CLIENTE = ['#F5B935','#5BD69E','#9EC5E8','#C8B6F0','#F2A28E','#E39B6B','#7FD1C7','#D9C27A'];
+const corCliente = c => { if (!c) return '#8E9A92'; let h = 0; for (const ch of String(c)) h = (h*31 + ch.charCodeAt(0)) >>> 0; return CORES_CLIENTE[h % CORES_CLIENTE.length]; };
+if (REAL) ROOMS.forEach(R => {
+  if (R.type === 'reception') return;
+  R.cor = corCliente(R.cliente || R.name);
+  const tex = canvasTex(512, 112, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = R.cor; c.fillRect(0,0,14,h);
+    c.fillStyle = '#EDE6D6'; c.font = font(700, 40); c.fillText(short(R.name, 22), 32, 50); c.fillStyle = R.cor; c.font = font(600, 26); c.fillText(short(R.cliente || R.stack || '', 30), 32, 92); });
+  add(FLOORS[R.f].g, geo('placa', () => new THREE.PlaneGeometry(3.4, .74)), new THREE.MeshBasicMaterial({map: tex, toneMapped: false}), R.ox + RW/2, .03, R.oz + RD + .8, {rx: -Math.PI/2, cast: false, recv: false});
+});
 
 /* drink display (EDevsHub own design) */
 let bellG = null;

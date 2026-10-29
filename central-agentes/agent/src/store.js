@@ -117,7 +117,7 @@ class Store extends EventEmitter {
   }
 
   /** Soma tokens de uma resposta (deduplicada por id). */
-  addUsage(a, msgId, model, usage, t) {
+  addUsage(a, msgId, model, usage, t, fator = null) {
     if (!usage) return;
     if (msgId) { if (a._seen.has(msgId)) return; a._seen.add(msgId); if (a._seen.size > 5000) a._seen = new Set([...a._seen].slice(-2000)); }
     const u = { in: usage.input_tokens || 0, out: usage.output_tokens || 0, cacheRead: usage.cache_read_input_tokens || 0, cacheWrite: usage.cache_creation_input_tokens || 0 };
@@ -126,7 +126,9 @@ class Store extends EventEmitter {
     if (!isToday(t)) return;
     for (const k in u) a.tokens[k] += u[k];
     const p = priceFor(model || a.model);
-    const cost = (u.in * p.in + u.out * p.out + u.cacheRead * (p.cacheRead || 0) + (u.cacheWrite - w1h) * (p.cacheWrite || 0) + w1h * (p.cacheWrite1h ?? p.cacheWrite ?? 0)) / 1e6;
+    // fator: regra de contexto longo da OpenAI (acima de ~272 mil tokens de entrada: entrada 2x, saída 1,5x)
+    const fi = fator?.in || 1, fo = fator?.out || 1;
+    const cost = (u.in * p.in * fi + u.out * p.out * fo + u.cacheRead * (p.cacheRead || 0) * fi + (u.cacheWrite - w1h) * (p.cacheWrite || 0) * fi + w1h * (p.cacheWrite1h ?? p.cacheWrite ?? 0)) / 1e6;
     a.costUsdToday += cost; this.roomDay(a).costUsdToday += cost;
     this.changed();
   }
@@ -238,7 +240,7 @@ class Store extends EventEmitter {
     const { rooms, projects } = this.dayTotals();
     return {
       updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans, planInfo: PLAN_INFO,
-      rooms, projects, layout: config.layout, uptime: this.uptime || [], content: this.content || null, ...(this.extras ? this.extras() : {}),
+      rooms, projects, layout: config.layout, uptime: this.uptime || [], content: this.content || null, deploys: this.deploys || [], ...(this.extras ? this.extras() : {}),
       pending: [...this.pending.values()].map(({ resolve, timer, ...p }) => p), feed: this.feed.slice(0, 80),
       remoteApproval: !!config.remoteApproval?.enabled, away: this.away,
       roomBudgets: Object.fromEntries((config.rooms || []).filter(r => r.budgetBrl).map(r => [r.room, r.budgetBrl])),

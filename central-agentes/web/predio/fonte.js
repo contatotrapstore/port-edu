@@ -169,6 +169,7 @@ function realApply(s, first){
   for (const R of ROOMS) R.tasks = [...new Set(R.agents.map(a => a.prompt).filter(Boolean).map(p => p.replace(/^["\s]+/, '').split(/\s+/).slice(0, 2).join(' ')))];
   BIZ.uptime = (s.uptime || []).map(u => [u.site, u.upPct, u.ok]);
   window.EDH_CONTENT = s.content || null;
+  window.EDH_DEPLOYS = s.deploys || [];
   if (first) lastQuadroT = Math.max(0, ...(s.quadro || []).map(m => m.t)); else quadroBaloes(s);   // posts e reels do Content Studio (Estúdio e sugestões)
 
   FEED.length = 0;
@@ -376,4 +377,110 @@ function quadroBaloes(s){
     const a = AGENTS.find(x => x.proj === m.projeto || x.R.name === m.sala);
     if (a){ a.bubble = {text: `${m.de}: ${short(m.texto, 70)}`, until: performance.now() + 6000}; a.pop = 1; }
   }
+}
+
+/* =========================== cartão do projeto (clique na sala) =========================== */
+let PROJ = null, PROJ_SALA = null, PROJ_AT = 0, projCarregando = false;
+function abrirProjeto(sala){
+  PROJ_SALA = sala; PROJ = null; PROJ_AT = 0;
+  if (tab !== 'agente') setTab('projeto');
+  carregarProjeto();
+}
+async function carregarProjeto(){
+  if (!PROJ_SALA || NUVEM || projCarregando) return;
+  projCarregando = true;
+  try { PROJ = await (await fetch('/api/projeto?sala=' + encodeURIComponent(PROJ_SALA))).json(); PROJ_AT = Date.now(); dirty = true; }
+  catch { /* agente fora do ar */ } finally { projCarregando = false; }
+}
+const ESTADO_DEPLOY = {READY: ['var(--ok)', 'no ar'], ERROR: ['var(--err)', 'com erro'], BLOCKED: ['var(--err)', 'bloqueado'], BUILDING: ['var(--wait)', 'publicando'], QUEUED: ['var(--wait)', 'na fila'], CANCELED: ['var(--idle)', 'cancelado']};
+function renderProjeto(){
+  if (!PROJ_SALA) return '<div class="card"><p class="note">Clique numa sala do prédio para ver o projeto: custos, git, deploys, últimos pedidos e o relatório do cliente.</p></div>';
+  if (NUVEM) return '<div class="card"><p class="note">O cartão completo do projeto (git, prompts, relatório) fica no app do PC.</p></div>';
+  if (Date.now() - PROJ_AT > 30e3) carregarProjeto();
+  const p = PROJ;
+  if (!p || p.sala !== PROJ_SALA) return '<div class="card"><p class="note">Carregando ' + esc(PROJ_SALA) + '…</p></div>';
+  if (p.erro) return '<div class="card"><p class="note">' + esc(p.erro) + '</p></div>';
+  const R = ROOMS.find(x => x.name === p.sala) || {};
+  const custo = (rot, c) => `<div class="stat"><span>${rot}</span><b>${brlFromUsd(c.usd)}</b><small class="note">${c.tarefas} tarefas${c.dias ? ' · ' + c.dias + ' dias' : ''}</small></div>`;
+  const mes = new Date().toISOString().slice(0, 7);
+  let html = `<div class="card"><div class="ag-head"><span class="swatch" style="background:${R.cor || 'var(--amber)'}"></span><div style="min-width:0"><div class="ag-name">${esc(p.sala)}</div><div class="ag-proj">${esc(p.cliente ? 'Cliente: ' + p.cliente : '')}${p.descricao ? ' · ' + esc(p.descricao) : ''}</div></div></div>
+    <div class="stats">${custo('Hoje', p.custos.hoje)}${custo('7 dias', p.custos.semana)}${custo('Mês', p.custos.mes)}</div>
+    <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">
+      ${p.pasta ? '<button class="btn" type="button" data-act="abrirProj" data-arg="claude">Abrir Claude aqui</button><button class="btn" type="button" data-act="abrirProj" data-arg="codex">Abrir Codex aqui</button>' : ''}
+      ${p.cliente ? `<a class="btn" href="/relatorio?cliente=${encodeURIComponent(p.cliente)}&mes=${mes}" target="_blank" rel="noopener">Relatório do mês · ${esc(p.cliente)}</a>` : ''}
+      <button class="btn" type="button" data-act="editarSalas">Editar salas</button>
+    </div>
+    ${p.pasta ? `<p class="note" style="margin-top:8px">Pasta: <code>${esc(p.pasta)}</code></p>` : '<p class="note" style="margin-top:8px">Nenhuma sessão recente nesta sala: abra uma no projeto para o painel saber a pasta.</p>'}</div>`;
+  if (p.git) html += `<div class="card"><div class="sec"><h2>Git</h2><small>${esc(p.git.branch)}</small></div>
+    <p style="margin:0">${esc(p.git.ultimoCommit)}<br><span class="note">${p.git.quando ? 'há ' + fmtSpan(Date.now() - p.git.quando) : ''}${p.git.alteracoes ? ` · <b style="color:var(--wait)">${p.git.alteracoes} arquivo${p.git.alteracoes > 1 ? 's' : ''} sem commit</b>` : ' · tudo commitado'}</span></p>
+    ${p.git.remoto ? `<p class="note" style="margin:6px 0 0"><a href="${esc(p.git.remoto)}" target="_blank" rel="noopener">${esc(p.git.remoto.replace(/^https:\/\//, ''))}</a></p>` : ''}</div>`;
+  if (p.deploys.length) html += `<div class="card"><div class="sec"><h2>Deploys · Vercel</h2></div><ul class="sessions">${p.deploys.map(d => { const e = ESTADO_DEPLOY[d.producao?.estado || d.estado] || ['var(--idle)', String(d.estado).toLowerCase()];
+    return `<li><i style="background:${e[0]}"></i><span>${esc(d.projeto)} · ${e[1]}${d.url ? ` · <a href="https://${esc(d.url)}" target="_blank" rel="noopener">${esc(d.url)}</a>` : ''}</span><em>${d.quando ? fmtSpan(Date.now() - d.quando) + ' atrás' : ''}</em></li>`; }).join('')}</ul></div>`;
+  if (p.prompts.length) html += `<div class="card"><div class="sec"><h2>Últimos pedidos</h2></div><ul class="log">${p.prompts.map(x => `<li><time>${fmtTime(new Date(x.t))}</time><span class="x">${esc(short(x.texto.replace(/^"|"$/g, ''), 160))}</span></li>`).join('')}</ul></div>`;
+  if (p.sessoes.length) html += `<div class="card"><div class="sec"><h2>Sessões</h2></div><ul class="sessions">${p.sessoes.map(s => `<li><i style="background:${ST[s.estado] || 'var(--idle)'}"></i><span>${esc(s.nome)}${s.projeto && s.projeto !== p.sala ? ' · ' + esc(s.projeto) : ''}</span><em>${brlFromUsd(s.custoUsdHoje || 0)}</em></li>`).join('')}</ul></div>`;
+  if (p.tarefas.length) html += `<div class="card"><div class="sec"><h2>Tarefas entre agentes</h2></div><ul class="sessions">${p.tarefas.map(t => `<li title="${esc(t.tarefa)}"><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${t.para === 'claude' ? 'Claude' : 'Codex'} (${t.modo}) · ${esc(short(t.tarefa, 50))}</span><em>${t.status}</em></li>`).join('')}</ul></div>`;
+  return html;
+}
+async function realAbrirProj(para){
+  try {
+    const r = await fetch('/api/sessao', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify({projeto: PROJ_SALA, para})});
+    const j = await r.json(); if (!r.ok) throw new Error(j.erro || r.status);
+    toast(`Terminal do ${para === 'claude' ? 'Claude' : 'Codex'} aberto em ${PROJ_SALA}`);
+  } catch (err) { toast('Não deu: ' + err.message); }
+}
+
+/* =========================== editor de salas =========================== */
+const VAGAS = [[0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4], [0, 1, 2, 3]];
+const TIPOS = {project: 'Projeto', control: 'Diretoria', reception: 'Recepção', infra: 'TI', studio: 'Estúdio'};
+let EDIT = null;
+async function abrirEditor(pastaNova){
+  if (NUVEM){ toast('O editor de salas fica no app do PC'); return; }
+  try { EDIT = await (await fetch('/api/config/salas')).json(); } catch { toast('Agente fora do ar'); return; }
+  if (pastaNova){
+    const ocup = new Set(EDIT.rooms.map(r => r.floor + ':' + r.slot));
+    let f = 2, s = null; for (const fl of [2, 1, 3, 0]){ s = VAGAS[fl].find(v => !ocup.has(fl + ':' + v)); if (s != null){ f = fl; break; } }
+    EDIT.rooms.push({room: pastaNova, floor: f, slot: s ?? 0, cliente: '', stack: '', match: '/' + pastaNova.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(/|$)', _nova: true});
+  }
+  let dlg = $('editorSalas');
+  if (!dlg){ dlg = document.createElement('dialog'); dlg.id = 'editorSalas'; dlg.className = 'editor'; document.body.appendChild(dlg);
+    dlg.addEventListener('click', e => { const b = e.target.closest('[data-ed]'); if (!b) return; const i = +b.dataset.i;
+      lerEditor();
+      if (b.dataset.ed === 'add') EDIT.rooms.push({room: 'Nova sala', floor: 2, slot: 0, cliente: '', stack: '', match: ''});
+      if (b.dataset.ed === 'del') EDIT.rooms.splice(i, 1);
+      if (b.dataset.ed === 'fechar'){ dlg.close(); return; }
+      if (b.dataset.ed === 'salvar'){ salvarEditor(); return; }
+      desenharEditor(); }); }
+  desenharEditor(); dlg.showModal();
+}
+function desenharEditor(){
+  const opt = (v, cur, label) => `<option value="${v}"${String(v) === String(cur) ? ' selected' : ''}>${esc(label)}</option>`;
+  $('editorSalas').innerHTML = `<div class="ed-head"><b>Salas do prédio</b><small class="note">Cada sala é um projeto. "Pasta contém" decide quais sessões entram nela (ex.: <code>/downloads/fernando(/|$)</code>).</small></div>
+    <div class="ed-scroll"><table><thead><tr><th>Sala (projeto)</th><th>Cliente</th><th>Descrição</th><th>Andar</th><th>Vaga</th><th>Tipo</th><th>Pasta contém</th><th></th></tr></thead><tbody>
+    ${EDIT.rooms.map((r, i) => `<tr data-row="${i}"${r._nova ? ' class="nova"' : ''}><td><input data-k="room" value="${esc(r.room)}"></td><td><input data-k="cliente" value="${esc(r.cliente || '')}"></td><td><input data-k="stack" value="${esc(r.stack || '')}"></td>
+      <td><select data-k="floor">${FLOORS.map(F => opt(F.i, r.floor, F.short + ' ' + F.name)).join('')}</select></td>
+      <td><select data-k="slot">${VAGAS[r.floor].map(v => opt(v, r.slot, String(v + 1))).join('')}</select></td>
+      <td><select data-k="type">${Object.entries(TIPOS).map(([k, l]) => opt(k, r.type || 'project', l)).join('')}</select></td>
+      <td><input data-k="match" value="${esc(r.match || '')}" placeholder="${r.fallback ? '(recebe as pastas sem sala)' : ''}"${r.fallback ? ' disabled' : ''}></td>
+      <td><button class="btn" type="button" data-ed="del" data-i="${i}" aria-label="Remover ${esc(r.room)}">✕</button></td></tr>`).join('')}
+    </tbody></table></div>
+    <div class="ed-foot"><button class="btn" type="button" data-ed="add">+ Nova sala</button><span style="flex:1"></span><button class="btn" type="button" data-ed="fechar">Cancelar</button><button class="btn solid" type="button" data-ed="salvar">Salvar e recarregar</button></div>`;
+  $('editorSalas').querySelectorAll('select[data-k="floor"]').forEach(sel => sel.addEventListener('change', () => { lerEditor(); desenharEditor(); }));
+}
+function lerEditor(){
+  $('editorSalas').querySelectorAll('tr[data-row]').forEach(tr => {
+    const r = EDIT.rooms[+tr.dataset.row]; if (!r) return;
+    tr.querySelectorAll('[data-k]').forEach(el => { const k = el.dataset.k; let v = el.value; if (k === 'floor' || k === 'slot') v = +v; if (k === 'match' && el.disabled) return; r[k] = v; });
+    if (!VAGAS[r.floor].includes(r.slot)) r.slot = VAGAS[r.floor][0];
+    if (r.type === 'project') delete r.type;
+    for (const k of ['cliente', 'stack', 'match']) if (r[k] === '') delete r[k];
+  });
+}
+async function salvarEditor(){
+  lerEditor();
+  const rooms = EDIT.rooms.map(({_nova, ...r}) => r);
+  try {
+    const r = await fetch('/api/config/salas', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify({rooms, floors: EDIT.floors})});
+    const j = await r.json(); if (!r.ok) throw new Error(j.erro || r.status);
+    toast('Salas salvas. Recarregando o prédio…'); setTimeout(() => location.reload(), 700);
+  } catch (err) { toast('Não salvei: ' + err.message); }
 }

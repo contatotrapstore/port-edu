@@ -235,3 +235,20 @@ body.tv .mini-hud b{font-size:26px}
   .bubble{display:none}
 }
 @media (prefers-reduced-motion:reduce){ .side,.toast{transition:none} }
+
+/* contagem de agentes trabalhando no botão do andar */
+.fbtn .fcount{margin-left:auto;font-size:11px;font-weight:700;min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:inline-grid;place-items:center;background:var(--ok);color:#0B1210}
+.fbtn .fcount + i{margin-left:6px}
+/* editor de salas */
+dialog.editor{width:min(1100px,calc(100% - 24px));max-height:calc(100% - 40px);padding:0;border:1px solid var(--line);border-radius:16px;background:var(--panel, #121C18);color:var(--fg);display:none;flex-direction:column}
+dialog.editor[open]{display:flex}
+dialog.editor::backdrop{background:rgba(0,0,0,.55)}
+.editor .ed-head{padding:16px 18px 8px;display:flex;flex-direction:column;gap:4px}
+.editor .ed-scroll{overflow:auto;padding:0 18px}
+.editor table{width:100%;border-collapse:collapse;font-size:13px}
+.editor th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 4px;position:sticky;top:0;background:var(--panel, #121C18)}
+.editor td{padding:3px 4px}
+.editor input,.editor select{width:100%;min-width:70px;font:inherit;color:var(--fg);background:#0E1714;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.editor input:focus-visible,.editor select:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+.editor tr.nova td{background:rgba(245,185,53,.08)}
+.editor .ed-foot{display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--line)}

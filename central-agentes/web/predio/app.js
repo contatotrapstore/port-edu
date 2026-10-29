@@ -30,6 +30,8 @@ function frame(){
     (R.desks || []).forEach((d, i) => { if (!d) return; const a = R.agents.find(x => (R.type === 'reception' ? 1 : x.desk) === i); const st = !a ? 'empty' : (a.state !== 'idle' && a.f === R.f && !a.path.length && !a.copa && !a.spot && !a.ride) ? a.state : 'idle'; setDesk(d, st, R); });
     const w = R.agents.length ? worstState(R) : 'idle', pulse = RM ? .5 : .5 + .5*Math.sin(T*3.2);
     if (w === 'error' || w === 'waiting'){ R.tint.material.color.set(ST[w]); R.tint.material.opacity = .03 + .05*pulse; } else R.tint.material.opacity = 0;
+    // sala acesa com gente trabalhando, meia-luz quando vazia
+    if (REAL && R.light){ const alvo = R.agents.some(a => a.state !== 'idle') ? 2.3 : .55; R.light.intensity += (alvo - R.light.intensity) * Math.min(1, dt*2); }
     if (R.onAir){ const on = R.agents.some(a => a.kind === 'eleven' && a.state === 'working' && !a.path.length && !a.copa && !a.spot); R.onAir.color.set(on ? '#FF5A4E' : '#3A2422'); }
   }
   if (bellG){ if (bellRing.t > 0){ bellRing.t -= dt; bellG.rotation.z = Math.sin(T*18) * .35 * Math.min(1, bellRing.t); } else bellG.rotation.z = 0; }

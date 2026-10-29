@@ -37,7 +37,8 @@ function check() {
     if (!plan || !RELIABLE.has(plan.source)) continue;
     for (const m of plan.meters || []) {
       if (!m.resetAt || m.resetAt <= now) continue;
-      const key = `${k}|${m.label}|${m.resetAt}`, p = projectMeter(m, now);
+      // reinício arredondado para a hora: o Codenotch devolve o mesmo horário com milissegundos diferentes a cada leitura
+      const key = `${k}|${m.label}|${Math.round(m.resetAt / 3600e3)}`, p = projectMeter(m, now);
       if (m.usedPct >= 90 && !sent.has(key + '|90')) {
         mark(key + '|90');
         notify(`🚨 <b>${nome} · ${esc(m.label)}</b> em ${Math.round(m.usedPct)}%. Reinicia ${when(m.resetAt)}.`);
@@ -48,6 +49,22 @@ function check() {
     }
   }
   const usdBrl = config.usdBrl || 5.4, today = dayKey();
+  // Deploy de produção com erro ou bloqueado na Vercel (uma vez por deploy)
+  for (const d of s.deploys || []) {
+    const est = d.producao?.estado || d.estado;
+    if (['ERROR', 'BLOCKED'].includes(est) && !sent.has('deploy|' + (d.producao?.id || d.projeto + d.quando))) {
+      mark('deploy|' + (d.producao?.id || d.projeto + d.quando));
+      notify(`🚀 <b>${esc(d.projeto)}</b> (${esc(d.sala)}): deploy de produção ${est === 'ERROR' ? 'com erro' : 'bloqueado'} na Vercel.`);
+    }
+  }
+  // Pasta nova trabalhando sem sala própria
+  const fb = (config.rooms || []).find(r => r.fallback);
+  for (const a of s.agents) {
+    if (!fb || a.room !== fb.room || !a.project || sent.has('pasta|' + a.project)) continue;
+    mark('pasta|' + a.project);
+    notify(`📁 Sessão nova na pasta <b>${esc(a.project)}</b>, que não tem sala. Crie uma no prédio (Operação → Editar salas) para separar custo e tarefas.`);
+  }
+  resumoDiario(s);
   for (const m of s.content?.marcas || []) {
     const k = `ig|${m.marca}|${today}`;
     if (m.erroPublicador && !sent.has(k + '|pub')) { mark(k + '|pub'); notify(`📸 <b>@${esc(m.instagram || m.marca)}</b>: o publicador do Content Studio registrou erro. Confira em /admin.`); }
@@ -68,6 +85,21 @@ function check() {
       notify(`💸 <b>${esc(r.room)}</b> passou do orçamento do dia: ${brl(spent)} de ${brl(r.budgetBrl)} (equivalente em API). Confira se algum agente está em loop.`);
     }
   }
+}
+
+// Resumo do dia no Telegram (config.json → resumoDiario, padrão 18:00)
+function resumoDiario(s) {
+  const [hh, mm] = String(config.resumoDiario || '18:00').split(':').map(Number), now = new Date(), key = 'resumo|' + dayKey();
+  if (sent.has(key) || now.getHours() * 60 + now.getMinutes() < hh * 60 + mm) return;
+  mark(key);
+  const usdBrl = config.usdBrl || 5.4, rooms = [...s.rooms].sort((a, b) => b.costUsdToday - a.costUsdToday);
+  const total = rooms.reduce((t, r) => t + r.costUsdToday, 0), tarefas = rooms.reduce((t, r) => t + r.tasksToday, 0);
+  const posts = (s.content?.marcas || []).map(m => `@${esc(m.instagram || m.marca)}: ${m.publicadosHoje} hoje, ${m.agendados} agendados, ${m.emRevisao} p/ aprovar`);
+  const problemas = [...(s.uptime || []).filter(u => !u.ok).map(u => '🌐 ' + esc(u.site) + ' fora do ar'), ...(s.deploys || []).filter(d => ['ERROR', 'BLOCKED'].includes(d.producao?.estado || d.estado)).map(d => '🚀 ' + esc(d.projeto) + ': deploy ' + (d.producao?.estado || d.estado))];
+  const meters = ['claude', 'gpt'].flatMap(k => (s.plans[k]?.meters || []).map(m => `${k === 'claude' ? 'Claude' : 'Codex'} · ${esc(m.label)}: ${Math.round(m.usedPct)}%`));
+  notify([`📊 <b>Resumo do dia</b> · ${now.toLocaleDateString('pt-BR')}`, `${brl(total * usdBrl)} em API · ${tarefas} tarefas`, '',
+    ...rooms.filter(r => r.costUsdToday > 0.01).slice(0, 6).map(r => `• ${esc(r.room)}: ${brl(r.costUsdToday * usdBrl)} · ${r.tasksToday} tarefas`),
+    ...(posts.length ? ['', ...posts] : []), ...(meters.length ? ['', ...meters] : []), ...(problemas.length ? ['', ...problemas] : [])].join('\n'));
 }
 
 export function startAlertas() {

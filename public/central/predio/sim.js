@@ -262,6 +262,13 @@ function computeSuggestions(now){
   if (el.short) out.push({sev:'alerta', short:'ElevenLabs acaba', title:`ElevenLabs Starter acaba em ~${Math.max(1,Math.round(el.runout))} dias`, body:`Restam ${num(PLAN.eleven.credit.left)} créditos e renova em ${PLAN.eleven.credit.daysLeft} dias. Deixe as URAs para depois da renovação ou suba de plano só neste mês.`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
   const gw = PLAN.gpt.meters.find(m => /semanal/i.test(m.label)) || PLAN.gpt.meters[1], gi = gw ? meterInfo(gw) : {};
   if (gw && gw.used < 35 && gi.elapsed > .3) out.push({sev:'economia', short:'Codex sobrando', title:`ChatGPT 5x em ${Math.round(gw.used)}% na semana`, body:`São ${brl(PLAN.gpt.brl)} por mês com bastante Codex sobrando. Coloque o Codex para revisar os PRs no QA em paralelo.`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
+  if (REAL){
+    const ti = ROOMS.find(R => R.type === 'infra');
+    for (const d of window.EDH_DEPLOYS || []){ const e = (d.producao && d.producao.estado) || d.estado;
+      if (['ERROR', 'BLOCKED'].includes(e)) out.push({sev:'alerta', short:'Deploy ' + d.projeto, title:`${d.projeto}: deploy de produção ${e === 'ERROR' ? 'com erro' : 'bloqueado'}`, body:`Na Vercel, o último deploy de produção de ${d.projeto} (${d.sala}) está ${e === 'ERROR' ? 'com erro' : 'bloqueado'}. O site pode estar desatualizado.`, acts: ti ? [{label:'Abrir TI', act:'room', arg:ti.i}] : []}); }
+    const fb = ROOMS.find(R => R.fallback);
+    if (fb && !NUVEM) for (const proj of [...new Set(fb.agents.map(a => a.proj).filter(p => p && p !== fb.name))]) out.push({sev:'oportunidade', short:'Pasta ' + proj, title:`A pasta "${proj}" está sem sala`, body:'As sessões dessa pasta caem em Projetos avulsos. Crie uma sala para separar custo, tarefas e o histórico do projeto.', acts:[{label:'Criar sala', act:'novaSala', arg:proj, primary:true}]});
+  }
   if (REAL && window.EDH_CONTENT){
     const studio = ROOMS.find(R => R.type === 'studio');
     for (const m of window.EDH_CONTENT.marcas || []){

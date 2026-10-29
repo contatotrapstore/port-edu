@@ -82,7 +82,7 @@ const SOCIAL_PROMPTS = {edevshub:['Cria o carrossel da semana sobre automação 
 
 // Sala real a partir do config.json: tipo do prédio + "kind" usado nas telas e animações
 const REAL_KIND = {control: 'fin', reception: 'recep', infra: 'ops'};
-const realRoomDef = r => ({f: r.floor, slot: r.slot, type: r.type || 'project', name: r.room, stack: r.stack || '', kind: r.type === 'studio' ? undefined : (REAL_KIND[r.type] || 'code'), files: [], cmds: [], prompts: [], tasks: [], budget: r.budgetBrl || 0, fallback: !!r.fallback});
+const realRoomDef = r => ({f: r.floor, slot: r.slot, type: r.type || 'project', name: r.room, stack: r.stack || '', cliente: r.cliente || null, kind: r.type === 'studio' ? undefined : (REAL_KIND[r.type] || 'code'), files: [], cmds: [], prompts: [], tasks: [], budget: r.budgetBrl || 0, fallback: !!r.fallback});
 const ROOM_DEFS = LAYOUT ? LAYOUT.rooms.map(realRoomDef) : [
   {f:0, slot:0, type:'reception', name:'Recepção', stack:'Atendimento e agenda', kind:'recep'},
   {f:0, slot:1, type:'meeting', name:'Sala de reunião', stack:'Calls com clientes'},

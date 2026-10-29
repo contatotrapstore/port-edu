@@ -37,6 +37,13 @@ npm run autostart:off    # remove o atalho
 ```
 Para parar o agente que está rodando: Gerenciador de Tarefas → node.exe, ou feche pela porta 4321.
 
+## Agentes conversando (MCP "central")
+`npm run mcp:install` registra o MCP no Claude Code (todas as pastas) e no Codex. Em qualquer sessão dá para pedir, por exemplo:
+- "leia o quadro da Central" / "deixe no quadro o que você terminou"
+- "delegue ao Codex uma revisão deste módulo (modo ler)"
+- "rode o fluxo planejar-executar-revisar para: …"
+O trabalho delegado roda em segundo plano na mesma pasta e aparece no prédio. Pelo painel: selecione um agente (ou clique numa sala) e use Delegar / Rodar fluxo / Abrir aqui. Limites em `config.json → orquestra`. Teste: `node scripts/teste-mcp.mjs`.
+
 ## Celular (Fase 2)
 - **Telegram:** crie o bot no @BotFather, coloque `TELEGRAM_BOT_TOKEN` no `agent/.env`, rode `npm run telegram:parear` e mande /start. Comandos: /status, /fora (modo ausente: pedidos de permissão chegam com botões) e /voltei.
 - **Site:** rode o SQL de `supabase/central-agentes.sql`, preencha as chaves do Supabase no `.env`, rode `npm run site:sync` e publique o site. Painel em https://www.edevshub.com/central (login por link no e-mail).

@@ -79,6 +79,17 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [ ] Revix no Content Studio: quando a marca for cadastrada lá, aparece sozinha no Estúdio
 - [ ] Novo projeto do Fernando: criar a sala em `config.json` quando começar (até lá cai em Projetos avulsos com o nome da pasta)
 
+## Fase 2.7 — agentes conversando e painel completo (29/10/2026)
+- [x] MCP `central` no Claude Code e no Codex (`npm run mcp:install`): quadro de recados por projeto, delegar tarefa (Claude `-p` / `codex exec`, modo ler ou editar), fluxos (planejar → executar → revisar; investigar → corrigir → conferir; segunda opinião) e "quem está trabalhando". Testado com Claude e Codex de verdade
+- [x] Painel: delegar, rodar fluxo e abrir sessão (Claude/Codex num terminal novo na pasta) pelo agente ou pelo cartão do projeto; quadro e tarefas na aba Operação; recados viram balões
+- [x] Aba Projeto (clique na sala): custo hoje/7 dias/mês, git (branch, último commit, arquivos sem commit), deploys da Vercel, últimos pedidos, sessões, tarefas e relatório do mês do cliente (`/relatorio?cliente=…`, imprime/salva em PDF)
+- [x] Editor de salas no painel (Operação → Editar salas); grava `config.json` sem reiniciar; sugestão "pasta sem sala → Criar sala"
+- [x] Vercel: último deploy de cada projeto (todas as contas do login da CLI), parede da TI, alerta de deploy com erro/bloqueado
+- [x] Cor por cliente nas placas da porta; botão do andar mostra quantos estão trabalhando; sala acende com gente trabalhando
+- [x] Resumo diário no Telegram (`resumoDiario`, padrão 18:00); regra de contexto longo da OpenAI (>272 mil tokens: entrada 2x, saída 1,5x)
+- [x] Atalho na Área de Trabalho abre como app (Chrome `--app`); o /central também instala como app no celular
+- [ ] Bot do Telegram (Eduardo cria no @BotFather)
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)

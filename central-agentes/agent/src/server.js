@@ -8,6 +8,8 @@ import { store } from './store.js';
 import { readHistory, readCosts, dayKey } from './history.js';
 import { spawn } from 'node:child_process';
 import { postar, lerQuadro, delegar, tarefa, listaTarefas, modelosFluxo, iniciarFluxo, pastaDoProjeto } from './orquestra.js';
+import { infoProjeto, relatorioHTML } from './projetos.js';
+import { aplicarSalas } from './config.js';
 
 const TOKEN = crypto.randomBytes(16).toString('hex');
 // Token fixo do MCP "central" (as sessões do Claude/Codex usam para falar com o agente). Fica em data/, fora do git.
@@ -112,6 +114,26 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, id ? (tarefa(id) || { erro: 'não encontrada' }) : listaTarefas());
     }
     if (p === '/api/fluxos' && req.method === 'GET') return send(res, 200, modelosFluxo());
+    // Cartão do projeto (clique na sala) e relatório mensal por cliente (página para imprimir/salvar em PDF)
+    if (p === '/api/projeto' && req.method === 'GET') return send(res, 200, infoProjeto(url.searchParams.get('sala') || ''));
+    if (p === '/relatorio' && req.method === 'GET') return send(res, 200, relatorioHTML(url.searchParams.get('cliente') || '', url.searchParams.get('mes') || ''), 'text/html; charset=utf-8');
+    // Editor de salas: lê e grava config.json → rooms/floors, sem reiniciar o agente
+    if (p === '/api/config/salas' && req.method === 'GET') return send(res, 200, { floors: config.floors || [], rooms: config.rooms.map(({ re, noSlot, ...r }) => r) });
+    if (p === '/api/config/salas' && req.method === 'POST') {
+      if (!authed(req)) return send(res, 403, { erro: 'token inválido' });
+      const b = await readBody(req);
+      if (!Array.isArray(b.rooms) || !b.rooms.length) return send(res, 400, { erro: 'lista de salas vazia' });
+      const vagas = new Set();
+      for (const r of b.rooms) {
+        if (!r.room || !String(r.room).trim()) return send(res, 400, { erro: 'sala sem nome' });
+        const k = r.floor + ':' + r.slot; if (Number.isInteger(r.slot) && vagas.has(k)) return send(res, 400, { erro: `duas salas na mesma vaga (andar ${r.floor}, vaga ${r.slot})` }); vagas.add(k);
+      }
+      if (!b.rooms.some(r => r.type === 'control' && r.floor === 0 && r.slot === 3)) return send(res, 400, { erro: 'a Diretoria (tipo control) precisa ficar no térreo, vaga 3' });
+      try { aplicarSalas(b.rooms, b.floors); } catch (err) { return send(res, 400, { erro: 'expressão de pasta inválida: ' + err.message }); }
+      for (const a of store.agents.values()) if (a.cwd) Object.assign(a, roomFor(a.cwd));
+      store.changed();
+      return send(res, 200, { ok: true });
+    }
     if (req.method === 'POST' && ['/api/quadro', '/api/tarefas', '/api/fluxos', '/api/sessao'].includes(p)) {
       if (!authed(req)) return send(res, 403, { erro: 'token inválido' });
       const b = await readBody(req);

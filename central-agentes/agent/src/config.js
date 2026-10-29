@@ -24,9 +24,24 @@ function loadConfig() {
   const file = fs.existsSync(own) ? own : example;
   const cfg = JSON.parse(fs.readFileSync(file, 'utf8'));
   cfg._file = file;
-  cfg.rooms = (cfg.rooms || []).map(r => ({ ...r, re: r.match ? new RegExp(r.match, 'i') : null }));
+  cfg.rooms = (cfg.rooms || []).map(compileRoom);
   cfg.layout = buildLayout(cfg);
   return cfg;
+}
+const compileRoom = r => ({ ...r, re: r.match ? new RegExp(r.match, 'i') : null });
+
+/** Troca salas e andares em uso (editor de salas) e grava no config.json, preservando o resto do arquivo. */
+export function aplicarSalas(rooms, floors) {
+  const salas = rooms.map(r => { const o = { ...r }; delete o.re; delete o.noSlot; return o; });
+  for (const r of salas) if (r.match) new RegExp(r.match, 'i');   // erro aqui = expressão inválida, nada é gravado
+  const file = path.join(AGENT_DIR, 'config.json');
+  const raw = JSON.parse(fs.readFileSync(fs.existsSync(file) ? file : path.join(AGENT_DIR, 'config.example.json'), 'utf8'));
+  raw.rooms = salas; if (floors) raw.floors = floors;
+  if (fs.existsSync(file)) fs.copyFileSync(file, file + '.bak');
+  fs.writeFileSync(file, JSON.stringify(raw, null, 2) + '\n');
+  config.rooms = salas.map(compileRoom); if (floors) config.floors = floors;
+  config.layout = buildLayout(config);
+  return config.layout;
 }
 
 // Vagas de sala por andar no prédio 3D (o resto do andar é área de convivência)
@@ -39,7 +54,7 @@ function buildLayout(cfg) {
     let slot = Number.isInteger(r.slot) && SLOTS[r.floor]?.includes(r.slot) ? r.slot : SLOTS[r.floor]?.find(s => !used[r.floor].has(s));
     if (slot == null) { console.log(`[config] sem vaga no andar ${r.floor} para a sala "${r.room}"; as sessões dela vão para a sala de projetos avulsos`); r.noSlot = true; continue; }
     used[r.floor].add(slot);
-    rooms.push({ room: r.room, floor: r.floor, slot, type: r.type || 'project', stack: r.stack || '', budgetBrl: r.budgetBrl || 0, fallback: !!r.fallback });
+    rooms.push({ room: r.room, floor: r.floor, slot, type: r.type || 'project', stack: r.stack || '', cliente: r.cliente || null, budgetBrl: r.budgetBrl || 0, fallback: !!r.fallback });
   }
   if (!rooms.some(r => r.floor === 0 && r.slot === 3 && r.type === 'control')) console.log('[config] a Diretoria (type "control") precisa ficar no térreo, vaga 3: é a mesa do Dudu');
   return { floors: cfg.floors || [], rooms };

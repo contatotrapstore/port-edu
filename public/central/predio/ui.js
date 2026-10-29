@@ -31,7 +31,7 @@ function setView(floor, building){
   sun.target.position.set(WW/2, fy, 12); sun.position.set(WW/2 - 20, fy + 34, 36);
   const [p, t] = presetFor(null); flyTo(p, t); updateTitles(); renderFloors();
 }
-function goFocus(f){ focus = f; follow = false; syncFollow(); const [p, t] = presetFor(f); flyTo(p, t); updateTitles(); }
+function goFocus(f){ focus = f; follow = false; syncFollow(); const [p, t] = presetFor(f); flyTo(p, t); updateTitles(); if (REAL && typeof f === 'number' && ROOMS[f]) abrirProjeto(ROOMS[f].name); }
 function goRoom(i){ const R = ROOMS[i]; if (view.building || view.floor !== R.f) setView(R.f, false); goFocus(i); }
 function goAgent(a){ if (view.building || view.floor !== a.f) setView(a.f, false); selected = a; follow = true; syncFollow(); }
 controls.addEventListener('start', () => { touched = true; fly = null; if (follow){ follow = false; syncFollow(); } });
@@ -44,9 +44,9 @@ new ResizeObserver(resize).observe(stage);
 function zoomBy(f){ const off = camera.position.clone().sub(controls.target); off.setLength(clamp(off.length() / f, controls.minDistance, controls.maxDistance)); flyTo(controls.target.clone().add(off), controls.target.clone()); }
 function rotateBy(dir){ rotQueue += dir * Math.PI/2; fly = null; }
 function renderFloors(){
-  const counts = FLOORS.map(F => { const ag = AGENTS.filter(a => a.f === F.i); return {w: ag.filter(a => a.state === 'waiting').length, e: ag.filter(a => a.state === 'error').length, n: ag.length}; });
+  const counts = FLOORS.map(F => { const ag = AGENTS.filter(a => a.R.f === F.i); return {w: ag.filter(a => a.state === 'waiting').length, e: ag.filter(a => a.state === 'error').length, n: ag.length, t: ag.filter(a => a.state === 'working').length}; });
   const html = [...FLOORS].reverse().map(F => { const c = counts[F.i], col = c.e ? 'var(--err)' : c.w ? 'var(--wait)' : 'var(--ok)';
-    return `<button class="fbtn ${!view.building && view.floor === F.i ? 'on' : ''}" type="button" data-act="floor" data-arg="${F.i}" title="${esc(F.desc)}"><small>${F.short}</small><span>${esc(F.name)}</span><i style="background:${col}"></i></button>`; }).join('')
+    return `<button class="fbtn ${!view.building && view.floor === F.i ? 'on' : ''}" type="button" data-act="floor" data-arg="${F.i}" title="${esc(F.desc)}"><small>${F.short}</small><span>${esc(F.name)}</span>${c.t ? `<b class="fcount" title="${c.t} trabalhando">${c.t}</b>` : ''}<i style="background:${col}"></i></button>`; }).join('')
     + `<button class="fbtn ${view.building ? 'on' : ''}" type="button" data-act="building" title="Ver o prédio inteiro (B)"><small>▦</small><span>Prédio</span></button>`;
   setHTML($('floors'), html);
 }
@@ -179,8 +179,8 @@ function renderAgentTab(now){
   if (agentShell !== a){
     agentShell = a; lastHTML.agDyn = lastHTML.agLog = null;
     pane.innerHTML = `<div id="agDyn"></div>
-      <div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
-        <div class="row"><small>${a.real ? 'Não dá para escrever numa sessão aberta: o texto vai para a área de transferência. Cole no terminal de ' + esc(a.proj || a.R.name) + '.' : 'O agente sai da convivência e volta pra mesa.'}</small><button class="btn solid" type="button" data-act="sendTask">${a.real ? 'Copiar' : 'Enviar'}</button></div></div>
+      ${a.real && !NUVEM ? workCard(a) : `<div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
+        <div class="row"><small>${a.real ? 'Não dá para escrever numa sessão aberta: o texto vai para a área de transferência. Cole no terminal de ' + esc(a.proj || a.R.name) + '.' : 'O agente sai da convivência e volta pra mesa.'}</small><button class="btn solid" type="button" data-act="sendTask">${a.real ? 'Copiar' : 'Enviar'}</button></div></div>`}
       <div class="card"><div class="sec"><h2>Chat ao vivo</h2><small id="agCount"></small></div><ul class="log" id="agLog"></ul></div>`;
     lastHTML.pane = null;
   }
@@ -200,14 +200,14 @@ function renderAgentTab(now){
 }
 const worstState = R => R.agents.some(x => x.state==='error') ? 'error' : R.agents.some(x => x.state==='waiting') ? 'waiting' : R.agents.some(x => x.state==='working') ? 'working' : 'idle';
 function renderOps(){
-  let html = `<div class="card"><div class="sec"><h2>Salas por andar</h2><small>consumo · orçamento</small></div><div class="projects">`;
+  let html = `<div class="card"><div class="sec"><h2>Salas por andar</h2><small>consumo · orçamento</small></div>${REAL && !NUVEM ? '<button class="btn" type="button" data-act="editarSalas" style="margin:4px 0 8px">Editar salas</button>' : ''}<div class="projects">`;
   for (const F of [...FLOORS].reverse()){
     const rooms = ROOMS.filter(R => R.f === F.i && (R.agents.length || R.base > 0));
     html += `<div class="fl-h">${F.short} · ${esc(F.name)}</div>`;
     for (const R of rooms){ const w = worstState(R), c = roomCost(R)*CAMBIO, pct = R.budget ? c / R.budget : 0;
       html += `<button class="prow ${focus===R.i?'on':''}" type="button" data-act="room" data-arg="${R.i}"><span class="dot" style="background:${ST[w]};box-shadow:0 0 8px ${ST[w]}"></span><span style="min-width:0"><span class="pn">${esc(R.name)}</span><br><span class="ps">${esc(R.stack)} · ${R.agents.length} agente${R.agents.length !== 1 ? 's' : ''} · ${R.done} concluídas</span></span><span class="pc">${brl(c, 2)}${R.budget ? `<small>de ${brl(R.budget)}/dia</small>` : ''}</span>${R.budget ? `<span class="bar"><i class="${pct > 1 ? 'over' : ''}" style="width:${Math.min(100, pct*100).toFixed(1)}%"></i></span>` : ''}</button>`; }
   }
-  html += `</div></div>` + costReport();
+  html += `</div></div>` + orquestraCard() + costReport();
   const un = ACHIEVEMENTS.filter(A => COMPANY.unlocked.includes(A.id));
   html += `<div class="card"><div class="sec"><h2>Conquistas</h2><small>nível ${companyLevel()} · ${num(COMPANY.xp)} XP</small></div>${un.length ? `<div class="trophies">${un.map(A => `<span class="trophy"><b>★</b>${esc(A.label)}</span>`).join('')}</div>` : '<p class="note">Nenhuma ainda hoje. Elas aparecem na estante de troféus da Diretoria.</p>'}
     <p class="note" style="margin-top:8px">Top agentes: ${[...AGENTS].sort((x,y) => y.xp - x.xp).slice(0,3).map(a => `${esc(a.name)} (${esc(a.R.name)}) nível ${levelOf(a.xp)}`).join(' · ')}</p></div>`;
@@ -218,7 +218,7 @@ function renderPanel(now){
   SUGG = computeSuggestions(now);
   $('sugCount').textContent = SUGG.length;
   if (tab === 'agente') renderAgentTab(now);
-  else { agentShell = null; setHTML($('pane'), tab === 'planos' ? renderPlans() : tab === 'sugestoes' ? renderSuggestions() : renderOps()); }
+  else { agentShell = null; setHTML($('pane'), tab === 'planos' ? renderPlans() : tab === 'sugestoes' ? renderSuggestions() : tab === 'projeto' ? renderProjeto() : renderOps()); }
   $('kSpend').textContent = brlFromUsd(totalCost());
   $('kSubs').innerHTML = `${brl(subsTotal())} <small>/mês</small>`;
   const worstPlan = PLANS.filter(p => p.meters ? p.meters.length : p.credit && p.credit.total).map(p => p.meters ? [p.name, Math.max(...p.meters.map(m => m.used))] : [p.name, (p.credit.total-p.credit.left)/p.credit.total*100]).sort((a,b) => b[1]-a[1])[0];
@@ -243,6 +243,9 @@ document.addEventListener('click', e => {
   if (act === 'agent'){ const a = agentBy(+arg); if (!a) return; a.pop = 1; goAgent(a); setTab('agente'); }
   if (act === 'tab') setTab(arg);
   if (act === 'costp') costPeriod = +arg;
+  if (act === 'abrirProj'){ realAbrirProj(arg); return; }
+  if (act === 'editarSalas'){ abrirEditor(); return; }
+  if (act === 'novaSala'){ abrirEditor(arg); return; }
   if (act === 'away') realToggleAway(arg === '1');
   if (act === 'room') goRoom(+arg);
   if (act === 'copa') goFocus('copa');
@@ -257,6 +260,7 @@ document.addEventListener('click', e => {
   if (act === 'tv') toggleTV();
   if (act === 'light'){ lightMode = lightMode === 'auto' ? 'day' : lightMode === 'day' ? 'night' : 'auto'; $('lightLbl').textContent = {auto:'Hora real', day:'Dia', night:'Noite'}[lightMode]; lastDay = -1; applyLight(); if (view.building) hemi.intensity += .35; }
   if (act === 'wake'){ const a = agentBy(+arg); if (a && a.state === 'idle') assignTask(a, pick(a.prompts)); }
+  if (act === 'delegar' || act === 'fluxo' || act === 'sessao'){ if (selected) realTrabalho(act, arg, selected); return; }
   if (act === 'sendTask'){ if (!selected) return; const ta = $('taskText'), v = ta && ta.value.trim(); if (!v){ toast('Escreva a tarefa antes de enviar'); return; } assignTask(selected, v); ta.value = ''; }
   if (act === 'live') goLive();
   if (act === 'replay') toggleReplay();

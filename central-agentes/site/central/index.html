@@ -101,6 +101,8 @@ pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 "JetBrains Mono",mon
 
     <section class="card" id="cConteudo" hidden><h2>Instagram · Content Studio</h2><div id="conteudo"></div></section>
 
+    <section class="card" id="cDeploys" hidden><h2>Deploys · Vercel</h2><ul id="deploys"></ul></section>
+
     <section class="card"><h2>Planos</h2><div id="plans"></div></section>
 
     <a class="btn solid" href="/central/predio?fonte=nuvem" style="width:100%">Abrir o prédio 3D</a>
@@ -155,6 +157,9 @@ pre{white-space:pre-wrap;word-break:break-all;font:12px/1.5 "JetBrains Mono",mon
     $('cConteudo').hidden = !marcas.length;
     $('conteudo').innerHTML = marcas.map(m => `<div class="row" style="margin:6px 0"><i class="dot" style="background:${m.erroPublicador || (m.saudeInstagram && m.saudeInstagram !== 'verified') ? 'var(--err)' : 'var(--ok)'}"></i><b style="flex:1">@${esc(m.instagram || m.marca)}</b><span class="note" style="margin:0">${m.publicacao ? 'publicando' : 'pausado'}</span></div>
       <p class="note" style="margin:0 0 6px">${m.publicadosHoje} hoje · ${m.agendados} agendados · ${m.emRevisao} esperando aprovação${m.proximos && m.proximos[0] ? ' · próximo ' + esc(m.proximos[0].quando) : ''}</p>`).join('');
+    const deps = state.deploys || [], COR = {READY: 'var(--ok)', ERROR: 'var(--err)', BLOCKED: 'var(--err)', BUILDING: 'var(--wait)'};
+    $('cDeploys').hidden = !deps.length;
+    $('deploys').innerHTML = deps.map(d => `<li class="ag"><i class="dot" style="background:${COR[d.estado] || 'var(--idle)'}"></i><span class="t"><b>${esc(d.projeto)}</b><small>${esc(d.sala)} · ${d.estado === 'READY' ? 'no ar' : esc(String(d.estado).toLowerCase())}</small></span><em>${esc(d.url || '')}</em></li>`).join('');
     const info = state.planInfo || {}, plans = state.plans || {};
     const head = (k, n) => `<div class="row" style="margin:12px 0 2px">${window.brandIcon ? brandIcon(k, 28) : ''}<b style="flex:1">${esc(n)}</b><span class="note" style="margin:0">${esc(info[k]?.tier || '')}</span></div>`;
     const meter = m => { const p = Math.round(m.usedPct), c = p > 85 ? 'var(--err)' : p > 60 ? 'var(--amber)' : 'var(--ok)';

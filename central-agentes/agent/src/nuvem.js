@@ -29,6 +29,7 @@ export function sanitize(s) {
     })),
     plans: s.plans, planInfo: s.planInfo, rooms: s.rooms, projects: s.projects, roomBudgets: s.roomBudgets, layout: s.layout,
     content: s.content,
+    deploys: (s.deploys || []).map(({ sala, projeto, estado, quando, url }) => ({ sala, projeto, estado, quando, url })),
     // tarefas delegadas: só situação (o texto da tarefa e o resultado ficam no PC); quadro não sobe
     tarefas: (s.tarefas || []).map(({ id, para, modo, projeto, status, criadaEm, fim, custoUsd }) => ({ id, para, modo, projeto, status, criadaEm, fim, custoUsd })),   // contagens e temas dos posts públicos do Instagram (sem tokens)
     uptime: (s.uptime || []).map(({ site, ok, status, ms, upPct, at }) => ({ site, ok, status, ms, upPct, at })),
