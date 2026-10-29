@@ -72,6 +72,14 @@ create policy "admins mudam controle" on public.office_control for update to aut
 -- Índice para consultar/limpar pedidos antigos (ex.: delete from public.permission_requests where created_at < now() - interval '7 days')
 create index if not exists permission_requests_created_at on public.permission_requests (created_at);
 
+-- Permissões de tabela (este projeto não dá acesso automático a tabelas novas). O RLS acima decide as linhas;
+-- visitante sem login (anon) não recebe nada.
+revoke all on public.central_admins, public.office_state, public.permission_requests, public.office_control from anon;
+grant select on public.central_admins, public.office_state, public.permission_requests, public.office_control to authenticated;
+grant update (status, decision, decided_at, decided_by) on public.permission_requests to authenticated;
+grant insert, update on public.office_control to authenticated;
+grant all on public.central_admins, public.office_state, public.permission_requests, public.office_control to service_role;
+
 -- 5) Tempo real (o painel atualiza sozinho)
 do $$ begin
   begin alter publication supabase_realtime add table public.office_state; exception when duplicate_object then null; end;
