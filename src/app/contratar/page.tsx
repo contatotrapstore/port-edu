@@ -6,6 +6,10 @@ import { offers, projects, testimonials, workanaStats } from "@/lib/constants";
 import { siteUrl } from "@/lib/site";
 import LandingNav from "@/components/contratar/LandingNav";
 import DirectContact from "@/components/contact/DirectContact";
+import HirePage from "@site/hire";
+import { getHireContent } from "@/components/contact/hire-content";
+import { isNewSiteEnabled } from "@/components/redesign/preview";
+import { portfolioOgImage } from "@/lib/portfolio-metadata";
 
 /**
  * Landing de conversão para tráfego pago (Google Ads e Meta Ads).
@@ -19,12 +23,24 @@ import DirectContact from "@/components/contact/DirectContact";
  * Vitals viram Quality Score, e prova visual com os mockups reais dos cases.
  */
 
-export const metadata: Metadata = {
+const currentMetadata: Metadata = {
   title: "Desenvolvimento de sites, apps e sistemas sob medida",
   description:
     `Contrate o desenvolvimento do seu site, app, plataforma ou sistema. Projetos a partir de R$ 3 mil, com escopo, prazo e valor definidos antes de começar. ${workanaStats.projectsCompleted} entregas, nota ${workanaStats.rating} em ${workanaStats.clientReviews} avaliações.`,
   alternates: { canonical: "/contratar" },
 };
+
+// EDH_NEW_SITE=1 no build: a página no design novo, com versão em inglês.
+const hire = getHireContent("pt");
+export const metadata: Metadata = isNewSiteEnabled()
+  ? {
+      title: hire.title,
+      description: hire.description,
+      alternates: { canonical: "/contratar", languages: { "pt-BR": "/contratar", en: "/en/contratar", "x-default": "/contratar" } },
+      openGraph: { type: "website", locale: "pt_BR", url: "/contratar", title: hire.title, description: hire.description, images: [portfolioOgImage] },
+      twitter: { card: "summary_large_image", title: hire.title, description: hire.description, images: [portfolioOgImage.url] },
+    }
+  : currentMetadata;
 
 /** O comprador pode começar um projeto ou melhorar o que já existe. */
 const necessidades = [
@@ -83,6 +99,7 @@ const naoServe = [
 ];
 
 export default function ContratarPage() {
+  if (isNewSiteEnabled() && HirePage) return <HirePage locale="pt" />;
   // Trecho, nao resumo: cada recorte sai palavra por palavra da avaliacao
   // original, que segue integral na /workana e no perfil da plataforma.
   const recortes: Record<string, string> = {

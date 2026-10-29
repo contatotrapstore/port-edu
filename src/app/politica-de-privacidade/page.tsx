@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { siteConfig } from "@/lib/constants";
 import CaseHeader from "@/components/CaseHeader";
+import { isNewSiteEnabled } from "@/components/redesign/preview";
+import PrivacyPage from "@site/privacy";
+import { portfolioOgImage } from "@/lib/portfolio-metadata";
 
 /**
  * Exigência da LGPD a partir do momento em que o site coleta contato — e
@@ -13,10 +16,30 @@ export const metadata: Metadata = {
   title: "Política de privacidade",
   description:
     "Como os dados enviados por formulários de anúncios, WhatsApp, e-mail ou navegação em edevshub.com são tratados, por quanto tempo e quais são os seus direitos.",
-  alternates: { canonical: "/politica-de-privacidade" },
+  alternates: isNewSiteEnabled()
+    ? {
+        canonical: "/politica-de-privacidade",
+        languages: { "pt-BR": "/politica-de-privacidade", en: "/en/politica-de-privacidade", "x-default": "/politica-de-privacidade" },
+      }
+    : { canonical: "/politica-de-privacidade" },
+  // Só no site novo: a página atual continua herdando o cartão do layout.
+  ...(isNewSiteEnabled()
+    ? {
+        openGraph: {
+          type: "website",
+          locale: "pt_BR",
+          url: "/politica-de-privacidade",
+          title: "Política de privacidade",
+          description:
+            "Como os dados enviados por formulários de anúncios, WhatsApp, e-mail ou navegação em edevshub.com são tratados, por quanto tempo e quais são os seus direitos.",
+          images: [portfolioOgImage],
+        },
+      }
+    : {}),
 };
 
 export default function PoliticaPage() {
+  if (isNewSiteEnabled() && PrivacyPage) return <PrivacyPage locale="pt" />;
   const contato = siteConfig.social.email || "pelo canal indicado na página de contratação";
 
   return (

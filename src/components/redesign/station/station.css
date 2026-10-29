@@ -1,0 +1,723 @@
+/* ==========================================================================
+   EDevsHub — prévia v4: uma estação do estúdio (Passagens Europa).
+   Reaproveita a abertura da v3 (studio.css): pôster, véu, título e nota.
+   ========================================================================== */
+
+.edh-station {
+  /* Recorte horizontal do pôster: acompanha o giro da câmera ao vivo. */
+  --poster-x: 0.5;
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.edh-v4 .edh-hall-poster {
+  object-position: calc(var(--poster-x) * 100%) 50%;
+}
+
+/* Retrato: a estação fica na metade de cima, abaixo do cabeçalho. */
+@media (orientation: portrait) {
+  .edh-v4 .edh-hall-poster {
+    object-position: 50% 40%;
+  }
+}
+
+@keyframes edh-tag-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Abertura parada; os projetos sobem por cima dela. */
+@media (height >= 34rem) {
+  .edh-station {
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* O título termina antes da estação (ver --hall-clear em studio.css). */
+@media (orientation: landscape) {
+  .edh-v4 .edh-studio-title {
+    --hall-clear: 50vw;
+  }
+}
+
+/* Tela larga: o texto sobe para o alto à esquerda, sobre a parede, e a
+   bancada ocupa a diagonal de baixo à direita. */
+@media (orientation: landscape) and (min-width: 48rem) {
+  .edh-v4 .edh-station {
+    align-items: start;
+  }
+
+  .edh-v4 .edh-studio-copy {
+    padding-block: clamp(6.5rem, 3rem + 8vh, 9rem) 3rem;
+  }
+
+  .edh-v4 .edh-studio-scrim {
+    background:
+      linear-gradient(to bottom, rgb(14 23 22 / 0.82) 0%, rgb(14 23 22 / 0.42) 38%, rgb(14 23 22 / 0) 60%),
+      linear-gradient(to right, rgb(14 23 22 / 0.72) 0%, rgb(14 23 22 / 0.24) 40%, rgb(14 23 22 / 0) 56%);
+  }
+}
+
+/* --- Troca de modo: o texto da abertura sai, o case entra ---------------- */
+
+.edh-station .edh-studio-copy > * {
+  transition:
+    opacity 0.45s var(--ease),
+    translate 0.6s var(--ease);
+}
+
+.edh-station[data-mode="focus"] .edh-studio-copy > * {
+  opacity: 0;
+  translate: 0 1rem;
+}
+
+.edh-station .edh-studio-note {
+  transition: opacity 0.4s var(--ease);
+}
+
+.edh-station[data-mode="focus"] .edh-studio-note {
+  opacity: 0;
+}
+
+/* Em foco o véu cobre a coluna do case. */
+.edh-station .edh-studio-scrim {
+  transition: opacity 0.8s var(--ease);
+}
+
+/* Em foco, a coluna do case vira um painel sólido: a tela aproximada nunca
+   passa por trás do texto. */
+.edh-station::after {
+  --case-edge: calc(max(var(--gutter), (100% - var(--frame)) / 2) + min(30rem, 40vw));
+
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgb(14 23 22 / 0.96) 0%,
+    rgb(14 23 22 / 0.94) calc(var(--case-edge) + 1rem),
+    rgb(14 23 22 / 0) calc(var(--case-edge) + 7rem)
+  );
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+
+.edh-station[data-mode="focus"]::after {
+  opacity: 1;
+}
+
+.edh-station[data-mode="focus"] .edh-studio-scrim {
+  opacity: 0.4;
+}
+
+/* Sem a cena ao vivo, o pôster escurece por trás do case. */
+.edh-station[data-live="false"] .edh-hall-poster {
+  transition: filter 0.6s var(--ease);
+}
+
+.edh-station[data-live="false"][data-mode="focus"] .edh-hall-poster {
+  filter: brightness(0.5);
+}
+
+/* --- Rótulo da estação --------------------------------------------------- */
+
+.edh-station-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.65rem;
+  align-items: center;
+  padding: 0.65rem 1rem 0.7rem 0.85rem;
+  border: 1px solid rgb(233 230 223 / 0.2);
+  border-radius: 0.875rem;
+  background: rgb(14 23 22 / 0.66);
+  backdrop-filter: blur(12px);
+  color: var(--ivory);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* Ao vivo, a cena ancora o rótulo no canto do monitor (--tag-x/--tag-y).
+     No pôster 2:1 (altura cheia), o mesmo canto fica a 1,2817 alturas da
+     borda esquerda e a 0,3087 do topo, deslocado pelo recorte. */
+  /* Sem a cena ao vivo: o canto do monitor no pôster 2:1 (altura cheia),
+     a 1,5466 alturas da borda esquerda e a 0,1173 do topo. */
+  translate:
+    min(var(--tag-x, calc(154.66dvh - var(--poster-x) * (200dvh - 100vw))), 100vw - 13.5rem)
+    max(var(--tag-y, 11.73dvh), 5rem);
+  animation: edh-tag-in 0.6s var(--ease) 2.2s both;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    opacity 0.4s var(--ease),
+    visibility 0s linear 0s;
+}
+
+.edh-station-tag:hover,
+.edh-station-tag[data-hover="true"] {
+  border-color: rgb(242 179 61 / 0.7);
+  background: rgb(14 23 22 / 0.82);
+}
+
+.edh-station-tag:active {
+  transform: scale(0.98);
+}
+
+.edh-station-tag-dot {
+  grid-row: span 2;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgb(242 179 61 / 0.18);
+}
+
+.edh-station-tag-name {
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.edh-station-tag-action {
+  color: var(--fog);
+  font-size: 0.875rem;
+  line-height: 1.3;
+}
+
+.edh-station[data-mode="focus"] .edh-station-tag {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s var(--ease),
+    visibility 0s linear 0.3s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .edh-station[data-live="true"] .edh-station-tag:not([data-hover="true"]) .edh-station-tag-dot {
+    animation: edh-tag-pulse 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes edh-tag-pulse {
+  50% {
+    box-shadow: 0 0 0 7px rgb(242 179 61 / 0.06);
+  }
+}
+
+/* --- Pontos exploráveis sobre a tela (só com a cena ao vivo) --------------- */
+
+.edh-station-points {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.edh-station[data-live="false"] .edh-station-points {
+  display: none;
+}
+
+/* O botão só se posiciona (o transform vem da cena a cada quadro); o círculo
+   de dentro é que cresce. Escala no próprio botão multiplicaria a posição. */
+.edh-point {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: -1.375rem 0 0 -1.375rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease);
+}
+
+.edh-point span {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--ink);
+  font: 600 0.875rem/1 var(--font-mono);
+  box-shadow:
+    0 0 0 5px rgb(242 179 61 / 0.22),
+    0 8px 20px rgb(0 0 0 / 0.45);
+  scale: 0.3;
+  transition:
+    scale 0.45s var(--ease),
+    background-color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.edh-point[data-on="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.edh-point[data-on="true"] span {
+  scale: 1;
+}
+
+.edh-point:hover span {
+  box-shadow:
+    0 0 0 8px rgb(242 179 61 / 0.3),
+    0 8px 20px rgb(0 0 0 / 0.45);
+}
+
+.edh-point:active span {
+  scale: 0.94;
+}
+
+.edh-point[data-active="true"] span {
+  background: var(--ivory);
+  scale: 1.12;
+  box-shadow:
+    0 0 0 3px var(--amber),
+    0 0 0 9px rgb(242 179 61 / 0.22),
+    0 8px 20px rgb(0 0 0 / 0.45);
+}
+
+/* Com um ponto aberto, os outros recuam. */
+.edh-station[data-selected] .edh-point[data-on="true"]:not([data-active="true"]) {
+  opacity: 0.6;
+}
+
+/* Antes da primeira escolha, os pontos convidam. */
+@media (prefers-reduced-motion: no-preference) {
+  .edh-station:not([data-selected]) .edh-point[data-on="true"] span {
+    animation: edh-point-call 2.2s ease-in-out 0.6s infinite;
+  }
+}
+
+@keyframes edh-point-call {
+  50% {
+    box-shadow:
+      0 0 0 11px rgb(242 179 61 / 0.08),
+      0 8px 20px rgb(0 0 0 / 0.45);
+  }
+}
+
+/* --- Painel do case ------------------------------------------------------ */
+
+.edh-station-case {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  width: calc(max(var(--gutter), (100% - var(--frame)) / 2) + min(30rem, 40vw));
+  padding: 5.5rem 0 2.5rem max(var(--gutter), (100% - var(--frame)) / 2);
+  opacity: 0;
+  visibility: hidden;
+  translate: -1rem 0;
+  transition:
+    opacity 0.4s var(--ease),
+    translate 0.5s var(--ease),
+    visibility 0s linear 0.4s;
+}
+
+.edh-station[data-mode="focus"] .edh-station-case {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  transition:
+    opacity 0.6s var(--ease),
+    translate 0.8s var(--ease),
+    visibility 0s linear 0s;
+}
+
+/* Ao vivo, o case entra quando a câmera está chegando. */
+.edh-station[data-live="true"][data-mode="focus"] .edh-station-case {
+  transition-delay: 0.85s, 0.85s, 0s;
+}
+
+.edh-station-case-inner {
+  width: 100%;
+  max-height: calc(100dvh - 8rem);
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.edh-station-case-title {
+  margin: 0;
+  font-size: clamp(2rem, 1.4rem + 1.6vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+/* Recebe foco só para leitores de tela ao abrir o case; não é um controle. */
+.edh .edh-station-case-title:focus,
+.edh .edh-station-case-title:focus-visible {
+  outline: none;
+}
+
+.edh-station-case-headline {
+  margin: 0.6rem 0 0;
+  color: var(--fog);
+  font-size: 1.0625rem;
+  line-height: 1.45;
+}
+
+.edh-station-case-label {
+  margin: 1.75rem 0 0;
+  color: var(--ivory);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.edh-station-case-text {
+  margin: 0.4rem 0 0;
+  color: #c4cfca;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* Antes e depois: a mudança que a estação conta. */
+.edh-station-shift {
+  display: grid;
+  gap: 0.35rem;
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.75rem;
+  background: rgb(23 37 33 / 0.6);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.edh-station-shift span:first-child {
+  color: var(--dim);
+}
+
+.edh-station-shift span:last-child {
+  display: flex;
+  gap: 0.55rem;
+  align-items: baseline;
+  color: var(--ivory);
+}
+
+.edh-station-shift span:last-child::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--amber);
+  translate: 0 -0.05rem;
+}
+
+.edh-point-chips {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.edh-point-chip {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid rgb(233 230 223 / 0.26);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ivory);
+  font: 600 0.875rem/1 var(--font-mono);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.edh-point-chip:hover {
+  border-color: var(--amber);
+}
+
+.edh-point-chip:active {
+  translate: 0 1px;
+}
+
+.edh-point-chip[aria-pressed="true"] {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: var(--ink);
+}
+
+.edh-point-detail {
+  min-height: 8.25rem;
+  margin-top: 0.85rem;
+  padding: 1rem 1.1rem 1.05rem;
+  border: 1px solid var(--rule);
+  border-radius: 0.75rem;
+  background: rgb(23 37 33 / 0.6);
+}
+
+.edh-point-title {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  color: var(--ivory);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.edh-point-count {
+  color: var(--dim);
+  font: 400 0.75rem/1.2 var(--font-mono);
+}
+
+.edh-point-body {
+  margin: 0.45rem 0 0;
+  color: #c4cfca;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.edh-point-hint {
+  margin: 0;
+  color: var(--fog);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.edh-point-next {
+  margin-top: 0.7rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--amber);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.edh-station-stack {
+  margin: 1.25rem 0 0;
+  color: var(--dim);
+  font: 400 0.75rem/1.5 var(--font-mono);
+}
+
+.edh-station-case-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.edh-station-back {
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border: 1px solid rgb(233 230 223 / 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ivory);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.edh-station-back:hover {
+  border-color: rgb(233 230 223 / 0.6);
+  background: rgb(233 230 223 / 0.06);
+}
+
+.edh-station-back:active {
+  translate: 0 1px;
+}
+
+/* Captura plana com as marcas: o close-up de quem não tem a cena ao vivo. */
+.edh-station-shot {
+  margin: 1.25rem 0 0;
+}
+
+.edh-station[data-live="true"] .edh-station-shot {
+  display: none;
+}
+
+.edh-station-shot-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(233 230 223 / 0.14),
+    0 20px 40px -20px rgb(0 0 0 / 0.8);
+}
+
+.edh-station-shot-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.edh-station-shot-point {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.75rem 0 0 -0.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--amber);
+  color: var(--ink);
+  font: 600 0.75rem/1 var(--font-mono);
+  box-shadow: 0 0 0 3px rgb(242 179 61 / 0.3);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.edh-station-shot-point[data-active="true"] {
+  background: var(--ink);
+  color: var(--amber);
+  box-shadow:
+    0 0 0 2px var(--amber),
+    0 0 0 6px rgb(242 179 61 / 0.25);
+}
+
+/* Pôster de retrato (largura cheia, recorte em 40%): rótulo compacto no
+   centro do monitor, nunca sob o cabeçalho. */
+@media (orientation: portrait) {
+  .edh-station-tag {
+    grid-template-columns: auto auto auto;
+    column-gap: 0.55rem;
+    padding: 0.5rem 0.85rem 0.55rem 0.75rem;
+    border-radius: 999px;
+    translate: var(--tag-x, 43vw) var(--tag-y, max(calc(40dvh - 41.7vw), 7.25rem));
+    transform: translate(-50%, -100%);
+    white-space: nowrap;
+  }
+
+  .edh-station-tag-dot {
+    grid-row: auto;
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  .edh-station-tag-name {
+    font-size: 0.9375rem;
+  }
+
+  .edh-station-tag-action {
+    font-size: 0.8125rem;
+  }
+
+  .edh-station-tag:active {
+    transform: translate(-50%, -100%) scale(0.98);
+  }
+}
+
+/* Celular: a nota (três linhas) mora abaixo das ações, sem encostar nelas. */
+@media (width < 48rem) {
+  .edh-v4 .edh-studio-copy {
+    position: relative;
+    isolation: isolate;
+    padding-bottom: 6.25rem;
+  }
+
+  /* Véu preso ao próprio texto: começa pouco acima do título (o padding de
+     cima, 7rem, é só folga do cabeçalho), então em celular baixo o título
+     nunca fica sobre a tela clara do monitor, seja qual for a altura. */
+  .edh-v4 .edh-studio-copy::before {
+    content: "";
+    position: absolute;
+    inset: 2.25rem calc(var(--gutter) * -1) 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgb(14 23 22 / 0) 0,
+      rgb(14 23 22 / 0.82) 4.75rem,
+      rgb(14 23 22 / 0.9) 100%
+    );
+  }
+
+  .edh-v4 .edh-studio-note {
+    right: var(--gutter);
+  }
+}
+
+/* --- Mobile e tablet em retrato: o case vira página, abaixo da estação ---- */
+
+@media (width < 48rem) {
+  .edh-station[data-mode="focus"] {
+    position: relative;
+    display: block;
+    min-height: 0;
+  }
+
+  .edh-station[data-mode="focus"] .edh-hall {
+    position: relative;
+    height: 38dvh;
+  }
+
+  /* Faixa de cima do case: o monitor e a mesa, abaixo do cabeçalho. */
+  .edh-station[data-mode="focus"] .edh-hall-poster {
+    object-position: 50% 17%;
+  }
+
+  .edh-station[data-mode="focus"] .edh-studio-copy,
+  .edh-station[data-mode="focus"] .edh-studio-note {
+    display: none;
+  }
+
+  .edh-station[data-mode="focus"]::after {
+    background: linear-gradient(to top, rgb(14 23 22 / 1) 0%, rgb(14 23 22 / 1) calc(100% - 38dvh), rgb(14 23 22 / 0) 100%);
+  }
+
+  .edh-station-case {
+    width: auto;
+    padding: 1.5rem var(--gutter) 3rem;
+  }
+
+  .edh-station[data-mode="focus"] .edh-station-case {
+    position: relative;
+    inset: auto;
+    display: block;
+  }
+
+  .edh-station-case-inner {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .edh-station .edh-studio-copy > *,
+  .edh-station-case {
+    translate: none !important;
+  }
+}

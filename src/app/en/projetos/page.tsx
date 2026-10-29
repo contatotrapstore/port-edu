@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 import ProjectCatalog from "@/components/ProjectCatalog";
+import { isNewSiteEnabled } from "@/components/redesign/preview";
+import ProjectsIndex from "@site/projects";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
 
 export const metadata: Metadata = {
@@ -15,5 +17,6 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectsIndexPage() {
+  if (isNewSiteEnabled() && ProjectsIndex) return <ProjectsIndex locale="en" />;
   return <ProjectCatalog locale="en" />;
 }

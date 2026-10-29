@@ -10,6 +10,8 @@ import AmbientBackdrop from "@/components/AmbientBackdrop";
 import { siteUrl } from "@/lib/site";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
 import { getCaseDescription } from "@/lib/portfolio-case-copy";
+import { isNewSiteEnabled } from "@/components/redesign/preview";
+import CasePage from "@site/case";
 
 // Only projects with real case-study content get a page; others (e.g. Click) 404.
 export const dynamicParams = false;
@@ -86,6 +88,7 @@ export default async function ProjectPage({
   const { id } = await params;
   const project = projects.find((p) => p.id === id);
   if (!project || !project.overview) notFound();
+  if (isNewSiteEnabled() && CasePage) return <CasePage project={project} locale="pt" />;
 
   const color = projectColors[project.category];
   const jsonLd = {

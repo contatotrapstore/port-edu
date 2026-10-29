@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import ServiceDetail from "@/components/services/ServiceDetail";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
 import { findService, services } from "@/lib/services";
+import { isNewSiteEnabled } from "@/components/redesign/preview";
+import ServiceView from "@site/service";
 
 export const dynamicParams = false;
 
@@ -18,7 +20,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: service.metadataTitle,
     description: service.metadataDescription,
-    alternates: { canonical: path, languages: {} },
+    alternates: isNewSiteEnabled()
+      ? { canonical: path, languages: { "pt-BR": path, en: `/en${path}`, "x-default": path } }
+      : { canonical: path, languages: {} },
     openGraph: { type: "website", locale: "pt_BR", url: path, title: service.metadataTitle, description: service.metadataDescription, images: [portfolioOgImage] },
     twitter: { card: "summary_large_image", title: service.metadataTitle, description: service.metadataDescription, images: [portfolioOgImage.url] },
   };
@@ -28,5 +32,6 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const service = findService(slug);
   if (!service) notFound();
+  if (isNewSiteEnabled() && ServiceView) return <ServiceView service={service} locale="pt" />;
   return <ServiceDetail service={service} />;
 }

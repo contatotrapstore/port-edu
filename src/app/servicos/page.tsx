@@ -6,6 +6,8 @@ import WorkanaLink from "@/components/workana/WorkanaLink";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
 import { serviceCases, services } from "@/lib/services";
 import { siteUrl } from "@/lib/site";
+import { isNewSiteEnabled } from "@/components/redesign/preview";
+import ServicesIndex from "@site/services";
 
 const title = "Sistemas sob medida, integrações e SaaS | Eduardo Gouveia";
 const description = "Conheça os serviços de desenvolvimento de Eduardo Gouveia: sistemas de gestão, integrações e automações, plataformas SaaS e evolução de produtos existentes.";
@@ -13,12 +15,16 @@ const description = "Conheça os serviços de desenvolvimento de Eduardo Gouveia
 export const metadata: Metadata = {
   title,
   description,
-  alternates: { canonical: "/servicos", languages: {} },
+  // Com o site novo existe /en/servicos; sem ele, a página só tem português.
+  alternates: isNewSiteEnabled()
+    ? { canonical: "/servicos", languages: { "pt-BR": "/servicos", en: "/en/servicos", "x-default": "/servicos" } }
+    : { canonical: "/servicos", languages: {} },
   openGraph: { type: "website", locale: "pt_BR", url: "/servicos", title, description, images: [portfolioOgImage] },
   twitter: { card: "summary_large_image", title, description, images: [portfolioOgImage.url] },
 };
 
 export default function ServicesPage() {
+  if (isNewSiteEnabled() && ServicesIndex) return <ServicesIndex locale="pt" title={title} description={description} />;
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [

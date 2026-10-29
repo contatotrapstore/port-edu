@@ -1,0 +1,1134 @@
+/* ==========================================================================
+   EDevsHub — nova home de marca: capítulos depois da bancada.
+   Tudo sob .edh-home (tokens de .edh em redesign.css). Capítulos alternam
+   tinta e papel pelo conteúdo: leitura de projetos e soluções no papel,
+   método, contato e rodapé na tinta da abertura.
+   ========================================================================== */
+
+.edh-home {
+  --chapter: clamp(4.5rem, 2.25rem + 6.5vw, 9rem);
+  --mono-label: 500 0.8125rem/1.35 var(--font-mono);
+}
+
+/* A home tem quatro capítulos no menu: entre 900 e 1120 px eles não cabem ao
+   lado da marca e do CTA, então o popover do mobile vale até essa largura. */
+@supports selector(:popover-open) {
+  @media (56.25rem <= width < 70rem) {
+    .edh-home .edh-menu-button {
+      display: inline-flex;
+    }
+
+    .edh-home .edh-header:has(#edh-menu:popover-open) .edh-menu-button {
+      border-color: var(--ivory);
+      background: var(--ink-raised);
+    }
+
+    .edh-home .edh-nav[popover] {
+      position: fixed;
+      inset: 4.5rem 0 auto;
+      display: none;
+      width: auto;
+      max-width: none;
+      margin: 0;
+      padding: 0.5rem var(--gutter) 1.5rem;
+      border: 0;
+      border-bottom: 1px solid var(--rule-strong);
+      background: var(--ink);
+      color: var(--ivory);
+    }
+
+    .edh-home .edh-nav[popover]:popover-open {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.25rem;
+    }
+
+    .edh-home .edh-nav[popover]::backdrop {
+      inset: 4.5rem 0 0;
+      background: rgb(14 23 22 / 0.6);
+    }
+
+    .edh-home .edh-nav-links {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .edh-home .edh-nav-links a {
+      display: block;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ivory);
+      font-size: 1.25rem;
+    }
+
+    .edh-home .edh-nav-links .edh-lang {
+      font-size: 1rem;
+    }
+
+    .edh-home .edh-nav-cta {
+      min-height: 3rem;
+    }
+  }
+}
+
+/* Sem a descrição da marca até haver folga para os quatro links. */
+@media (width < 80rem) {
+  .edh-home .edh-brand-descriptor {
+    display: none;
+  }
+}
+
+/* --- Capítulo base --------------------------------------------------------- */
+
+.edh-ch {
+  position: relative;
+  z-index: 2;
+  padding-block: var(--chapter);
+}
+
+.edh-ch--paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.edh-ch--ink {
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+.edh-ch-head {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 54rem;
+}
+
+.edh-ch-kicker {
+  margin: 0;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-ch--ink .edh-ch-kicker {
+  color: var(--dim);
+}
+
+.edh-ch-title {
+  margin: 0;
+  font-size: clamp(2.25rem, 1.15rem + 3.3vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.038em;
+  text-wrap: balance;
+}
+
+.edh-ch-intro {
+  max-width: 40rem;
+  margin: 0;
+  color: var(--moss);
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.edh-ch--ink .edh-ch-intro {
+  color: #c4cfca;
+}
+
+/* Links de texto no papel: tinta com sublinhado, âmbar só no foco. */
+.edh-ch--paper .edh-link {
+  color: var(--ink);
+  text-decoration-color: rgb(14 23 22 / 0.35);
+}
+
+.edh-ch--paper .edh-link:hover {
+  text-decoration-color: var(--ink);
+}
+
+.edh-ch--paper :focus-visible {
+  outline-color: var(--ink);
+}
+
+/* --- Evidência breve -------------------------------------------------------- */
+
+.edh-proofline {
+  position: relative;
+  z-index: 2;
+  border-block: 1px solid var(--rule);
+  background: var(--ink-raised);
+  color: var(--ivory);
+}
+
+.edh-proofline-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.75rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-block: 1.15rem;
+}
+
+.edh-proofline-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+.edh-proofline-facts b {
+  font-weight: 600;
+}
+
+.edh-proofline-source {
+  margin: 0;
+  color: var(--dim);
+  font: 400 0.8125rem/1.4 var(--font-mono);
+}
+
+.edh-proofline-source a {
+  color: var(--fog);
+}
+
+/* --- Projetos ---------------------------------------------------------------- */
+
+.edh-projects {
+  border-radius: clamp(1.25rem, 2.4vw, 2.25rem) clamp(1.25rem, 2.4vw, 2.25rem) 0 0;
+  box-shadow: 0 -30px 60px -20px rgb(0 0 0 / 0.6);
+}
+
+.edh-cases {
+  display: grid;
+  gap: clamp(4.5rem, 2rem + 7vw, 9rem);
+  margin-top: clamp(3rem, 1.5rem + 4vw, 5.5rem);
+}
+
+.edh-case {
+  display: grid;
+  gap: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+}
+
+.edh-case-media {
+  margin: 0;
+}
+
+.edh-case-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.625rem;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(14 23 22 / 0.1),
+    0 40px 70px -40px rgb(14 23 22 / 0.55);
+}
+
+.edh-case-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Recorte: só a parte útil da captura, sem moldura de mockup. */
+.edh-case-frame--crop {
+  aspect-ratio: var(--ratio, 16 / 10);
+}
+
+.edh-case-frame--crop img {
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focus, 50% 0%);
+}
+
+.edh-case-note {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin: 0.85rem 0 0;
+  color: var(--moss);
+  font: 400 0.8125rem/1.45 var(--font-mono);
+}
+
+.edh-case-note::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--amber);
+  translate: 0 -0.05rem;
+}
+
+/* Demonstração do Passagens: o CRM grande; a conversa e o bilhete apoiados
+   nele, como objetos da mesma mesa. No mobile, os dois vêm lado a lado. */
+.edh-demo {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: 1rem;
+  align-items: end;
+}
+
+.edh-demo-main {
+  grid-column: 1 / -1;
+}
+
+.edh-demo-phone {
+  overflow: hidden;
+  border: 5px solid #1b1f21;
+  border-radius: 1.35rem;
+  background: #1b1f21;
+  box-shadow: 0 30px 50px -30px rgb(14 23 22 / 0.6);
+}
+
+.edh-demo-phone img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+}
+
+.edh-demo-ticket {
+  overflow: hidden;
+  border-radius: 0.375rem;
+  box-shadow:
+    0 0 0 1px rgb(14 23 22 / 0.08),
+    0 24px 40px -28px rgb(14 23 22 / 0.55);
+  rotate: -1.5deg;
+}
+
+.edh-demo-ticket img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (width >= 40rem) {
+  .edh-demo {
+    position: relative;
+    display: block;
+    padding: 0 clamp(1.25rem, 2.5vw, 2.5rem) clamp(7rem, 11vw, 9.5rem) 0;
+  }
+
+  .edh-demo-phone {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 23%;
+  }
+
+  .edh-demo-ticket {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 7%;
+    width: 46%;
+  }
+}
+
+/* Dois recortes do mesmo sistema: a tela principal e um detalhe por cima. */
+.edh-case-shots {
+  display: grid;
+  gap: 1rem;
+}
+
+.edh-case-detail {
+  width: 78%;
+  margin: -12% 0 0 auto;
+}
+
+@media (width >= 64rem) {
+  .edh-case-shots--pair {
+    padding-bottom: 2rem;
+  }
+
+  .edh-case-detail {
+    width: 56%;
+    margin-top: -18%;
+  }
+
+  .edh-case--left .edh-case-detail {
+    margin-right: -2rem;
+  }
+
+  .edh-case--right .edh-case-detail {
+    margin-left: -2rem;
+    margin-right: auto;
+  }
+}
+
+.edh-case-kicker {
+  margin: 0 0 0.75rem;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-case-title {
+  margin: 0;
+  font-size: clamp(1.75rem, 1.1rem + 1.9vw, 2.875rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.edh-case-lede {
+  max-width: 34rem;
+  margin: 1rem 0 0;
+  color: #34403c;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* Ficha do projeto: linhas com fio, rótulo acima do texto. Tecnologias e ano
+   dividem a última linha. */
+.edh-spec {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 1.5rem;
+  margin: 1.75rem 0 0;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-spec > div {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 0.3rem;
+  padding-block: 0.85rem;
+  border-bottom: 1px solid var(--rule-paper);
+}
+
+.edh-spec > .edh-spec-half {
+  grid-column: auto;
+}
+
+.edh-spec dt {
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-spec dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.9875rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.edh-case-link {
+  display: inline-flex;
+  margin-top: 1.5rem;
+  font-weight: 600;
+}
+
+@media (width >= 64rem) {
+  .edh-case {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+
+  /* Primeiro caso: largo. Mídia ocupa 8 colunas, texto 4, depois a ficha. */
+  .edh-case--lead .edh-case-media {
+    grid-column: 1 / span 8;
+  }
+
+  .edh-case--lead .edh-case-body {
+    grid-column: 9 / -1;
+    position: sticky;
+    top: 2rem;
+  }
+
+  /* Demais: alternam lado e escala. */
+  .edh-case--right .edh-case-media {
+    grid-column: 6 / -1;
+    grid-row: 1;
+  }
+
+  .edh-case--right .edh-case-body {
+    grid-column: 1 / span 4;
+    grid-row: 1;
+    padding-top: 3rem;
+  }
+
+  .edh-case--left .edh-case-media {
+    grid-column: 1 / span 7;
+  }
+
+  .edh-case--left .edh-case-body {
+    grid-column: 9 / -1;
+    padding-top: 3rem;
+  }
+
+  /* Último: menor, texto primeiro, para fechar a sequência em outra escala. */
+  .edh-case--compact .edh-case-media {
+    grid-column: 7 / -1;
+    grid-row: 1;
+  }
+
+  .edh-case--compact .edh-case-body {
+    grid-column: 1 / span 5;
+    grid-row: 1;
+  }
+}
+
+.edh-projects-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: clamp(4rem, 2rem + 5vw, 7rem);
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-projects-foot p {
+  max-width: 38rem;
+  margin: 0;
+  color: var(--moss);
+}
+
+/* --- Soluções ----------------------------------------------------------------- */
+
+/* Mesmo papel dos projetos: o fio separa, e o respiro de cima é menor. */
+.edh-solutions {
+  padding-top: calc(var(--chapter) * 0.75);
+  border-top: 1px solid var(--rule-paper);
+}
+
+.edh-solution-list {
+  margin: clamp(2.5rem, 1.5rem + 3vw, 4rem) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.edh-solution {
+  display: grid;
+  gap: 1rem 2.5rem;
+  padding-block: clamp(1.75rem, 1rem + 2vw, 2.75rem);
+  border-bottom: 1px solid var(--rule-paper-strong);
+}
+
+.edh-solution-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.05rem + 1.4vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.edh-solution-need {
+  margin: 0;
+  color: #34403c;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+.edh-solution-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--moss);
+  font: 400 0.875rem/1.5 var(--font-mono);
+}
+
+.edh-solution-example {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: start;
+  color: #34403c;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.edh-solution-example p {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+}
+
+.edh-solution-label {
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-solution-example a {
+  font-weight: 600;
+}
+
+@media (width >= 64rem) {
+  .edh-solution {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .edh-solution-title {
+    grid-column: 1 / span 4;
+  }
+
+  .edh-solution-body {
+    grid-column: 5 / span 5;
+  }
+
+  .edh-solution-example {
+    grid-column: 10 / -1;
+  }
+}
+
+/* --- Método --------------------------------------------------------------------- */
+
+.edh-method {
+  position: relative;
+  margin-top: clamp(3rem, 2rem + 3vw, 5rem);
+}
+
+.edh-method-track {
+  display: grid;
+  gap: 2.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-step {
+  position: relative;
+  display: grid;
+  gap: 0.6rem;
+  padding-left: 2.75rem;
+}
+
+/* Trilho: as hastes da marca nas pontas, o ponto âmbar percorre as etapas. */
+.edh-method-rail {
+  position: absolute;
+  inset: 0.4rem auto 0.4rem 0.6875rem;
+  width: 2px;
+  background: var(--rule-strong);
+}
+
+.edh-method-rail::before,
+.edh-method-rail::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 0.75rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: var(--ivory);
+  translate: -50% 0;
+}
+
+.edh-method-rail::before {
+  top: -1.4rem;
+}
+
+.edh-method-rail::after {
+  bottom: -1.4rem;
+}
+
+.edh-method-dot {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--amber);
+  translate: -50% 0;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .edh-method-dot {
+      animation: edh-dot-travel linear both;
+      animation-timeline: view();
+      animation-range: entry 70% exit 35%;
+    }
+  }
+}
+
+@keyframes edh-dot-travel {
+  from {
+    top: 0%;
+  }
+
+  to {
+    top: calc(100% - 1rem);
+  }
+}
+
+.edh-step-n {
+  color: var(--amber);
+  font: 500 0.875rem/1 var(--font-mono);
+}
+
+.edh-step-title {
+  margin: 0;
+  font-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.5rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.edh-step-body {
+  max-width: 30rem;
+  margin: 0;
+  color: #c4cfca;
+  line-height: 1.6;
+}
+
+@media (width >= 64rem) {
+  .edh-method-track {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2.5rem;
+    padding-top: 3.5rem;
+  }
+
+  .edh-step {
+    padding-left: 0;
+  }
+
+  .edh-method-rail {
+    inset: 0.6875rem 0 auto;
+    width: auto;
+    height: 2px;
+  }
+
+  .edh-method-rail::before,
+  .edh-method-rail::after {
+    top: 50%;
+    width: 2.25rem;
+    height: 0.75rem;
+    translate: 0 -50%;
+  }
+
+  .edh-method-rail::before {
+    left: -1.25rem;
+  }
+
+  .edh-method-rail::after {
+    right: -1.25rem;
+    left: auto;
+    bottom: auto;
+  }
+
+  .edh-method-dot {
+    top: 50%;
+    left: 0;
+    translate: 0 -50%;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .edh-method-dot {
+        animation-name: edh-dot-travel-x;
+      }
+    }
+  }
+}
+
+@keyframes edh-dot-travel-x {
+  from {
+    left: 0%;
+  }
+
+  to {
+    left: calc(100% - 1rem);
+  }
+}
+
+.edh-method-note {
+  max-width: 44rem;
+  margin: clamp(2.5rem, 1.5rem + 2vw, 3.5rem) 0 0;
+  color: var(--dim);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* --- Responsável técnico e avaliações ---------------------------------------- */
+
+.edh-about-grid {
+  display: grid;
+  gap: clamp(2rem, 1rem + 3vw, 4rem);
+  margin-top: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+}
+
+.edh-about-photo {
+  margin: 0;
+  max-width: 22rem;
+}
+
+.edh-about-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.625rem;
+  filter: grayscale(0.15) contrast(1.02);
+}
+
+.edh-about-photo figcaption {
+  margin-top: 0.75rem;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-about-bio {
+  max-width: 38rem;
+  margin: 0;
+  font-size: clamp(1.125rem, 1rem + 0.45vw, 1.375rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.edh-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 2rem;
+  margin: 2.25rem 0 0;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-stats div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.edh-stats dt {
+  order: 2;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-stats dd {
+  order: 1;
+  margin: 0;
+  font-size: clamp(1.75rem, 1.3rem + 1.2vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.edh-stats dd small {
+  margin-left: 0.1em;
+  color: var(--moss);
+  font-size: 0.5em;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.edh-stats-source {
+  margin: 1rem 0 0;
+  color: var(--moss);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+.edh-about-peaks {
+  max-width: 38rem;
+  margin: 1.25rem 0 0;
+  color: #34403c;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.edh-about-text .edh-ch-title {
+  margin-bottom: 1.5rem;
+}
+
+.edh-reviews {
+  display: grid;
+  gap: 2rem;
+  margin-top: clamp(3.5rem, 2rem + 4vw, 6rem);
+}
+
+.edh-reviews-title {
+  margin: 0;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-review {
+  display: grid;
+  align-content: start;
+  margin: 0;
+  padding: 1.75rem 0 0;
+  border-top: 2px solid var(--ink);
+}
+
+.edh-review blockquote {
+  margin: 0;
+}
+
+.edh-review blockquote p {
+  margin: 0;
+  font-size: clamp(1.125rem, 1rem + 0.4vw, 1.3125rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.edh-review blockquote p::before {
+  content: "“";
+}
+
+.edh-review blockquote p::after {
+  content: "”";
+}
+
+.edh-review figcaption {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 1.25rem;
+  color: var(--moss);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+.edh-review-author {
+  color: var(--ink);
+  font: 600 0.9375rem/1.4 var(--font-display);
+}
+
+.edh-reviews-note {
+  margin: 0;
+  color: var(--moss);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+@media (width >= 64rem) {
+  .edh-about-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .edh-about-photo {
+    grid-column: 1 / span 4;
+  }
+
+  .edh-about-text {
+    grid-column: 6 / -1;
+  }
+
+  .edh-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .edh-reviews {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+
+  .edh-reviews-title,
+  .edh-reviews-note {
+    grid-column: 1 / span 4;
+  }
+
+  .edh-reviews-title {
+    grid-row: 1;
+    padding-top: 1.9rem;
+  }
+
+  .edh-review {
+    grid-row: 1;
+    grid-column: span 4;
+  }
+
+  .edh-review:first-of-type {
+    grid-column: 5 / span 4;
+  }
+
+  .edh-reviews-note {
+    grid-row: 2;
+    grid-column: 5 / -1;
+  }
+}
+
+/* --- Contato ------------------------------------------------------------------ */
+
+.edh-contact {
+  overflow: hidden;
+}
+
+.edh-contact-inner {
+  display: grid;
+  gap: 2rem;
+}
+
+.edh-contact-title {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2.5rem, 1.2rem + 4.4vw, 5.75rem);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.edh-contact-body {
+  max-width: 34rem;
+  margin: 0;
+  color: #c4cfca;
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.55;
+}
+
+.edh-contact-steps {
+  display: grid;
+  gap: 0.6rem;
+  max-width: 34rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fog);
+  font-size: 0.9375rem;
+}
+
+.edh-contact-steps li {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+}
+
+.edh-contact-steps span {
+  color: var(--amber);
+  font: 500 0.875rem/1.6 var(--font-mono);
+}
+
+.edh-contact-channel {
+  margin: 0;
+  color: var(--fog);
+  font-size: 0.9375rem;
+}
+
+.edh-contact-alt {
+  margin: 0;
+  color: var(--fog);
+}
+
+.edh-contact-text {
+  display: grid;
+  gap: 1.5rem;
+  justify-items: start;
+}
+
+.edh-contact-text .edh-actions {
+  margin: 0.5rem 0 0;
+}
+
+.edh-contact-mark {
+  display: none;
+}
+
+@media (width >= 64rem) {
+  .edh-contact-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  /* Símbolo oficial grande como assinatura do fecho. */
+  .edh-contact-mark {
+    display: block;
+    width: clamp(10rem, 16vw, 15rem);
+    height: auto;
+    opacity: 0.9;
+  }
+}
+
+/* --- Rodapé ---------------------------------------------------------------------- */
+
+.edh-site-footer {
+  position: relative;
+  z-index: 2;
+  padding-block: 3.5rem 2.5rem;
+  border-top: 1px solid var(--rule);
+  background: #0a1110;
+  color: var(--fog);
+  font-size: 0.9375rem;
+}
+
+.edh-footer-grid {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.edh-footer-brand {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 22rem;
+}
+
+.edh-footer-brand .edh-brand {
+  color: var(--ivory);
+}
+
+.edh-footer-brand p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.edh-footer-col h2 {
+  margin: 0 0 0.85rem;
+  color: var(--dim);
+  font: var(--mono-label);
+}
+
+.edh-footer-col ul {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-footer-col a {
+  color: var(--ivory);
+  text-decoration: none;
+}
+
+.edh-footer-col a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.edh-footer-lang {
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+.edh-footer-base {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2rem;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  color: var(--dim);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+@media (width >= 48rem) {
+  .edh-footer-grid {
+    grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* --- Entrada discreta dos capítulos (melhoria progressiva) ---------------------- */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .edh-rise {
+      animation: edh-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+@keyframes edh-rise {
+  from {
+    opacity: 0;
+    translate: 0 1.25rem;
+  }
+}

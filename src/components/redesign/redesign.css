@@ -1,0 +1,1645 @@
+/* ==========================================================================
+   EDevsHub — prévia do redesign (abertura, primeiro case e fechamento)
+
+   Todo seletor vive sob .edh: este arquivo não pode mudar /admin, a home
+   atual nem outra rota. Cores amostradas da logo (Rebranding/00-foto-de-
+   perfil.png): fundo #0E1716, hastes #E9E6DF, ponto #F2B33D. Tipografia das
+   peças do Rebranding: IBM Plex Sans + IBM Plex Mono.
+
+   O estado "Por fora / Por dentro" é global: um rádio no seletor fixo e
+   :has() no .edh. Sem :has(), a página fica inteira na vista "Por fora".
+   ========================================================================== */
+
+html:has(.edh) {
+  background: #0e1716;
+}
+
+/* O globals.css dá overflow-x: hidden ao body; isso o torna contêiner de
+   rolagem e desliga o sticky da abertura. clip corta o excesso horizontal
+   sem criar rolagem. Vale só quando a prévia está na página. */
+html:has(.edh) body:has(.edh) {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.edh) {
+    scroll-behavior: smooth;
+  }
+}
+
+.edh {
+  --ink: #0e1716;
+  --ink-raised: #172521;
+  --ivory: #e9e6df;
+  --amber: #f2b33d;
+  --amber-hover: #f7c766;
+  --paper: #f6f3ed;
+  --paper-deep: #ebe7de;
+  --fog: #a3b2aa; /* 8,2:1 sobre ink */
+  --dim: #8a9a92; /* 6,2:1 sobre ink */
+  --moss: #56635e; /* 5,7:1 sobre paper */
+  --rule: #26342f;
+  --rule-strong: #3a4d47;
+  --rule-paper: #d8dcd2;
+  --rule-paper-strong: #a9b3ac;
+  --wire: #6f7d76;
+
+  --font-display: var(--font-plex-sans), "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+
+  --gutter: clamp(1.25rem, 0.4rem + 3.4vw, 4rem);
+  --frame: 80rem;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-open: cubic-bezier(0.65, 0, 0.2, 1);
+
+  position: relative;
+  min-height: 100dvh;
+  background: var(--ink);
+  color: var(--ivory);
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.edh ::selection {
+  background: var(--amber);
+  color: var(--ink);
+}
+
+.edh :focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.edh-frame {
+  width: min(100% - 2 * var(--gutter), var(--frame));
+  margin-inline: auto;
+}
+
+.edh-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.edh-skip {
+  position: absolute;
+  top: 0.75rem;
+  left: var(--gutter);
+  z-index: 30;
+  padding: 0.625rem 1rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  translate: 0 -250%;
+}
+
+.edh-skip:focus-visible {
+  translate: 0 0;
+}
+
+/* --- Cabeçalho ------------------------------------------------------------ */
+
+.edh-header {
+  position: relative;
+  z-index: 3;
+  border-bottom: 1px solid var(--rule);
+}
+
+.edh-header-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 4.5rem;
+}
+
+.edh-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--ivory);
+  text-decoration: none;
+}
+
+.edh-brand-mark {
+  width: 2rem;
+  height: 2rem;
+}
+
+.edh-brand-name {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.edh-brand-descriptor {
+  display: none;
+  margin-left: 0.25rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--rule-strong);
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+@media (width >= 72rem) {
+  .edh-brand-descriptor {
+    display: inline;
+  }
+}
+
+.edh-menu-button {
+  display: none;
+  align-items: center;
+  margin-left: auto;
+  min-height: 2.75rem;
+  padding: 0 1.125rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ivory);
+  font: 500 0.9375rem/1 var(--font-display);
+  cursor: pointer;
+}
+
+/* .edh-nav não declara display na base: no mobile ele é um popover fechado. */
+.edh-nav {
+  align-items: center;
+  gap: 2rem;
+  margin-left: auto;
+}
+
+.edh-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-nav-links a {
+  color: var(--fog);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: color 0.16s;
+}
+
+.edh-nav-links a:hover {
+  color: var(--ivory);
+}
+
+.edh-nav-links .edh-lang {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+}
+
+.edh-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border: 1px solid var(--ivory);
+  border-radius: 999px;
+  color: var(--ivory);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.16s, color 0.16s;
+}
+
+.edh-nav-cta:hover {
+  background: var(--ivory);
+  color: var(--ink);
+}
+
+@media (width >= 56.25rem) {
+  .edh-nav[popover] {
+    position: static;
+    inset: auto;
+    display: flex;
+    width: auto;
+    height: auto;
+    margin: 0 0 0 auto;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: none;
+    color: inherit;
+  }
+}
+
+@supports selector(:popover-open) {
+  @media (width < 56.25rem) {
+    .edh-menu-button {
+      display: inline-flex;
+    }
+
+    .edh-header:has(#edh-menu:popover-open) .edh-menu-button {
+      border-color: var(--ivory);
+      background: var(--ink-raised);
+    }
+
+    .edh-nav[popover] {
+      position: fixed;
+      inset: 4.5rem 0 auto;
+      width: auto;
+      max-width: none;
+      margin: 0;
+      padding: 0.5rem var(--gutter) 1.5rem;
+      border: 0;
+      border-bottom: 1px solid var(--rule-strong);
+      background: var(--ink);
+      color: var(--ivory);
+    }
+
+    .edh-nav[popover]:popover-open {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.25rem;
+    }
+
+    /* Escurece só a página: a barra com a marca e o botão Menu continua nítida. */
+    .edh-nav[popover]::backdrop {
+      inset: 4.5rem 0 0;
+      background: rgb(14 23 22 / 0.6);
+    }
+
+    .edh-nav-links {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .edh-nav-links a {
+      display: block;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ivory);
+      font-size: 1.25rem;
+    }
+
+    .edh-nav-links .edh-lang {
+      font-size: 1rem;
+    }
+
+    .edh-nav-cta {
+      min-height: 3rem;
+    }
+  }
+}
+
+@supports not selector(:popover-open) {
+  @media (width < 56.25rem) {
+    .edh-header-row {
+      flex-wrap: wrap;
+      padding-block: 0.75rem;
+    }
+
+    .edh-nav {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      gap: 1rem 1.5rem;
+      margin-left: 0;
+    }
+  }
+}
+
+/* --- Abertura --------------------------------------------------------------- */
+
+.edh-hero {
+  padding-block: clamp(2.5rem, 1rem + 3vw, 3rem) clamp(5.5rem, 4rem + 3vw, 6.5rem);
+}
+
+/* Desktop alto: a abertura fica parada e a folha do case sobe por cima dela. */
+@media (width >= 64rem) and (height >= 54rem) {
+  .edh-hero {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.edh-hero-head {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.edh-hero-title {
+  margin: 0;
+  font-size: clamp(2.625rem, 1.1rem + 4.3vw, 5rem);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+@media (width >= 64rem) {
+  .edh-hero-head {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2rem;
+    align-items: end;
+  }
+
+  .edh-hero-title {
+    grid-column: 1 / span 8;
+  }
+
+  .edh-hero-side {
+    grid-column: 9 / -1;
+  }
+}
+
+.edh-lead {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--fog);
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.edh-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.75rem;
+  margin-top: 1.75rem;
+}
+
+.edh-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.16s, translate 0.16s;
+}
+
+.edh-cta:hover {
+  background: var(--amber-hover);
+}
+
+.edh-cta:active {
+  translate: 0 1px;
+}
+
+.edh-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--wire);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.32em;
+  transition: text-decoration-color 0.16s;
+}
+
+.edh-link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* --- Objeto: as hastes sustentando o sistema ---------------------------------- */
+
+.edh-stage {
+  position: relative;
+  margin: clamp(1.5rem, 0.5rem + 2vw, 2.5rem) 0 0;
+}
+
+.edh-object {
+  position: relative;
+  width: min(100% - 2 * var(--gutter), 44rem, (100dvh - 22rem) * 1.4237);
+  min-width: min(100% - 2 * var(--gutter), 18rem);
+  margin-inline: auto;
+}
+
+.edh-object-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.edh-stage-caption {
+  width: min(100% - 2 * var(--gutter), 36rem);
+  margin: 1.25rem auto 0;
+  color: var(--dim);
+  font-size: 0.8125rem;
+  text-wrap: pretty;
+}
+
+/* Desktop: a legenda vai para o canto inferior esquerdo, longe do seletor fixo. */
+@media (width >= 64rem) {
+  .edh-stage-caption {
+    position: absolute;
+    bottom: 0;
+    left: max(var(--gutter), (100% - var(--frame)) / 2);
+    width: 17rem;
+    margin: 0;
+  }
+}
+
+/* Faces das placas */
+.edh-face-dark-top {
+  fill: #1a2925;
+}
+
+.edh-face-dark-l {
+  fill: #24362f;
+}
+
+.edh-face-dark-r {
+  fill: #111d1a;
+}
+
+.edh-edge-light {
+  fill: none;
+  stroke: rgb(233 230 223 / 0.24);
+  stroke-width: 1;
+}
+
+.edh-face-board-top {
+  fill: #ebe8e1;
+}
+
+.edh-face-board-l {
+  fill: #d3cfc6;
+}
+
+.edh-face-board-r {
+  fill: #b5b1a8;
+}
+
+.edh-edge-board {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.6);
+  stroke-width: 1;
+}
+
+.edh-screen-frame {
+  fill: none;
+  stroke: rgb(14 23 22 / 0.2);
+  stroke-width: 0.8;
+}
+
+.edh-print text {
+  fill: rgb(233 230 223 / 0.55);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.edh-print circle,
+.edh-print rect {
+  fill: rgb(233 230 223 / 0.2);
+}
+
+.edh-print .edh-print-ring {
+  fill: none;
+  stroke: rgb(233 230 223 / 0.45);
+  stroke-dasharray: 4 5;
+}
+
+.edh-plate-0 text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.edh-plate-0 .edh-print-dark {
+  fill: rgb(14 23 22 / 0.66);
+}
+
+.edh-plate-0 .edh-print-faint {
+  fill: rgb(14 23 22 / 0.42);
+}
+
+.edh-dot-shadow {
+  fill: rgb(5 10 9 / 0.42);
+}
+
+.edh-leader circle {
+  fill: var(--ivory);
+}
+
+.edh-leader line {
+  stroke: rgb(233 230 223 / 0.45);
+  stroke-width: 1;
+}
+
+.edh-face-xray {
+  fill: rgb(233 230 223 / 0.035);
+  stroke: var(--ivory);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 5;
+}
+
+.edh-stem-cut {
+  stroke: var(--ivory);
+  stroke-width: 2.4;
+}
+
+/* Elementos que só existem por dentro começam invisíveis. */
+.edh-dot-in,
+.edh-leader,
+.edh-face-cut,
+.edh-stem-cut,
+.edh-face-xray {
+  opacity: 0;
+}
+
+.edh-plate,
+.edh-dot-out,
+.edh-dot-in,
+.edh-leader,
+.edh-face-cut,
+.edh-stem-cut,
+.edh-face-xray,
+.edh-plate-0 :is(polygon, image, rect, text) {
+  transition:
+    translate 0.7s var(--ease-open),
+    opacity 0.45s var(--ease);
+}
+
+/* Etiquetas do objeto */
+.edh-tags {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1rem;
+}
+
+.edh-tag {
+  display: grid;
+  gap: 0.125rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.edh-tag b {
+  color: var(--amber);
+  font: 500 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.edh-tag span {
+  color: var(--fog);
+}
+
+/* Etiquetas ao lado do objeto só quando cabem: objeto (44rem) + duas colunas. */
+@media (width >= 75rem) {
+  .edh-tags {
+    margin: 0;
+    display: block;
+  }
+
+  .edh-tag {
+    position: absolute;
+    width: 13.5rem;
+    translate: 0 -50%;
+  }
+
+  .edh-tag-in {
+    right: calc(100% + 1.5rem);
+    top: 50.2%;
+    text-align: right;
+  }
+
+  .edh-tag-out,
+  .edh-tag-layer {
+    left: calc(100% + 1.5rem);
+  }
+
+  .edh-tag-out,
+  .edh-tag-layer-1 {
+    top: 50.2%;
+  }
+
+  .edh-tag-layer-0 {
+    top: 34.6%;
+  }
+
+  .edh-tag-layer-2 {
+    top: 65.8%;
+  }
+
+  /* Continua a linha de chamada do SVG até o texto. */
+  .edh-tag-layer::before {
+    content: "";
+    position: absolute;
+    top: 0.65rem;
+    right: 100%;
+    width: 1.5rem;
+    height: 1px;
+    background: rgb(233 230 223 / 0.45);
+  }
+}
+
+/* Sem espaço lateral, as etiquetas descem para uma lista: sem linhas de chamada. */
+@media (width < 75rem) {
+  .edh-leader {
+    display: none;
+  }
+}
+
+@media (48rem <= width < 75rem) {
+  .edh-tags {
+    width: min(100% - 2 * var(--gutter), 44rem);
+    margin-inline: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width < 48rem) {
+  .edh-tags {
+    width: min(100% - 2 * var(--gutter), 44rem);
+    margin-inline: auto;
+  }
+}
+
+/* --- Seletor global Por fora / Por dentro (fixo) ----------------------------- */
+
+.edh-lens {
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: rgb(14 23 22 / 0.9);
+  box-shadow: 0 12px 32px rgb(5 10 9 / 0.45);
+  translate: -50% 0;
+  backdrop-filter: blur(10px);
+}
+
+.edh-lens-stem {
+  flex: none;
+  width: 0.375rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--ivory);
+}
+
+.edh-lens-dot {
+  flex: none;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--amber);
+  translate: -0.1875rem 0;
+  transition: translate 0.35s var(--ease);
+}
+
+.edh-lens-option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0 0.875rem;
+  border-radius: 999px;
+  color: var(--fog);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.edh-lens-option:hover {
+  color: var(--ivory);
+}
+
+@media (width < 40rem) {
+  .edh-lens {
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .edh-lens-option {
+    min-height: 2.25rem;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* O rádio cobre a opção inteira: clique, toque e foco nativos. */
+.edh-lens-option input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+@supports not selector(:has(*)) {
+  .edh-lens {
+    display: none;
+  }
+
+  .edh [data-view="dentro"] {
+    display: none;
+  }
+}
+
+/* --- Folha do case: papel que sobe sobre a abertura -------------------------- */
+
+.edh-sheet {
+  position: relative;
+  z-index: 2;
+  margin-inline: clamp(0.5rem, 1.2vw, 1.25rem);
+  padding-block: clamp(4rem, 2rem + 5vw, 7.5rem);
+  border-radius: clamp(1.25rem, 2.4vw, 2.25rem);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 -24px 60px -16px rgb(5 10 9 / 0.55);
+}
+
+.edh-sheet :focus-visible {
+  outline-color: var(--ink);
+}
+
+.edh-sheet ::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.edh-case-title {
+  max-width: 20ch;
+  margin: 0;
+  font-size: clamp(2.25rem, 1.15rem + 3.2vw, 4.25rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.edh-case-intro {
+  max-width: 40rem;
+  margin: 1.25rem 0 0;
+  color: var(--moss);
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  text-wrap: pretty;
+}
+
+/* Quadro escuro: a tela real exposta como peça. */
+.edh-board {
+  margin: clamp(2.5rem, 1.5rem + 3vw, 4rem) 0 0;
+  padding: clamp(1rem, 0.25rem + 2.6vw, 3rem);
+  border-radius: clamp(0.875rem, 1.6vw, 1.5rem);
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+.edh-board :focus-visible {
+  outline-color: var(--amber);
+}
+
+.edh-board-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (width >= 64rem) {
+  .edh-board-grid {
+    grid-template-columns: minmax(0, 817px) minmax(15rem, 1fr);
+    align-items: center;
+    column-gap: clamp(2rem, 3.5vw, 3.5rem);
+  }
+}
+
+.edh-shot-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(233 230 223 / 0.14),
+    0 30px 60px -30px rgb(0 0 0 / 0.8);
+  transition: background-color 0.45s var(--ease);
+}
+
+.edh-shot-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition:
+    opacity 0.45s var(--ease),
+    filter 0.45s var(--ease);
+}
+
+.edh-balloon,
+.edh-note-key {
+  display: grid;
+  place-items: center;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 50%;
+  font: 600 0.75rem/1 var(--font-mono);
+  transition:
+    background-color 0.16s,
+    color 0.16s,
+    scale 0.16s;
+}
+
+.edh-balloon {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  background: var(--ink);
+  color: var(--ivory);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 2px 8px rgb(14 23 22 / 0.3);
+  translate: -50% -50%;
+}
+
+@media (width < 40rem) {
+  .edh-balloon {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.6875rem;
+    box-shadow:
+      0 0 0 1.5px #fff,
+      0 1px 4px rgb(14 23 22 / 0.3);
+  }
+}
+
+.edh-xray-region {
+  position: absolute;
+  border: 1px dashed rgb(233 230 223 / 0.75);
+  border-radius: 4px;
+  background: rgb(242 179 61 / 0.07);
+}
+
+.edh-xray-label {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  width: max-content;
+  padding: 0.25rem 0.4rem;
+  border-radius: 3px;
+  background: var(--ink);
+  color: var(--ivory);
+  font: 500 0.6875rem/1 var(--font-mono);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* Região pequena na borda direita: o rótulo fica acima dela, alinhado à direita. */
+.edh-xray-region[data-label="outside"] .edh-xray-label {
+  top: auto;
+  right: 0;
+  bottom: calc(100% + 0.25rem);
+  left: auto;
+}
+
+.edh-notes-label {
+  margin: 0 0 1.25rem;
+  color: var(--dim);
+  font: 500 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.edh-notes {
+  display: grid;
+  gap: 1.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (48rem <= width < 64rem) {
+  .edh-notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
+}
+
+.edh-note {
+  display: grid;
+  grid-template-columns: 1.625rem minmax(0, 1fr);
+  column-gap: 0.875rem;
+}
+
+.edh-note-key {
+  border: 1px solid rgb(233 230 223 / 0.55);
+  color: var(--ivory);
+}
+
+.edh-note-title {
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.edh-note-body {
+  margin: 0.375rem 0 0;
+  color: var(--fog);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.edh-note:hover .edh-note-key,
+.edh-board:has(.edh-note[data-n="1"]:hover) .edh-balloon[data-n="1"],
+.edh-board:has(.edh-note[data-n="2"]:hover) .edh-balloon[data-n="2"],
+.edh-board:has(.edh-note[data-n="3"]:hover) .edh-balloon[data-n="3"],
+.edh-board:has(.edh-note[data-n="4"]:hover) .edh-balloon[data-n="4"] {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: var(--ink);
+}
+
+.edh-board:has(.edh-note[data-n="1"]:hover) .edh-balloon[data-n="1"],
+.edh-board:has(.edh-note[data-n="2"]:hover) .edh-balloon[data-n="2"],
+.edh-board:has(.edh-note[data-n="3"]:hover) .edh-balloon[data-n="3"],
+.edh-board:has(.edh-note[data-n="4"]:hover) .edh-balloon[data-n="4"] {
+  scale: 1.18;
+}
+
+.edh-board-caption {
+  margin-top: 1.25rem;
+  color: var(--dim);
+  font-size: 0.8125rem;
+}
+
+/* Ficha curta, no ritmo das fichas de exposição. */
+.edh-ficha {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  margin: clamp(2rem, 1rem + 2vw, 3rem) 0 0;
+}
+
+@media (width >= 48rem) {
+  .edh-ficha {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.35fr) minmax(0, 1.35fr) minmax(0, 0.8fr);
+  }
+}
+
+.edh-ficha > div {
+  padding-top: 1rem;
+  border-top: 1px solid var(--ink);
+}
+
+.edh-ficha dt {
+  color: var(--moss);
+  font: 500 0.75rem/1.3 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.edh-ficha dd {
+  margin: 0.5rem 0 0;
+  font-size: 0.9875rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Decisão de projeto: antes e depois desenhados com a geometria da marca. */
+.edh-decision {
+  display: grid;
+  gap: 2.25rem;
+  margin-top: clamp(4.5rem, 2.5rem + 5vw, 8rem);
+}
+
+@media (width >= 75rem) {
+  .edh-decision {
+    grid-template-columns: minmax(0, 4.2fr) minmax(0, 7.8fr);
+    align-items: center;
+    column-gap: 4rem;
+  }
+}
+
+.edh-decision-label {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  color: var(--moss);
+  font: 500 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.edh-decision-label::before {
+  content: "";
+  flex: none;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 1px rgb(14 23 22 / 0.2);
+}
+
+.edh-decision-title {
+  max-width: 16ch;
+  margin: 1rem 0 0;
+  font-size: clamp(1.875rem, 1.2rem + 1.8vw, 2.875rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.edh-decision-body {
+  max-width: 34rem;
+  margin: 1.25rem 0 0;
+  color: var(--moss);
+  text-wrap: pretty;
+}
+
+.edh-shift {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (width >= 40rem) {
+  .edh-shift {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.edh-shift-panel {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 17rem;
+  padding: clamp(1.25rem, 0.75rem + 1.5vw, 2rem);
+  border-radius: 1.25rem;
+}
+
+/* Painel estreito: módulos em duas colunas para os nomes caberem inteiros.
+   Seletores mais específicos que as regras base, que vêm depois no arquivo. */
+@container (width < 24rem) {
+  .edh-shift-panel .edh-shift-scatter,
+  .edh-shift-panel .edh-rail-modules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .edh-shift-panel .edh-rail-modules {
+    column-gap: 1.5rem;
+  }
+}
+
+.edh-shift-before {
+  background: var(--paper-deep);
+}
+
+.edh-shift-after {
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+.edh-shift-caption {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.edh-shift-before .edh-shift-caption {
+  color: var(--moss);
+}
+
+/* Antes: cada parte numa ferramenta, sem ligação entre elas. */
+.edh-shift-scatter {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-shift-scatter li {
+  padding: 0.5rem 0.4rem;
+  border: 1px dashed var(--rule-paper-strong);
+  border-radius: 0.5rem;
+  background: var(--paper);
+  color: var(--moss);
+  font: 500 0.75rem/1.2 var(--font-mono);
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (width < 30rem) {
+  .edh-shift-scatter {
+    gap: 1.25rem 0.5rem;
+  }
+
+  .edh-shift-scatter li {
+    font-size: 0.65625rem;
+  }
+}
+
+.edh-shift-scatter li:nth-child(1) {
+  rotate: -4deg;
+  translate: 0 0.375rem;
+}
+
+.edh-shift-scatter li:nth-child(2) {
+  rotate: 3deg;
+  translate: 0 -0.25rem;
+}
+
+.edh-shift-scatter li:nth-child(3) {
+  rotate: -2deg;
+  translate: 0 0.5rem;
+}
+
+.edh-shift-scatter li:nth-child(4) {
+  rotate: 2.5deg;
+  translate: 0.25rem 0;
+}
+
+.edh-shift-scatter li:nth-child(5) {
+  rotate: -3.5deg;
+  translate: 0 -0.375rem;
+}
+
+.edh-shift-scatter li:nth-child(6) {
+  rotate: 4deg;
+  translate: -0.25rem 0.25rem;
+}
+
+/* Depois: as hastes seguram um trilho só; o ponto é o histórico do cliente. */
+.edh-rail {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 0.625rem;
+  margin-top: 0.5rem;
+}
+
+.edh-rail::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  left: 0.5rem;
+  height: 1px;
+  background: rgb(233 230 223 / 0.45);
+}
+
+/* As hastes acompanham a altura dos módulos (2 ou 3 linhas). */
+.edh-rail-stem {
+  position: relative;
+  flex: none;
+  width: 0.75rem;
+  min-height: 6.5rem;
+  margin-block: -0.5rem;
+  border-radius: 999px;
+  background: var(--ivory);
+}
+
+.edh-rail-modules {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.75rem 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-rail-modules li {
+  padding: 0.45rem 0.25rem;
+  border-radius: 999px;
+  background: var(--ivory);
+  color: var(--ink);
+  font: 500 0.6875rem/1.2 var(--font-mono);
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (width < 30rem) {
+  .edh-rail-modules li {
+    font-size: 0.625rem;
+  }
+}
+
+.edh-rail-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px var(--ink);
+  translate: -50% -50%;
+}
+
+/* Rodapé do case: nota do responsável técnico e carimbo da prancha. */
+.edh-case-foot {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: clamp(4.5rem, 2.5rem + 5vw, 7rem);
+  padding-top: clamp(2rem, 1rem + 2vw, 3rem);
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+@media (width >= 64rem) {
+  .edh-case-foot {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    align-items: start;
+    column-gap: 4rem;
+  }
+}
+
+.edh-lead-note {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  column-gap: 1.25rem;
+}
+
+/* Retrato no formato das hastes da marca. */
+.edh-lead-photo {
+  width: 3rem;
+  height: 4.75rem;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.edh-lead-label {
+  margin: 0;
+  color: var(--moss);
+  font: 500 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.edh-lead-quote {
+  margin: 0.75rem 0 0;
+}
+
+.edh-lead-quote p {
+  max-width: 36ch;
+  margin: 0;
+  font-size: clamp(1.25rem, 1rem + 0.8vw, 1.75rem);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+
+.edh-lead-by {
+  display: grid;
+  margin: 1rem 0 0;
+  line-height: 1.4;
+}
+
+.edh-lead-by span:first-child {
+  font-weight: 600;
+}
+
+.edh-lead-by span:last-child {
+  color: var(--moss);
+  font-size: 0.875rem;
+}
+
+.edh-case-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-paper-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.32em;
+  transition: text-decoration-color 0.16s;
+}
+
+.edh-case-link:hover {
+  text-decoration-color: var(--ink);
+}
+
+.edh-stamp {
+  max-width: 34rem;
+  border: 1.5px solid var(--ink);
+  font-size: 0.9375rem;
+}
+
+.edh-stamp-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1.5px solid var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.edh-stamp-head img {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.edh-stamp-sheet {
+  margin-left: auto;
+  color: var(--moss);
+  font: 500 0.75rem/1 var(--font-mono);
+}
+
+.edh-stamp dl {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  margin: 0;
+}
+
+.edh-stamp dl > div {
+  padding: 0.625rem 0.75rem 0.75rem;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-stamp dl > div:first-child {
+  border-top: 0;
+}
+
+.edh-stamp .edh-stamp-wide {
+  grid-column: 1 / -1;
+}
+
+.edh-stamp .edh-stamp-split {
+  border-left: 1px solid var(--rule-paper-strong);
+}
+
+.edh-stamp dt {
+  color: var(--moss);
+  font: 500 0.6875rem/1.3 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.edh-stamp dd {
+  margin: 0.25rem 0 0;
+  line-height: 1.35;
+}
+
+/* --- Fechamento --------------------------------------------------------------- */
+
+.edh-closing {
+  position: relative;
+  z-index: 2;
+  padding-block: clamp(5rem, 3rem + 6vw, 9rem);
+  background: var(--ink);
+}
+
+.edh-closing-inner {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+@media (width >= 64rem) {
+  .edh-closing-inner {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: clamp(3rem, 6vw, 6rem);
+  }
+}
+
+.edh-closing-mark {
+  width: clamp(8.75rem, 5rem + 9vw, 13.75rem);
+  height: auto;
+}
+
+.edh-closing-title {
+  max-width: 15ch;
+  margin: 0;
+  font-size: clamp(2.25rem, 1.15rem + 3.3vw, 4.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.edh-closing-body {
+  max-width: 34rem;
+  margin: 1.25rem 0 0;
+  color: var(--fog);
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  text-wrap: pretty;
+}
+
+.edh-closing-alt {
+  margin: 0;
+  color: var(--dim);
+  font-size: 0.9375rem;
+}
+
+.edh-closing-alt .edh-link {
+  color: var(--ivory);
+}
+
+/* --- Rodapé da prévia ----------------------------------------------------------- */
+
+.edh-footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid var(--rule);
+  background: var(--ink);
+  color: var(--dim);
+}
+
+.edh-footer p {
+  margin: 0;
+  /* Espaço para o seletor fixo não cobrir o texto. */
+  padding-block: 1.5rem 5.5rem;
+  font: 400 0.75rem/1.5 var(--font-mono);
+}
+
+/* --- Vista global: Por fora / Por dentro ------------------------------------------ */
+
+@supports selector(:has(*)) {
+  .edh:not(:has(#edh-lens-dentro:checked)) [data-view="dentro"],
+  .edh:has(#edh-lens-dentro:checked) [data-view="fora"] {
+    display: none;
+  }
+
+  .edh-lens-option:has(input:checked) {
+    background: var(--ink-raised);
+    color: var(--ivory);
+    box-shadow: inset 0 0 0 1px var(--rule-strong);
+  }
+
+  .edh-lens-option:has(input:focus-visible) {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+  }
+
+  .edh:has(#edh-lens-dentro:checked) .edh-lens-dot {
+    translate: 0.1875rem 0;
+  }
+
+  /* Objeto aberto: a placa de cima sobe e vira raio-x, a de baixo desce. */
+  /* Mesmo valor de OPEN_SHIFT em SystemObject.tsx. */
+  .edh:has(#edh-lens-dentro:checked) .edh-plate-0 {
+    translate: 0 -76px;
+  }
+
+  .edh:has(#edh-lens-dentro:checked) .edh-plate-2 {
+    translate: 0 76px;
+  }
+
+  .edh:has(#edh-lens-dentro:checked) .edh-plate-0 :is(.edh-face-board-l, .edh-face-board-r, .edh-face-board-top, .edh-screen, .edh-screen-frame, .edh-print-dark, .edh-board-sheen) {
+    opacity: 0.1;
+  }
+
+  .edh:has(#edh-lens-dentro:checked) .edh-dot-out {
+    opacity: 0;
+    translate: 0 -76px;
+  }
+
+  .edh:has(#edh-lens-dentro:checked) :is(.edh-dot-in, .edh-leader, .edh-face-cut, .edh-stem-cut, .edh-face-xray) {
+    opacity: 1;
+  }
+
+  /* Case por dentro: a tela vira raio-x e as regiões aparecem. */
+  .edh:has(#edh-lens-dentro:checked) .edh-shot-frame {
+    background: #0b1311;
+  }
+
+  .edh:has(#edh-lens-dentro:checked) .edh-shot-img {
+    opacity: 0.22;
+    filter: grayscale(1) contrast(1.15);
+  }
+}
+
+/* --- Movimento -------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Montagem do objeto: placas pousam, o ponto chega por último. */
+  .edh-stem3d {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: edh-rise 0.8s var(--ease) backwards;
+  }
+
+  .edh-plate-2 {
+    animation: edh-drop 0.75s var(--ease) 0.1s backwards;
+  }
+
+  .edh-plate-1 {
+    animation: edh-drop 0.75s var(--ease) 0.2s backwards;
+  }
+
+  .edh-plate-0 {
+    animation: edh-drop 0.75s var(--ease) 0.3s backwards;
+  }
+
+  .edh-dot-out {
+    animation: edh-land 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.85s backwards;
+  }
+
+  /* Conteúdo que aparece ao trocar de vista. */
+  .edh [data-view] {
+    animation: edh-swap 0.4s var(--ease);
+  }
+
+  .edh-lens-option,
+  .edh-cta {
+    transition-duration: 0.2s;
+  }
+}
+
+@keyframes edh-rise {
+  from {
+    opacity: 0;
+    scale: 1 0.82;
+  }
+}
+
+@keyframes edh-drop {
+  from {
+    opacity: 0;
+    translate: 0 -36px;
+  }
+}
+
+@keyframes edh-land {
+  from {
+    opacity: 0;
+    translate: 0 -48px;
+  }
+}
+
+/* Só opacidade: balões e etiquetas usam translate para se centralizar. */
+@keyframes edh-swap {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Entrada das peças do case ao rolar (melhoria progressiva, sem JavaScript). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .edh-case-head,
+    .edh-board,
+    .edh-ficha,
+    .edh-decision,
+    .edh-case-foot,
+    .edh-closing-inner {
+      animation: edh-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+
+    /* O quadro escuro só desliza: semitransparente sobre o papel ele fica cinza. */
+    .edh-board {
+      animation-name: edh-reveal-solid;
+    }
+
+    .edh-rail-dot {
+      animation: edh-rail linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 55%;
+    }
+  }
+}
+
+@keyframes edh-reveal {
+  from {
+    opacity: 0;
+    translate: 0 2.5rem;
+  }
+}
+
+@keyframes edh-reveal-solid {
+  from {
+    translate: 0 3rem;
+  }
+}
+
+@keyframes edh-rail {
+  from {
+    left: 4%;
+  }
+}

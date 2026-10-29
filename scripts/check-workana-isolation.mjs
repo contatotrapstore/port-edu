@@ -47,6 +47,7 @@ if (!htmlPath) {
     { re: /mailto:/i, what: "link de e-mail (mailto:)" },
     { re: /href="tel:/i, what: "link de telefone (tel:)" },
     { re: /linkedin\.com/i, what: "link do LinkedIn" },
+    { re: /instagram\.com/i, what: "link do Instagram" },
     {
       // Rotas internas, relativas ou absolutas no próprio domínio.
       re: /href="(?:https?:\/\/(?:www\.)?edevshub\.com)?\/(?:contratar|solucoes|projetos|en)(?:[/"?])/i,
@@ -69,11 +70,29 @@ if (!htmlPath) {
   }
 }
 
-// --- Checagem 2: onde DirectContact pode ser importado -------------------
-const ALLOWED_PREFIXES = [
-  path.join("src", "app", "contratar"),
-  path.join("src", "app", "solucoes"),
-  path.join("src", "components", "contact"), // a própria definição
+// --- Checagem 2: onde o contato direto pode ser importado ----------------
+// DirectContact é o canal; HirePage (página de contratação do site novo) o
+// contém e também não pode ir para um componente compartilhado.
+const GUARDED = [
+  {
+    name: "DirectContact",
+    re: /from\s+["'][^"']*DirectContact["']/,
+    allowed: [
+      path.join("src", "app", "contratar"),
+      path.join("src", "app", "en", "contratar"),
+      path.join("src", "app", "solucoes"),
+      path.join("src", "components", "contact"), // a própria definição e a HirePage
+    ],
+  },
+  {
+    name: "HirePage",
+    re: /from\s+["'](?:[^"']*\/HirePage|@site\/hire)["']/,
+    allowed: [
+      path.join("src", "app", "contratar"),
+      path.join("src", "app", "en", "contratar"),
+      path.join("src", "components", "contact"),
+    ],
+  },
 ];
 
 const offenders = [];
@@ -84,9 +103,10 @@ const walk = (dir) => {
       walk(full);
     } else if (/\.tsx?$/.test(entry.name)) {
       const src = fs.readFileSync(full, "utf8");
-      if (!/from\s+["'][^"']*DirectContact["']/.test(src)) continue;
       const rel = path.relative(ROOT, full);
-      if (!ALLOWED_PREFIXES.some((p) => rel.startsWith(p))) offenders.push(rel);
+      for (const guard of GUARDED) {
+        if (guard.re.test(src) && !guard.allowed.some((p) => rel.startsWith(p))) offenders.push(`${rel} (${guard.name})`);
+      }
     }
   }
 };
@@ -94,9 +114,36 @@ walk(path.join(ROOT, "src"));
 
 if (offenders.length) {
   fail(
-    "DirectContact importado fora das rotas permitidas:\n" +
+    "Contato direto importado fora das rotas permitidas:\n" +
       offenders.map((f) => `  · ${f}`).join("\n") +
-      "\n\nSó /contratar e /solucoes/* podem expor canal direto."
+      "\n\nSó /contratar, /en/contratar e /solucoes/* podem expor canal direto."
+  );
+}
+
+// --- Checagem 2b: link de WhatsApp só nas páginas de contratação -----------
+// Home, cases e demais páginas circulam junto da zona Workana: nenhuma pode
+// sair do build com wa.me, mesmo que um componente novo burle a checagem 2.
+const appDir = path.join(ROOT, ".next", "server", "app");
+const CONTACT_PAGES = [/^contratar\.html$/, /^en[\\/]contratar\.html$/, /^solucoes[\\/]/];
+const leaks = [];
+const scan = (dir) => {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) scan(full);
+    else if (entry.name.endsWith(".html")) {
+      const rel = path.relative(appDir, full);
+      if (CONTACT_PAGES.some((re) => re.test(rel))) continue;
+      if (/wa\.me|api\.whatsapp\.com|web\.whatsapp\.com/i.test(fs.readFileSync(full, "utf8"))) leaks.push(rel);
+    }
+  }
+};
+scan(appDir);
+if (leaks.length) {
+  fail(
+    "Link de WhatsApp fora das páginas de contratação:\n" +
+      leaks.map((f) => `  · ${f}`).join("\n") +
+      "\n\nO canal direto vive só em /contratar, /en/contratar e /solucoes/*."
   );
 }
 

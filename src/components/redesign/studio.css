@@ -1,0 +1,375 @@
+/* ==========================================================================
+   EDevsHub — prévia v3: abertura imersiva (hall de engenharia) e projetos.
+   Usa os tokens de .edh (redesign.css). Tudo sob .edh-v3.
+   ========================================================================== */
+
+.edh-v3 .edh-header {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 6;
+  border-bottom-color: rgb(233 230 223 / 0.08);
+  background: linear-gradient(to bottom, rgb(14 23 22 / 0.78), rgb(14 23 22 / 0));
+}
+
+/* --- Abertura ------------------------------------------------------------- */
+
+.edh-studio {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* Abertura parada; os projetos sobem por cima dela. */
+@media (height >= 34rem) {
+  .edh-studio {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.edh-hall {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.edh-hall-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Pôster largo (2:1): em telas mais quadradas, o recorte acompanha o giro da
+   câmera ao vivo e mantém o núcleo inteiro no quadro. */
+@media (orientation: landscape) and (max-aspect-ratio: 3/2) {
+  .edh-hall-poster {
+    object-position: 60% 50%;
+  }
+}
+
+@media (orientation: landscape) and (max-aspect-ratio: 4/3) {
+  .edh-hall-poster {
+    object-position: 67% 50%;
+  }
+}
+
+@media (orientation: landscape) and (max-aspect-ratio: 6/5) {
+  .edh-hall-poster {
+    object-position: 72% 50%;
+  }
+}
+
+/* Retrato mais largo que o celular (tablet): o núcleo fica acima do texto. */
+@media (orientation: portrait) {
+  .edh-hall-poster {
+    object-position: 50% 32%;
+  }
+}
+
+.edh-hall-live {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+
+.edh-hall[data-ready] .edh-hall-live {
+  opacity: 1;
+}
+
+/* Véu de leitura: escurece só onde o texto mora. */
+.edh-studio-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgb(14 23 22 / 0.94) 0%, rgb(14 23 22 / 0.6) 26%, rgb(14 23 22 / 0) 56%),
+    linear-gradient(to right, rgb(14 23 22 / 0.72) 0%, rgb(14 23 22 / 0.2) 38%, rgb(14 23 22 / 0) 56%);
+}
+
+/* O texto não bloqueia o ponteiro na cena; só links e texto recebem eventos. */
+.edh-studio-copy {
+  pointer-events: none;
+  padding-block: 7rem clamp(3rem, min(2rem + 5vw, 11dvh), 6.5rem);
+}
+
+.edh-studio-copy :is(h1, p, a) {
+  pointer-events: auto;
+}
+
+.edh-studio-title {
+  /* O título termina antes do pilar esquerdo do núcleo: o tamanho sai do
+     espaço livre até o pilar (--hall-clear) e da linha mais longa, em em
+     (--title-em). */
+  --hall-clear: 100vw;
+  --title-em: 9.3;
+
+  display: grid;
+  margin: 0;
+  font-size: clamp(
+    2.75rem,
+    min(1.1rem + 4.6vw, (var(--hall-clear) - max(var(--gutter), (100vw - var(--frame)) / 2)) / var(--title-em)),
+    5.75rem
+  );
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  text-shadow: 0 2px 40px rgb(14 23 22 / 0.55);
+}
+
+.edh-v3:lang(en) .edh-studio-title {
+  --title-em: 7.5;
+}
+
+/* Onde o pilar esquerdo cai, por proporção (a câmera gira menos em telas
+   mais quadradas e o núcleo se aproxima do centro). */
+@media (orientation: landscape) {
+  .edh-studio-title {
+    --hall-clear: 57vw;
+  }
+}
+
+@media (orientation: landscape) and (min-aspect-ratio: 2/1) {
+  .edh-studio-title {
+    --hall-clear: 55vw;
+  }
+}
+
+@media (orientation: landscape) and (max-aspect-ratio: 3/2) {
+  .edh-studio-title {
+    --hall-clear: 52vw;
+  }
+}
+
+@media (orientation: landscape) and (max-aspect-ratio: 13/10) {
+  .edh-studio-title {
+    --hall-clear: 49vw;
+  }
+}
+
+@media (orientation: landscape) and (max-aspect-ratio: 6/5) {
+  .edh-studio-title {
+    --hall-clear: 44vw;
+  }
+}
+
+.edh-studio-lead {
+  max-width: 33rem;
+  margin: 1.5rem 0 0;
+  color: #c4cfca;
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.edh-studio-note {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 1.25rem;
+  margin: 0;
+  color: var(--dim);
+  font: 400 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* Celular baixo (SE, 360×740): o texto alcança a base do núcleo. O pôster
+   sobe o que dá e o véu escurece a base dos pilares por trás do título. */
+@media (width < 48rem) and (height < 48rem) {
+  .edh-hall-poster {
+    object-position: 50% 70%;
+  }
+
+  .edh-studio-scrim {
+    background: linear-gradient(to top, rgb(14 23 22 / 0.95) 0%, rgb(14 23 22 / 0.75) 40%, rgb(14 23 22 / 0) 66%);
+  }
+}
+
+@media (width < 48rem) {
+  .edh-studio-copy {
+    padding-bottom: 3.75rem;
+  }
+
+  .edh-studio-note {
+    right: auto;
+    left: var(--gutter);
+  }
+}
+
+/* Saída do hall ao rolar (melhoria progressiva). */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .edh-hall {
+      animation: edh-hall-exit linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    .edh-studio-copy {
+      animation: edh-copy-exit linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 70vh;
+    }
+  }
+}
+
+@keyframes edh-hall-exit {
+  to {
+    opacity: 0.3;
+    scale: 1.05;
+  }
+}
+
+@keyframes edh-copy-exit {
+  to {
+    opacity: 0;
+    translate: 0 -2rem;
+  }
+}
+
+/* --- Projetos entregues ----------------------------------------------------- */
+
+.edh-reel {
+  position: relative;
+  z-index: 2;
+  padding-block: clamp(4rem, 2rem + 5vw, 7rem);
+  border-radius: clamp(1.25rem, 2.4vw, 2.25rem) clamp(1.25rem, 2.4vw, 2.25rem) 0 0;
+  background: var(--ink);
+  box-shadow: 0 -30px 60px -20px rgb(0 0 0 / 0.65);
+}
+
+.edh-reel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.edh-reel-title {
+  margin: 0;
+  font-size: clamp(2.5rem, 1.2rem + 4vw, 5.5rem);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.edh-reel-grid {
+  display: grid;
+  gap: clamp(2.25rem, 1rem + 2.5vw, 3.5rem) 2rem;
+  margin-top: clamp(2rem, 1rem + 3vw, 4rem);
+}
+
+@media (width >= 64rem) {
+  .edh-reel-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .edh-reel-a {
+    grid-column: 1 / span 8;
+  }
+
+  .edh-reel-b {
+    grid-column: 9 / -1;
+  }
+
+  .edh-reel-c {
+    grid-column: 1 / span 5;
+  }
+
+  .edh-reel-d {
+    grid-column: 6 / -1;
+  }
+}
+
+.edh-reel-link {
+  display: block;
+  border-radius: 0.875rem;
+}
+
+.edh-reel-frame {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0.875rem;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(233 230 223 / 0.12),
+    0 30px 60px -30px rgb(0 0 0 / 0.8);
+}
+
+.edh-reel-a .edh-reel-frame,
+.edh-reel-d .edh-reel-frame {
+  aspect-ratio: 16 / 9;
+}
+
+.edh-reel-b .edh-reel-frame {
+  aspect-ratio: 4 / 5;
+}
+
+.edh-reel-c .edh-reel-frame {
+  aspect-ratio: 4 / 3;
+}
+
+/* Recorte ampliado em torno do foco: a interface fica legível. */
+.edh-reel-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focus);
+  transform-origin: var(--focus);
+  scale: var(--zoom);
+  transition: scale 0.7s var(--ease);
+}
+
+.edh-reel-link:hover .edh-reel-img {
+  scale: calc(var(--zoom) * 1.04);
+}
+
+.edh-reel-meta {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
+
+.edh-reel-name {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.edh-reel-line {
+  margin: 0;
+  color: var(--fog);
+  text-wrap: pretty;
+}
+
+.edh-reel-line::first-letter {
+  text-transform: uppercase;
+}
+
+.edh-reel-stack {
+  margin: 0.25rem 0 0;
+  color: var(--dim);
+  font: 400 0.75rem/1.4 var(--font-mono);
+}
+
+/* Entrada dos projetos ao rolar (melhoria progressiva). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .edh-reel-item {
+      animation: edh-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}

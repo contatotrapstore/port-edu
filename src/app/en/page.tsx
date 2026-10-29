@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import HomePage from "@/components/HomePage";
+import BrandHome from "@site/home";
+import { brandHomeMetadata } from "@/components/redesign/home/metadata";
+import { isNewSiteEnabled } from "@/components/redesign/preview";
 import { siteUrl } from "@/lib/site";
 import { portfolioWorkanaStats as workanaStats } from "@/lib/constants";
 import { portfolioOgImage } from "@/lib/portfolio-metadata";
 
 const workanaProof = `${workanaStats.projectsCompleted} completed projects · ${workanaStats.rating}/5 across ${workanaStats.clientReviews} reviews`;
 
-export const metadata: Metadata = {
+const currentHomeMetadata: Metadata = {
   title: "EDevsHub | Eduardo Gouveia — Senior Full Stack · Workana HERO",
   description:
     `Custom systems, SaaS platforms and integrations with Eduardo Gouveia. ${workanaProof} · ${workanaStats.level} on Workana.`,
@@ -56,6 +59,11 @@ export const metadata: Metadata = {
   },
 };
 
+// EDH_NEW_SITE=1 no build troca a home pela nova experiência de marca; sem a
+// variável, a home atual continua igual.
+export const metadata: Metadata = isNewSiteEnabled() ? brandHomeMetadata("en") : currentHomeMetadata;
+
 export default function Page() {
+  if (isNewSiteEnabled() && BrandHome) return <BrandHome locale="en" variant="home" />;
   return <HomePage locale="en" />;
 }

@@ -1,0 +1,1474 @@
+/* ==========================================================================
+   EDevsHub — páginas internas do site novo: projetos, cases, serviços,
+   contratação e privacidade. Mesmos tokens e componentes da home (.edh em
+   redesign.css, capítulos em home.css); nada aqui vale fora de .edh-site.
+   Abertura de página em tinta, leitura em papel, fecho em tinta.
+   ========================================================================== */
+
+.edh-site .edh-header {
+  background: var(--ink);
+}
+
+/* Link da seção atual no menu. */
+.edh-site .edh-nav-links a[aria-current="page"] {
+  color: var(--ivory);
+  text-decoration: underline;
+  text-decoration-color: var(--amber);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.45em;
+}
+
+/* --- Abertura da página ------------------------------------------------------ */
+
+.edh-pagehead {
+  padding-block: clamp(2rem, 1.25rem + 2.5vw, 3.75rem) clamp(3.5rem, 2.25rem + 4vw, 6rem);
+  background: var(--ink);
+  color: var(--ivory);
+}
+
+.edh-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  margin: 0 0 clamp(1.75rem, 1.25rem + 1.5vw, 2.75rem);
+  padding: 0;
+  list-style: none;
+  color: var(--dim);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+.edh-crumbs li + li::before {
+  content: "/";
+  margin-right: 0.6rem;
+  color: var(--rule-strong);
+}
+
+.edh-crumbs a {
+  color: var(--fog);
+  text-decoration: none;
+}
+
+.edh-crumbs a:hover {
+  color: var(--ivory);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.edh-pagehead-kicker {
+  margin: 0 0 1rem;
+  color: var(--dim);
+  font: var(--mono-label);
+}
+
+.edh-pagehead-title {
+  max-width: 20ch;
+  margin: 0;
+  font-size: clamp(2.5rem, 1.25rem + 4.2vw, 5.25rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.edh-pagehead-lead {
+  max-width: 42rem;
+  margin: 1.5rem 0 0;
+  color: #c4cfca;
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.edh-pagehead .edh-actions {
+  margin-top: 2rem;
+}
+
+/* Linha de prova: os números do perfil, com a data. */
+.edh-proofstrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+  margin: clamp(2rem, 1.5rem + 1.5vw, 3rem) 0 0;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--rule);
+  color: var(--fog);
+  font-size: 0.9375rem;
+  list-style: none;
+}
+
+.edh-proofstrip b {
+  color: var(--ivory);
+  font-weight: 600;
+}
+
+.edh-proofstrip-source {
+  color: var(--dim);
+  font: 400 0.8125rem/1.6 var(--font-mono);
+}
+
+/* Títulos de seção no papel, menores que os da home. */
+.edh-sec-title {
+  max-width: 26ch;
+  margin: 0;
+  font-size: clamp(1.75rem, 1.15rem + 1.9vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.edh-sec-intro {
+  max-width: 42rem;
+  margin: 1rem 0 0;
+  color: #34403c;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.edh-ch--ink .edh-sec-intro {
+  color: #c4cfca;
+}
+
+.edh-sec + .edh-sec {
+  margin-top: clamp(3.5rem, 2.5rem + 3vw, 6rem);
+}
+
+.edh-kicker {
+  margin: 0 0 0.75rem;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-ch--ink .edh-kicker {
+  color: var(--dim);
+}
+
+/* Listas com fio, sem marcador decorativo. */
+.edh-rules {
+  display: grid;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-rules > li {
+  padding-block: 0.9rem;
+  border-bottom: 1px solid var(--rule-paper);
+  color: #2c3733;
+  line-height: 1.55;
+}
+
+.edh-ch--ink .edh-rules {
+  border-top-color: var(--rule-strong);
+}
+
+.edh-ch--ink .edh-rules > li {
+  border-bottom-color: var(--rule);
+  color: #c4cfca;
+}
+
+@media (width >= 48rem) {
+  .edh-rules--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+}
+
+/* Perguntas: details nativo, sem acordeão em JavaScript. */
+.edh-faq {
+  margin: 1.75rem 0 0;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-faq details {
+  border-bottom: 1px solid var(--rule-paper);
+}
+
+.edh-faq summary {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-block: 1.1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  list-style: none;
+}
+
+.edh-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.edh-faq summary::after {
+  content: "+";
+  flex: none;
+  color: var(--moss);
+  font: 400 1.25rem/1 var(--font-mono);
+  transition: rotate 0.2s var(--ease);
+}
+
+.edh-faq details[open] summary::after {
+  rotate: 45deg;
+}
+
+.edh-faq details p {
+  max-width: 44rem;
+  margin: 0 0 1.25rem;
+  color: #34403c;
+  line-height: 1.6;
+}
+
+/* Fecho em tinta: pergunta, próximo passo e a alternativa da Workana. */
+.edh-closing {
+  display: grid;
+  gap: 1.5rem;
+  justify-items: start;
+}
+
+.edh-closing-title {
+  max-width: 20ch;
+  margin: 0;
+  font-size: clamp(2rem, 1.2rem + 2.8vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.edh-closing-body {
+  max-width: 38rem;
+  margin: 0;
+  color: #c4cfca;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+.edh-closing .edh-actions {
+  margin: 0;
+}
+
+.edh-closing-alt {
+  margin: 0;
+  color: var(--fog);
+}
+
+/* --- Índice de projetos ---------------------------------------------------- */
+
+.edh-pgroup {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.edh-pgroup + .edh-pgroup {
+  margin-top: clamp(3.5rem, 2.5rem + 3vw, 5.5rem);
+}
+
+.edh-pgroup-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.15rem + 1vw, 2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.edh-pgroup-blurb {
+  max-width: 30rem;
+  margin: 0.6rem 0 0;
+  color: #34403c;
+  line-height: 1.55;
+}
+
+.edh-prows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.edh-prow {
+  border-bottom: 1px solid var(--rule-paper-strong);
+}
+
+.edh-prow a {
+  display: grid;
+  grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  padding-block: 1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.edh-prow-thumb {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 0.375rem;
+  background: var(--paper-deep);
+  box-shadow: 0 0 0 1px rgb(14 23 22 / 0.08);
+}
+
+.edh-prow-thumb img {
+  object-fit: cover;
+  transition: scale 0.4s var(--ease);
+}
+
+.edh-prow-name {
+  display: block;
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color 0.16s;
+}
+
+.edh-prow-headline {
+  display: block;
+  margin-top: 0.2rem;
+  color: #34403c;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.edh-prow-meta {
+  display: none;
+  color: var(--moss);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+  text-align: right;
+}
+
+.edh-prow-meta span {
+  display: block;
+}
+
+.edh-prow a:hover .edh-prow-name {
+  text-decoration-color: var(--ink);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .edh-prow a:hover .edh-prow-thumb img {
+    scale: 1.03;
+  }
+}
+
+@media (width >= 48rem) {
+  .edh-prow a {
+    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) minmax(0, 12rem);
+    gap: 1.5rem;
+  }
+
+  .edh-prow-meta {
+    display: block;
+  }
+}
+
+@media (width >= 64rem) {
+  .edh-pgroup {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+
+  .edh-pgroup-head {
+    grid-column: 1 / span 4;
+    position: sticky;
+    top: 2rem;
+  }
+
+  .edh-prows {
+    grid-column: 5 / -1;
+  }
+}
+
+/* --- Case ---------------------------------------------------------------------- */
+
+.edh-casehead {
+  padding-bottom: 0;
+}
+
+.edh-casehead .edh-pagehead-title {
+  max-width: 16ch;
+}
+
+/* A imagem do projeto atravessa a passagem da tinta para o papel. */
+.edh-casehero {
+  margin: clamp(2.25rem, 1.5rem + 2.5vw, 3.75rem) 0 0;
+  background: linear-gradient(to bottom, var(--ink) 58%, var(--paper) 58%);
+}
+
+
+.edh-casehero figcaption {
+  margin: 0;
+}
+
+.edh-casebody {
+  display: grid;
+  gap: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  padding-top: clamp(3rem, 2rem + 3vw, 5rem);
+}
+
+.edh-casebody .edh-spec {
+  margin-top: 0;
+}
+
+.edh-case-live {
+  display: inline-flex;
+  margin-top: 1.25rem;
+  font-weight: 600;
+}
+
+.edh-case-overview {
+  margin: 0;
+  font-size: clamp(1.1875rem, 1.05rem + 0.5vw, 1.4375rem);
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+
+.edh-case-overview + .edh-case-section,
+.edh-case-section + .edh-case-section {
+  margin-top: clamp(2.5rem, 2rem + 1.5vw, 3.5rem);
+}
+
+.edh-case-section h2 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.375rem, 1.15rem + 0.6vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.edh-case-section > p {
+  max-width: 42rem;
+  margin: 0;
+  color: #2c3733;
+  line-height: 1.65;
+}
+
+.edh-case-gallery {
+  display: grid;
+  gap: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+  margin: 1.5rem 0 0;
+}
+
+.edh-case-gallery figure {
+  margin: 0;
+}
+
+.edh-flow {
+  display: grid;
+  gap: 1.25rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: flow;
+}
+
+.edh-flow li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0.25rem 0.75rem;
+  counter-increment: flow;
+}
+
+.edh-flow li::before {
+  content: counter(flow, decimal-leading-zero);
+  grid-row: span 2;
+  padding-top: 0.2rem;
+  color: var(--moss);
+  font: 500 0.875rem/1.4 var(--font-mono);
+}
+
+.edh-flow h3 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.edh-flow p {
+  margin: 0;
+  color: #34403c;
+  line-height: 1.55;
+}
+
+.edh-related {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-related a {
+  font-weight: 600;
+}
+
+.edh-related p {
+  margin: 0.2rem 0 0;
+  color: #34403c;
+  line-height: 1.55;
+}
+
+@media (width >= 64rem) {
+  .edh-casebody {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+
+  .edh-casebody-aside {
+    grid-column: 1 / span 4;
+    position: sticky;
+    top: 2rem;
+  }
+
+  .edh-casebody-main {
+    grid-column: 6 / -1;
+  }
+}
+
+/* Autor: foto, nome e os números do perfil. */
+.edh-author {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 1rem 1.25rem;
+  align-items: center;
+  max-width: 38rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.edh-author img {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.5rem;
+  object-fit: cover;
+}
+
+.edh-author-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.edh-author-body {
+  margin: 0.2rem 0 0;
+  color: var(--fog);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.edh-author-proof {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--dim);
+  font: 400 0.8125rem/1.6 var(--font-mono);
+}
+
+/* Anterior e próximo. */
+.edh-casenav {
+  display: grid;
+  gap: 1rem;
+}
+
+.edh-casenav a {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 1px solid var(--rule-paper-strong);
+  color: inherit;
+  text-decoration: none;
+}
+
+.edh-casenav-thumb {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 0.375rem;
+  background: var(--paper-deep);
+}
+
+.edh-casenav-thumb img {
+  object-fit: cover;
+}
+
+.edh-casenav-label {
+  display: block;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-casenav-name {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.edh-casenav a:hover .edh-casenav-name {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.edh-casenav-all {
+  margin: 1.5rem 0 0;
+}
+
+@media (width >= 48rem) {
+  .edh-casenav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+
+  .edh-casenav a.edh-casenav-next {
+    grid-template-columns: minmax(0, 1fr) 7rem;
+    text-align: right;
+  }
+
+  .edh-casenav-next .edh-casenav-thumb {
+    order: 2;
+  }
+}
+
+/* --- Serviços ------------------------------------------------------------- */
+
+.edh-svc-rows {
+  margin: clamp(2rem, 1.5rem + 1.5vw, 3rem) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.edh-svc-row {
+  border-bottom: 1px solid var(--rule-paper-strong);
+}
+
+.edh-svc-row a {
+  display: grid;
+  gap: 0.6rem 2.5rem;
+  padding-block: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+  color: inherit;
+  text-decoration: none;
+}
+
+.edh-svc-row h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.125rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.edh-svc-row p {
+  max-width: 34rem;
+  margin: 0;
+  color: #34403c;
+  line-height: 1.55;
+}
+
+.edh-svc-row-go {
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-svc-row a:hover h3 {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.15em;
+}
+
+@media (width >= 64rem) {
+  .edh-svc-row a {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: baseline;
+  }
+
+  .edh-svc-row h3 {
+    grid-column: 1 / span 5;
+  }
+
+  .edh-svc-row p {
+    grid-column: 6 / span 5;
+  }
+
+  .edh-svc-row-go {
+    grid-column: 11 / -1;
+    text-align: right;
+  }
+}
+
+/* Duas colunas: título e texto lado a lado no desktop. */
+.edh-split {
+  display: grid;
+  gap: 1.25rem 2.5rem;
+}
+
+.edh-split-text p {
+  max-width: 40rem;
+  margin: 0;
+  color: #2c3733;
+  line-height: 1.65;
+}
+
+.edh-split-text p + p {
+  margin-top: 1rem;
+}
+
+.edh-aside-rule {
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--amber);
+}
+
+.edh-aside-rule h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.edh-aside-rule p {
+  margin: 0;
+  color: #2c3733;
+  line-height: 1.65;
+}
+
+@media (width >= 64rem) {
+  .edh-split {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .edh-split > :first-child {
+    grid-column: 1 / span 5;
+  }
+
+  .edh-split > :last-child {
+    grid-column: 7 / -1;
+  }
+}
+
+/* Exemplos de escopo: entrega e critério de aceite. */
+.edh-scope {
+  display: grid;
+  gap: 2rem 2.5rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-scope li {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule-paper-strong);
+}
+
+.edh-scope h3 {
+  margin: 0;
+  font-size: 1.1875rem;
+  font-weight: 600;
+}
+
+.edh-scope p {
+  margin: 0.6rem 0 0;
+  color: #2c3733;
+  line-height: 1.6;
+}
+
+.edh-scope-accept {
+  color: #34403c;
+  font-size: 0.9375rem;
+}
+
+.edh-scope-accept b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (width >= 48rem) {
+  .edh-scope {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Etapas numeradas em linha. */
+.edh-steps {
+  display: grid;
+  gap: 1.75rem 2rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.edh-steps li {
+  padding-top: 1rem;
+  border-top: 2px solid var(--ink);
+  counter-increment: step;
+}
+
+.edh-steps li::before {
+  content: counter(step, decimal-leading-zero);
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--moss);
+  font: 500 0.875rem/1 var(--font-mono);
+}
+
+.edh-steps h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.edh-steps p {
+  margin: 0.5rem 0 0;
+  color: #34403c;
+  font-size: 0.9875rem;
+  line-height: 1.6;
+}
+
+.edh-ch--ink .edh-steps li {
+  border-top-color: var(--ivory);
+}
+
+.edh-ch--ink .edh-steps li::before {
+  color: var(--amber);
+}
+
+.edh-ch--ink .edh-steps p {
+  color: #c4cfca;
+}
+
+@media (width >= 48rem) {
+  .edh-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width >= 64rem) {
+  .edh-steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Case relacionado ao serviço: recorte de uma captura existente. */
+.edh-svc-case {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  margin: 1.75rem 0 0;
+  align-items: center;
+}
+
+.edh-crop {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.625rem;
+  background: #f5f5f5;
+  box-shadow:
+    0 0 0 1px rgb(14 23 22 / 0.1),
+    0 30px 60px -40px rgb(14 23 22 / 0.5);
+}
+
+.edh-crop img {
+  position: absolute;
+  max-width: none;
+  height: auto;
+}
+
+.edh-svc-case h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.15rem + 1vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.edh-svc-case p {
+  margin: 0.75rem 0 0;
+  color: #2c3733;
+  line-height: 1.6;
+}
+
+.edh-svc-case figcaption {
+  margin: 0.75rem 0 0;
+  color: var(--moss);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+.edh-svc-case .edh-link {
+  display: inline-flex;
+  margin-top: 1.25rem;
+  font-weight: 600;
+}
+
+@media (width >= 64rem) {
+  .edh-svc-case {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .edh-svc-case figure {
+    grid-column: 1 / span 7;
+    margin: 0;
+  }
+
+  .edh-svc-case > div {
+    grid-column: 9 / -1;
+  }
+
+  .edh-svc-cases .edh-svc-case:nth-child(even) figure {
+    grid-column: 6 / -1;
+    grid-row: 1;
+  }
+
+  .edh-svc-cases .edh-svc-case:nth-child(even) > div {
+    grid-column: 1 / span 4;
+    grid-row: 1;
+  }
+}
+
+.edh-svc-cases {
+  display: grid;
+  gap: clamp(3rem, 2rem + 3vw, 5rem);
+}
+
+.edh-svc-case figure {
+  margin: 0;
+}
+
+/* Brief: o que reunir antes da conversa. */
+.edh-brief {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+}
+
+.edh-brief .edh-rules {
+  margin: 0;
+}
+
+@media (width >= 64rem) {
+  .edh-brief {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .edh-brief > :first-child {
+    grid-column: 1 / span 5;
+  }
+
+  .edh-brief > :last-child {
+    grid-column: 7 / -1;
+  }
+}
+
+/* --- Texto jurídico --------------------------------------------------------- */
+
+.edh-prose {
+  max-width: 44rem;
+}
+
+.edh-prose section + section {
+  margin-top: 2.5rem;
+}
+
+.edh-prose h2 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.375rem, 1.15rem + 0.6vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.edh-prose p {
+  margin: 0;
+  color: #2c3733;
+  line-height: 1.7;
+}
+
+.edh-prose p + p {
+  margin-top: 1rem;
+}
+
+.edh-prose b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.edh-prose a {
+  color: var(--ink);
+}
+
+.edh-prose-note {
+  max-width: 44rem;
+  margin: 0 0 2.5rem;
+  padding: 1rem 1.25rem;
+  border-left: 2px solid var(--amber);
+  background: var(--paper-deep);
+  color: #2c3733;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* --- Contratação (página de anúncio) ------------------------------------------ */
+
+/* Cabeçalho mínimo: marca, uma âncora e o idioma. */
+.edh-hire-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-left: auto;
+}
+
+.edh-hire-nav a {
+  color: var(--fog);
+  font-size: 0.9375rem;
+  text-decoration: none;
+}
+
+.edh-hire-nav a:hover {
+  color: var(--ivory);
+}
+
+.edh-hire-nav .edh-lang {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+}
+
+.edh-hire-hero {
+  padding-block: clamp(2.25rem, 1.5rem + 3vw, 4.5rem) clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  background: var(--ink);
+}
+
+.edh-hire-grid {
+  display: grid;
+  gap: clamp(2.5rem, 2rem + 2vw, 4rem);
+  align-items: center;
+}
+
+.edh-hire-title {
+  max-width: 14ch;
+  margin: 0;
+  font-size: clamp(2.5rem, 1.3rem + 4.2vw, 5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.edh-hire-title span {
+  display: block;
+  color: var(--amber);
+}
+
+.edh-hire-lede {
+  max-width: 36rem;
+  margin: 1.5rem 0 0;
+  color: #c4cfca;
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  line-height: 1.6;
+}
+
+.edh-hire-lede strong {
+  color: var(--ivory);
+  font-weight: 600;
+}
+
+.edh-hire-proof {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 0.25rem 0.85rem;
+  align-items: center;
+  margin: 2rem 0 0;
+  color: var(--fog);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.edh-hire-proof img {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.edh-hire-proof strong {
+  display: block;
+  color: var(--ivory);
+  font-weight: 600;
+}
+
+.edh-hire-art {
+  margin: 0;
+}
+
+.edh-hire-art .edh-case-frame {
+  background: #0b1210;
+}
+
+.edh-hire-art figcaption {
+  margin-top: 0.85rem;
+  color: var(--dim);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+@media (width >= 64rem) {
+  .edh-hire-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+}
+
+/* Botões do contato direto (marcação do DirectContact, estilo do site). */
+.edh-hire .lp-cta {
+  margin-top: 2rem;
+}
+
+.edh-hire .lp-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+}
+
+.edh-hire .lp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0 1.6rem;
+  border-radius: 999px;
+  background: var(--amber);
+  color: var(--ink);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition: background-color 0.16s, translate 0.16s;
+}
+
+.edh-hire .lp-btn:hover {
+  background: var(--amber-hover);
+}
+
+.edh-hire .lp-btn:active {
+  translate: 0 1px;
+}
+
+.edh-hire .lp-btn-ghost {
+  color: var(--ivory);
+}
+
+.edh-hire .lp-cta-note {
+  max-width: 34rem;
+  margin: 0.9rem 0 0;
+  color: var(--fog);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.edh-hire .lp-cta-alt {
+  color: inherit;
+}
+
+.edh-hire-final .lp-cta {
+  margin-top: 0.5rem;
+}
+
+/* Necessidades: três entradas lado a lado. */
+.edh-needs {
+  display: grid;
+  gap: 2rem 2.5rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-needs li {
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--ink);
+}
+
+.edh-needs h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.edh-needs p {
+  margin: 0.6rem 0 0;
+  color: #34403c;
+  line-height: 1.6;
+}
+
+@media (width >= 64rem) {
+  .edh-needs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Ofertas: linhas largas com faixa de preço e prazo. */
+.edh-offers {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.edh-offer {
+  display: grid;
+  gap: 1rem 2.5rem;
+  padding-block: clamp(1.75rem, 1.25rem + 1.5vw, 2.5rem);
+  border-bottom: 1px solid var(--rule-paper-strong);
+}
+
+.edh-offer h3 {
+  margin: 0;
+  font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.edh-offer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0.75rem 0 0;
+  color: var(--moss);
+  font: 400 0.875rem/1.5 var(--font-mono);
+}
+
+.edh-offer-price {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.edh-offer-promise {
+  margin: 0;
+  color: #2c3733;
+  line-height: 1.6;
+}
+
+.edh-offer-scope {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.9rem 0 0;
+  padding: 0 0 0 1.1rem;
+  color: #34403c;
+  font-size: 0.9875rem;
+  line-height: 1.55;
+}
+
+.edh-offer-scope li::marker {
+  color: var(--moss);
+}
+
+.edh-offer-not {
+  margin: 0.9rem 0 0;
+  color: var(--moss);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+@media (width >= 64rem) {
+  .edh-offer {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .edh-offer-head {
+    grid-column: 1 / span 4;
+  }
+
+  .edh-offer-body {
+    grid-column: 6 / -1;
+  }
+}
+
+/* Cases da landing: imagem grande e descrição curta. */
+.edh-hire-cases {
+  display: grid;
+  gap: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Mesma proporção nas três telas, recortadas a partir do topo. */
+.edh-hire-case .edh-case-frame {
+  aspect-ratio: 16 / 10;
+}
+
+.edh-hire-case .edh-case-frame img {
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0%;
+}
+
+.edh-hire-case h3 {
+  margin: 1.1rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.edh-hire-case-type {
+  margin: 0.2rem 0 0;
+  color: var(--moss);
+  font: var(--mono-label);
+}
+
+.edh-hire-case p {
+  margin: 0.6rem 0 0;
+  color: #2c3733;
+  line-height: 1.6;
+}
+
+.edh-hire-case ul {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.75rem 0 0;
+  padding: 0 0 0 1.1rem;
+  color: #34403c;
+  font-size: 0.9375rem;
+}
+
+@media (width >= 64rem) {
+  .edh-hire-cases {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+}
+
+.edh-hire-note {
+  max-width: 44rem;
+  margin: 2rem 0 0;
+  color: var(--moss);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.edh-ch--ink .edh-hire-note {
+  color: var(--dim);
+}
+
+/* Trechos de avaliação. */
+.edh-quotes {
+  display: grid;
+  gap: 2rem 2.5rem;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edh-quotes figure {
+  margin: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule-strong);
+}
+
+.edh-quotes blockquote {
+  margin: 0;
+}
+
+.edh-quotes blockquote p {
+  margin: 0;
+  font-size: clamp(1.125rem, 1rem + 0.4vw, 1.3125rem);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.edh-quotes blockquote p::before {
+  content: "“";
+}
+
+.edh-quotes blockquote p::after {
+  content: "”";
+}
+
+.edh-quotes figcaption {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: 1rem;
+  color: var(--dim);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+.edh-quotes figcaption strong {
+  color: var(--ivory);
+  font: 600 0.9375rem/1.4 var(--font-display);
+}
+
+@media (width >= 64rem) {
+  .edh-quotes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Quando digo não + perguntas. */
+.edh-hire-faq {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.edh-hire-no .edh-rules {
+  margin-top: 1.25rem;
+}
+
+.edh-hire-no p {
+  margin: 1.25rem 0 0;
+  color: #34403c;
+  line-height: 1.6;
+}
+
+@media (width >= 64rem) {
+  .edh-hire-faq {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 2.5rem;
+    align-items: start;
+  }
+
+  .edh-hire-no {
+    grid-column: 1 / span 4;
+  }
+
+  .edh-hire-faq .edh-faq-wrap {
+    grid-column: 6 / -1;
+  }
+
+  .edh-hire-faq .edh-faq {
+    margin-top: 0;
+  }
+}
+
+.edh-hire-footer {
+  padding-block: 2rem;
+  border-top: 1px solid var(--rule);
+  background: #0a1110;
+  color: var(--dim);
+  font: 400 0.8125rem/1.5 var(--font-mono);
+}
+
+.edh-hire-footer .edh-frame {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2rem;
+  justify-content: space-between;
+}
+
+.edh-hire-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+
+.edh-hire-footer a {
+  color: var(--fog);
+}
