@@ -54,7 +54,7 @@ var dirty = false;   // marcas.js marca "redesenhar" quando o ícone em imagem c
     renderPerms();
     if (!state) return;
     const ag = state.agents || [], rooms = state.rooms || [];
-    const idade = Date.now() - (state.updatedAt || 0), off = idade > OFFLINE_MS;
+    const idade = Date.now() - (Date.parse(state.updatedAt) || 0), off = idade > OFFLINE_MS;   // updatedAt vem em ISO
     $('offline').hidden = !off;
     if (off) $('offline').textContent = `O PC está sem sinal há ${dur(idade)} (desligado, dormindo ou sem internet). Os números abaixo são de ${new Date(state.updatedAt).toLocaleString('pt-BR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'})}.`;
     $('kCost').textContent = brl(rooms.reduce((t, r) => t + (r.costUsdToday || 0), 0));
