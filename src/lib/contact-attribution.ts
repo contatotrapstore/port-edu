@@ -48,14 +48,18 @@ export function contactReference(page: string, attribution: Attribution = {}): s
   const safe = safeContactAttribution(attribution);
   const location = page === "contratar_topo" ? "CT"
     : page === "contratar_final" ? "CF"
-      : page.startsWith("solucoes") ? "SOL" : "SITE";
+      : page === "contratar_en_topo" ? "CT-EN"
+        : page === "contratar_en_final" ? "CF-EN"
+          : page.startsWith("solucoes") ? "SOL" : "SITE";
   return [location, safe.src && SOURCES[safe.src],
     safe.campaign && CAMPAIGNS[safe.campaign], safe.content && CONTENT[safe.content]]
     .filter(Boolean).join("-");
 }
 
-export function whatsappHref(phone: string, page: string, attribution: Attribution = {}): string {
-  const message = "Olá, Eduardo! Quero conversar sobre um projeto de desenvolvimento.\n\n" +
-    `Ref.: ${contactReference(page, attribution)}`;
+export function whatsappHref(phone: string, page: string, attribution: Attribution = {}, locale: "pt" | "en" = "pt"): string {
+  const greeting = locale === "en"
+    ? "Hi, Eduardo! I'd like to talk about a development project.\n\n"
+    : "Olá, Eduardo! Quero conversar sobre um projeto de desenvolvimento.\n\n";
+  const message = greeting + `Ref.: ${contactReference(page, attribution)}`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }

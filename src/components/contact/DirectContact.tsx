@@ -20,14 +20,37 @@ import WorkanaLink from "@/components/workana/WorkanaLink";
  * CTAs com o mesmo peso viram zero CTA.
  */
 
+const labels = {
+  pt: {
+    whatsapp: "Pedir orçamento pelo WhatsApp",
+    workana: "Ver perfil e contratar",
+    email: "Prefiro por e-mail",
+    heroNote: "Conte seu projeto para receber uma avaliação inicial.",
+    finalNote:
+      "Conte o que deseja desenvolver, para quem é e qual investimento considera. Eu retorno com os próximos passos para preparar seu orçamento.",
+  },
+  en: {
+    whatsapp: "Request a quote on WhatsApp",
+    workana: "See the profile and hire",
+    email: "I prefer email",
+    heroNote: "Tell us about your project to receive an initial assessment.",
+    finalNote:
+      "Tell us what you want to build, who it is for and what budget you have in mind. I will reply with the next steps to prepare your quote.",
+  },
+};
+
 export default function DirectContact({
   page,
   variant = "final",
+  locale = "pt",
 }: {
   page: string;
   /** hero = CTA compacto no topo; final = bloco centralizado de fechamento. */
   variant?: "hero" | "final";
+  /** Textos e mensagem do WhatsApp; a /contratar em português é o padrão. */
+  locale?: "pt" | "en";
 }) {
+  const text = labels[locale];
   const { whatsapp, email } = siteConfig.social;
   const hasWhats = Boolean(whatsapp);
   const hasEmail = Boolean(email);
@@ -59,7 +82,7 @@ export default function DirectContact({
   // on interaction so hydration stays deterministic; keep native navigation,
   // keyboard, middle-click and copy-link behavior (no popup/window.open).
   const prepareWhatsApp = (event: SyntheticEvent<HTMLAnchorElement>) => {
-    event.currentTarget.href = whatsappHref(whatsapp, page, getAttribution());
+    event.currentTarget.href = whatsappHref(whatsapp, page, getAttribution(), locale);
   };
 
   return (
@@ -67,7 +90,7 @@ export default function DirectContact({
       <div className="lp-cta-row">
         {hasWhats && (
           <a
-            href={whatsappHref(whatsapp, page)}
+            href={whatsappHref(whatsapp, page, {}, locale)}
             target="_blank"
             rel="noopener noreferrer"
             onFocus={prepareWhatsApp}
@@ -84,13 +107,13 @@ export default function DirectContact({
             }}
             className="lp-btn"
           >
-            Pedir orçamento pelo WhatsApp
+            {text.whatsapp}
           </a>
         )}
 
         {!hasWhats && !isHiringPage && (
           <WorkanaLink location={`${page}_workana`} className="lp-btn">
-            Ver perfil e contratar
+            {text.workana}
           </WorkanaLink>
         )}
 
@@ -100,7 +123,7 @@ export default function DirectContact({
             onClick={() => onChannel("email")}
             className="lp-btn-ghost"
           >
-            Prefiro por e-mail
+            {text.email}
           </a>
         )}
       </div>
@@ -110,7 +133,7 @@ export default function DirectContact({
       <p className="lp-cta-note">
         {variant === "hero" ? (
           <>
-            Conte seu projeto para receber uma avaliação inicial.{" "}
+            {text.heroNote}{" "}
             {!isHiringPage && (hasWhats ? (
               <>
                 Prefere pagamento retido até aceitar cada etapa?{" "}
@@ -124,10 +147,7 @@ export default function DirectContact({
             ))}
           </>
         ) : (
-          <>
-            Conte o que deseja desenvolver, para quem é e qual investimento considera.
-            Eu retorno com os próximos passos para preparar seu orçamento.
-          </>
+          <>{text.finalNote}</>
         )}
       </p>
     </div>
