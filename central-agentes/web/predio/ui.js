@@ -258,7 +258,7 @@ document.addEventListener('click', e => {
   if (act === 'immersive') toggleImmersive();
   if (act === 'drawer') toggleDrawer();
   if (act === 'tv') toggleTV();
-  if (act === 'light'){ lightMode = lightMode === 'auto' ? 'day' : lightMode === 'day' ? 'night' : 'auto'; $('lightLbl').textContent = {auto:'Hora real', day:'Dia', night:'Noite'}[lightMode]; lastDay = -1; applyLight(); if (view.building) hemi.intensity += .35; }
+  if (act === 'light'){ lightMode = lightMode === 'auto' ? 'day' : lightMode === 'day' ? 'night' : 'auto'; $('lightLbl').textContent = {auto:'Hora real', day:'Dia', night:'Noite'}[lightMode]; $('btnLight').title = 'Iluminação: ' + $('lightLbl').textContent; lastDay = -1; applyLight(); if (view.building) hemi.intensity += .35; }
   if (act === 'wake'){ const a = agentBy(+arg); if (a && a.state === 'idle') assignTask(a, pick(a.prompts)); }
   if (act === 'delegar' || act === 'fluxo' || act === 'sessao'){ if (selected) realTrabalho(act, arg, selected); return; }
   if (act === 'sendTask'){ if (!selected) return; const ta = $('taskText'), v = ta && ta.value.trim(); if (!v){ toast('Escreva a tarefa antes de enviar'); return; } assignTask(selected, v); ta.value = ''; }

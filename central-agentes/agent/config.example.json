@@ -16,17 +16,17 @@
     {"room": "Estúdio · Posts e reels", "floor": 0, "slot": 2, "type": "studio", "cliente": "EDevsHub", "stack": "Content Studio · Instagram automático · ElevenLabs · Higgsfield", "match": "/worktrees/content-studio/|/port edu/kit-conteudo"},
     {"room": "Diretoria", "floor": 0, "slot": 3, "type": "control", "cliente": "EDevsHub", "stack": "Central de Agentes, planos, custos e conversas soltas do Codex", "match": "/port edu/central-agentes(/|$)|^c:/users/gouveiarx$|/documents/codex/"},
 
-    {"room": "MX Corp", "floor": 1, "slot": 0, "cliente": "Marcelo", "stack": "Marcelo · gestão e produção de conteúdo", "match": "/downloads/marcelo(-wt)?(/|$)"},
-    {"room": "Organzza · Kommo", "floor": 1, "slot": 1, "cliente": "Organzza", "stack": "Organzza · CRM Kommo", "match": "/downloads/(kommo|organzza)"},
+    {"room": "MX Corp", "floor": 1, "slot": 0, "cliente": "Marcelo", "stack": "gestão e produção de conteúdo", "match": "/downloads/marcelo(-wt)?(/|$)"},
+    {"room": "Organzza · Kommo", "floor": 1, "slot": 1, "cliente": "Organzza", "stack": "CRM Kommo", "match": "/downloads/(kommo|organzza)"},
     {"room": "PlanetShake", "floor": 1, "slot": 2, "cliente": "PlanetShake", "stack": "App Android", "vercel": ["planetshake-app"], "match": "/downloads/planet(shake)?(/|$)"},
-    {"room": "King Prime", "floor": 1, "slot": 3, "cliente": "Renato", "stack": "Renato · reservas diretas", "match": "/downloads/renato(/|$)|kingprime"},
+    {"room": "King Prime", "floor": 1, "slot": 3, "cliente": "Renato", "stack": "reservas diretas", "match": "/downloads/renato(/|$)|kingprime"},
     {"room": "Fisko", "floor": 1, "slot": 4, "cliente": "Alberto", "stack": "Alberto", "match": "/downloads/alberto(/|$)|fisko"},
     {"room": "Ligou Chegou", "floor": 1, "slot": 5, "cliente": "Danyllo", "stack": "Danyllo Gás", "match": "/downloads/danyllo(/|$)|ligou-chegou"},
     {"room": "AntiCasino", "floor": 1, "slot": 6, "cliente": "AntiCasino", "stack": "Cliente", "match": "/downloads/anticassino(/|$)|anticasino"},
 
-    {"room": "ChatCupom", "floor": 2, "slot": 0, "cliente": "Fernando", "stack": "Fernando · busca de cupons em conversa", "vercel": ["chatcupom"], "match": "/downloads/fernando(/|$)|chatcupom"},
-    {"room": "Beeder", "floor": 2, "slot": 1, "cliente": "Fernando", "stack": "Fernando · beeder.me", "vercel": ["beeder"], "match": "/downloads/beeder(/|$)"},
-    {"room": "Livoreto", "floor": 2, "slot": 2, "cliente": "Fernando", "stack": "Fernando · marketplace de eBooks e cursos", "match": "/downloads/plat fernando(/|$)|livoreto"},
+    {"room": "ChatCupom", "floor": 2, "slot": 0, "cliente": "Fernando", "stack": "busca de cupons em conversa", "vercel": ["chatcupom"], "match": "/downloads/fernando(/|$)|chatcupom"},
+    {"room": "Beeder", "floor": 2, "slot": 1, "cliente": "Fernando", "stack": "beeder.me", "vercel": ["beeder"], "match": "/downloads/beeder(/|$)"},
+    {"room": "Livoreto", "floor": 2, "slot": 2, "cliente": "Fernando", "stack": "marketplace de eBooks e cursos", "match": "/downloads/plat fernando(/|$)|livoreto"},
     {"room": "Psicóloga Marli", "floor": 2, "slot": 3, "cliente": "Marli", "stack": "Site", "vercel": ["psicolmarli"], "match": "/documents/site mae(/|$)|psicolmarli"},
     {"room": "Projetos avulsos", "floor": 2, "slot": 4, "stack": "Pastas sem sala própria (aparece o nome da pasta)", "fallback": true},
 

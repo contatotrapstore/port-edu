@@ -567,14 +567,16 @@ function callsRoom(R){
 }
 const BUILD = {project:projectRoom, qa:qaRoom, sales:salesRoom, social:socialRoom, ads:adsRoom, studio:studioRoom, control:controlRoom, reception:receptionRoom, meeting:meetingRoom, infra:infraRoom, calls:callsRoom};
 ROOMS.forEach(R => BUILD[R.type](R));
-const CORES_CLIENTE = ['#F5B935','#5BD69E','#9EC5E8','#C8B6F0','#F2A28E','#E39B6B','#7FD1C7','#D9C27A'];
-const corCliente = c => { if (!c) return '#8E9A92'; let h = 0; for (const ch of String(c)) h = (h*31 + ch.charCodeAt(0)) >>> 0; return CORES_CLIENTE[h % CORES_CLIENTE.length]; };
+// Uma cor por cliente, na ordem em que aparecem no config (sem repetir até 12 clientes)
+const CORES_CLIENTE = ['#F5B935','#5BD69E','#9EC5E8','#C8B6F0','#F2A28E','#7FD1C7','#E39B6B','#D9C27A','#8FB8FF','#F08BB4','#B5D96B','#FFB86B'];
+const ORDEM_CLIENTES = [...new Set(ROOMS.map(R => R.cliente).filter(Boolean))];
+const corCliente = c => { const i = ORDEM_CLIENTES.indexOf(c); return i < 0 ? '#8E9A92' : CORES_CLIENTE[i % CORES_CLIENTE.length]; };
 if (REAL) ROOMS.forEach(R => {
   if (R.type === 'reception') return;
   R.cor = corCliente(R.cliente || R.name);
   const tex = canvasTex(512, 112, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.fillStyle = R.cor; c.fillRect(0,0,14,h);
     c.fillStyle = '#EDE6D6'; c.font = font(700, 40); c.fillText(short(R.name, 22), 32, 50); c.fillStyle = R.cor; c.font = font(600, 26); c.fillText(short(R.cliente || R.stack || '', 30), 32, 92); });
-  add(FLOORS[R.f].g, geo('placa', () => new THREE.PlaneGeometry(3.4, .74)), new THREE.MeshBasicMaterial({map: tex, toneMapped: false}), R.ox + RW/2, .03, R.oz + RD + .8, {rx: -Math.PI/2, cast: false, recv: false});
+  add(FLOORS[R.f].g, geo('placa', () => new THREE.PlaneGeometry(5.2, 1.13)), new THREE.MeshBasicMaterial({map: tex, toneMapped: false}), R.ox + RW/2, .03, R.oz + RD + .95, {rx: -Math.PI/2, cast: false, recv: false});
 });
 
 /* drink display (EDevsHub own design) */
