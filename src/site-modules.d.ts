@@ -28,3 +28,5 @@ declare module "@site/privacy" {
   const Component: typeof import("@/components/redesign/site/PrivacyPage").default | null;
   export default Component;
 }
+// CSS da /contratar atual: só entra no build sem EDH_NEW_SITE (ver next.config.ts).
+declare module "@current/contratar-styles";

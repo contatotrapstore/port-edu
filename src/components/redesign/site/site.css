@@ -1180,6 +1180,28 @@
   margin-top: 0.5rem;
 }
 
+/* Em telas estreitas o botão ocupa a largura toda, como na landing atual:
+   alvo de toque maior no ponto de conversão. */
+@media (width < 35rem) {
+  .edh-hire .lp-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .edh-hire .lp-btn,
+  .edh-hire .lp-btn-ghost {
+    width: 100%;
+    padding-inline: 1rem;
+  }
+}
+
+/* Abaixo de 360 px, "Pedir orçamento pelo WhatsApp" quebraria em duas linhas. */
+@media (width < 22.5rem) {
+  .edh-hire .lp-btn {
+    font-size: 1rem;
+  }
+}
+
 /* Necessidades: três entradas lado a lado. */
 .edh-needs {
   display: grid;

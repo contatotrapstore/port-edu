@@ -10,7 +10,8 @@ export const metadata: Metadata = {
   description: `${workanaStats.projectsCompleted} completed projects on Workana. Case studies covering AI automation, systems, integrations, SaaS and apps: problems, solutions and product capabilities.`,
   alternates: {
     canonical: "/en/projetos",
-    languages: { "pt-BR": "/projetos", en: "/en/projetos" },
+    // x-default só com o site novo, igual ao sitemap e às outras páginas bilíngues.
+    languages: { "pt-BR": "/projetos", en: "/en/projetos", ...(isNewSiteEnabled() ? { "x-default": "/projetos" } : {}) },
   },
   openGraph: { locale: "en_US", title: "Custom software case studies", description: "AI automation, systems, integrations, SaaS and apps: problems, solutions and product capabilities.", url: "/en/projetos", images: [portfolioOgImage] },
   twitter: { card: "summary_large_image", title: "Custom software case studies", description: "Documented projects by Eduardo Gouveia", images: [portfolioOgImage.url] },

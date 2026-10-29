@@ -14,6 +14,7 @@ const securityHeaders = [
  * e nenhuma rota atual empacota CSS, fonte ou código do site novo.
  */
 const newSite = process.env.EDH_NEW_SITE === "1";
+const off = "./src/components/redesign/site/off.ts";
 const siteModules: Record<string, string> = {
   "@site/home": "./src/components/redesign/BrandHome.tsx",
   "@site/projects": "./src/components/redesign/site/ProjectsIndex.tsx",
@@ -23,13 +24,22 @@ const siteModules: Record<string, string> = {
   "@site/hire": "./src/components/contact/HirePage.tsx",
   "@site/privacy": "./src/components/redesign/site/PrivacyPage.tsx",
 };
+/**
+ * O inverso: o que só as páginas atuais carregam. O CSS da /contratar atual
+ * estiliza as mesmas classes do DirectContact que a página nova usa; com o site
+ * novo ele sai, e /contratar e /en/contratar recebem o mesmo CSS.
+ */
+const currentModules: Record<string, string> = {
+  "@current/contratar-styles": "./src/app/contratar/landing.css",
+};
 
 const nextConfig: NextConfig = {
   transpilePackages: ["three"],
   turbopack: {
-    resolveAlias: Object.fromEntries(
-      Object.entries(siteModules).map(([name, file]) => [name, newSite ? file : "./src/components/redesign/site/off.ts"]),
-    ),
+    resolveAlias: {
+      ...Object.fromEntries(Object.entries(siteModules).map(([name, file]) => [name, newSite ? file : off])),
+      ...Object.fromEntries(Object.entries(currentModules).map(([name, file]) => [name, newSite ? off : file])),
+    },
   },
   async redirects() {
     return [

@@ -8,6 +8,7 @@ import { getRedesignCopy } from "@/components/redesign/copy";
 import { plexMono, plexSans } from "@/components/redesign/fonts";
 import HtmlLang from "@/components/redesign/site/HtmlLang";
 import { localePath } from "@/components/redesign/site/paths";
+import { siteConfig } from "@/lib/constants";
 import { getContent } from "@/lib/content.en";
 import type { Locale } from "@/lib/locale";
 import { siteUrl } from "@/lib/site";
@@ -258,6 +259,12 @@ export default function HirePage({ locale }: { locale: Locale }) {
           <nav aria-label={en ? "Footer" : "Rodapé"}>
             <a href="#cases">{t.footerCases}</a>
             <a href="#orcamento">{t.footerQuote}</a>
+            {/* Nova aba, como no rodapé do resto do site: a landing continua aberta. */}
+            {siteConfig.social.instagram ? (
+              <a href={siteConfig.social.instagram} target="_blank" rel="noopener noreferrer">
+                Instagram
+              </a>
+            ) : null}
             <Link href={privacy}>{t.footerPrivacy}</Link>
           </nav>
         </div>

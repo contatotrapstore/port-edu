@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import "./landing.css";
+// landing.css; com EDH_NEW_SITE=1 vira um módulo vazio (ver next.config.ts).
+import "@current/contratar-styles";
 import Link from "next/link";
 import Image from "next/image";
 import { offers, projects, testimonials, workanaStats } from "@/lib/constants";

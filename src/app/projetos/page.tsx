@@ -10,7 +10,8 @@ export const metadata: Metadata = {
   description: `${workanaStats.projectsCompleted} projetos realizados na Workana. Cases de automação com IA, sistemas, integrações, SaaS e apps: problemas, soluções e capacidades dos produtos.`,
   alternates: {
     canonical: "/projetos",
-    languages: { "pt-BR": "/projetos", en: "/en/projetos" },
+    // x-default só com o site novo, igual ao sitemap e às outras páginas bilíngues.
+    languages: { "pt-BR": "/projetos", en: "/en/projetos", ...(isNewSiteEnabled() ? { "x-default": "/projetos" } : {}) },
   },
   openGraph: { title: "Cases de software sob medida", description: "Automação com IA, sistemas, integrações, SaaS e apps: problemas, soluções e capacidades dos produtos.", url: "/projetos", images: [portfolioOgImage] },
   twitter: { card: "summary_large_image", title: "Cases de software sob medida", description: "Projetos documentados de Eduardo Gouveia", images: [portfolioOgImage.url] },

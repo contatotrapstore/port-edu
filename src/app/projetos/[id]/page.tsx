@@ -38,6 +38,8 @@ export async function generateMetadata({
       languages: {
         "pt-BR": `/projetos/${p.id}`,
         en: `/en/projetos/${p.id}`,
+        // x-default só com o site novo, igual ao sitemap e às outras páginas bilíngues.
+        ...(isNewSiteEnabled() ? { "x-default": `/projetos/${p.id}` } : {}),
       },
     },
     openGraph: {
