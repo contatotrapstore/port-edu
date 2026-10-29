@@ -59,7 +59,7 @@ const offersEN: Record<string, Omit<Offer, "id">> = {
 };
 
 const pt = {
-  title: "Desenvolvimento de sites, apps e sistemas sob medida",
+  title: "Desenvolvimento de sites, apps e sistemas sob medida | EDevsHub",
   description: `Contrate o desenvolvimento do seu site, app, plataforma ou sistema. Projetos a partir de R$ 3 mil, com escopo, prazo e valor definidos antes de começar. ${stats.projectsCompleted} projetos realizados na Workana, nota ${stats.rating.toLocaleString("pt-BR")} em ${stats.clientReviews} avaliações.`,
   navAnchor: "Soluções",
   heroTitle: ["Seu site, app ou sistema.", "Desenvolvido sob medida."],
@@ -133,7 +133,7 @@ const pt = {
 type HireContent = typeof pt;
 
 const en: HireContent = {
-  title: "Custom website, app and system development",
+  title: "Custom website, app and system development | EDevsHub",
   description: `Hire the development of your website, app, platform or system. Projects from R$ 3,000 (BRL), with scope, timeline and price defined before work starts. ${stats.projectsCompleted} projects completed on Workana, rated ${stats.rating} across ${stats.clientReviews} reviews.`,
   navAnchor: "Solutions",
   heroTitle: ["Your website, app or system.", "Built to fit your business."],
