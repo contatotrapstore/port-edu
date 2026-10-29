@@ -235,7 +235,7 @@ class Store extends EventEmitter {
     const { rooms, projects } = this.dayTotals();
     return {
       updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans, planInfo: PLAN_INFO,
-      rooms, projects, layout: config.layout, uptime: this.uptime || [],
+      rooms, projects, layout: config.layout, uptime: this.uptime || [], content: this.content || null,
       pending: [...this.pending.values()].map(({ resolve, timer, ...p }) => p), feed: this.feed.slice(0, 80),
       remoteApproval: !!config.remoteApproval?.enabled, away: this.away,
       roomBudgets: Object.fromEntries((config.rooms || []).filter(r => r.budgetBrl).map(r => [r.room, r.budgetBrl])),

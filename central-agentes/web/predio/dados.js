@@ -181,7 +181,7 @@ function meterInfo(m){
 }
 function creditInfo(c){
   if (!c || !c.total) return {usedPct: 0, elapsed: 0, leftover: 0, proj: (c && c.label) || 'Sem fonte de dados', cls: '', short: false, rate: 0};
-  const elapsedD = c.cycle - c.daysLeft, usedC = c.total - c.left, rate = usedC / Math.max(1, elapsedD), need = rate * c.daysLeft, usedPct = usedC / c.total * 100;
+  const elapsedD = c.elapsedDays ?? (c.cycle - c.daysLeft), usedC = c.total - c.left, rate = usedC / Math.max(1, elapsedD), need = rate * c.daysLeft, usedPct = usedC / c.total * 100;
   if (need <= c.left) return {usedPct, elapsed: elapsedD/c.cycle, leftover: c.left - need, proj:`No ritmo atual, sobram ~${num(c.left-need)} ${c.unit} na renovação`, cls:'good', short:false, rate};
   return {usedPct, elapsed: elapsedD/c.cycle, leftover:0, runout: c.left/rate, proj:`No ritmo atual, acaba em ~${Math.max(1,Math.round(c.left/rate))} dias (renova em ${c.daysLeft})`, cls:'bad', short:true, rate};
 }

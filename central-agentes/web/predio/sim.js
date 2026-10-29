@@ -255,12 +255,21 @@ function computeSuggestions(now){
   if (!REAL && w.respostas / Math.max(1, w.propostas) < .3) out.push({sev:'oportunidade', short:'Taxa de resposta', title:`Workana: ${w.respostas} respostas em ${w.propostas} propostas hoje`, body:'A taxa está abaixo de 30%. Vale o agente de Triagem filtrar só projetos com orçamento definido e cliente com histórico, e a proposta abrir citando um projeto parecido que você já entregou.', acts:[{label:'Abrir Workana', act:'room', arg:roomAt(2,0).i}]});
   if (!REAL && BIZ.funnel.Negociação >= 3) out.push({sev:'oportunidade', short:'Negociações', title:`${BIZ.funnel.Negociação} leads em negociação`, body:'Mande o agente de Follow-up priorizar esses antes dos novos. É onde está o dinheiro mais perto de entrar.', acts:[{label:'Abrir funil', act:'room', arg:roomAt(2,1).i}]});
   const idle = AGENTS.filter(a => a.state === 'idle' && a.kind === 'code');
-  if (cs && idle.length >= 2 && cs.used < 55) out.push({sev:'oportunidade', short:'Capacidade livre', title:`${idle.length} devs parados e ${Math.round(100-cs.used)}% da sessão livre`, body:`${idle.map(a => a.R.name + ' (' + a.name + ')').join(', ')} estão na convivência. Dá para puxar o próximo item do backlog antes do reset em ${fmtSpan(cs.reset - Date.now())}.`, acts:[{label:'Mandar tarefa', act:'agent', arg:idle[0].id}]});
+  if (!REAL && cs && idle.length >= 2 && cs.used < 55) out.push({sev:'oportunidade', short:'Capacidade livre', title:`${idle.length} devs parados e ${Math.round(100-cs.used)}% da sessão livre`, body:`${idle.map(a => a.R.name + ' (' + a.name + ')').join(', ')} estão na convivência. Dá para puxar o próximo item do backlog antes do reset em ${fmtSpan(cs.reset - Date.now())}.`, acts:[{label:'Mandar tarefa', act:'agent', arg:idle[0].id}]});
   const hi = creditInfo(PLAN.higgs.credit);
   if (PLAN.higgs.credit && !hi.short && hi.leftover > PLAN.higgs.credit.total*.2) out.push({sev:'oportunidade', short:'Higgsfield sobra', title:`Higgsfield: ~${num(hi.leftover)} créditos devem sobrar`, body:`Renova em ${PLAN.higgs.credit.daysLeft} dias. Use nos carrosséis da EDevsHub ou nos vídeos do Revix.`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
   const el = creditInfo(PLAN.eleven.credit);
   if (el.short) out.push({sev:'alerta', short:'ElevenLabs acaba', title:`ElevenLabs Starter acaba em ~${Math.max(1,Math.round(el.runout))} dias`, body:`Restam ${num(PLAN.eleven.credit.left)} créditos e renova em ${PLAN.eleven.credit.daysLeft} dias. Deixe as URAs para depois da renovação ou suba de plano só neste mês.`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
   const gw = PLAN.gpt.meters.find(m => /semanal/i.test(m.label)) || PLAN.gpt.meters[1], gi = gw ? meterInfo(gw) : {};
   if (gw && gw.used < 35 && gi.elapsed > .3) out.push({sev:'economia', short:'Codex sobrando', title:`ChatGPT 5x em ${Math.round(gw.used)}% na semana`, body:`São ${brl(PLAN.gpt.brl)} por mês com bastante Codex sobrando. Coloque o Codex para revisar os PRs no QA em paralelo.`, acts:[{label:'Ver planos', act:'tab', arg:'planos'}]});
+  if (REAL && window.EDH_CONTENT){
+    const studio = ROOMS.find(R => R.type === 'studio');
+    for (const m of window.EDH_CONTENT.marcas || []){
+      const arroba = '@' + (m.instagram || m.marca), acts = studio ? [{label:'Abrir estúdio', act:'room', arg:studio.i}] : [];
+      if (m.erroPublicador || (m.saudeInstagram && m.saudeInstagram !== 'verified')) out.push({sev:'alerta', short:'Instagram ' + arroba, title:`${arroba}: publicação automática com problema`, body: m.erroPublicador ? 'O publicador do Content Studio registrou erro. Os próximos posts podem não sair; confira em /admin.' : `A conexão com o Instagram está "${m.saudeInstagram}". Reconecte no Content Studio.`, acts});
+      if (m.emRevisao > 0) out.push({sev:'oportunidade', short:`${m.emRevisao} posts p/ aprovar`, title:`${arroba}: ${m.emRevisao} posts esperando sua aprovação`, body:`Com ${m.agendados} já agendados. Aprovar agora mantém a fila cheia${m.proximos && m.proximos[0] ? '; o próximo sai ' + m.proximos[0].quando : ''}.`, acts});
+      if (m.publicacao && m.agendados === 0) out.push({sev:'alerta', short:'Fila vazia ' + arroba, title:`${arroba} sem nenhum post agendado`, body:'A publicação está ligada, mas a fila acabou. Gere ou aprove posts no Content Studio.', acts});
+    }
+  }
   return out.sort((x,y) => SEV[x.sev].o - SEV[y.sev].o);
 }

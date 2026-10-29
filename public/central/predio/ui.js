@@ -115,6 +115,7 @@ window.addEventListener('keydown', e => {
   else if (k === '0') goFocus(null);
   else if (k >= '1' && k <= '8'){ const list = ROOMS.filter(R => R.f === view.floor).sort((x,y) => x.slot - y.slot); const R = list[+k - 1]; if (R) goRoom(R.i); }
   else if (k === '9') goFocus('copa');
+  else if (k === 'r') toggleReplay();
   else if (k === 'f'){ follow = !follow; syncFollow(); } else if (k === 't') toggleImmersive(); else if (k === 'p') toggleDrawer(); else if (k === 'n') nextWaiting(); else if (k === 'v') toggleTV();
   else if (k === 'escape'){ if (document.body.classList.contains('tv')) toggleTV(); else if (document.body.classList.contains('immersive')) toggleImmersive(false); }
 });
@@ -258,6 +259,7 @@ document.addEventListener('click', e => {
   if (act === 'wake'){ const a = agentBy(+arg); if (a && a.state === 'idle') assignTask(a, pick(a.prompts)); }
   if (act === 'sendTask'){ if (!selected) return; const ta = $('taskText'), v = ta && ta.value.trim(); if (!v){ toast('Escreva a tarefa antes de enviar'); return; } assignTask(selected, v); ta.value = ''; }
   if (act === 'live') goLive();
+  if (act === 'replay') toggleReplay();
   dirty = true;
 });
 
@@ -320,4 +322,10 @@ scrub.addEventListener('input', () => {
   replayIdx = i; $('replay').classList.add('past'); $('liveLbl').textContent = 'Voltar ao vivo';
   const d = new Date(SNAPS[i].t); $('scrubTime').textContent = d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 });
+// A linha do tempo continua gravando em segundo plano; a barra só aparece quando você pede
+function toggleReplay(force){
+  const el = $('replay'), on = force ?? el.hidden;
+  el.hidden = !on; $('btnReplay').classList.toggle('on', on);
+  if (!on) goLive();
+}
 function goLive(){ replayIdx = -1; $('replay').classList.remove('past'); $('liveLbl').textContent = 'Ao vivo'; $('scrubTime').textContent = 'agora'; scrub.value = scrub.max; }

@@ -89,3 +89,6 @@ end $$;
 
 -- 6) Quem já é admin do Content Studio entra direto. Para liberar outra conta: entre uma vez em /central e rode a linha abaixo trocando o e-mail.
 -- insert into public.central_admins (user_id) select id from auth.users where email = 'SEU-EMAIL-AQUI' on conflict do nothing;
+
+-- Avisa a API do Supabase (PostgREST) das tabelas e funções novas
+notify pgrst, 'reload schema';

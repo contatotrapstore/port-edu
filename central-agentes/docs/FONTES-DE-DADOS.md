@@ -23,6 +23,11 @@ Cada fonte tem uma seção **Conferir**: são pontos escritos com base no format
 - Subagentes ficam em `<projeto>/<sessão>/subagents/agent-*.jsonl`, com um `agent-*.meta.json` ao lado (`agentType`, `description`). O nome no painel vem daí.
 - Texto colado chega como `<pasted_content ...>`; o painel mostra só o que foi digitado, ou "[texto colado]".
 
+### Quais conversas entram (conferido em 29/10/2026)
+- **Entram:** Claude Code no terminal, na extensão do VS Code e no Claude Desktop (modo Code), porque gravam em `~/.claude/projects`; Codex CLI, app do Codex e a **extensão Codex do Chrome** (o conector local roda o Codex no PC e grava em `~/.codex/sessions`); subagentes.
+- **Não entram:** conversas no claude.ai (navegador ou app) e na extensão **Claude in Chrome** usada pelo painel lateral, e no chatgpt.com. Elas ficam nos servidores da Anthropic/OpenAI, sem arquivo no PC e sem API pública de histórico. Para aparecerem no prédio, rode a tarefa pelo Claude Code (que controla o Chrome pelo MCP/extensão) ou pelo Codex: aí ela cai na sala da pasta onde foi aberta.
+- `~/.codex/archived_sessions`: sessões antigas, comprimidas (.zst); ignoradas.
+
 ## 2. Claude Code — hooks
 Configurados em `~/.claude/settings.json` → `hooks`. O script recebe um JSON no stdin com, entre outros: `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `tool_name`, `tool_input`, `prompt` (em `UserPromptSubmit`), `message` (em `Notification`).
 

@@ -392,6 +392,21 @@ function studioRoom(R){
     const NONE = {left: 0, total: 1, none: true}, H = PLAN.higgs.credit || NONE, E = PLAN.eleven.credit || NONE;
     const left = c => c.label ? c.label.split(' ·')[0] : c.none ? 'sem fonte' : num(c.left);
     const frac = c => c.total ? c.left / c.total : 0;
+    const marcas = REAL && window.EDH_CONTENT ? window.EDH_CONTENT.marcas || [] : [];
+    if (marcas.length){
+      // Esquerda: Instagram automático (Content Studio). Direita: créditos de voz e imagem
+      const m = marcas[0];
+      g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText(`@${m.instagram || m.marca} · ${m.publicacao ? (m.modo === 'approved' ? 'publica o que você aprovar' : 'publicação automática') : 'publicação pausada'}`, 34, 98);
+      g.fillStyle = '#EDE6D6'; g.font = font(700, 56); g.fillText(`${m.publicadosHoje} hoje`, 34, 160);
+      g.fillStyle = '#8E9A92'; g.font = font(500, 20); g.fillText(`${m.agendados} agendados · ${m.emRevisao} em revisão · ${m.publicados7d} na semana`, 34, 194);
+      g.fillStyle = m.erroPublicador || (m.saudeInstagram && m.saudeInstagram !== 'verified') ? '#FF6B5E' : '#5BD69E'; g.beginPath(); g.arc(300, 140, 9, 0, 7); g.fill();
+      if (marcas.length > 1){ g.fillStyle = '#8E9A92'; g.font = font(500, 18); g.fillText('+ ' + marcas.slice(1).map(x => '@' + (x.instagram || x.marca) + ' ' + x.publicadosHoje + ' hoje').join(' · '), 330, 150); }
+      g.fillStyle = '#8E9A92'; g.font = font(500, 20); g.fillText('ElevenLabs', 640, 98); g.fillText('Higgsfield', 840, 98);
+      g.fillStyle = '#EDE6D6'; g.font = font(700, 38); g.fillText(left(E), 640, 150); g.fillText(left(H), 840, 150);
+      g.fillStyle = '#1F2C27'; g.fillRect(640, 172, 170, 10); g.fillRect(840, 172, 140, 10);
+      g.fillStyle = E.total && frac(E) < .35 ? '#FF6B5E' : '#F0E2B6'; g.fillRect(640, 172, 170*frac(E), 10); g.fillStyle = '#C8B6F0'; g.fillRect(840, 172, 140*frac(H), 10);
+      return;
+    }
     g.fillStyle = '#8E9A92'; g.font = font(500, 22); g.fillText('Higgsfield · créditos', 34, 98); g.fillText('ElevenLabs · créditos', 540, 98);
     g.fillStyle = '#EDE6D6'; g.font = font(700, 56); g.fillText(left(H), 34, 160); g.fillText(left(E), 540, 160);
     g.fillStyle = '#1F2C27'; g.fillRect(34, 180, 440, 12); g.fillRect(540, 180, 440, 12);
@@ -399,10 +414,16 @@ function studioRoom(R){
   });
   wallScreen(R.sides.N.tall, 5.2, 1.12, -1.6, 1.75, R.big);
   const mood = canvasTex(768, 300, (g, w, h) => {
+    const fila = REAL && window.EDH_CONTENT ? (window.EDH_CONTENT.marcas || []).flatMap(m => (m.proximos || []).map(p => ({...p, marca: m.marca}))).slice(0, 5) : [];
+    if (fila.length){   // fila real de posts agendados no Content Studio
+      g.fillStyle = '#1A1F1D'; g.fillRect(0,0,w,h); g.fillStyle = '#C8B6F0'; g.font = font(700, 22); g.fillText('PRÓXIMOS POSTS', 24, 40);
+      fila.forEach((p, i) => { const y = 82 + i*46; g.fillStyle = '#F5D76E'; g.font = font(700, 19); g.fillText(p.quando, 24, y); g.fillStyle = '#EDE6D6'; g.font = font(500, 19); g.fillText(short(p.tema || '', 48), 160, y); });
+      return;
+    }
     g.fillStyle = '#1A1F1D'; g.fillRect(0,0,w,h); g.fillStyle = '#8E9A92'; g.font = font(700, 22); g.fillText('MOODBOARD · CAMPANHAS', 24, 40);
     ['#B07A5A','#D9C2A7','#6B4E3D','#E8D9C4','#F5B935','#16211D','#FF6B5E','#D4B596'].forEach((c,k) => { const x = 24 + (k%4)*182, y = 60 + Math.floor(k/4)*118; g.fillStyle = c; g.fillRect(x, y, 170, 106); g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(x, y, 170, 22); });
   });
-  wallBoard(R.sides.W.tall, 4.6, 1.8, -.6, 1.5, mood);
+  wallBoard(R.sides.W.tall, 4.6, 1.8, -.6, 1.5, mood); R.board = mood;   // redesenha junto com as outras telas
   R.desks = [1.7, 4.8].map((dx, i) => { const d = desk(R.st, dx, 2.6, {screen:'idle', headphones:true}); chair(R.st, dx, 3.45, 0); return d; });
   const bg = new THREE.Group(); bg.position.set(8.1, 0, 2.1); R.st.add(bg);
   box(bg, 2.6, .05, 2.6, M.charcoal, 0, .025, 0);

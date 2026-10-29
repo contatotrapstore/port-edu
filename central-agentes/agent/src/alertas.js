@@ -48,6 +48,13 @@ function check() {
     }
   }
   const usdBrl = config.usdBrl || 5.4, today = dayKey();
+  for (const m of s.content?.marcas || []) {
+    const k = `ig|${m.marca}|${today}`;
+    if (m.erroPublicador && !sent.has(k + '|pub')) { mark(k + '|pub'); notify(`📸 <b>@${esc(m.instagram || m.marca)}</b>: o publicador do Content Studio registrou erro. Confira em /admin.`); }
+    if (m.instagram && m.saudeInstagram && m.saudeInstagram !== 'verified' && !sent.has(k + '|saude')) { mark(k + '|saude'); notify(`📸 <b>@${esc(m.instagram)}</b>: conexão com o Instagram "${esc(m.saudeInstagram)}". Os posts automáticos podem parar.`); }
+    if (m.tokenExpiraEm && Date.parse(m.tokenExpiraEm) - Date.now() < 7 * 86400e3 && !sent.has(k + '|token')) { mark(k + '|token'); notify(`📸 <b>@${esc(m.instagram || m.marca)}</b>: o acesso ao Instagram expira em ${when(Date.parse(m.tokenExpiraEm))}. Renove no Content Studio.`); }
+    if (m.jobsFalhos24h > 0 && !sent.has(k + '|jobs')) { mark(k + '|jobs'); notify(`📸 <b>${esc(m.marca)}</b>: ${m.jobsFalhos24h} geração(ões) de post falharam nas últimas 24 h.`); }
+  }
   for (const u of s.uptime || []) {
     const key = `site|${u.site}|${today}`;
     if (!u.ok && !sent.has(key)) { mark(key); notify(`🌐 <b>${esc(u.site)}</b> fora do ar (${u.status ? 'HTTP ' + u.status : esc(u.erro || 'sem resposta')}).`); }

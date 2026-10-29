@@ -72,6 +72,13 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [x] Telas reais: recepção, telão do térreo, daily do 1º, sino das entregas e "o que os planos renderam no mês" no 2º, monitor dos sites na TI (+ alerta de site fora do ar)
 - [ ] useconvoo.com.br não resolve no DNS (NXDOMAIN em 29/10/2026): conferir o domínio
 
+## Fase 2.6 — salas por projeto e Instagram (29/10/2026)
+- [x] Salas com o nome do projeto e o cliente embaixo (ex.: ChatCupom, Beeder e Livoreto são do Fernando; King Prime é do Renato; Fisko do Alberto; Ligou Chegou do Danyllo; MX Corp do Marcelo; StayDirect e Meu Financeiro são produtos)
+- [x] Estúdio ligado ao Content Studio: posts publicados hoje, agendados, em revisão, fila dos próximos posts, saúde da conexão com o Instagram (função `central_content_summary`, `supabase/central-conteudo.sql`); sugestões e alertas de Instagram
+- [x] Barra de replay escondida; abre no botão "Replay" ou na tecla R (a linha do tempo continua gravando)
+- [ ] Revix no Content Studio: quando a marca for cadastrada lá, aparece sozinha no Estúdio
+- [ ] Novo projeto do Fernando: criar a sala em `config.json` quando começar (até lá cai em Projetos avulsos com o nome da pasta)
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)

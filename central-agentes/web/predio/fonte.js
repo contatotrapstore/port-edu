@@ -126,7 +126,8 @@ function realPlans(s){
       p.meters = (src.meters || []).map(m => ({label: m.label, used: m.usedPct || 0, reset: m.resetAt || 0, win: /semanal|dias/i.test(m.label) ? D7 : H5}));
       p.sourceNote = p.id === 'gpt' ? 'Aguardando leitura do Codenotch ou de uma sessão do Codex.' : 'Aguardando leitura do Codenotch.';
     } else if (p.id === 'eleven'){
-      p.credit = src.source === 'api' && src.limit ? {total: src.limit, left: Math.max(0, src.limit - (src.used || 0)), unit: 'créditos', daysLeft: Math.max(0, Math.ceil(((src.resetAt || 0) - Date.now()) / 86400e3)), cycle: 30, mix: {}} : null;
+      const restam = Math.max(0, ((src.resetAt || 0) - Date.now()) / 86400e3);   // ciclo mensal: ~30,4 dias
+      p.credit = src.source === 'api' && src.limit ? {total: src.limit, left: Math.max(0, src.limit - (src.used || 0)), unit: 'créditos', daysLeft: Math.ceil(restam), cycle: 30.4, elapsedDays: Math.max(0.5, 30.4 - restam), mix: {}} : null;
       p.sourceNote = src.source === 'sem chave' ? 'Sem chave da ElevenLabs. Coloque ELEVENLABS_API_KEY (só leitura) em agent/.env.' : 'ElevenLabs: ' + (src.source || 'sem leitura');
     } else if (p.id === 'higgs'){
       const tot = i.manualCreditsTotal, left = i.manualCreditsLeft;
@@ -167,6 +168,7 @@ function realApply(s, first){
   // Quadro de cada sala: o que as sessões de lá estão fazendo (começo do último prompt)
   for (const R of ROOMS) R.tasks = [...new Set(R.agents.map(a => a.prompt).filter(Boolean).map(p => p.replace(/^["\s]+/, '').split(/\s+/).slice(0, 2).join(' ')))];
   BIZ.uptime = (s.uptime || []).map(u => [u.site, u.upPct, u.ok]);
+  window.EDH_CONTENT = s.content || null;   // posts e reels do Content Studio (Estúdio e sugestões)
 
   FEED.length = 0;
   for (const f of s.feed || []) FEED.push(toEv(f, REAL_AGENTS.get(f.agentId) || {R: {name: REAL_ROOM.get(f.agentId) || 'Sessão encerrada'}, name: ''}));
