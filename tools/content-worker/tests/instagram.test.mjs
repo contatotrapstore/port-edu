@@ -14,3 +14,11 @@ test('verification rejects another Instagram account before any publish call',as
 test('network uncertainty after POST is explicit and request does not retry',async()=>{
  let calls=0;await assert.rejects(instagramRequest('secret','123/media_publish',{creation_id:'456'},'POST',async(url,options)=>{calls++;assert.equal(url.href.includes('secret'),false);assert.equal(options.headers.Authorization,'Bearer secret');throw Error('timeout');}),/provider_outcome_unknown/);assert.equal(calls,1);
 });
+test('provider rejection keeps code and text for the caller, but never in serialized errors',async()=>{
+ const error=await instagramRequest('secret','123/media',{caption:'x'},'POST',async()=>({ok:false,json:async()=>({error:{message:'Invalid parameter',code:100,error_subcode:2207000,error_user_title:'Collaborator',error_user_msg:'The user cannot be added as a collaborator'}})})).catch(e=>e);
+ assert.equal(error.message,'instagram_request_rejected');
+ assert.deepEqual(error.provider,{code:100,subcode:2207000,text:'Invalid parameter Collaborator The user cannot be added as a collaborator'});
+ assert.equal(JSON.stringify(error),'{}');assert.equal(Object.keys(error).length,0);
+ const expired=await instagramRequest('secret','me',{},'GET',async()=>({ok:false,json:async()=>({error:{code:190,message:'expired'}})})).catch(e=>e);
+ assert.equal(expired.message,'instagram_reconnect_required');
+});

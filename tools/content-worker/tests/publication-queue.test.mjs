@@ -64,4 +64,31 @@ test('uncertain sends reconcile read-only while later schedules remain eligible'
   assert.deepEqual((await db.query('select state from content_studio.publications order by revision_id')).rows.map(r=>r.state),['unknown','publishing']);
  }finally{await db.close();}
 });
-
+// Post pronto importado: imagens JPEG publicáveis, sem rótulo de IA e com Collab vindo do brief
+for(const [format,brief,expectAi,expectCollab] of [['carousel',{production:'manual-only',ai_generated:false,collaborators:['formula.foto']},undefined,'["formula.foto"]'],['story',{production:'manual-only',collaborators:['formula.foto']},undefined,undefined],['carousel',{},'true',undefined]])test(`queue sends ${format} JPEG media with brief ${JSON.stringify(brief)}`,async()=>{
+ const n=format==='carousel'?2:1;
+ const assets=[...Array.from({length:n},(_,i)=>({id:'j'+i,sha256:'x',kind:'jpg',object_key:`r/${i+1}.jpg`,provenance:{format,slide:i+1,width:1080,height:format==='story'?1920:1350,publish:true,qa:'image-checked'}})),{id:'p',sha256:'x',kind:'png',object_key:'r/capa.png',provenance:{slide:1}}];
+ const hash=fingerprint(assets),signed=[],provider=[];let saved=null;
+ const db={query:async(sql,args)=>{
+  if(sql.includes("state in ('publishing','unknown')"))return {rows:[]};
+  if(sql.startsWith('select * from content_studio.settings'))return {rows:[{publication_enabled:true,publication_mode:'approved',brand_id:'b'}]};
+  if(sql.startsWith('select health'))return {rows:[{health:'verified',expires_at:'2099-01-01'}]};
+  if(sql.startsWith('select s.*,p.id'))return {rows:[{id:'s',post_id:'p',revision_id:'r',active_revision_id:'r',format,brief,slides:['a','b'],caption:'Legenda',asset_fingerprint:hash,approval_mode:'approved',due:false}]};
+  if(sql.startsWith('select id,sha256'))return {rows:assets};
+  if(sql.startsWith('select metadata'))return {rows:[{metadata:{decision:'approved',assetFingerprint:hash}}]};
+  if(sql.startsWith('select active_revision_id'))return {rows:[{active_revision_id:'r',state:'ready'}]};
+  if(sql.startsWith('select * from content_studio.publications'))return {rows:[{id:'u',state:'creating',provider_container_ids:saved||{}}]};
+  if(sql.startsWith('select t.publication_enabled'))return {rows:[{publication_enabled:true,state:'scheduled',publication_mode:'approved'}]};
+  if(sql.startsWith('update content_studio.publications set provider_container_ids'))saved=JSON.parse(args[0]);
+  return {rows:[]};
+ }};
+ const deps={api:async(e,p,m)=>{provider.push({e,p,m});return m==='POST'?{id:String(100+provider.length)}:{status_code:'FINISHED'};},sign:async key=>{signed.push(key);return 'https://example.test/'+key;}};
+ for(let i=0;i<n+1;i++)await publicationTick(db,deps);
+ assert.deepEqual([...new Set(signed)],assets.filter(a=>a.kind==='jpg').map(a=>a.object_key));
+ const posts=provider.filter(c=>c.m==='POST');
+ if(format==='carousel')assert.deepEqual(posts.slice(0,2).map(c=>c.p),[{image_url:'https://example.test/r/1.jpg',is_carousel_item:'true'},{image_url:'https://example.test/r/2.jpg',is_carousel_item:'true'}]);
+ const parent=posts.at(-1).p;
+ assert.equal(parent.media_type,format==='carousel'?'CAROUSEL':'STORIES');
+ if(format==='story')assert.equal(parent.image_url,'https://example.test/r/1.jpg');
+ assert.equal(parent.is_ai_generated,expectAi);assert.equal(parent.collaborators,expectCollab);
+});

@@ -1,4 +1,4 @@
-import {fingerprint,publicationEligibility} from './publication-policy.mjs';
+import {fingerprint,publicationEligibility,publishableMedia,aiGenerated,collaboratorsOf} from './publication-policy.mjs';
 import {advancePublication} from './publication-step.mjs';
 import {EXPECTED_ACCOUNT} from './instagram-core.mjs';
 
@@ -56,7 +56,7 @@ export async function publicationTick(db,{api,sign,shouldContinue=()=>true,brand
  // Unknown sends must be reconciled, never marked missed or retried.
  await db.query("update content_studio.schedules s set state='missed' where s.account_id=$1 and s.state='scheduled' and (s.local_date+s.local_time) at time zone s.timezone<now()-interval '15 minutes' and not exists(select 1 from content_studio.publications u where u.revision_id=s.revision_id and u.state in ('publishing','unknown','published'))",[ACCOUNT]);
  await db.query("update content_studio.posts p set state='paused' where state='publishing' and exists(select 1 from content_studio.schedules s where s.revision_id=p.active_revision_id and s.state='missed')");
- const schedule=(await db.query(`select s.*,p.id as post_id,p.active_revision_id,p.state as post_state,r.slides,r.caption,case when r.brief ? 'format' then r.brief->>'format' else 'carousel' end as format,
+ const schedule=(await db.query(`select s.*,p.id as post_id,p.active_revision_id,p.state as post_state,r.slides,r.caption,r.brief,case when r.brief ? 'format' then r.brief->>'format' else 'carousel' end as format,
  ((s.local_date+s.local_time) at time zone s.timezone)<=now() as due
  from content_studio.schedules s join content_studio.revisions r on r.id=s.revision_id join content_studio.posts p on p.id=r.post_id
  where s.account_id=$1 and s.state='scheduled' and (s.local_date+s.local_time) at time zone s.timezone<=now()+interval '20 minutes'
@@ -99,18 +99,22 @@ export async function publicationTick(db,{api,sign,shouldContinue=()=>true,brand
    if(['complete','failed','unknown'].includes(state.phase)){
     await db.query('update content_studio.posts set state=$1 where id=$2',[{complete:'published',failed:'paused',unknown:'publishing_unknown'}[state.phase],schedule.post_id]);
     if(state.phase!=='unknown')await db.query('update content_studio.schedules set state=$1 where id=$2',[state.phase==='complete'?'completed':'paused',schedule.id]);
-    await db.query("insert into content_studio.events(actor,entity_id,action,metadata) values('publisher',$1,$2,$3)",[schedule.post_id,'publication.'+state.phase,JSON.stringify({revisionId:schedule.revision_id,mediaId:state.mediaId||null})]);
+    await db.query("insert into content_studio.events(actor,entity_id,action,metadata) values('publisher',$1,$2,$3)",[schedule.post_id,'publication.'+state.phase,JSON.stringify({revisionId:schedule.revision_id,mediaId:state.mediaId||null,...(state.warnings?.length?{warnings:state.warnings}:{})})]);
    }
    await db.query('commit');
   }catch(e){await db.query('rollback');throw e;}
  };
  let previous=Array.isArray(publication.provider_container_ids)?{}:publication.provider_container_ids;
  if(publication.state==='published')previous={...previous,phase:'complete'};
- const videos=assets.filter(a=>a.kind==='mp4').sort((a,b)=>a.provenance.slide-b.provenance.slide);
+ // Vídeos e imagens publicáveis (JPEG marcado no import), na ordem dos slides.
+ const media=publishableMedia(assets);
  // URLs last 1 hour, generated only for this authorized publication attempt.
- const urls=await Promise.all(videos.map(a=>sign(a.object_key)));
+ const urls=await Promise.all(media.map(a=>sign(a.object_key)));
  try{
-  const result=await advancePublication({enabled:true,due:schedule.due,accountId:ACCOUNT,caption:schedule.caption,format:schedule.format,videos:urls,coverMs:videos[0]?.provenance?.cover_ms},previous,api,save,allow);
+  const result=await advancePublication({enabled:true,due:schedule.due,accountId:ACCOUNT,caption:schedule.caption,format:schedule.format,
+   media:media.map((a,i)=>({type:a.kind==='mp4'?'video':'image',url:urls[i]})),coverMs:media[0]?.provenance?.cover_ms,
+   // rótulo de IA e Collab vêm da revisão (brief); Story não leva Collab
+   aiGenerated:aiGenerated(schedule.brief),collaborators:schedule.format==='story'?[]:collaboratorsOf(schedule.brief)},previous,api,save,allow);
   if(result.phase==='complete'&&result.mediaId){
    try{const media=await api(result.mediaId,{fields:'permalink'},'GET');if(/^https:\/\/www\.instagram\.com\//.test(media.permalink||''))await db.query('update content_studio.publications set permalink=$1 where id=$2',[media.permalink,publication.id]);}catch{/* Publication already persisted; permalink is optional. */}
   }

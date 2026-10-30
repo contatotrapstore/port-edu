@@ -20,7 +20,12 @@ export async function instagramRequest(token,endpoint,params={},method='GET',tra
  else options.body=new URLSearchParams(params);
  let response;try{response=await transport(url,options);}catch{throw Error(method==='POST'?'provider_outcome_unknown':'provider_unavailable');}
  let data;try{data=await response.json();}catch{throw Error(method==='POST'?'provider_outcome_unknown':'provider_invalid_response');}
- if(!response.ok||data.error)throw Error(data.error?.code===190?'instagram_reconnect_required':'instagram_request_rejected');
+ if(!response.ok||data.error){
+  const error=Error(data.error?.code===190?'instagram_reconnect_required':'instagram_request_rejected'),e=data?.error;
+  // Detalhe da recusa só para decidir a reação (ex.: Collab recusado). Não enumerável: nunca é impresso nem gravado.
+  if(e&&typeof e==='object')Object.defineProperty(error,'provider',{enumerable:false,value:{code:Number.isInteger(e.code)?e.code:null,subcode:Number.isInteger(e.error_subcode)?e.error_subcode:null,text:[e.message,e.error_user_title,e.error_user_msg].filter(v=>typeof v==='string').join(' ').slice(0,500)}});
+  throw error;
+ }
  return data;
 }
 export async function verifyInstagram(token,transport=fetch,expected={id:EXPECTED_ACCOUNT,username:'edevshub'}){
