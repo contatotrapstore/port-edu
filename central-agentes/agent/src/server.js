@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { ROOT_DIR, PORT, config, DATA_DIR, roomFor, ENV_DO_AGENTE } from './config.js';
 import { store } from './store.js';
+import { targetOf } from './util.js';
 import { readCosts } from './history.js';
 import { spawn, spawnSync } from 'node:child_process';
 import { postar, lerQuadro, delegar, tarefa, listaTarefas, modelosFluxo, iniciarFluxo, pastaDoProjeto } from './orquestra.js';
@@ -36,13 +37,10 @@ function abrirSessao(cwd, para, prompt, { sid = '', retomar = false } = {}) {
 /** Traz para a frente a janela da sessão: o terminal aberto pela Central ("Central · projeto") ou a janela com a pasta no título
  *  (VS Code, terminal). Os nomes vão por variável de ambiente, nunca pela linha de comando. */
 function focarJanela(cwd, projeto) {
-  const script = "$sh = New-Object -ComObject WScript.Shell; foreach ($t in @($env:EDH_A, $env:EDH_B)) { if (-not $t) { continue }; " +
-    "$ordem = @('Code', 'WindowsTerminal', 'powershell', 'pwsh', 'Cursor'); " +   // onde as sessões costumam rodar vem primeiro
-    "$p = Get-Process | Where-Object { $_.MainWindowHandle -ne 0 -and $_.MainWindowTitle -like ('*' + $t + '*') } | Sort-Object { $i = $ordem.IndexOf($_.ProcessName); if ($i -lt 0) { 99 } else { $i } } | Select-Object -First 1; " +
-    "if ($p) { [void]$sh.AppActivate($p.Id); 'ok ' + $p.ProcessName; exit } }; 'nada'";
-  const r = spawnSync('powershell.exe', ['-NoProfile', '-Command', script], { encoding: 'utf8', timeout: 8000, windowsHide: true,
-    env: { ...process.env, EDH_A: 'Central · ' + (projeto || ''), EDH_B: path.basename(cwd || '') } });
-  return String(r.stdout || '').trim();
+  // varre todas as janelas (Trae/VS Code têm várias por processo) e prefere editor e terminal; ver scripts/focar.ps1
+  const pasta = String(cwd || '').replace(/[\\/]+$/, ''), termos = ['Central · ' + (projeto || ''), path.basename(pasta), projeto, pasta].filter(t => t && t.length > 1);
+  const r = spawnSync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(ROOT_DIR, 'agent', 'scripts', 'focar.ps1'), '-Termos', termos.join(',')], { encoding: 'utf8', timeout: 10000, windowsHide: true });
+  return String(r.stdout || '').trim().split(/\r?\n/).pop();
 }
 const WEB = path.join(ROOT_DIR, 'web');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon' };
@@ -110,7 +108,7 @@ const server = http.createServer(async (req, res) => {
         // Espera resposta remota se o painel está à vista ou se o modo ausente está ligado (celular); senão, terminal
         const panelVisible = Date.now() - panelSeenAt <= PANEL_FRESH_MS;
         if (!ra.enabled || (!panelVisible && !store.away)) {
-          const text = (h.tool_name || '') + ' ' + JSON.stringify(h.tool_input || {}).slice(0, 120);
+          const text = targetOf(h.tool_name, h.tool_input) || (h.tool_name || '') + ' ' + JSON.stringify(h.tool_input || {}).slice(0, 120);
           store.setState(a, 'waiting'); a.waitCmd = text; store.event(a, 'wait', 'Permissão', 'Pede permissão no terminal: ' + text);
           return send(res, 200, { decision: null });
         }

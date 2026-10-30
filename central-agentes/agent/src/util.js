@@ -13,6 +13,8 @@ export const toolPt = t => TOOL_PT[t] || (String(t).startsWith('mcp__') ? 'Integ
 export function targetOf(tool, input) {
   if (!input) return '';
   if (typeof input === 'string') { try { input = JSON.parse(input); } catch { return input.slice(0, 160); } }
+  // pergunta do agente (AskUserQuestion): mostra o texto da pergunta, não o JSON
+  if (Array.isArray(input.questions) && input.questions[0]?.question) return 'Pergunta: ' + String(input.questions[0].question).replace(/\s+/g, ' ').trim().slice(0, 150);
   const v = input.file_path || input.notebook_path || input.path || input.command || input.cmd || input.pattern || input.url || input.query || input.description || input.prompt;
   let s = Array.isArray(v) ? v.join(' ') : String(v ?? '');
   if (input.file_path || input.notebook_path) s = s.replace(/\\/g, '/');
