@@ -31,7 +31,7 @@ function tvTick(now){
   const d = new Date();
   $('tvHora').textContent = d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
   $('tvData').textContent = d.toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'});
-  const trab = AGENTS.filter(a => a.state === 'working'), esp = AGENTS.filter(a => a.state === 'waiting'), err = AGENTS.filter(a => a.state === 'error');
+  const trab = AGENTS.filter(a => a.state === 'working'), esp = AGENTS.filter(a => a.state === 'waiting'), err = AGENTS.filter(a => a.state === 'error'), fim = AGENTS.filter(a => vis(a) === 'done');
   // legenda do andar: aparece por alguns segundos quando o andar troca
   const andar = view.building ? 'O prédio inteiro' : FLOORS[view.floor].short + ' · ' + FLOORS[view.floor].name;
   if (andar !== tvAndar){ tvAndar = andar; tvAndarAte = now + 6000; }
@@ -44,7 +44,7 @@ function tvTick(now){
   $('tvTarefas').textContent = COMPANY.tasks;
   $('tvTrab').textContent = trab.length;
   $('tvEsp').textContent = esp.length; $('tvEspBox').classList.toggle('alert', esp.length > 0);
-  setHTML($('tvAgora'), [...esp, ...err, ...trab].slice(0, 6).map(a => `<li><i style="background:${ST[a.state]}"></i><span><b>${esc(a.R.name)}</b><small>${esc(a.name)}${a.state === 'working' && a.tool ? ' · ' + esc(TOOL_PT[a.tool] || a.tool) : a.state === 'waiting' ? ' · precisa de você' : a.state === 'error' ? ' · erro' : ''}</small></span></li>`).join('') || '<li class="vazio">Todo mundo em pausa</li>');
+  setHTML($('tvAgora'), [...esp, ...err, ...fim, ...trab].slice(0, 6).map(a => `<li><i style="background:${ST[vis(a)]}"></i><span><b>${esc(a.R.name)}</b><small>${esc(a.name)}${a.state === 'working' && a.tool ? ' · ' + esc(TOOL_PT[a.tool] || a.tool) : a.state === 'waiting' ? ' · precisa de você' : a.state === 'error' ? ' · erro' : vis(a) === 'done' ? ' · terminou, não visto' : ''}</small></span></li>`).join('') || '<li class="vazio">Todo mundo em pausa</li>');
   // faixa: só troca quando chega coisa nova (trocar a cada segundo reiniciaria a animação)
   // num telão não aparecem comandos nem textos de pedido: só quem fez o quê (sala · acontecimento)
   // erro de ferramenta (um comando que falhou) é comum e assusta no telão: o erro de verdade já aparece no "Agora" e na cor do boneco

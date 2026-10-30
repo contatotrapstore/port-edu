@@ -2,7 +2,7 @@
    tabbed side panel on the right. Immersive and TV modes make the office full-window. Single dark look on purpose (night office). */
 :root{
   --bg:#0B1210; --panel:#111A17; --panel-2:#16211D; --line:#22302B; --fg:#EDE6D6; --muted:#8E9A92; --body:#CFC9BB;
-  --amber:#F5B935; --amber-soft:rgba(245,185,53,.12); --ok:#5BD69E; --wait:#FFD84A; --err:#FF6B5E; --idle:#6F837B;
+  --amber:#F5B935; --amber-soft:rgba(245,185,53,.12); --ok:#5BD69E; --wait:#FFD84A; --err:#FF6B5E; --idle:#6F837B; --done:#7CC4FF;
   --f-body:'Instrument Sans','Segoe UI',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
   color-scheme:dark;
 }
@@ -156,6 +156,8 @@ button.chip.alert b{color:var(--wait)}
 .pill i{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
 .s-working{color:var(--ok);border-color:rgba(91,214,158,.4);background:rgba(91,214,158,.07)}
 .s-waiting{color:var(--wait);border-color:rgba(255,216,74,.45);background:rgba(255,216,74,.08)}
+.s-done{color:var(--done);border-color:rgba(124,196,255,.45);background:rgba(124,196,255,.08)}
+.lb .bang.ok{background:var(--done);color:#06182A}
 .s-error{color:var(--err);border-color:rgba(255,107,94,.45);background:rgba(255,107,94,.08)}
 .s-idle{color:var(--idle);border-color:rgba(111,131,123,.4);background:rgba(111,131,123,.08)}
 .k{display:block;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;font-weight:600}

@@ -170,7 +170,7 @@ const server = http.createServer(async (req, res) => {
       store.changed();
       return send(res, 200, { ok: true });
     }
-    if (req.method === 'POST' && ['/api/quadro', '/api/tarefas', '/api/fluxos', '/api/sessao', '/api/focar'].includes(p)) {
+    if (req.method === 'POST' && ['/api/quadro', '/api/tarefas', '/api/fluxos', '/api/sessao', '/api/focar', '/api/visto'].includes(p)) {
       if (!authed(req)) return send(res, 403, { erro: 'token inválido' });
       const b = await readBody(req);
       try {
@@ -179,8 +179,10 @@ const server = http.createServer(async (req, res) => {
           const cwd = b.agente || b.projeto ? pastaDe(b) : b.cwd, r = cwd ? roomFor(cwd) : { room: b.projeto, project: b.projeto };
           return send(res, 200, postar({ projeto: r.project, sala: r.room, de: b.de, para: b.para, texto: b.texto }) || { erro: 'mensagem vazia' });
         }
+        if (p === '/api/visto') return send(res, 200, { ok: store.visto(String(b.agente || '')) });
         if (p === '/api/focar') {
           const a = store.agents.get(String(b.agente || ''));
+          if (a) store.visto(a.id);
           if (!a || !a.cwd) return send(res, 400, { erro: 'sessão sem pasta conhecida' });
           const r = focarJanela(a.cwd, a.project);
           return send(res, 200, { ok: r.startsWith('ok'), janela: r.replace(/^ok /, '') });

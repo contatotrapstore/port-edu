@@ -68,6 +68,18 @@ function notificar(a){
     n.onclick = () => { window.focus(); goAgent(a); onSelect(a); n.close(); };
   } catch { /* sem suporte */ }
 }
+function notificarFim(a){
+  if (!('Notification' in window) || Notification.permission !== 'granted' || (!document.hidden && document.hasFocus())) return;
+  try {
+    const n = new Notification(`${a.proj || a.R.name} terminou`, {body: short(a.resposta || a.prompt || 'A sessão parou. Confira a resposta.', 140), tag: 'edh-fim-' + a.key, icon: NUVEM ? '/central/icones/icone-192.png' : '/icones/icone-192.png'});
+    n.onclick = () => { window.focus(); goAgent(a); onSelect(a); n.close(); };
+  } catch { /* sem suporte */ }
+}
+// abriu a sessão no painel: avisa o agente que você viu (some o "terminou")
+function realVisto(a){
+  if (NUVEM || !a.unseen) return; a.unseen = false;
+  fetch('/api/visto', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify({agente: a.key})}).catch(() => {});
+}
 document.addEventListener('pointerdown', () => { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); }, {once: true});
 async function realFocar(a){
   try {
@@ -101,6 +113,8 @@ function realUpdate(a, x, first){
   }
   if (newest) a.lastLogT = Math.max(a.lastLogT, newest.t);
   if (!first && prev !== 'waiting' && x.state === 'waiting') notificar(a);
+  const via = a.unseen; a.unseen = !!x.unseen && x.state === 'idle'; a.doneAt = x.doneAt || 0;
+  if (!first && !via && a.unseen) notificarFim(a);
   a.state = x.state;
   // PC escolhido depois que a sessão já existia (conversa retomada): troca de mesa se ela estiver livre
   if (!first && Number.isInteger(x.mesa) && a.desk !== x.mesa && a.R && seatsOf(a.R).includes(x.mesa) && !a.R.agents.some(o => o !== a && o.desk === x.mesa)){ a.desk = x.mesa; realGo(a); return; }

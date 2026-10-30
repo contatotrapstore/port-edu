@@ -136,7 +136,12 @@ class Store extends EventEmitter {
   }
 
   setState(a, state, t = Date.now()) {
-    if (a.state !== state) { a.state = state; a.since = t; }
+    if (a.state !== state) {
+      // terminou de trabalhar e você ainda não viu: aviso próprio no prédio (delegações automáticas e histórico antigo não contam)
+      if (a.state === 'working' && state === 'idle' && !this.jobSessions.has(a.sessionId) && Date.now() - a.lastActivity < 15 * 60e3) { a.unseen = true; a.doneAt = t; }
+      if (state === 'working' || state === 'waiting') a.unseen = false;
+      a.state = state; a.since = t;
+    }
     if (state !== 'waiting') { a.waitCmd = null; a.pendingId = null; }
     if (state !== 'error') a.errMsg = null;
     this.changed();
@@ -198,6 +203,12 @@ class Store extends EventEmitter {
     }
     this.changed();
     return a;
+  }
+
+  /** Você abriu ou focou a sessão: some o aviso de "terminou". */
+  visto(id) {
+    const a = this.agents.get(id); if (!a || !a.unseen) return false;
+    a.unseen = false; this.changed(); return true;
   }
 
   /** Cria um pedido de permissão e devolve uma Promise com a decisão (ou null). */

@@ -24,8 +24,10 @@ const WALK = WD + 1.5, DOOR_X = 8.4, AISLE = 4.7, BACK = 7.3;
 const EX = WW + 3.3, EZ = WD + 3.4;
 let CAMBIO = 5.40; // vem do agente (config.json → usdBrl)
 const AMBER = '#F5B935', CREAM = '#EDE6D6';
-const ST = {working:'#5BD69E', waiting:'#FFD84A', error:'#FF6B5E', idle:'#6F837B', empty:'#2A3832', boss:'#F5B935'};
-const ST_LABEL = {working:'Trabalhando', waiting:'Precisa de você', error:'Erro', idle:'Ocioso'};
+const ST = {working:'#5BD69E', waiting:'#FFD84A', error:'#FF6B5E', idle:'#6F837B', done:'#7CC4FF', empty:'#2A3832', boss:'#F5B935'};
+const ST_LABEL = {working:'Trabalhando', waiting:'Precisa de você', error:'Erro', idle:'Ocioso', done:'Terminou · sua vez'};
+// estado mostrado: ocioso que terminou e você ainda não viu vira "done" (o estado real continua "idle")
+const vis = a => a.state === 'idle' && a.unseen ? 'done' : a.state;
 const TOOL_PT = {Edit:'Editando', Read:'Lendo', Bash:'Executando', Grep:'Buscando', Write:'Criando', WebFetch:'Consultando', Imagem:'Gerando imagem', Video:'Gerando vídeo', Voz:'Narrando'};
 const KIND_TAG = {wait:'Permissão', err:'Erro', done:'Concluído', prompt:'Prompt', tool:'Ação'};
 const pick = a => a[Math.floor(Math.random()*a.length)];
