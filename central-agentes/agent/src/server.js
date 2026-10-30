@@ -3,7 +3,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { ROOT_DIR, PORT, config, DATA_DIR, roomFor } from './config.js';
+import { ROOT_DIR, PORT, config, DATA_DIR, roomFor, ENV_DO_AGENTE } from './config.js';
 import { store } from './store.js';
 import { readHistory, readCosts, dayKey } from './history.js';
 import { spawn } from 'node:child_process';
@@ -26,7 +26,7 @@ function abrirSessao(cwd, para, prompt) {
   const cmd = para === 'codex' ? 'codex' : 'claude';
   const script = `Set-Location -LiteralPath $env:EDH_CWD; $host.UI.RawUI.WindowTitle = 'Central · ' + $env:EDH_TITULO; if ($env:EDH_PROMPT) { ${cmd} $env:EDH_PROMPT } else { ${cmd} }`;
   const p = spawn('powershell.exe', ['-NoExit', '-NoProfile', '-Command', script], { cwd, detached: true, stdio: 'ignore', windowsHide: false,
-    env: { ...process.env, EDH_CWD: cwd, EDH_PROMPT: prompt || '', EDH_TITULO: roomFor(cwd).project } });
+    env: { ...Object.fromEntries(Object.entries(process.env).filter(([k]) => !ENV_DO_AGENTE.has(k))), EDH_CWD: cwd, EDH_PROMPT: prompt || '', EDH_TITULO: roomFor(cwd).project } });
   p.unref();
 }
 const WEB = path.join(ROOT_DIR, 'web');
@@ -121,7 +121,12 @@ const server = http.createServer(async (req, res) => {
       }
       return null;
     };
-    if (p === '/api/quadro' && req.method === 'GET') return send(res, 200, lerQuadro(url.searchParams.get('projeto') || '', Number(url.searchParams.get('limite')) || 30));
+    if (p === '/api/quadro' && req.method === 'GET') {
+      // projeto pelo nome ou pela pasta da sessão (mesma regra de salas usada para gravar)
+      const cwd = url.searchParams.get('cwd');
+      const projeto = url.searchParams.get('projeto') || (cwd ? roomFor(cwd).project : '');
+      return send(res, 200, lerQuadro(projeto, Number(url.searchParams.get('limite')) || 30));
+    }
     if (p.startsWith('/api/tarefas') && req.method === 'GET') {
       const id = p.split('/')[3];
       return send(res, 200, id ? (tarefa(id) || { erro: 'não encontrada' }) : listaTarefas());
@@ -152,7 +157,8 @@ const server = http.createServer(async (req, res) => {
       const b = await readBody(req);
       try {
         if (p === '/api/quadro') {
-          const cwd = pastaDe(b), r = cwd ? roomFor(cwd) : { room: b.projeto, project: b.projeto };
+          // recado não executa nada: a pasta de quem escreve só decide o quadro (mesma regra de salas da leitura)
+          const cwd = b.agente || b.projeto ? pastaDe(b) : b.cwd, r = cwd ? roomFor(cwd) : { room: b.projeto, project: b.projeto };
           return send(res, 200, postar({ projeto: r.project, sala: r.room, de: b.de, para: b.para, texto: b.texto }) || { erro: 'mensagem vazia' });
         }
         const cwd = pastaDe(b);

@@ -24,12 +24,6 @@ async function api(method, p, body) {
   if (!r.ok) throw new Error(j.erro || `Central respondeu ${r.status}`);
   return j;
 }
-const norm = p => path.resolve(p).toLowerCase().replace(/[\\/]+$/, '');
-async function projetoAqui() {
-  const aqui = norm(CWD), ags = (await api('GET', '/api/state')).agents.filter(a => a.cwd);
-  const a = ags.find(x => norm(x.cwd) === aqui) || ags.find(x => aqui.startsWith(norm(x.cwd) + path.sep) || norm(x.cwd).startsWith(aqui + path.sep));
-  return a?.project || null;
-}
 const linha = m => `[${new Date(m.t).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}] ${m.de} → ${m.para}: ${m.texto}`;
 const resumoTarefa = t => `Tarefa ${t.id} · ${t.para} (${t.modo}) · ${t.status}${t.custoUsd ? ` · US$ ${t.custoUsd.toFixed(2)}` : ''}${t.erro ? `\nErro: ${t.erro}` : ''}${t.resultado ? `\n\nResultado:\n${t.resultado}` : ''}`;
 
@@ -50,10 +44,11 @@ const TOOLS = [
 
 async function call(name, a = {}) {
   if (name === 'central_quadro_ler') {
-    const projeto = a.projeto || await projetoAqui();
-    if (!projeto) throw new Error('não achei o projeto desta pasta na Central (a sessão acabou de abrir?). Informe "projeto" com o nome da sala.');
-    const ms = await api('GET', `/api/quadro?projeto=${encodeURIComponent(projeto)}&limite=${Math.min(100, a.limite || 20)}`);
-    return ms.length ? `Quadro de ${projeto || 'todos os projetos'}:\n` + ms.map(linha).join('\n') : `Quadro de ${projeto || 'todos'} vazio.`;
+    // sem projeto informado, a Central acha o quadro pela pasta desta sessão (mesma regra usada ao escrever)
+    const filtro = a.projeto ? `projeto=${encodeURIComponent(a.projeto)}` : `cwd=${encodeURIComponent(CWD)}`;
+    const ms = await api('GET', `/api/quadro?${filtro}&limite=${Math.min(100, a.limite || 20)}`);
+    const nome = a.projeto || ms[0]?.projeto || 'deste projeto';
+    return ms.length ? `Quadro de ${nome}:\n` + ms.map(linha).join('\n') : `Quadro ${a.projeto ? 'de ' + a.projeto : 'deste projeto'} vazio.`;
   }
   if (name === 'central_quadro_escrever') {
     const m = await api('POST', '/api/quadro', { cwd: CWD, de: QUEM, para: a.para || 'todos', texto: a.texto });
