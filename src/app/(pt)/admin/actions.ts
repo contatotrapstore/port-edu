@@ -1,5 +1,5 @@
 'use server';
-import {headers} from 'next/headers';
+import {headers,cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
 import {contentAuth,contentConfigured} from '@/lib/content/auth';
@@ -24,6 +24,13 @@ export async function requestLogin(form:FormData){
  if(h.get('origin')!==origin)redirect('/admin/login?status=invalid');
  const auth=await contentAuth();const {error}=await auth.auth.signInWithOtp({email,options:{shouldCreateUser:false,emailRedirectTo:origin+'/admin/auth/callback'}});
  redirect('/admin/login?status='+(error?'unavailable':'sent'));
+}
+// troca a marca do painel (cookie lido por lib/content/brand); só aceita marcas cadastradas
+export async function selectBrand(form:FormData){
+ const {brandContext,BRAND_COOKIE}=await import('@/lib/content/brand');
+ const handle=String(form.get('marca')||''),{brands}=await brandContext();
+ if(brands.some(b=>b.handle===handle))(await cookies()).set(BRAND_COOKIE,handle,{httpOnly:true,secure:true,sameSite:'lax',path:'/admin',maxAge:60*60*24*365});
+ redirect('/admin/conteudo');
 }
 export async function logout(){const auth=await contentAuth();await auth.auth.signOut();redirect('/admin/login');}
 export async function savePost(form:FormData){

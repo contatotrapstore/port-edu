@@ -10,11 +10,25 @@ export function splitSlide(text){
 
 export function seedFrom(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return h%100000;}
 
+// tema da marca para o motor (cores viram variáveis CSS; mark é o SVG do logo)
+export function themeOf(brand){
+  const g=brand?.guidelines||{},v=g.visual||{};
+  if(!brand||brand.handle==='edevshub')return undefined;
+  return {name:g.name||brand.handle,handle:g.instagram_username||brand.handle,colors:v.colors||{},mark:v.mark||undefined,font:v.font||undefined};
+}
+
 export function motionItem(revision,format,{id='post',seed}={}){
   const brief=revision.brief||{},s=seed??seedFrom(revision.id||id);
   if(brief.motion?.scenes?.length)return {...brief.motion,id,format,seed:brief.motion.seed??s,music:{style:STYLES[s%STYLES.length],...brief.motion.music}};
   const slides=(revision.slides||[]).map(splitSlide);
   if(slides.length<2)throw Error('slides_insuficientes');
+  if(format==='carousel'){
+    // carrossel: capa, um slide por ideia e o último com o convite; sem narração
+    const out=slides.map((x,i)=>i===0?{kind:'cover',eyebrow:brief.series||'',title:x.title,sub:x.speech.length<=120?x.speech:undefined}
+      :i===slides.length-1?{kind:'cta',eyebrow:'Sua vez',title:x.title,options:[],save:x.speech.length<=70?x.speech:'Salva e segue pra mais'}
+      :{kind:'statement',title:x.title,sub:x.speech.length<=170?x.speech:x.speech.slice(0,167)+'…'});
+    return {id,format,seed:s,slideSeconds:6,slides:out,music:{style:['lofi','garage','warm'][s%3]}};
+  }
   const narration=slides.map(x=>x.speech).join(' ');
   const scenes=slides.map((x,i)=>{
     const cue=i===0?undefined:x.speech.split(/\s+/).slice(0,3).join(' ');

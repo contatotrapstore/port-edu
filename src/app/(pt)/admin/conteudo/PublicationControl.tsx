@@ -2,7 +2,7 @@
 import {useState,useTransition} from 'react';
 import {useRouter} from 'next/navigation';
 import {savePublication,prepareSchedule,removeSchedule} from './publication-actions';
-type Props={enabled:boolean;location:string;mode:string;time:string;connected:boolean;online:boolean;lastSeen:string|null;error:string|null;postId?:string;revisionId?:string;schedules:{id:string;topic:string;format?:string;state:string;local_date:string;local_time:string;publication_state:string|null}[]};
+type Props={username:string;enabled:boolean;location:string;mode:string;time:string;connected:boolean;online:boolean;lastSeen:string|null;error:string|null;postId?:string;revisionId?:string;schedules:{id:string;topic:string;format?:string;state:string;local_date:string;local_time:string;publication_state:string|null}[]};
 export default function PublicationControl(props:Props){
  const [enabled,setEnabled]=useState(props.enabled),[mode,setMode]=useState(props.mode),[time,setTime]=useState(props.time.slice(0,5)),[message,setMessage]=useState(''),[pending,start]=useTransition(),router=useRouter();
  return <section id="agenda" className="studio-operation studio-research" aria-labelledby="agenda-title">
@@ -21,7 +21,7 @@ export default function PublicationControl(props:Props){
     <p className="studio-fieldhint">Automático: usa uma produção das últimas 36 h com vídeos completos; pedidos de ajuste impedem a escolha.</p>
     {mode==='automatic'?<><label htmlFor="publication-time">Horário diário (Brasília)</label><input id="publication-time" name="time" type="time" value={time} onChange={e=>setTime(e.target.value)} required/></>:<input type="hidden" name="time" value={time}/>}
     <label><input name="enabled" type="checkbox" checked={enabled} onChange={e=>setEnabled(e.target.checked)} disabled={!props.connected&&!props.enabled}/> Habilitar publicação no Instagram</label>
-    {enabled&&<label><input name="confirmed" type="checkbox" required/> Confirmo o modo escolhido e autorizo publicar no @edevshub, incluindo agendas futuras preparadas.</label>}
+    {enabled&&<label><input name="confirmed" type="checkbox" required/> Confirmo o modo escolhido e autorizo publicar no @{props.username}, incluindo agendas futuras preparadas.</label>}
     <button type="submit">{pending?'Salvando…':'Salvar'}</button>
    </fieldset>
   </form>

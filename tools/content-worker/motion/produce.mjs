@@ -93,7 +93,7 @@ async function reel(studio,item){
   const end=words.at(-1).end,duration=ceilFrames(end+(item.tail??1.4));
   let from=0;const starts=item.scenes.map((s,i)=>{if(i===0)return 0;from=cueIndex(words,s.cue,from)+1;return Math.max(0,words[from-1].start-.1);});
   const scenes=item.scenes.map((s,i)=>({...s,start:+starts[i].toFixed(3),end:+(i+1<starts.length?starts[i+1]:duration).toFixed(3)}));
-  const timeline={format:'reel',height:1920,fps:FPS,duration,series:content.series,when:item.when||content.when,source:item.source,scenes,words};
+  const timeline={format:'reel',height:1920,fps:FPS,duration,theme:item.theme||content.theme,series:item.series||content.series,when:item.when||content.when,source:item.source,scenes,words};
   fs.writeFileSync(path.join(dir,'timeline.json'),JSON.stringify(timeline,null,1));
   const rel=path.relative(project,path.join(dir,'timeline.json'));
   const pg=await studio.page(rel);const cues=await pg.cues();
@@ -115,7 +115,7 @@ async function reel(studio,item){
 async function carousel(studio,item){
   const dir=path.join(project,item.id);fs.mkdirSync(dir,{recursive:true});
   const sec=item.slideSeconds||6,n=item.slides.length;
-  const timeline={format:'carousel',height:1350,fps:FPS,slideSeconds:sec,series:content.series,when:item.when||content.when,source:item.source,slides:item.slides};
+  const timeline={format:'carousel',height:1350,fps:FPS,slideSeconds:sec,theme:item.theme||content.theme,series:item.series||content.series,when:item.when||content.when,source:item.source,slides:item.slides};
   fs.writeFileSync(path.join(dir,'timeline.json'),JSON.stringify(timeline,null,1));
   const rel=path.relative(project,path.join(dir,'timeline.json'));
   const track=stills?null:await music(dir,item,n*sec+1.5);

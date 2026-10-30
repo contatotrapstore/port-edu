@@ -5,6 +5,7 @@ import {parseEnv} from 'node:util';
 import {spawn} from 'node:child_process';
 import pg from 'pg';
 import {research} from './research.mjs';
+import {revixEvents} from './research-revix.mjs';
 import {enqueueDaily,claimResearch,saveGeneratedDraft} from './research-queue.mjs';
 import {subscriptionEnv,validateDraft} from './draft-generation.mjs';
 const repo=fileURLToPath(new URL('../../../',import.meta.url));
@@ -17,10 +18,13 @@ try{
  if(run){
   const recent=(await pool.query('select p.topic,r.source_refs from content_studio.posts p join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 order by p.created_at desc limit 30',[run.brand_id])).rows;
   const used=recent.flatMap(r=>r.source_refs);
-  const sources=await research(used);
+  // cada marca tem sua pauta: EDevsHub lê lançamentos no GitHub; o Revix, os encontros dos próximos dias
+  const brand=(await pool.query('select handle,guidelines from content_studio.brands where id=$1',[run.brand_id])).rows[0]||{handle:'edevshub',guidelines:{}},g=brand.guidelines||{};
+  const sources=g.research?.source==='revix-events'?(await revixEvents(env)).filter(s=>!used.includes(s.url)):await research(used);
+  const marca=brand.handle==='edevshub'?undefined:{name:g.name||brand.handle,about:g.about,audience:g.audience,tone:g.tone,rules:g.rules,cta:g.cta,hashtags:g.hashtags};
   const root=path.join(repo,'output/conteudo/research',run.id);fs.mkdirSync(root,{recursive:true});
   const input=path.join(root,'input.json'),output=path.join(root,'draft.json');
-  fs.writeFileSync(input,JSON.stringify({engine:run.engine,topic:sources.length?'Escolha a mudança de maior impacto prático para devs e vibe coders: MCPs, APIs, modelos, agentes e ferramentas de desenvolvimento. Explique o que muda, quem consegue usar agora, um caso concreto e um limite. Não faça notícia de correção pequena.':'Não houve notícia com sinal suficiente de impacto. Crie um tutorial ou comparação educativa útil para devs e vibe coders sobre MCPs, APIs e agentes, sem apresentar como lançamento ou tendência e sem repetir temas recentes.',sources,recentTopics:recent.map(r=>r.topic)}));
+  fs.writeFileSync(input,JSON.stringify({engine:run.engine,brand:marca,topic:marca?(sources.length?g.research?.topic:g.research?.fallback_topic)||'Crie um conteúdo útil para o público da marca.':sources.length?'Escolha a mudança de maior impacto prático para devs e vibe coders: MCPs, APIs, modelos, agentes e ferramentas de desenvolvimento. Explique o que muda, quem consegue usar agora, um caso concreto e um limite. Não faça notícia de correção pequena.':'Não houve notícia com sinal suficiente de impacto. Crie um tutorial ou comparação educativa útil para devs e vibe coders sobre MCPs, APIs e agentes, sem apresentar como lançamento ou tendência e sem repetir temas recentes.',sources,recentTopics:recent.map(r=>r.topic)}));
   await new Promise((resolve,reject)=>{
    const child=spawn(process.execPath,[path.join(repo,'tools/content-worker/scripts/generate-child.mjs'),input,output],{cwd:root,env:subscriptionEnv(process.env),windowsHide:true,stdio:'ignore'});
    child.once('error',reject);child.once('close',code=>code===0?resolve():reject(Error('generation_failed')));

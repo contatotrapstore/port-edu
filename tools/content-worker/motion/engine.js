@@ -11,7 +11,7 @@ const rich=s=>esc(s).replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/`(.+?)`/g,'<co
 const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;};
 const MARK='<svg viewBox="0 0 30 30"><rect x="3" y="3" width="5" height="24" rx="2.5" fill="#F3EDE0"/><rect x="22" y="3" width="5" height="24" rx="2.5" fill="#F3EDE0"/><rect x="8" y="13.5" width="3" height="3" fill="#F3EDE0"/><rect x="19" y="13.5" width="3" height="3" fill="#F3EDE0"/><circle cx="15" cy="15" r="2.6" fill="#F5B935"/></svg>';
 const CURSOR='<svg viewBox="0 0 44 58"><path d="M2 2v44l11-10 8 19 8-4-8-18h15z" fill="#F3EDE0" stroke="#06110B" stroke-width="3" stroke-linejoin="round"/></svg>';
-const BOOKMARK='<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z" fill="none" stroke="#F5B935" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+const BOOKMARK='<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4.5L6 21z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
 
 let D,S=[],ANIM=[],TICK=[],CUES=[],LAYOUT=[],CAP=null,GROUPS=[];
 const cue=(t,sfx,gain=0)=>CUES.push({t:+t.toFixed(3),sfx,gain});
@@ -186,7 +186,10 @@ function build(){
   const st=document.querySelector('.stage');st.classList.add(D.format);
   st.style.height=D.height+'px';
   st.insertAdjacentHTML('afterbegin',`<div class="bg-grid"></div><div class="bg-glow"></div><div class="bg-glow b"></div><div class="vignette"></div><div class="bg-noise" style="background-image:url(${noise()})"></div>`);
-  const br=el('div','brand',MARK+'<b>EDevsHub</b><i>'+esc(D.series||'RADAR IA')+'</i>'+(D.when?'<span class="when">'+esc(D.when)+'</span>':''));st.append(br);
+  // tema da marca: cores viram variáveis CSS; logo e nome substituem os da EDevsHub
+  const th=D.theme||{};for(const [k,v] of Object.entries(th.colors||{}))st.style.setProperty('--'+k,v);
+  if(th.font)st.style.setProperty('--sans',th.font+',Geist,system-ui,sans-serif');
+  const br=el('div','brand',(th.mark||MARK)+'<b>'+esc(th.name||'EDevsHub')+'</b><i>'+esc(D.series||'RADAR IA')+'</i>'+(D.when?'<span class="when">'+esc(D.when)+'</span>':''));st.append(br);
   D.scenes.forEach((s,i)=>{const root=el('section','scene');const sc={i,start:s.start,end:s.end,root,s};S.push(sc);st.append(root);
     (B[s.kind]||(()=>{throw Error('cena desconhecida: '+s.kind);}))(sc,s,root);
     if(i>0&&D.format==='reel')cue(s.start,i%2?'whoosh':'back',-5);});
@@ -197,7 +200,7 @@ function build(){
     D.words.forEach(w=>{g.push(w);const chars=g.map(x=>x.text).join(' ').length;if(/[.,?!:;]$/.test(w.text)||g.length>=3||chars>=17)flush();});flush();
   }
   if(D.format==='carousel'){
-    const f=el('div','foot',`<span class="pg">${String(D.slide).padStart(2,'0')}/${String(D.total).padStart(2,'0')}</span><span class="bars">${Array.from({length:D.total},(_,i)=>'<span'+(i<D.slide?' class="on"':'')+'></span>').join('')}</span><span class="sw">${D.slide===1?'ARRASTE →':D.slide===D.total?'@EDEVSHUB':'EDEVSHUB'}</span>`);
+    const f=el('div','foot',`<span class="pg">${String(D.slide).padStart(2,'0')}/${String(D.total).padStart(2,'0')}</span><span class="bars">${Array.from({length:D.total},(_,i)=>'<span'+(i<D.slide?' class="on"':'')+'></span>').join('')}</span><span class="sw">${D.slide===1?'ARRASTE →':D.slide===D.total?'@'+esc((th.handle||'edevshub').toUpperCase()):esc((th.name||'EDevsHub').toUpperCase())}</span>`);
     st.append(f);
   }
   window.__cues=CUES.sort((a,b)=>a.t-b.t);

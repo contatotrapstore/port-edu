@@ -1,10 +1,11 @@
 import 'server-only';
 import {createHash} from 'node:crypto';
 import {contentDb} from './db';
+import {currentBrand} from './brand';
 import {requireAdmin} from './auth';
 import type {DraftInput} from './input';
 export type ContentPost={id:string;topic:string;state:string;active_revision_id:string;created_at:Date;caption:string;brief:{text?:string;format?:'carousel'|'reel'|'story';generation?:{engine?:string;model?:string}};slides:string[];source_refs:string[]};
-export async function listPosts(){await requireAdmin();return (await contentDb().query<ContentPost>(`select p.*,r.caption,r.brief,r.slides,r.source_refs from content_studio.posts p left join content_studio.revisions r on r.id=p.active_revision_id order by p.created_at desc limit 100`)).rows;}
+export async function listPosts(){await requireAdmin();const brand=await currentBrand();return (await contentDb().query<ContentPost>(`select p.*,r.caption,r.brief,r.slides,r.source_refs from content_studio.posts p left join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 order by p.created_at desc limit 100`,[brand.id])).rows;}
 export async function saveDraft(input:DraftInput,postId?:string,expectedRevision?:string){
  if(input.format!==undefined&&!['carousel','reel','story'].includes(input.format))throw Error('Formato inválido.');
  const actor=await requireAdmin(), db=await contentDb().connect();
@@ -16,7 +17,7 @@ export async function saveDraft(input:DraftInput,postId?:string,expectedRevision
    previous=(await db.query('select brief,slides from content_studio.revisions where id=$1',[current.active_revision_id])).rows[0];
    await db.query("update content_studio.schedules set state='paused' where revision_id=$1 and state='scheduled'",[expectedRevision]);
    await db.query("update content_studio.jobs set state='cancelled' where revision_id=$1 and state='queued'",[expectedRevision]);
- }else{id=(await db.query("insert into content_studio.posts(brand_id,topic) select id,$1 from content_studio.brands where handle='edevshub' returning id",[input.topic])).rows[0].id;}
+ }else{id=(await db.query("insert into content_studio.posts(brand_id,topic) values($2,$1) returning id",[input.topic,(await currentBrand()).id])).rows[0].id;}
  const hash=createHash('sha256').update(JSON.stringify(input)).digest('hex');
  const keepStoryboard=previous&&(previous.brief.format??'carousel')===(input.format??'carousel')&&JSON.stringify(previous.slides)===JSON.stringify(input.slides);
  const brief={text:input.brief,format:input.format??'carousel',...(keepStoryboard&&previous?.brief.vertical?{vertical:previous.brief.vertical}:{})};

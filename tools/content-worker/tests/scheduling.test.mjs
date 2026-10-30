@@ -15,7 +15,7 @@ function setup({admin=true,online=true,health='verified',valid=true,review='appr
  else if(sql.includes('as online'))rows=[{online}];
  else if(sql.includes('select health'))rows=[{health,expires_at:new Date(Date.now()+86400000)}];
  return {rows};}};
- const exports={},deps={'server-only':{},'./auth':{requireAdmin:async()=>{if(!admin)throw Error('denied');return {id:'admin'};}},'./db':{contentDb:()=>({connect:async()=>db})},'./publication-policy.mjs':policy,'./instagram-core.mjs':{EXPECTED_ACCOUNT:'17841416428564956'}};
+ const exports={},deps={'server-only':{},'./auth':{requireAdmin:async()=>{if(!admin)throw Error('denied');return {id:'admin'};}},'./db':{contentDb:()=>({connect:async()=>db})},'./publication-policy.mjs':policy,'./instagram-core.mjs':{EXPECTED_ACCOUNT:'17841416428564956'},'./brand':{currentBrand:async()=>{if(!admin)throw Error('denied');return {id:'brand',handle:'edevshub',account:'17841416428564956'};}}};
  vm.runInNewContext(require('typescript').transpileModule(fs.readFileSync(new URL('../../../src/lib/content/scheduling.ts',import.meta.url),'utf8'),{compilerOptions:{module:1,target:9}}).outputText,{exports,require:id=>deps[id]});return {api:exports,calls};
 }
 test('activation requires admin, online worker, connection and explicit confirmation',async()=>{

@@ -26,6 +26,7 @@ test('admin authorization rejects missing session and nonmember, accepts only ve
     '@supabase/ssr': { createServerClient: () => ({ auth: { getUser: async () => ({ data: { user }, error: null }) } }) },
     'next/headers': { cookies: async () => ({ getAll: () => [] }) },
     './db': { contentDb: () => ({ query: async () => { reads++; return { rowCount: member ? 1 : 0 }; } }) },
+    'react': { cache: f => f },
   });
   await assert.rejects(api.requireAdmin()); assert.equal(reads, 0);
   user = { id: 'user-1', email: 'admin@example.test' };
@@ -81,7 +82,7 @@ test('draft revision is immutable, stale edits roll back and editing suspends pr
     await db.exec(fs.readFileSync(new URL('../../../supabase/migrations/20261027001716_content_studio_foundation.sql',import.meta.url),'utf8'));
     const actor = '00000000-0000-4000-8000-000000000001';
     const client = { query: (...args) => db.query(...args), release() {} };
-    const api = load('repository', { 'node:crypto': { createHash }, './db': { contentDb: () => ({ connect: async () => client }) }, './auth': { requireAdmin: async () => ({ id: actor }) } });
+    const api = load('repository', { 'node:crypto': { createHash }, './db': { contentDb: () => ({ connect: async () => client }) }, './auth': { requireAdmin: async () => ({ id: actor }) }, './brand': { currentBrand: async () => ({ id: (await db.query("select id from content_studio.brands where handle='edevshub'")).rows[0].id, handle: 'edevshub' }) } });
     const input = { topic:'Teste editorial',brief:'Brief claro',caption:'Legenda',slides:['Um','Dois'],sources:[],format:'reel' };
     const id = await api.saveDraft(input);
     const first = (await db.query('select active_revision_id from content_studio.posts where id=$1',[id])).rows[0].active_revision_id;

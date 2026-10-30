@@ -23,11 +23,11 @@ export async function instagramRequest(token,endpoint,params={},method='GET',tra
  if(!response.ok||data.error)throw Error(data.error?.code===190?'instagram_reconnect_required':'instagram_request_rejected');
  return data;
 }
-export async function verifyInstagram(token,transport=fetch){
+export async function verifyInstagram(token,transport=fetch,expected={id:EXPECTED_ACCOUNT,username:'edevshub'}){
  if(typeof token!=='string'||token.length<30||token.length>4096||/\s/.test(token))throw Error('invalid_token');
  const account=await instagramRequest(token,'me',{fields:'user_id,username'},'GET',transport);
  const id=String(account.user_id||account.id);
- if(id!==EXPECTED_ACCOUNT||account.username!=='edevshub')throw Error('wrong_account');
+ if((expected.id&&id!==expected.id)||(expected.username&&account.username!==expected.username)||(!expected.id&&!expected.username))throw Error('wrong_account');
  const quota=await instagramRequest(token,`${id}/content_publishing_limit`,{fields:'config,quota_usage'},'GET',transport);
  return {id,username:account.username,quota};
 }
