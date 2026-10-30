@@ -16,6 +16,12 @@ for(const format of ['reel','story'])test(`${format} creates one container and s
  await advancePublication(data,state,api,save,async()=>true);assert.equal(calls.filter(c=>c.e.endsWith('media_publish')).length,1);
  await advancePublication(data,state,async()=>({status_code:'PUBLISHED'}),save,async()=>true);assert.equal(state.phase,'complete');
 });
+test('reel sends the designed cover frame as thumb_offset; story ignores it',async()=>{
+ for(const format of ['reel','story']){
+  const calls=[];await advancePublication({...input,format,videos:input.videos.slice(0,1),coverMs:0,due:false},{},async(e,p,m)=>{calls.push(p);return m==='POST'?{id:'7'}:{status_code:'IN_PROGRESS'};},async()=>{},async()=>true);
+  assert.equal(calls[0].thumb_offset,format==='reel'?'0':undefined);
+ }
+});
 test('invalid format is rejected before any provider write',async()=>{
  for(const format of ['',null,'REELS'])await assert.rejects(advancePublication({...input,format},{},async()=>{throw Error('provider_called');},async()=>{},async()=>true),/invalid_publication/);
 });

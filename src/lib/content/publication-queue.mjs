@@ -99,7 +99,7 @@ export async function publicationTick(db,{api,sign,shouldContinue=()=>true}){
  // URLs last 1 hour, generated only for this authorized publication attempt.
  const urls=await Promise.all(videos.map(a=>sign(a.object_key)));
  try{
-  const result=await advancePublication({enabled:true,due:schedule.due,accountId:EXPECTED_ACCOUNT,caption:schedule.caption,format:schedule.format,videos:urls},previous,api,save,allow);
+  const result=await advancePublication({enabled:true,due:schedule.due,accountId:EXPECTED_ACCOUNT,caption:schedule.caption,format:schedule.format,videos:urls,coverMs:videos[0]?.provenance?.cover_ms},previous,api,save,allow);
   if(result.phase==='complete'&&result.mediaId){
    try{const media=await api(result.mediaId,{fields:'permalink'},'GET');if(/^https:\/\/www\.instagram\.com\//.test(media.permalink||''))await db.query('update content_studio.publications set permalink=$1 where id=$2',[media.permalink,publication.id]);}catch{/* Publication already persisted; permalink is optional. */}
   }

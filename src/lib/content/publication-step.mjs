@@ -28,7 +28,7 @@ export async function advancePublication(input,previous,api,save,allow){
   if(!state.parent){
    if(!await allow())return {...state,phase:'paused'};
    await checkpoint({phase:'creating_parent'});
-   const params=format==='carousel'?{media_type:'CAROUSEL',children:state.children.join(','),caption:input.caption,is_ai_generated:'true'}:{media_type:format==='reel'?'REELS':'STORIES',video_url:input.videos[0],is_ai_generated:'true',...(format==='reel'?{caption:input.caption,share_to_feed:'true'}:{})};
+   const params=format==='carousel'?{media_type:'CAROUSEL',children:state.children.join(','),caption:input.caption,is_ai_generated:'true'}:{media_type:format==='reel'?'REELS':'STORIES',video_url:input.videos[0],is_ai_generated:'true',...(format==='reel'?{caption:input.caption,share_to_feed:'true',...(Number.isInteger(input.coverMs)&&input.coverMs>=0?{thumb_offset:String(input.coverMs)}:{})}:{})};
    const parent=await api(`${input.accountId}/media`,params,'POST');
    if(!/^\d+$/.test(String(parent.id)))throw Error('provider_outcome_unknown');
    return checkpoint({parent:String(parent.id),phase:'preparing'});
