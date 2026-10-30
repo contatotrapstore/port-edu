@@ -1,24 +1,18 @@
 import type {ContentAsset} from '@/lib/content/storage';
 
+// Prévia como o post vai aparecer: Reel e Story numa moldura de celular (9:16); carrossel como fileira de slides (4:5)
 export default function AssetPreview({assets}:{assets:ContentAsset[]}){
-  const videos=assets.filter(asset=>asset.kind==='mp4');
-  return <section className="studio-preview">
-    <h2>Prévia desta revisão</h2>
-    {videos.length===0?<p>Esta revisão ainda não tem vídeos. Alterar o roteiro exige uma nova renderização.</p>:<>
-      <p>Use os controles para tocar, pausar ou ajustar o som. Vídeos privados, com acesso temporário.</p>
-      <div className="studio-preview-grid">{videos.map(video=>{
-        const slide=video.provenance.slide,vertical=video.provenance.format==='reel'||video.provenance.format==='story';
-        const label=vertical?(video.provenance.format==='reel'?'Reel narrado':'Story'):'Slide '+slide;
-        const poster=assets.find(asset=>asset.kind==='png'&&asset.provenance.slide===slide);
-        return <article key={video.id}>
-          <h3>{label}</h3>
-          <video controls playsInline loop={!vertical} preload="none" width={1080} height={vertical?1920:1350}
-            poster={poster?'/api/content/assets/'+poster.id:undefined}
-            src={'/api/content/assets/'+video.id} aria-label={'Prévia de '+label}/>
-          <a href={'/api/content/assets/'+video.id} target="_blank" rel="noreferrer">Abrir vídeo ↗</a>
-          {poster&&<a href={'/api/content/assets/'+poster.id} target="_blank" rel="noreferrer">Imagem estática ↗</a>}
-        </article>;
-      })}</div>
-    </>}
-  </section>;
+  const videos=assets.filter(asset=>asset.kind==='mp4').sort((a,b)=>(a.provenance.slide||0)-(b.provenance.slide||0));
+  if(videos.length===0)return <p className="studio-fieldhint">Esta revisão ainda não tem vídeos. Gere os vídeos para ver a prévia; alterar o roteiro exige gerar de novo.</p>;
+  const vertical=videos.some(video=>video.provenance.format==='reel'||video.provenance.format==='story');
+  return <div className={vertical?'studio-phones':'studio-slides'}>{videos.map((video,i)=>{
+    const slide=video.provenance.slide,format=video.provenance.format;
+    const label=format==='reel'?'Reel':format==='story'?'Story':`Slide ${i+1} de ${videos.length}`;
+    const poster=assets.find(asset=>asset.kind==='png'&&asset.provenance.slide===slide);
+    return <figure key={video.id} className="studio-frame">
+      <video controls playsInline loop={!vertical} preload="metadata" width={1080} height={vertical?1920:1350}
+        poster={poster?'/api/content/assets/'+poster.id:undefined} src={'/api/content/assets/'+video.id} aria-label={'Prévia: '+label}/>
+      <figcaption><span>{label}</span><a href={'/api/content/assets/'+video.id} target="_blank" rel="noreferrer">Abrir ↗</a>{poster&&<a href={'/api/content/assets/'+poster.id} target="_blank" rel="noreferrer">Imagem ↗</a>}</figcaption>
+    </figure>;
+  })}</div>;
 }
