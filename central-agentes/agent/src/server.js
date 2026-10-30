@@ -47,6 +47,8 @@ function focarJanela(cwd, projeto) {
 const WEB = path.join(ROOT_DIR, 'web');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon' };
 const clients = new Set();
+/** Quantas abas do prédio (o app do atalho ou o navegador) estão conectadas agora, mesmo minimizadas. */
+export const paineisConectados = () => clients.size;
 // Último aviso de "painel aberto e visível" (POST /api/presence). Pedido de permissão só espera o painel
 // se alguém está olhando para ele; senão cai direto no terminal, sem atraso.
 let panelSeenAt = 0;

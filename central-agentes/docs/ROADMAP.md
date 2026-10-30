@@ -129,6 +129,9 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [x] Saíram: "Seguir", lista de sessões nos planos, "Editar salas" no Projeto, modo protótipo com dados simulados
 - [x] Login do admin com a marca EDevsHub; admin e /central entram sozinhos quando o link do e-mail é aberto no mesmo perfil do navegador. Código de 6 dígitos no e-mail depende de SMTP próprio (o plano gratuito do Supabase não deixa editar o modelo)
 
+## Fase 3.3 — Codenotch só com a Central fechada (30/10/2026)
+- [x] O agente abre o Codenotch quando a Central está fechada e Claude ou Codex rodam; fecha quando o prédio abre (`agent/src/codenotch.js`, contando as abas conectadas ao agente)
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)
