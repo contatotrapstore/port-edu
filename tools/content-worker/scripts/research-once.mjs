@@ -34,6 +34,9 @@ try{
   const {data,dia}=hoje();
   // pauta planejada do dia (calendário em brands.guidelines.plan) tem prioridade sobre a pesquisa
   const plano=g.plan?.[data];
+  // dia já agendado à mão: fecha a rodada sem gerar nada (não gasta a assinatura)
+  if(plano?.skip){await pool.query("update content_studio.research_runs set state='succeeded',lease_token=null,lease_until=null where id=$1 and lease_token=$2 and state='running'",[run.id,run.lease_token]);console.log(JSON.stringify({researched:false,skipped:data}));run=null;}
+  else{
   let sources,topic;
   if(plano){sources=await articleSources(plano.sources||[]);topic=plano.topic;}
   else if(g.research?.source==='revix-events'){sources=(await revixEvents(env)).filter(s=>!used.includes(s.url));topic=(sources.length?g.research?.topic:g.research?.fallback_topic)||'Crie um conteúdo útil para o público da marca.';}
@@ -55,6 +58,7 @@ try{
    for(const [i,d] of drafts.entries())posts.push(await saveGeneratedDraft(db,run,d.draft,sources,{format:d.format,finish:i===drafts.length-1}));
    await db.query('commit');console.log(JSON.stringify({researched:true,posts,formats:formatos,planned:!!plano,published:false}));
   }catch(e){await db.query('rollback');throw e;}finally{db.release();}
+  }
  }
 }catch(e){
  if(run)await pool.query("update content_studio.research_runs set state='failed',error_code=$3,lease_token=null,lease_until=null where id=$1 and lease_token=$2 and state='running'",[run.id,run.lease_token,['sources_unavailable','generation_failed'].includes(e.message)?e.message:'research_failed']).catch(()=>{});
