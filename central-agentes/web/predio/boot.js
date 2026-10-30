@@ -2,14 +2,18 @@
 // Carrega os scripts do prédio na ordem certa. Na nuvem (?fonte=nuvem, servido pelo site em /central/predio) faz antes
 // o login e busca o estado no Supabase, porque o layout das salas vem dele e precisa existir antes de montar a cena.
 (() => {
+  // No site, o prédio só abre com login (dados reais da nuvem); sem "?fonte=nuvem" não mostra mais dados de exemplo
+  const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  if (!local && new URLSearchParams(location.search).get('fonte') !== 'nuvem'){ location.replace('/central/predio?fonte=nuvem'); return; }
   const FILES = ['marcas.js', 'dados.js', 'sim.js', 'cena.js', 'fachada.js', 'ui.js', 'fonte.js', 'pc.js', 'tv.js', 'app.js'];
   const base = document.currentScript.src.replace(/boot\.js(\?.*)?$/, '');
   const load = () => { for (const f of FILES){ const s = document.createElement('script'); s.src = base + f; s.async = false; document.body.appendChild(s); } };
   const msg = t => { const el = document.getElementById('loading'); if (el) el.textContent = t; };
   const addScript = (src, integrity) => new Promise((ok, bad) => { const s = document.createElement('script'); s.src = src; if (integrity){ s.integrity = integrity; s.crossOrigin = 'anonymous'; } s.onload = ok; s.onerror = bad; document.head.appendChild(s); });
-  // Seletor Central | Conteúdo: no PC (localhost) o admin de vídeos e reels abre no site, em outra janela
+  // Seletor Central | Conteúdo: alterna na mesma janela. No app do PC (localhost) vai para o admin do site com "volta=pc",
+  // e o "Central" do admin traz de volta para este prédio (mesma janela, mesmo perfil do Chrome)
   const conteudo = document.getElementById('linkConteudo');
-  if (conteudo && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) { conteudo.href = 'https://www.edevshub.com/admin/conteudo'; conteudo.target = '_blank'; conteudo.rel = 'noopener'; }
+  if (conteudo && local) conteudo.href = 'https://www.edevshub.com/admin/conteudo?volta=pc';
 
   async function nuvem(){
     msg('Entrando na Central…');

@@ -377,3 +377,9 @@ body.tv .tvhud{display:block;position:absolute;inset:0;z-index:6;pointer-events:
 /* na TV o título do andar e a legenda dão lugar ao painel */
 body.tv .ov-tl{display:none}
 body.tv .tv-exit{bottom:26px;right:24px;opacity:.7}
+/* atalhos do teclado atrás do "?" (o rodapé do prédio não recebe clique; o botão sim) */
+.ov-bl .atalhos-btn{pointer-events:auto;align-self:flex-start;width:28px;height:28px;padding:0;justify-content:center;font-size:13px;opacity:.75}
+.ov-bl .atalhos-btn:hover,.ov-bl .atalhos-btn[aria-expanded="true"]{opacity:1;border-color:var(--amber)}
+.keys[hidden]{display:none!important}
+.seg-2 .seg-b{flex-direction:column;gap:1px}
+@media (max-width:640px){.ov-bl .atalhos-btn{display:none}}

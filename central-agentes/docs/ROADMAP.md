@@ -117,6 +117,11 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [x] Modo TV de recepção (`tv.js`): marca e "ao vivo", relógio, legenda do andar, números do dia, quem está trabalhando e faixa de acontecimentos sem comandos nem textos de pedido
 - [x] Símbolo da EDevsHub nas placas do elevador; placa "NO AR" do estúdio acende com gente trabalhando; barra de XP sumiu do modo real
 
+## Fase 3.1 — limpeza e Conteúdo na mesma janela (30/10/2026)
+- [x] "Conteúdo" abre na mesma janela (app do PC: admin com `?volta=pc`; o "Central" do admin volta para o prédio local). Atalho da Área de Trabalho fixado no perfil Default do Chrome
+- [x] Saíram: botão de luz (sempre hora real), replay (e a gravação da linha do tempo no agente), avisos e cartão de marcos (ficam na estante e no quadro da Diretoria), "Em equipe" do lançador, código do cartão antigo "Trabalho em…"
+- [x] Atalhos do teclado atrás de um "?"; prédio do site sem login vai para a entrada; indicador "Empresa" virou "Hoje"
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)

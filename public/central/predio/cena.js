@@ -502,6 +502,8 @@ function controlRoom(R){
       g.save(); g.translate(x+100, y+55); g.rotate(r); g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(-96, -46, 200, 110);
       g.fillStyle = s.sev === 'alerta' ? '#F2A28E' : s.sev === 'economia' ? '#F5D76E' : '#A8D5A2'; g.fillRect(-100, -52, 200, 110);
       g.fillStyle = '#C0392B'; g.beginPath(); g.arc(0, -44, 6, 0, 7); g.fill(); g.fillStyle = '#1E1E1E'; g.font = font(700, 21); g.fillText(short(s.short, 16), -86, -6); g.font = font(500, 16); g.fillText(SEV[s.sev].label, -86, 22); g.restore(); });
+    if (REAL){ const mk = ACHIEVEMENTS.filter(A => COMPANY.unlocked.includes(A.id)).map(A => A.label);
+      g.fillStyle = '#2B302D'; g.font = font(700, 18); g.fillText('MARCOS DE HOJE: ' + (mk.length ? short(mk.join(' · '), 58).toUpperCase() : 'NENHUM AINDA'), 34, h - 30); }
   });
   wallBoard(R.sides.W.tall, 4.6, 2.16, .4, 1.45, R.board);
   R.desks = [];

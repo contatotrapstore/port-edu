@@ -226,7 +226,7 @@ function startReal(){
   es.addEventListener('state', ev => {
     try {
       realApply(JSON.parse(ev.data), first);
-      if (first){ first = false; loadHistory(); loadCosts(); setInterval(loadCosts, 60e3); fetch('/api/fluxos').then(r => r.json()).then(f => { FLUXOS = f; agentShell = null; dirty = true; }).catch(() => {}); }
+      if (first){ first = false; loadCosts(); setInterval(loadCosts, 60e3); }
     } catch (err) { console.error('[fonte]', err); }
   });
   es.onerror = () => { $('simTag').textContent = 'Agente local fora do ar · tentando reconectar'; };
@@ -350,36 +350,7 @@ function startNuvemFront(){
 }
 
 /* =========================== orquestra: agentes conversando =========================== */
-let FLUXOS = [], lastQuadroT = 0;
-const modoSel = () => (document.querySelector('input[name="modoTrab"]:checked') || {}).value || 'ler';
-function workCard(a){
-  return `<div class="card task"><span class="k">Trabalho em ${esc(a.proj || a.R.name)}</span>
-    <textarea id="taskText" placeholder="O que fazer neste projeto (o outro agente não vê esta conversa: dê o contexto)"></textarea>
-    <div class="row" style="gap:12px;margin:6px 0"><label><input type="radio" name="modoTrab" value="ler" checked> Só ler (revisar, investigar, planejar)</label><label><input type="radio" name="modoTrab" value="editar"> Pode editar esta pasta</label></div>
-    <div class="row" style="flex-wrap:wrap;gap:6px">
-      <button class="btn solid" type="button" data-act="delegar" data-arg="claude">Delegar ao Claude</button>
-      <button class="btn solid" type="button" data-act="delegar" data-arg="codex">Delegar ao Codex</button>
-      ${FLUXOS.length ? `<select id="fluxoSel" class="btn" aria-label="Fluxo">${FLUXOS.map(f => `<option value="${esc(f.id)}">${esc(f.nome)}</option>`).join('')}</select><button class="btn" type="button" data-act="fluxo">Rodar fluxo</button>` : ''}
-      <button class="btn" type="button" data-act="sessao" data-arg="claude">Abrir Claude aqui</button>
-      <button class="btn" type="button" data-act="sessao" data-arg="codex">Abrir Codex aqui</button>
-    </div>
-    <small class="note">Delegar e fluxo rodam em segundo plano nesta pasta; o resultado cai no quadro (aba Operação). "Abrir" abre um terminal novo com o texto como primeiro pedido.</small></div>`;
-}
-async function realTrabalho(act, arg, a){
-  const ta = $('taskText'), texto = ta ? ta.value.trim() : '';
-  if (act !== 'sessao' && !texto){ toast('Escreva a tarefa primeiro'); return; }
-  const rota = act === 'delegar' ? '/api/tarefas' : act === 'fluxo' ? '/api/fluxos' : '/api/sessao';
-  const corpo = act === 'delegar' ? {agente: a.key, para: arg, modo: modoSel(), tarefa: texto, de: 'Eduardo'}
-    : act === 'fluxo' ? {agente: a.key, modelo: ($('fluxoSel') || {}).value, objetivo: texto, de: 'Eduardo'}
-    : {agente: a.key, para: arg, prompt: texto};
-  try {
-    const r = await fetch(rota, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify(corpo)});
-    const j = await r.json();
-    if (!r.ok) throw new Error(j.erro || r.status);
-    toast(act === 'delegar' ? `Delegado ao ${arg === 'claude' ? 'Claude' : 'Codex'} (${modoSel() === 'ler' ? 'só ler' : 'pode editar'}). Resultado no quadro.` : act === 'fluxo' ? `Fluxo "${j.nome}" iniciado (${j.passos} passos)` : 'Terminal aberto na pasta do projeto');
-    if (ta && act !== 'sessao') ta.value = '';
-  } catch (err) { toast('Não deu: ' + err.message); }
-}
+let lastQuadroT = 0;
 const ST_TAREFA = {'na fila': '⏳', 'rodando': '🟢', 'concluída': '✅', 'falhou': '❌'};
 function orquestraCard(){
   if (!REAL || !realState) return '';
@@ -442,14 +413,6 @@ function renderProjeto(){
   if (p.tarefas.length) html += `<div class="card"><div class="sec"><h2>Tarefas entre agentes</h2></div><ul class="sessions">${p.tarefas.map(t => `<li title="${esc(t.tarefa)}"><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${t.para === 'claude' ? 'Claude' : 'Codex'} (${esc(t.modo)}) · ${esc(short(t.tarefa, 50))}</span><em>${esc(t.status)}</em></li>`).join('')}</ul></div>`;
   return html;
 }
-async function realAbrirProj(para){
-  try {
-    const r = await fetch('/api/sessao', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify({projeto: PROJ_SALA, para})});
-    const j = await r.json(); if (!r.ok) throw new Error(j.erro || r.status);
-    toast(`Terminal do ${para === 'claude' ? 'Claude' : 'Codex'} aberto em ${PROJ_SALA}`);
-  } catch (err) { toast('Não deu: ' + err.message); }
-}
-
 /* =========================== editor de salas =========================== */
 const VAGAS = [[0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6], [0, 1, 2, 3, 4], [0, 1, 2, 3]];
 const TIPOS = {project: 'Projeto', control: 'Diretoria', reception: 'Recepção', infra: 'TI', studio: 'Estúdio'};

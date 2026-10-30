@@ -123,7 +123,6 @@ window.addEventListener('keydown', e => {
   else if (k === '0' || k === 'c') centerView();
   else if (k >= '1' && k <= '8'){ const list = ROOMS.filter(R => R.f === view.floor).sort((x,y) => x.slot - y.slot); const R = list[+k - 1]; if (R) goRoom(R.i); }
   else if (k === '9') goFocus('copa');
-  else if (k === 'r') toggleReplay();
   else if (k === 'f'){ follow = !follow; syncFollow(); } else if (k === 't') toggleImmersive(); else if (k === 'p') toggleDrawer(); else if (k === 'n') nextWaiting(); else if (k === 'v') toggleTV();
   else if (k === 'escape'){ if (document.body.classList.contains('tv')) toggleTV(); else if (document.body.classList.contains('immersive')) toggleImmersive(false); }
 });
@@ -217,8 +216,8 @@ function renderOps(){
       html += `<button class="prow ${focus===R.i?'on':''}" type="button" data-act="room" data-arg="${R.i}"><span class="dot" style="background:${ST[w]};box-shadow:0 0 8px ${ST[w]}"></span><span style="min-width:0"><span class="pn">${esc(R.name)}</span><br><span class="ps">${esc(R.stack)} · ${R.agents.length} agente${R.agents.length !== 1 ? 's' : ''} · ${R.done} concluídas</span></span><span class="pc">${brl(c, 2)}${R.budget ? `<small>de ${brl(R.budget)}/dia</small>` : ''}</span>${R.budget ? `<span class="bar"><i class="${pct > 1 ? 'over' : ''}" style="width:${Math.min(100, pct*100).toFixed(1)}%"></i></span>` : ''}</button>`; }
   }
   html += `</div></div>` + orquestraCard() + costReport();
-  const un = ACHIEVEMENTS.filter(A => COMPANY.unlocked.includes(A.id));
-  html += `<div class="card"><div class="sec"><h2>${REAL ? 'Marcos do dia' : 'Conquistas'}</h2><small>${REAL ? COMPANY.tasks + ' tarefas' : `nível ${companyLevel()} · ${num(COMPANY.xp)} XP`}</small></div>${un.length ? `<div class="trophies">${un.map(A => `<span class="trophy"><b>★</b>${esc(A.label)}</span>`).join('')}</div>` : '<p class="note">Nenhuma ainda hoje. Elas aparecem na estante de troféus da Diretoria.</p>'}
+  const un = REAL ? [] : ACHIEVEMENTS.filter(A => COMPANY.unlocked.includes(A.id));
+  if (!REAL) html += `<div class="card"><div class="sec"><h2>${REAL ? 'Marcos do dia' : 'Conquistas'}</h2><small>${REAL ? COMPANY.tasks + ' tarefas' : `nível ${companyLevel()} · ${num(COMPANY.xp)} XP`}</small></div>${un.length ? `<div class="trophies">${un.map(A => `<span class="trophy"><b>★</b>${esc(A.label)}</span>`).join('')}</div>` : '<p class="note">Nenhuma ainda hoje. Elas aparecem na estante de troféus da Diretoria.</p>'}
     <p class="note" style="margin-top:8px">${REAL ? 'Mais tarefas hoje: ' + [...AGENTS].sort((x,y) => y.tasksDone - x.tasksDone).slice(0,3).filter(a => a.tasksDone).map(a => `${esc(a.R.name)} · ${esc(a.name)} (${a.tasksDone})`).join(' · ') : 'Top agentes: ' + [...AGENTS].sort((x,y) => y.xp - x.xp).slice(0,3).map(a => `${esc(a.name)} (${esc(a.R.name)}) nível ${levelOf(a.xp)}`).join(' · ')}</p></div>`;
   html += `<div class="card"><div class="sec"><h2>Atividade ao vivo</h2><small>${FEED.length} eventos</small></div><ul class="log">${logItems(FEED.slice(0,18), true)}</ul></div>`;
   return html;
@@ -232,7 +231,7 @@ function renderPanel(now){
   $('kSubs').innerHTML = `${brl(subsTotal())} <small>/mês</small>`;
   const worstPlan = PLANS.filter(p => p.meters ? p.meters.length : p.credit && p.credit.total).map(p => p.meters ? [p.name, Math.max(...p.meters.map(m => m.used))] : [p.name, (p.credit.total-p.credit.left)/p.credit.total*100]).sort((a,b) => b[1]-a[1])[0];
   $('kSubsSub').textContent = `${PLANS.length} planos${worstPlan ? ` · mais usado: ${worstPlan[0]} ${Math.round(worstPlan[1])}%` : ''}`;
-  if (REAL){ $('kLevel').textContent = `${COMPANY.tasks} tarefas`; $('kXp').textContent = `hoje · ${AGENTS.filter(a => a.state !== 'idle').length} de ${AGENTS.length} sessões ativas`; }
+  if (REAL){ $('kLevel').textContent = `${COMPANY.tasks} tarefas`; $('kXp').textContent = `${AGENTS.filter(a => a.state !== 'idle').length} de ${AGENTS.length} sessões ativas agora`; }
   else { $('kLevel').textContent = 'Nível ' + companyLevel(); $('kXp').textContent = `${num(COMPANY.xp)} XP · ${COMPANY.tasks} tarefas hoje`; }
   const working = AGENTS.filter(x => x.state==='working').length, waiting = AGENTS.filter(x => x.state==='waiting').length, errors = AGENTS.filter(x => x.state==='error').length;
   setHTML($('chips'), `<span class="chip"><i style="background:var(--ok)"></i>Trabalhando <b>${working}</b></span><button class="chip ${waiting?'alert':''}" type="button" data-act="next-wait"><i style="background:var(--wait)"></i>Precisam de você <b>${waiting}</b></button><span class="chip"><i style="background:var(--err)"></i>Erros <b>${errors}</b></span><button class="chip" type="button" data-act="tab" data-arg="sugestoes"><i style="background:var(--amber)"></i>Sugestões <b>${SUGG.length}</b></button>`);
@@ -253,7 +252,6 @@ document.addEventListener('click', e => {
   if (act === 'agent'){ const a = agentBy(+arg); if (!a) return; a.pop = 1; goAgent(a); setTab('agente'); }
   if (act === 'tab') setTab(arg);
   if (act === 'costp') costPeriod = +arg;
-  if (act === 'abrirProj'){ realAbrirProj(arg); return; }
   if (act === 'editarSalas'){ abrirEditor(); return; }
   if (act === 'novaSala'){ abrirEditor(arg); return; }
   if (act === 'away') realToggleAway(arg === '1');
@@ -268,12 +266,10 @@ document.addEventListener('click', e => {
   if (act === 'immersive') toggleImmersive();
   if (act === 'drawer') toggleDrawer();
   if (act === 'tv') toggleTV();
-  if (act === 'light'){ lightMode = lightMode === 'auto' ? 'day' : lightMode === 'day' ? 'night' : 'auto'; $('lightLbl').textContent = {auto:'Hora real', day:'Dia', night:'Noite'}[lightMode]; $('btnLight').title = 'Iluminação: ' + $('lightLbl').textContent; lastDay = -1; applyLight(); if (view.building) hemi.intensity += .35; }
+  if (act === 'atalhos'){ const el = $('atalhos'); el.hidden = !el.hidden; b.setAttribute('aria-expanded', String(!el.hidden)); }
   if (act === 'wake'){ const a = agentBy(+arg); if (a && a.state === 'idle') assignTask(a, pick(a.prompts)); }
-  if (act === 'delegar' || act === 'fluxo' || act === 'sessao'){ if (selected) realTrabalho(act, arg, selected); return; }
   if (act === 'sendTask'){ if (!selected) return; const ta = $('taskText'), v = ta && ta.value.trim(); if (!v){ toast('Escreva a tarefa antes de enviar'); return; } assignTask(selected, v); ta.value = ''; }
   if (act === 'live') goLive();
-  if (act === 'replay') toggleReplay();
   if (act === 'center') centerView();
   dirty = true;
 });

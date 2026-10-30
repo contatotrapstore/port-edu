@@ -138,7 +138,7 @@ COMPANY.perms = 0;
 const MARCOS_KEY = 'edh-marcos-' + new Date().toDateString();
 try { if (REAL) COMPANY.unlocked = JSON.parse(localStorage.getItem(MARCOS_KEY) || '[]'); } catch { /* sem armazenamento */ }
 function checkAchievements(){
-  for (const A of ACHIEVEMENTS){ if (!COMPANY.unlocked.includes(A.id) && A.test()){ COMPANY.unlocked.push(A.id); try { if (REAL) localStorage.setItem(MARCOS_KEY, JSON.stringify(COMPANY.unlocked)); } catch {} toast('Marco do dia: ' + A.label); const d = AGENTS[0]; FEED.unshift({t:new Date(), a:d, kind:'xp', text:A.label, tag:KIND_TAG.xp}); dirty = true; } }
+  for (const A of ACHIEVEMENTS){ if (!COMPANY.unlocked.includes(A.id) && A.test()){ COMPANY.unlocked.push(A.id); try { if (REAL) localStorage.setItem(MARCOS_KEY, JSON.stringify(COMPANY.unlocked)); } catch {} if (!REAL){ toast('Marco do dia: ' + A.label); const d = AGENTS[0]; FEED.unshift({t:new Date(), a:d, kind:'xp', text:A.label, tag:KIND_TAG.xp}); } dirty = true; } }
 }
 
 /* walking with floors and elevator */

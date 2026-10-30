@@ -5,7 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { ROOT_DIR, PORT, config, DATA_DIR, roomFor, ENV_DO_AGENTE } from './config.js';
 import { store } from './store.js';
-import { readHistory, readCosts, dayKey } from './history.js';
+import { readCosts } from './history.js';
 import { spawn } from 'node:child_process';
 import { postar, lerQuadro, delegar, tarefa, listaTarefas, modelosFluxo, iniciarFluxo, pastaDoProjeto } from './orquestra.js';
 import { infoProjeto, relatorioHTML } from './projetos.js';
@@ -78,7 +78,6 @@ const server = http.createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && p === '/api/state') return send(res, 200, store.snapshot());
     // Linha do tempo do dia para o replay: ?date=AAAA-MM-DD (padrão hoje) &since=ms
-    if (req.method === 'GET' && p === '/api/history') return send(res, 200, readHistory(url.searchParams.get('date') || dayKey(), Number(url.searchParams.get('since')) || 0));
     // Custo e tarefas por sala por dia: { "AAAA-MM-DD": { sala: { floor, costUsd, tasks } } }
     if (req.method === 'GET' && p === '/api/costs') return send(res, 200, readCosts());
     if (req.method === 'GET' && p === '/api/events') {
