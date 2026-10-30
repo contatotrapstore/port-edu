@@ -20,3 +20,16 @@ test('migração multimarca cadastra Revix desligada e aceita outra conta do Ins
   await assert.rejects(db.query("insert into content_studio.instagram_connections(brand_id,account_id,username,token_ciphertext) select id,'17841400000000001','outra','x' from content_studio.brands where handle='edevshub'"));
  }finally{await db.close();}
 });
+// Imagem nativa: assets aceitam 'jpg' (JPEG publicável); outros tipos continuam recusados
+test('migração de imagem nativa aceita asset jpg e mantém os tipos antigos',async()=>{
+ const db=new PGlite();
+ try{
+  await db.exec('create role anon; create role authenticated; create role service_role; create schema auth; create table auth.users(id uuid primary key);');
+  const dir=new URL('../../../supabase/migrations/',import.meta.url);
+  for(const f of fs.readdirSync(dir).filter(f=>f.endsWith('.sql')).sort())await db.exec(fs.readFileSync(new URL(f,dir),'utf8'));
+  const post=(await db.query("insert into content_studio.posts(brand_id,topic) select id,'Teste' from content_studio.brands where handle='revix' returning id")).rows[0].id;
+  const rev=(await db.query("insert into content_studio.revisions(post_id,brief,slides,content_hash) values($1,'{}','[]',$2) returning id",[post,'a'.repeat(64)])).rows[0].id;
+  for(const kind of ['png','mp4','jpg','audio','qa'])await db.query("insert into content_studio.assets(revision_id,kind,object_key,sha256,provenance) values($1,$2,$3,$4,'{}')",[rev,kind,`${rev}/x.${kind}`,'a'.repeat(64)]);
+  for(const kind of ['jpeg','gif','webp'])await assert.rejects(db.query("insert into content_studio.assets(revision_id,kind,object_key,sha256,provenance) values($1,$2,$3,$4,'{}')",[rev,kind,`${rev}/y.${kind}`,'a'.repeat(64)]));
+ }finally{await db.close();}
+});
