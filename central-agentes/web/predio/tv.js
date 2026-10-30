@@ -47,12 +47,19 @@ function tvTick(now){
   setHTML($('tvAgora'), [...esp, ...err, ...trab].slice(0, 6).map(a => `<li><i style="background:${ST[a.state]}"></i><span><b>${esc(a.R.name)}</b><small>${esc(a.name)}${a.state === 'working' && a.tool ? ' · ' + esc(TOOL_PT[a.tool] || a.tool) : a.state === 'waiting' ? ' · precisa de você' : a.state === 'error' ? ' · erro' : ''}</small></span></li>`).join('') || '<li class="vazio">Todo mundo em pausa</li>');
   // faixa: só troca quando chega coisa nova (trocar a cada segundo reiniciaria a animação)
   // num telão não aparecem comandos nem textos de pedido: só quem fez o quê (sala · acontecimento)
-  const FRASE = {done: 'concluiu', wait: 'pediu sua permissão', err: 'deu erro', prompt: 'recebeu um pedido novo', tool: null};
+  // erro de ferramenta (um comando que falhou) é comum e assusta no telão: o erro de verdade já aparece no "Agora" e na cor do boneco
+  const FRASE = {done: 'concluiu', wait: 'pediu sua permissão', prompt: 'recebeu um pedido novo'};
   const ev = FEED.slice(0, 16).map(e => {
     const sala = (e.a && e.a.R && e.a.R.name) || '', frase = e.kind in FRASE ? FRASE[e.kind] : null;
-    if (!sala) return '';
-    if (e.kind === 'tool') return `<span><b>${esc(sala)}</b> ${esc(String(e.tag || 'trabalhando').toLowerCase())}</span>`;
+    if (!sala || sala === 'Sessão encerrada') return '';
+    // ferramentas (ler, editar, rodar comando) mudam toda hora: a faixa fica só com o que importa
     return frase ? `<span><b>${esc(sala)}</b> ${frase}</span>` : '';
-  }).filter(Boolean).filter((x, i, arr) => x !== arr[i - 1]).slice(0, 10).join('<em>•</em>');
-  if (ev !== tvFaixa){ tvFaixa = ev; $('tvTrack').innerHTML = ev ? ev + '<em>•</em>' + ev : '<span>Sem novidades por enquanto</span>'; }
+  }).filter(Boolean).filter((x, i, arr) => arr.indexOf(x) === i).slice(0, 10);
+  const chave = ev.join('|');
+  if (chave !== tvFaixa){
+    tvFaixa = chave; const track = $('tvTrack'), lista = ev.join('<em>•</em>');
+    // com poucos acontecimentos a faixa fica parada (rolar 2 itens em loop parecia repetido)
+    const rola = ev.length >= 4; track.classList.toggle('parado', !rola);
+    track.innerHTML = !ev.length ? '<span>Sem novidades por enquanto</span>' : rola ? lista + '<em>•</em>' + lista : lista;
+  }
 }

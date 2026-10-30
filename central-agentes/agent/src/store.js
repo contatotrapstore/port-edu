@@ -128,7 +128,7 @@ class Store extends EventEmitter {
   }
 
   event(a, kind, tag, text, t = Date.now()) {
-    const e = { t, agentId: a.id, kind, tag, text: String(text || '').slice(0, 240) };
+    const e = { t, agentId: a.id, room: a.room, kind, tag, text: String(text || '').slice(0, 240) };
     a.log.unshift(e); if (a.log.length > 20) a.log.length = 20;
     this.feed.unshift(e); if (this.feed.length > 200) this.feed.length = 200;
     this.emit('event', e, a);

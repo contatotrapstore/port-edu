@@ -387,3 +387,9 @@ body.tv .tv-exit{bottom:26px;right:24px;opacity:.7}
 
 /* pedido e última fala longos: rolam dentro da caixa em vez de esticar o cartão */
 .prompt p{max-height:180px;overflow:auto;scrollbar-width:thin}
+
+/* TV: valores sempre numa linha; o consumo (valor mais longo) ocupa a largura toda */
+.tv-kpis>div:first-child{grid-column:1/-1}
+.tv-kpis b{white-space:nowrap;font-size:clamp(22px,2.1vw,30px)}
+.tv-kpis>div:last-child{grid-column:1/-1}
+.tv-track.parado{animation:none}

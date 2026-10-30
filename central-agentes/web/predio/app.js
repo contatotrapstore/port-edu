@@ -4,6 +4,7 @@
 
 /* loop */
 const clock = new THREE.Clock();
+let tvGiro = 0;   // ângulo atual do balanço da câmera no modo TV
 let accScreen = 0, accWall = 0, lastPanel = 0, lastSnap = 0, lastLightCheck = 0;
 function frame(){
   const dt = Math.min(.05, clock.getDelta()), now = performance.now(); T += dt;
@@ -50,6 +51,7 @@ function frame(){
   // TV mode cycles floors
   if (document.body.classList.contains('tv')){ tvTimer += dt; if (tvTimer > 24){ tvTimer = 0; if (view.building) setView(0, false); else if (view.floor < 3) setView(view.floor + 1, false); else setView(0, true); } }
   // camera
+  if (TV_LIGADA && !fly){ const alvo = Math.sin(T * .1) * .45, dg = alvo - tvGiro; tvGiro = alvo; const off = camera.position.clone().sub(controls.target); off.applyAxisAngle(new THREE.Vector3(0, 1, 0), dg); camera.position.copy(controls.target).add(off); }
   if (fly){ fly.k = Math.min(1, fly.k + dt/1.0); const e = 1 - Math.pow(1 - fly.k, 3); camera.position.lerpVectors(fly.p0, fly.p1, e); controls.target.lerpVectors(fly.t0, fly.t1, e); if (fly.k >= 1) fly = null; }
   if (Math.abs(rotQueue) > 1e-4){ const rs = RM ? rotQueue : rotQueue * Math.min(1, dt*6); rotQueue -= rs; const off = camera.position.clone().sub(controls.target); off.applyAxisAngle(new THREE.Vector3(0,1,0), rs); camera.position.copy(controls.target).add(off); }
   if (keys.size){
@@ -62,7 +64,9 @@ function frame(){
   if (follow && selected && !replaying){ const g = selected.body.g, tg = V(g.position.x, g.position.y + .8, g.position.z), delta = tg.sub(controls.target).multiplyScalar(Math.min(1, dt*3)); controls.target.add(delta); camera.position.add(delta); }
   controls.target.x = clamp(controls.target.x, -4, WW + 6); controls.target.z = clamp(controls.target.z, -4, WD + PLAZA + 3); controls.target.y = clamp(controls.target.y, 0, EXPL*3 + 2);
   controls.update();
-  for (const s of WALLSETS){ if (!view.building && s.f !== view.floor) continue; tmpV.copy(camera.position); tmpV.y = 0; tmpV.sub(s.center); const facing = tmpV.x*s.normal.x + tmpV.z*s.normal.z > 0; s.tall.visible = !facing; s.low.visible = facing; }
+  // parede do lado da câmera fica baixa (corte); com folga de 1,5 m para não piscar quando a câmera passa perto do plano dela
+  for (const s of WALLSETS){ if (!view.building && s.f !== view.floor) continue; tmpV.copy(camera.position); tmpV.y = 0; tmpV.sub(s.center); const d = tmpV.x*s.normal.x + tmpV.z*s.normal.z;
+    if (s.facing === undefined || (s.facing && d < -1.5) || (!s.facing && d > 1.5)) s.facing = d > 0; s.tall.visible = !s.facing; s.low.visible = s.facing; }
   renderer.render(scene, camera);
   updateLabels(now, replaying || null);
   if (dirty || now - lastPanel > 1000){ renderPanel(now); lastPanel = now; dirty = false; }

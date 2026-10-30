@@ -101,7 +101,7 @@ let TV_LIGADA = false;
 function toggleTV(){
   const on = !document.body.classList.contains('tv');
   TV_LIGADA = on;
-  if (on){ toggleImmersive(true); document.body.classList.add('tv'); document.body.classList.remove('drawer'); controls.autoRotate = true; controls.autoRotateSpeed = .22; tvTimer = 0; tvUlt = 0; }
+  if (on){ toggleImmersive(true); document.body.classList.add('tv'); document.body.classList.remove('drawer'); controls.autoRotate = false; tvGiro = 0; tvTimer = 0; tvUlt = 0; }
   else { document.body.classList.remove('tv'); controls.autoRotate = false; controls.autoRotateSpeed = .45; toggleImmersive(false); }
 }
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && document.body.classList.contains('immersive')) toggleImmersive(false); });

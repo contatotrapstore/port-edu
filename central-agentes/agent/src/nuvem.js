@@ -34,7 +34,7 @@ export function sanitize(s) {
     tarefas: (s.tarefas || []).map(({ id, para, modo, projeto, status, criadaEm, fim, custoUsd }) => ({ id, para, modo, projeto, status, criadaEm, fim, custoUsd })),   // contagens e temas dos posts públicos do Instagram (sem tokens)
     uptime: (s.uptime || []).map(({ site, ok, status, ms, upPct, at }) => ({ site, ok, status, ms, upPct, at })),
     pending: s.pending.map(p => ({ id: p.id, agentId: hid(p.agentId), tool: p.tool, at: p.at })),
-    feed: s.feed.slice(0, 40).map(e => ({ t: e.t, agentId: hid(e.agentId), kind: e.kind, tag: e.tag, text: '' })),
+    feed: s.feed.slice(0, 40).map(e => ({ t: e.t, agentId: hid(e.agentId), room: e.room, kind: e.kind, tag: e.tag, text: '' })),
   };
 }
 
