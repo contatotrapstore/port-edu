@@ -8,9 +8,9 @@ let tvUlt = 0, tvAndar = '', tvAndarAte = 0, tvFaixa = null, tvMontado = false;
 function tvMontar(el){
   el.innerHTML = `
     <div class="tv-brand">${TV_LOGO}<div><b>EDevsHub</b><small>Central de Agentes</small></div><span class="tv-live"><i></i>AO VIVO</span></div>
-    <div class="tv-clock"><b id="tvHora"></b><small id="tvData"></small></div>
     <div class="tv-floor" id="tvAndar"><small>Agora na tela</small><b id="tvAndarNome"></b><span id="tvAndarSub"></span></div>
     <div class="tv-side">
+      <div class="tv-clock"><b id="tvHora"></b><small id="tvData"></small></div>
       <div class="tv-kpis">
         <div><small>Consumo hoje</small><b id="tvGasto"></b></div>
         <div><small>Tarefas hoje</small><b id="tvTarefas"></b></div>

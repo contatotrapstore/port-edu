@@ -393,3 +393,6 @@ body.tv .tv-exit{bottom:26px;right:24px;opacity:.7}
 .tv-kpis b{white-space:nowrap;font-size:clamp(22px,2.1vw,30px)}
 .tv-kpis>div:last-child{grid-column:1/-1}
 .tv-track.parado{animation:none}
+/* relógio é o primeiro item da coluna da direita: nunca sobrepõe os números */
+.tvhud .tv-side{top:22px}
+.tvhud .tv-side .tv-clock{position:static;top:auto;right:auto}
