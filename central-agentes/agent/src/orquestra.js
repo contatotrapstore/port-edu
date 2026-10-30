@@ -25,7 +25,6 @@ const q = a => process.platform === 'win32' && /[\s()*&|<>^]/.test(a) ? '"' + a 
 const LEITURA = ['Read', 'Grep', 'Glob', 'WebSearch', 'Bash(git status:*)',
   'Bash(git diff)', 'Bash(git diff --stat)', 'Bash(git diff --cached)', 'Bash(git diff --cached --stat)', 'Bash(git diff HEAD)', 'Bash(git diff HEAD --stat)',
   'Bash(git log --oneline -20)', 'Bash(git log --oneline -50)', 'Bash(git log -5 --stat)', 'Bash(git show HEAD)', 'Bash(git show --stat HEAD)'];
-const TESTES = ['Bash(npm test:*)', 'Bash(npm run test:*)', 'Bash(npm run lint:*)', 'Bash(npm run build:*)', 'Bash(npx vitest:*)', 'Bash(npx jest:*)', 'Bash(npx tsc:*)', 'Bash(pnpm test:*)', 'Bash(node --test:*)'];
 import { store } from './store.js';
 
 const CFG = { maxTarefas: 2, minutosMax: 30, maxUsdClaude: 3, ...(config.orquestra || {}) };
@@ -89,13 +88,14 @@ function executar(t) {
   if (t.para === 'claude') {
     t.sessionId = crypto.randomUUID();
     store.jobSessions.set(t.sessionId, `Delegado · ${t.de}`);
-    // ler: só ferramentas de leitura e git (o resto é negado sem perguntar); editar: edita + roda testes/build
-    args = ['-p', '--output-format', 'json', '--session-id', t.sessionId, '--permission-mode', t.modo === 'ler' ? 'dontAsk' : 'acceptEdits', '--max-budget-usd', String(CFG.maxUsdClaude),
-      '--allowedTools', ...(t.modo === 'ler' ? LEITURA : [...LEITURA, ...TESTES])].map(q);
+    // ler: modo plan (não edita nada) com leitura e git liberados; editar: bypass, aceita tudo sem perguntar (escolha do Eduardo)
+    args = ['-p', '--output-format', 'json', '--session-id', t.sessionId, '--max-budget-usd', String(CFG.maxUsdClaude),
+      ...(t.modo === 'ler' ? ['--permission-mode', 'plan', '--allowedTools', ...LEITURA] : ['--permission-mode', 'bypassPermissions'])].map(q);
     if (/^[\w.-]+$/.test(CFG.modeloClaude || '')) args.push('--model', CFG.modeloClaude);   // ex.: "sonnet" para gastar menos da janela
   } else {
     saidaFinal = path.join(os.tmpdir(), `edh-${t.id}.txt`);
-    args = ['exec', '--json', '--skip-git-repo-check', '-s', t.modo === 'ler' ? 'read-only' : 'workspace-write', '-o', q(saidaFinal), '-'];
+    // editar: sem sandbox, como o bypass do Claude
+    args = ['exec', '--json', '--skip-git-repo-check', '-s', t.modo === 'ler' ? 'read-only' : 'danger-full-access', '-o', q(saidaFinal), '-'];
   }
   // .cmd do npm precisa de shell no Windows; os argumentos são fixos e o texto vai pela entrada padrão
   const p = spawn(t.para, args, { cwd: t.cwd, env, shell: process.platform === 'win32', windowsHide: true });

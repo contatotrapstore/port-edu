@@ -98,6 +98,7 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [x] /central: script externo + CSP fechada; contagem regressiva nos pedidos (some faltando 5 s); resumo seguro do pedido (programa ou tipo de arquivo); aviso "PC sem sinal há X"; modo ausente mostra "aplicando…" até o PC confirmar; acesso conferido por `is_central_admin()`; mensagem de login que não revela e-mails; PWA com escopo `/central`
 - [x] Supabase: coluna `resumo`; resposta só com pedido válido e `decided_by` = quem respondeu
 - [x] MCP: token relido, projeto achado sem diferença de maiúsculas/subpasta, mensagens em paralelo, versão do protocolo negociada; instalador com bloco marcado no `config.toml` do Codex
+- [x] Tarefas delegadas: modo "ler" = Claude em modo plan (leitura e git em formas fixas, sem WebFetch) / Codex read-only; modo "editar" = Claude em bypass (aceita tudo) / Codex sem sandbox, por escolha do Eduardo
 - [x] Testes: `npm test` = estado (hooks, custo, permissão, salas) + Telegram + nuvem; `node scripts/teste-mcp.mjs`
 
 ## Fase 3 — ideias guardadas
