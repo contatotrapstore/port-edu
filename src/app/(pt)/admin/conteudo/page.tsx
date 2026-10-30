@@ -6,7 +6,7 @@ import {instagramState} from '@/lib/content/instagram';
 import AssetPreview from './AssetPreview';
 import ResearchControl from './ResearchControl';
 import {researchState} from '@/lib/content/research';
-import {listAssets} from '@/lib/content/storage';
+import {listAssets,signedPreviewUrls} from '@/lib/content/storage';
 import {renderStatus} from '@/lib/content/render';
 import RenderControl from './RenderControl';
 import ReviewPanel from './ReviewPanel';
@@ -17,16 +17,16 @@ import {listPosts} from '@/lib/content/repository';
 import {logout} from '../actions';
 import DraftForm from './DraftForm';
 import CentralLink from './CentralLink';
+import PautaLink from './PautaLink';
 const states:Record<string,string>={draft:'Rascunho',producing:'Em produção',review:'Em revisão',ready:'Pronto',scheduled:'Agendado',publishing:'Publicando',publishing_unknown:'Conferir publicação',published:'Publicado',paused:'Pausado'};
 export default async function Studio({searchParams}:{searchParams:Promise<{post?:string;saved?:string;error?:string;instagram?:string}>}){
  const admin=await getAdmin();if(!admin)redirect('/admin/login');
- const params=await searchParams,posts=await listPosts(),selected=posts.find(p=>p.id===params.post);
- const assets=selected?await listAssets(selected.active_revision_id):[];
- const render=selected?await renderStatus(selected.active_revision_id):null;
- const research=await researchState();
- const instagram=await instagramState();
- const appReady=await instagramAppReady();
- const publication=await publicationSettings(),schedules=await listSchedules();
+ // tudo em paralelo: antes eram ~10 idas ao banco em fila a cada troca de pauta
+ const params=await searchParams;
+ const [posts,research,instagram,appReady,publication,schedules]=await Promise.all([listPosts(),researchState(),instagramState(),instagramAppReady(),publicationSettings(),listSchedules()]);
+ const selected=posts.find(p=>p.id===params.post);
+ const [assets,render]=selected?await Promise.all([listAssets(selected.active_revision_id),renderStatus(selected.active_revision_id)]):[[],null];
+ const urls=await signedPreviewUrls(assets);
  const online=publication.publisher_online;
  const formato=(p?:typeof selected)=>p?.brief?.format==='reel'?'Reel':p?.brief?.format==='story'?'Story':`Carrossel · ${p?.slides?.length||0} slides`;
  const instagramOk=instagram?.health==='verified';
@@ -42,9 +42,9 @@ export default async function Studio({searchParams}:{searchParams:Promise<{post?
   </div>
   {params.saved&&<p role="status" className="studio-notice">Nova revisão salva no banco.</p>}{params.error&&<p role="alert" className="studio-notice">Não foi possível salvar. Confira os campos, sua conexão e se o post foi alterado em outra janela.</p>}{params.instagram&&<p role="status" className="studio-notice">{params.instagram==='connected'?'Instagram conectado com sucesso. Confira o estado de publicação na agenda.':'Não foi possível concluir a conexão. Confira permissões e tente novamente.'}</p>}
   <div className="studio-workspace">
-   <section className="studio-library"><div className="studio-sectionhead"><h2>Suas pautas</h2><span>{posts.length} registros</span></div>{posts.length===0?<div className="studio-empty"><span className="studio-empty-number">01</span><h3>A próxima ideia começa aqui.</h3><p>Escreva um problema real do seu cliente ou uma novidade de IA que mereça ser explicada.</p></div>:<ul>{posts.map(p=><li key={p.id}><Link href={'/admin/conteudo?post='+p.id} className={selected?.id===p.id?'is-selected':''}><span className="studio-post-state" data-state={p.state}>{states[p.state]||p.state}</span><h3>{p.topic}</h3><small>{new Date(p.created_at).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'})} · {formato(p)}</small></Link></li>)}</ul>}</section>
+   <section className="studio-library"><div className="studio-sectionhead"><h2>Suas pautas</h2><span>{posts.length} registros</span></div>{posts.length===0?<div className="studio-empty"><span className="studio-empty-number">01</span><h3>A próxima ideia começa aqui.</h3><p>Escreva um problema real do seu cliente ou uma novidade de IA que mereça ser explicada.</p></div>:<ul>{posts.map(p=><li key={p.id}><PautaLink href={'/admin/conteudo?post='+p.id} selected={selected?.id===p.id}><span className="studio-post-state" data-state={p.state}>{states[p.state]||p.state}</span><h3>{p.topic}</h3><small>{new Date(p.created_at).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'})} · {formato(p)}</small></PautaLink></li>)}</ul>}</section>
    <div className="studio-col">
-    {selected&&<section className="studio-stage" aria-labelledby="stage-title"><div className="studio-sectionhead"><h2 id="stage-title">Prévia</h2><span><span className="studio-post-state" data-state={selected.state}>{states[selected.state]||selected.state}</span> {formato(selected)}</span></div><h3 className="studio-stage-topic">{selected.topic}</h3>{assets.length===0&&<RenderControl postId={selected.id} revisionId={selected.active_revision_id} state={render?.state}/>}<AssetPreview assets={assets}/></section>}
+    {selected&&<section className="studio-stage" aria-labelledby="stage-title"><div className="studio-sectionhead"><h2 id="stage-title">Prévia</h2><span><span className="studio-post-state" data-state={selected.state}>{states[selected.state]||selected.state}</span> {formato(selected)}</span></div><h3 className="studio-stage-topic">{selected.topic}</h3>{assets.length===0&&<RenderControl postId={selected.id} revisionId={selected.active_revision_id} state={render?.state}/>}<AssetPreview assets={assets} urls={urls}/></section>}
     {selected&&<ReviewPanel postId={selected.id} revisionId={selected.active_revision_id} assets={assets}/>}
     {selected?<details className="studio-fold"><summary>Editar texto e roteiro</summary>{editor}</details>:editor}
    </div>

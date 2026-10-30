@@ -267,3 +267,9 @@
   .studio-library ul{max-height:300px;min-height:0}
   .studio-schedule button{flex:1 1 100%}
 }
+
+/* pauta clicada: barra correndo enquanto a prévia carrega */
+.studio-library li a{position:relative;overflow:hidden}
+.studio-pending{position:absolute;left:0;top:0;height:3px;width:100%;background:linear-gradient(90deg,transparent,var(--amber),transparent);opacity:0;transform:translateX(-100%)}
+.studio-pending[data-on="1"]{opacity:1;animation:studio-pend 1s linear infinite}
+@keyframes studio-pend{to{transform:translateX(100%)}}

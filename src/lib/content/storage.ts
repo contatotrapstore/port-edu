@@ -8,6 +8,17 @@ export async function listAssets(revisionId:string){
   await requireAdmin();
   return (await contentDb().query<ContentAsset>('select id,kind,object_key,sha256,provenance from content_studio.assets where revision_id=$1 order by object_key',[revisionId])).rows;
 }
+// Assina todas as mídias da prévia numa chamada só (antes cada vídeo passava pela rota e assinava sozinho)
+export async function signedPreviewUrls(assets:ContentAsset[]){
+  await requireAdmin();
+  const key=process.env.CONTENT_SUPABASE_STORAGE_KEY,url=process.env.NEXT_PUBLIC_CONTENT_SUPABASE_URL;
+  const keys=assets.map(a=>a.object_key).filter(k=>/^[0-9a-f-]{36}\/[a-zA-Z0-9._-]+$/.test(k));
+  if(!key||!url||!keys.length)return {} as Record<string,string>;
+  const {data,error}=await createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}}).storage.from('content-studio').createSignedUrls(keys,3600);
+  if(error||!data)return {} as Record<string,string>;
+  const byKey=Object.fromEntries(data.filter(d=>d.signedUrl&&d.path).map(d=>[d.path,d.signedUrl]));
+  return Object.fromEntries(assets.filter(a=>byKey[a.object_key]).map(a=>[a.id,byKey[a.object_key]])) as Record<string,string>;
+}
 export async function getPreviewUrl(assetId:string){
   await requireAdmin();
   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(assetId))throw Error('Arquivo indisponível');
