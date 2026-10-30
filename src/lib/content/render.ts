@@ -4,8 +4,9 @@ import {contentDb} from './db';
 export async function requestRender(postId:string,revisionId:string){
  const actor=await requireAdmin(),db=await contentDb().connect();
  try{await db.query('begin');
-  const post=(await db.query('select active_revision_id,state from content_studio.posts where id=$1 for update',[postId])).rows[0];
-  if(!post||post.active_revision_id!==revisionId||!['draft','review','producing','paused'].includes(post.state))throw Error('Revisão indisponível.');
+  const post=(await db.query("select p.active_revision_id,p.state,r.brief->>'production' as production from content_studio.posts p join content_studio.revisions r on r.id=p.active_revision_id where p.id=$1 for update of p",[postId])).rows[0];
+  // post pronto importado: a mídia vem do import, o Studio não gera vídeo para ele
+  if(!post||post.active_revision_id!==revisionId||!['draft','review','producing','paused'].includes(post.state)||post.production==='manual-only')throw Error('Revisão indisponível.');
   if((await db.query('select id from content_studio.assets where revision_id=$1 limit 1',[revisionId])).rows.length)throw Error('Esta revisão já possui vídeos. Edite e salve para gerar outra versão.');
   await db.query("insert into content_studio.jobs(revision_id,kind) values($1,'render') on conflict(revision_id,kind) where state in ('queued','running','unknown') do nothing",[revisionId]);
   await db.query("update content_studio.posts set state='producing' where id=$1",[postId]);

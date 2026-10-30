@@ -2,7 +2,7 @@
 import {useState,useTransition} from 'react';
 import {useRouter} from 'next/navigation';
 import {savePublication,prepareSchedule,removeSchedule} from './publication-actions';
-type Props={username:string;enabled:boolean;location:string;mode:string;time:string;connected:boolean;online:boolean;lastSeen:string|null;error:string|null;postId?:string;revisionId?:string;schedules:{id:string;topic:string;format?:string;state:string;local_date:string;local_time:string;publication_state:string|null}[]};
+type Props={username:string;enabled:boolean;location:string;mode:string;time:string;connected:boolean;online:boolean;lastSeen:string|null;error:string|null;postId?:string;revisionId?:string;schedules:{id:string;topic:string;format?:string;state:string;local_date:string;local_time:string;publication_state:string|null;warnings?:{code?:string}[]|null}[]};
 export default function PublicationControl(props:Props){
  const [enabled,setEnabled]=useState(props.enabled),[mode,setMode]=useState(props.mode),[time,setTime]=useState(props.time.slice(0,5)),[message,setMessage]=useState(''),[pending,start]=useTransition(),router=useRouter();
  return <section id="agenda" className="studio-operation studio-research" aria-labelledby="agenda-title">
@@ -28,7 +28,7 @@ export default function PublicationControl(props:Props){
   </details>
   {(()=>{const ativos=props.schedules.filter(s=>!['cancelled','completed'].includes(s.state)),historico=props.schedules.filter(s=>['cancelled','completed'].includes(s.state));
    const item=(s:Props['schedules'][number])=><li key={s.id}>{s.local_date.split('-').reverse().join('/')} {s.local_time.slice(0,5)} · {s.format==='reel'?'Reel':s.format==='story'?'Story':'Carrossel'} · {s.topic} · {({paused:'Preparado / pausado',scheduled:'Agendado',missed:'Horário perdido',cancelled:'Cancelado',completed:'Concluído'} as Record<string,string>)[s.state]||s.state}
-   {s.publication_state==='unknown'&&<strong> · Resultado incerto: confira o Instagram. Não será reenviado automaticamente.</strong>}{s.publication_state==='failed'&&<strong> · A Meta recusou o processamento. Cancele e prepare uma nova revisão.</strong>}
+   {s.publication_state==='unknown'&&<strong> · Resultado incerto: confira o Instagram. Não será reenviado automaticamente.</strong>}{s.publication_state==='failed'&&<strong> · A Meta recusou o processamento. Cancele e prepare uma nova revisão.</strong>}{s.warnings?.some(w=>w.code==='collaborators_rejected')&&<strong> · A Meta recusou o convite de Collab: saiu sem colaboradores.</strong>}
    {['paused','scheduled','missed'].includes(s.state)&&<button type="button" disabled={pending} onClick={()=>start(async()=>{const result=await removeSchedule(s.id);setMessage(result.ok?'Agenda cancelada.':'Não foi possível cancelar: pode já estar em envio ou aguardando conferência da Meta.');router.refresh();})}>Cancelar</button>}
   </li>;
    return <>{ativos.length===0?<p>Nenhum post agendado.</p>:<ul>{ativos.map(item)}</ul>}{historico.length>0&&<details className="studio-history"><summary>Histórico ({historico.length} concluídos ou cancelados)</summary><ul>{historico.map(item)}</ul></details>}</>;})()}

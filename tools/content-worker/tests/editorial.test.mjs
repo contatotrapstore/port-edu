@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
 import { PGlite } from '@electric-sql/pglite';
+import * as carry from '../../../src/lib/content/revision-carry.mjs';
 
 const require = createRequire(new URL('../../../package.json', import.meta.url));
 const ts = require('typescript');
@@ -82,7 +83,7 @@ test('draft revision is immutable, stale edits roll back and editing suspends pr
     await db.exec(fs.readFileSync(new URL('../../../supabase/migrations/20261027001716_content_studio_foundation.sql',import.meta.url),'utf8'));
     const actor = '00000000-0000-4000-8000-000000000001';
     const client = { query: (...args) => db.query(...args), release() {} };
-    const api = load('repository', { 'node:crypto': { createHash }, './db': { contentDb: () => ({ connect: async () => client }) }, './auth': { requireAdmin: async () => ({ id: actor }) }, './brand': { currentBrand: async () => ({ id: (await db.query("select id from content_studio.brands where handle='edevshub'")).rows[0].id, handle: 'edevshub' }) } });
+    const api = load('repository', { 'node:crypto': { createHash }, './revision-carry.mjs': carry, './storage': { copyAssetObjects: async () => { throw Error('no copy expected'); }, removeAssetObjects: async () => {} }, './db': { contentDb: () => ({ connect: async () => client }) }, './auth': { requireAdmin: async () => ({ id: actor }) }, './brand': { currentBrand: async () => ({ id: (await db.query("select id from content_studio.brands where handle='edevshub'")).rows[0].id, handle: 'edevshub' }) } });
     const input = { topic:'Teste editorial',brief:'Brief claro',caption:'Legenda',slides:['Um','Dois'],sources:[],format:'reel' };
     const id = await api.saveDraft(input);
     const first = (await db.query('select active_revision_id from content_studio.posts where id=$1',[id])).rows[0].active_revision_id;
@@ -101,3 +102,74 @@ test('draft revision is immutable, stale edits roll back and editing suspends pr
   } finally { await db.close(); }
 });
 
+// Post pronto importado: editar só a legenda leva a mídia conferida para a revisão nova (cópia com ids novos)
+test('imported post: caption edit copies the media, script edit leaves it without media, failures roll back', async () => {
+  const db = new PGlite();
+  try {
+    await db.exec('create role anon; create role authenticated; create role service_role; create schema auth; create table auth.users(id uuid primary key);');
+    const dir = new URL('../../../supabase/migrations/', import.meta.url);
+    for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.sql')).sort()) await db.exec(fs.readFileSync(new URL(f, dir), 'utf8'));
+    const brand = (await db.query("select id from content_studio.brands where handle='revix'")).rows[0].id;
+    let failInsert = false, copyFails = false; const copies = [], removed = [];
+    const client = { query: (sql, ...args) => { if (failInsert && String(sql).startsWith('insert into content_studio.assets')) return Promise.reject(Error('db down')); return db.query(sql, ...args); }, release() {} };
+    const storage = { copyAssetObjects: async plan => { if (copyFails) throw Error('Não foi possível copiar as mídias.'); copies.push(...plan.map(p => [p.from, p.to])); return plan.map(p => p.to); }, removeAssetObjects: async keys => { removed.push(...keys); } };
+    const api = load('repository', { 'node:crypto': { createHash }, './revision-carry.mjs': carry, './storage': storage, './db': { contentDb: () => ({ connect: async () => client }) }, './auth': { requireAdmin: async () => ({ id: '00000000-0000-4000-8000-000000000001' }) }, './brand': { currentBrand: async () => ({ id: brand, handle: 'revix' }) } });
+    // como o studio-importar grava
+    const post = (await db.query("insert into content_studio.posts(brand_id,topic,state) values($1,'Story importado','draft') returning id", [brand])).rows[0].id;
+    const brief = { text: 'Post pronto importado', format: 'story', production: 'manual-only', ai_generated: false, collaborators: ['formula.foto'], import_key: 'k1', importado: { ferramenta: 'studio-importar' } };
+    const first = (await db.query("insert into content_studio.revisions(post_id,brief,slides,caption,content_hash) values($1,$2,$3,'Nota',$4) returning id", [post, JSON.stringify(brief), JSON.stringify(['Hoje tem encontro', 'Abre o app']), 'a'.repeat(64)])).rows[0].id;
+    await db.query("insert into content_studio.assets(revision_id,kind,object_key,sha256,provenance) values($1,'jpg',$2,$3,$4)", [first, first + '/imp-01-abc.jpg', 'b'.repeat(64), JSON.stringify({ format: 'story', slide: 1, width: 1080, height: 1920, publish: true, qa: 'image-checked' })]);
+    await db.query("update content_studio.posts set active_revision_id=$1,state='review' where id=$2", [first, post]);
+    const input = { topic: 'Story importado', brief: 'Post pronto importado', caption: 'Nota nova', slides: ['Hoje tem encontro', 'Abre o app'], sources: [], format: 'story' };
+    // falha ao copiar: nada muda
+    copyFails = true;
+    await assert.rejects(api.saveDraft(input, post, first));
+    assert.equal((await db.query('select active_revision_id from content_studio.posts where id=$1', [post])).rows[0].active_revision_id, first);
+    // banco falha depois de copiar: desfaz e apaga as cópias
+    copyFails = false; failInsert = true;
+    await assert.rejects(api.saveDraft(input, post, first));
+    assert.equal(removed.length, 1); assert.equal((await db.query('select count(*)::int n from content_studio.revisions')).rows[0].n, 1);
+    failInsert = false; copies.length = 0;
+    // só a legenda: a mídia segue, o post volta para revisão e precisa de aprovação nova
+    await api.saveDraft(input, post, first);
+    const second = (await db.query('select active_revision_id,state from content_studio.posts where id=$1', [post])).rows[0];
+    assert.notEqual(second.active_revision_id, first); assert.equal(second.state, 'review');
+    const rev2 = (await db.query('select brief,caption from content_studio.revisions where id=$1', [second.active_revision_id])).rows[0];
+    assert.equal(rev2.caption, 'Nota nova');
+    assert.deepEqual({ ...rev2.brief }, { text: 'Post pronto importado', format: 'story', production: 'manual-only', ai_generated: false, collaborators: ['formula.foto'], import_key: 'k1', importado: { ferramenta: 'studio-importar' } });
+    const assets2 = (await db.query('select id,kind,object_key,sha256,provenance from content_studio.assets where revision_id=$1', [second.active_revision_id])).rows;
+    assert.deepEqual(copies, [[first + '/imp-01-abc.jpg', second.active_revision_id + '/imp-01-abc.jpg']]);
+    assert.equal(assets2.length, 1); assert.equal(assets2[0].object_key, second.active_revision_id + '/imp-01-abc.jpg');
+    assert.equal(assets2[0].provenance.publish, true); assert.ok(assets2[0].provenance.copied_from);
+    const ev = (await db.query("select metadata from content_studio.events where action='draft.saved' order by created_at desc limit 1")).rows[0].metadata;
+    assert.equal(ev.mediaCopiedFrom, first); assert.equal(ev.assets, 1);
+    // mudou o roteiro: segue importado, mas sem mídia (reimportar)
+    await api.saveDraft({ ...input, slides: ['Outro texto', 'Abre o app'] }, post, second.active_revision_id);
+    const third = (await db.query('select active_revision_id,state from content_studio.posts where id=$1', [post])).rows[0];
+    assert.equal(third.state, 'draft'); assert.equal(copies.length, 1);
+    assert.equal((await db.query('select count(*)::int n from content_studio.assets where revision_id=$1', [third.active_revision_id])).rows[0].n, 0);
+    assert.equal((await db.query('select brief from content_studio.revisions where id=$1', [third.active_revision_id])).rows[0].brief.production, 'manual-only');
+  } finally { await db.close(); }
+});
+
+test('render request refuses imported (manual-only) revisions and still queues generated ones', async () => {
+  const db = new PGlite();
+  try {
+    await db.exec('create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key);');
+    await db.exec(fs.readFileSync(new URL('../../../supabase/migrations/20261027001716_content_studio_foundation.sql', import.meta.url), 'utf8'));
+    const client = { query: (...args) => db.query(...args), release() {} };
+    const api = load('render', { './db': { contentDb: () => ({ connect: async () => client }) }, './auth': { requireAdmin: async () => ({ id: '00000000-0000-4000-8000-000000000001' }) } });
+    const make = async brief => {
+      const post = (await db.query("insert into content_studio.posts(brand_id,topic,state) select id,'Tema','draft' from content_studio.brands returning id")).rows[0].id;
+      const rev = (await db.query("insert into content_studio.revisions(post_id,brief,slides,content_hash) values($1,$2,'[\"a\",\"b\"]',$3) returning id", [post, JSON.stringify(brief), 'a'.repeat(64)])).rows[0].id;
+      await db.query('update content_studio.posts set active_revision_id=$1 where id=$2', [rev, post]);
+      return [post, rev];
+    };
+    const [imported, importedRev] = await make({ text: 'Importado', format: 'story', production: 'manual-only' });
+    await assert.rejects(api.requestRender(imported, importedRev), /Revisão indisponível/);
+    const [generated, generatedRev] = await make({ text: 'Gerado', format: 'reel' });
+    await api.requestRender(generated, generatedRev);
+    assert.deepEqual((await db.query('select revision_id from content_studio.jobs')).rows.map(r => r.revision_id), [generatedRev]);
+    assert.equal((await db.query('select state from content_studio.posts where id=$1', [imported])).rows[0].state, 'draft');
+  } finally { await db.close(); }
+});

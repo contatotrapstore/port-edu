@@ -4,11 +4,14 @@ import {contentDb} from './db';
 import {currentBrand} from './brand';
 import {requireAdmin} from './auth';
 import type {DraftInput} from './input';
-export type ContentPost={id:string;topic:string;state:string;active_revision_id:string;created_at:Date;caption:string;brief:{text?:string;format?:'carousel'|'reel'|'story';generation?:{engine?:string;model?:string}};slides:string[];source_refs:string[]};
+import {carriesImportedMedia,copiedAssetPlan,importedBriefFields} from './revision-carry.mjs';
+import {copyAssetObjects,removeAssetObjects,type ContentAsset} from './storage';
+export type ContentPost={id:string;topic:string;state:string;active_revision_id:string;created_at:Date;caption:string;brief:{text?:string;format?:'carousel'|'reel'|'story';generation?:{engine?:string;model?:string};production?:string;ai_generated?:boolean;collaborators?:string[]};slides:string[];source_refs:string[]};
 export async function listPosts(){await requireAdmin();const brand=await currentBrand();return (await contentDb().query<ContentPost>(`select p.*,r.caption,r.brief,r.slides,r.source_refs from content_studio.posts p left join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 order by p.created_at desc limit 100`,[brand.id])).rows;}
 export async function saveDraft(input:DraftInput,postId?:string,expectedRevision?:string){
  if(input.format!==undefined&&!['carousel','reel','story'].includes(input.format))throw Error('Formato inválido.');
  const actor=await requireAdmin(), db=await contentDb().connect();
+ let copied:string[]=[];
  try{await db.query('begin');let id=postId;
  let previous:{brief:ContentPost['brief']&{vertical?:unknown};slides:string[]}|undefined;
  if(id){const current=(await db.query('select * from content_studio.posts where id=$1 for update',[id])).rows[0];
@@ -20,11 +23,20 @@ export async function saveDraft(input:DraftInput,postId?:string,expectedRevision
  }else{id=(await db.query("insert into content_studio.posts(brand_id,topic) values($2,$1) returning id",[input.topic,(await currentBrand()).id])).rows[0].id;}
  const hash=createHash('sha256').update(JSON.stringify(input)).digest('hex');
  const keepStoryboard=previous&&(previous.brief.format??'carousel')===(input.format??'carousel')&&JSON.stringify(previous.slides)===JSON.stringify(input.slides);
- const brief={text:input.brief,format:input.format??'carousel',...(keepStoryboard&&previous?.brief.vertical?{vertical:previous.brief.vertical}:{})};
+ // post importado continua importado (sem gerar vídeo, rótulo de IA e Collab do import)
+ const brief={...importedBriefFields(previous?.brief),text:input.brief,format:input.format??'carousel',...(keepStoryboard&&previous?.brief.vertical?{vertical:previous.brief.vertical}:{})};
  const revision=(await db.query('insert into content_studio.revisions(post_id,brief,slides,caption,source_refs,content_hash) values($1,$2,$3,$4,$5,$6) returning id',[id,JSON.stringify(brief),JSON.stringify(input.slides),input.caption,JSON.stringify(input.sources),hash])).rows[0].id;
- await db.query("update content_studio.posts set topic=$1,active_revision_id=$2,state='draft' where id=$3",[input.topic,revision,id]);
- await db.query("insert into content_studio.events(actor,entity_id,action) values($1,$2,'draft.saved')",[actor.id,id]);
+ // Importado com o mesmo formato e roteiro (ex.: só a legenda mudou): a mídia conferida segue para a revisão nova,
+ // copiada com ids novos. A aprovação anterior não vale para ela: o post volta para "Em revisão".
+ if(previous&&expectedRevision&&carriesImportedMedia(previous,input)){
+  const assets=(await db.query<ContentAsset>('select id,kind,object_key,sha256,provenance from content_studio.assets where revision_id=$1',[expectedRevision])).rows;
+  const plan=copiedAssetPlan(assets,revision);
+  copied=await copyAssetObjects(plan);
+  for(const a of plan)await db.query('insert into content_studio.assets(revision_id,kind,object_key,sha256,provenance) values($1,$2,$3,$4,$5)',[revision,a.kind,a.to,a.sha256,JSON.stringify(a.provenance)]);
+ }
+ await db.query("update content_studio.posts set topic=$1,active_revision_id=$2,state=$4 where id=$3",[input.topic,revision,id,copied.length?'review':'draft']);
+ await db.query("insert into content_studio.events(actor,entity_id,action,metadata) values($1,$2,'draft.saved',$3)",[actor.id,id,JSON.stringify(copied.length?{revisionId:revision,mediaCopiedFrom:expectedRevision,assets:copied.length}:{})]);
  if(!id)throw Error('Não foi possível identificar o post.');
  await db.query('commit');return id;
- }catch(e){await db.query('rollback');throw e;}finally{db.release();}
+ }catch(e){await db.query('rollback');if(copied.length)await removeAssetObjects(copied);throw e;}finally{db.release();}
 }

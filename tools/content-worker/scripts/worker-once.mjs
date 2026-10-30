@@ -33,6 +33,8 @@ try{
   let checking=false;
   timer=setInterval(async()=>{if(checking)return;checking=true;try{if(!await queue.heartbeat(job.id,job.lease_token)){lost=true;stopChild();}}catch{lost=true;stopChild();}finally{checking=false;}},25000);
   const revision=(await pool.query('select slides,brief from content_studio.revisions where id=$1',[job.revision_id])).rows[0];
+  // post pronto importado: a mídia veio do import e nunca é gerada aqui
+  if(revision.brief?.production==='manual-only')throw Error('manual_only');
   const format=Object.hasOwn(revision.brief||{},'format')?revision.brief.format:'carousel';
   if(!['carousel','reel','story'].includes(format))throw Error('invalid_format');
   const vertical=format!=='carousel';
