@@ -22,7 +22,9 @@ var dirty = false;   // marcas.js marca "redesenhar" quando o ícone em imagem c
     btn.disabled = false;
     // mensagem igual para conta existente ou não (não revela quais e-mails têm cadastro); só limite de envio é dito
     $('loginMsg').textContent = error && /rate|limit|seconds/i.test(error.message) ? 'Muitos pedidos seguidos. Espere um minuto e tente de novo.'
-      : 'Se este e-mail tiver acesso, o link chega em instantes. Abra o e-mail neste aparelho.';
+      : 'Se este e-mail tiver acesso, o link chega em instantes. Abra no navegador deste aparelho (no PC, no mesmo perfil do Chrome): esta tela entra sozinha.';
+    // o link abre em outra aba ou janela do mesmo perfil e grava a sessão no cookie: esta tela percebe e entra
+    if (!error){ const fim = Date.now() + 15 * 60e3; const id = setInterval(async () => { if (Date.now() > fim) return clearInterval(id); const {data} = await sb.auth.getSession(); if (data.session){ clearInterval(id); location.reload(); } }, 3000); }
   });
   $('sair').addEventListener('click', () => sb.auth.signOut());
   sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') location.reload(); });

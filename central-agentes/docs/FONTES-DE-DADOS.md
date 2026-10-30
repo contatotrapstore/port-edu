@@ -57,14 +57,12 @@ ou `"behavior":"deny"` com `"message"`.
 - Não há `event_msg` `user_message`; o prompt vem de `response_item` `message`/`user`. Quando o Codex é chamado pelo plugin do Claude Code, esse "prompt" é o texto que o Claude mandou.
 - Outros tipos novos ignorados: `world_state`, `token_usage_record`, `compacted`, `inter_agent_communication_metadata`.
 
-## 4. Uso do plano Claude (sessão de 5h e semanal)
-**Em uso: Codenotch** (app de uso que o Eduardo roda no Windows). Ele consulta a conta e grava em `%APPDATA%\codenotch\usage.json` (Claude) e `codex.json` (Codex):
-`{ status: "ok", windows: [{ id: "session" | "weekly_all" | "weekly_scoped" | "primary", label, used: 0-1, resets_at: ms }], fetched_at: ms, note }`.
-O coletor `agent/src/collectors/codenotch.js` lê a cada 30 s. Se o arquivo tiver mais de 30 min (`CODENOTCH_FRESH_MS`), volta para as opções abaixo. O Codenotch só roda enquanto o Claude ou o Codex estão abertos (`%LOCALAPPDATA%\CodenotchWatch\watch.ps1`).
+## 4. Uso do plano Claude (sessão de 5h e semanais)
+**Em uso: leitura direta da conta** (`agent/src/collectors/claude-plan.js`, a cada 3 min). Usa o login local do Claude Code (`~/.claude/.credentials.json`) para chamar `GET https://api.anthropic.com/api/oauth/usage` (header `anthropic-beta: oauth-2025-04-20`), o mesmo dado do `/usage` do Claude Code. A lista `limits` traz `kind` (`session`, `weekly_all`, `weekly_scoped`), `percent`, `resets_at` e, no escopo, `scope.model.display_name` (ex.: "Fable"). Endpoint não documentado: pode mudar. Com 429 o coletor espera 5 min; sem leitura por 30 min (`CODENOTCH_FRESH_MS`), volta para a estimativa pelos JSONL. O token nunca é logado.
 
-Alternativas (reserva):
-1. **Estimativa pelos JSONL** (padrão): soma tokens na janela e compara com um teto configurável em `config.json → plans.claude`. Funciona, mas é aproximado.
-2. **Mesmo método da ferramenta que o Eduardo usa no Windows** (pendente: ele vai informar o nome). Algumas ferramentas leem o endpoint interno de uso da conta com o token OAuth local do Claude Code. É **não oficial** e pode mudar a qualquer momento. Existe em `agent/src/collectors/claude-plan.js`, **desligado por padrão** (`plans.claude.experimentalOauthUsage: false`). Só ligar depois de ver como a ferramenta dele faz.
+Desde 30/10/2026 o **Codenotch foi desligado** (era o app que fazia essa leitura): saiu do início do Windows (valor antigo guardado em `agent/data/codenotch-desligado.json`) e os hooks dele saíram do `~/.claude/settings.json` (backup em `settings.json.bak-codenotch`). O programa continua instalado em `%LOCALAPPDATA%\Codenotch` caso queira voltar.
+
+Codex: medidor semanal pelos `rate_limits` dos JSONL das sessões (`codex-sessions.js`).
 
 ## 5. ElevenLabs
 - `GET https://api.elevenlabs.io/v1/user/subscription`, header `xi-api-key`.

@@ -10,7 +10,7 @@ let pcShell = '';                 // assinatura do cartão montado (evita recria
 const LANC = {quem: 'claude', como: 'conversa', editar: false, texto: ''};   // última escolha
 const SESS = new Map();           // sala -> { at, lista, carregando }
 const PC_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 20h6M12 16v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
-const podeLancar = () => REAL && !NUVEM;
+const podeLancar = () => !NUVEM;
 
 /* ---------- mesas clicáveis ---------- */
 // vaga do agente -> mesa desenhada (na recepção a vaga 0 é o balcão, mesa 1)

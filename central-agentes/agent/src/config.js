@@ -68,7 +68,7 @@ export const PORT = Number(process.env.EDH_PORT || 4321);
 export const CLAUDE_HOME = process.env.CLAUDE_HOME || path.join(os.homedir(), '.claude');
 export const CODEX_HOME = process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
 export const DATA_DIR = path.join(AGENT_DIR, 'data');
-export const CODENOTCH_FRESH_MS = 30 * 60e3; // medidor do Codenotch mais velho que isso: volta para a estimativa / JSONL
+export const CODENOTCH_FRESH_MS = 30 * 60e3; // leitura do plano (conta) mais velha que isso: volta para a estimativa
 
 export function roomFor(cwd) {
   const norm = String(cwd || '').replace(/\\/g, '/');

@@ -168,10 +168,15 @@ class Store extends EventEmitter {
     const now = Date.now(); a._hook = now; this.touch(a, now);
     switch (ev) {
       case 'SessionStart': this.event(a, 'done', 'Sessão', 'Sessão iniciada'); break;
-      case 'UserPromptSubmit':
-        if (this.away && !process.env.EDH_JOB_ID) this.setAway(false, 'pc');
-        a.prompt = String(h.prompt || '').slice(0, 2000); a.tool = 'Pensando'; a.target = 'lendo o contexto';
-        this.setState(a, 'working'); this.event(a, 'prompt', 'Prompt', '"' + a.prompt.slice(0, 200) + '"'); break;
+      case 'UserPromptSubmit': {
+        // avisos automáticos que entram como "prompt" (fim de tarefa em segundo plano, lembretes do sistema) não são pedido seu:
+        // não trocam o pedido mostrado, não entram na atividade e não desligam o modo ausente
+        const auto = /^\s*<(task-notification|system-reminder|local-command|command-)/.test(String(h.prompt || ''));
+        if (!auto && this.away && !process.env.EDH_JOB_ID) this.setAway(false, 'pc');
+        if (!auto) a.prompt = String(h.prompt || '').slice(0, 2000);
+        a.tool = 'Pensando'; a.target = 'lendo o contexto';
+        this.setState(a, 'working'); if (!auto) this.event(a, 'prompt', 'Prompt', '"' + a.prompt.slice(0, 200) + '"'); break;
+      }
       case 'PreToolUse':
         a.tool = h.tool_name; a.target = targetOf(h.tool_name, h.tool_input); a._toolOpen = now;
         if (a.state !== 'waiting') this.setState(a, 'working');
@@ -232,7 +237,7 @@ class Store extends EventEmitter {
     const cfg = config.plans?.claude || {}, now = Date.now();
     if (this.claudeUsage.length > 5000 || this.claudeUsage.some(([t]) => now - t > D7 + 86400e3)) this.claudeUsage = this.claudeUsage.filter(([t]) => now - t < D7 + 86400e3);
     if (this.plans.claude.source === 'oauth' && now - (this.plans.claude.at || 0) < 15 * 60e3) return;
-    if (this.plans.claude.source === 'codenotch' && now - (this.plans.claude.at || 0) < CODENOTCH_FRESH_MS) return;
+    if (this.plans.claude.source === 'conta' && now - (this.plans.claude.at || 0) < CODENOTCH_FRESH_MS) return;   // leitura da conta recente: não estima
     this.claudeUsage = this.claudeUsage.filter(([t]) => now - t < D7 + 86400e3).sort((x, y) => x[0] - y[0]);
     let start = null, sess = 0;
     for (const [t, n] of this.claudeUsage) {

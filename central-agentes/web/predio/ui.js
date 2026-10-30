@@ -32,16 +32,18 @@ function setView(floor, building){
   sun.target.position.set(WW/2, fy, 12); sun.position.set(WW/2 - 20, fy + 34, 36);
   const [p, t] = presetFor(null); flyTo(p, t); updateTitles(); renderFloors();
 }
-function goFocus(f){ focus = f; follow = false; syncFollow(); const [p, t] = presetFor(f); flyTo(p, t); updateTitles(); if (REAL && typeof f === 'number' && ROOMS[f]) abrirProjeto(ROOMS[f].name); }
+function goFocus(f){ focus = f; follow = false; syncFollow(); const [p, t] = presetFor(f); flyTo(p, t); updateTitles(); if (typeof f === 'number' && ROOMS[f]) abrirProjeto(ROOMS[f].name); }
 function goRoom(i){ const R = ROOMS[i]; if (view.building || view.floor !== R.f) setView(R.f, false); goFocus(i); }
-function goAgent(a){ if (view.building || view.floor !== a.f) setView(a.f, false); selected = a; follow = true; syncFollow(); }
+function goAgent(a){ if (view.building || view.floor !== a.f) setView(a.f, false); selected = a; focus = a.R.i; const [p, t] = presetFor(a.R.i); flyTo(p, t); updateTitles(); }
 controls.addEventListener('start', () => { touched = true; fly = null; if (follow){ follow = false; syncFollow(); } });
 function resize(){
   const r = stage.getBoundingClientRect();
+  if (r.width < 2 || r.height < 2) return;   // minimizado: não recria o desenho em 0×0
   renderer.setSize(r.width, r.height, false); camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
   if (!touched && focus === null && !fly){ const [p, t] = presetFor(null); camera.position.copy(p); controls.target.copy(t); }
 }
-new ResizeObserver(resize).observe(stage);
+let resizePend = 0;   // várias mudanças de tamanho seguidas (tela cheia, minimizar) viram um ajuste só por quadro
+new ResizeObserver(() => { if (!resizePend) resizePend = requestAnimationFrame(() => { resizePend = 0; resize(); }); }).observe(stage);
 function zoomBy(f){ const off = camera.position.clone().sub(controls.target); off.setLength(clamp(off.length() / f, controls.minDistance, controls.maxDistance)); flyTo(controls.target.clone().add(off), controls.target.clone()); }
 function rotateBy(dir){ rotQueue += dir * Math.PI/2; fly = null; }
 function renderFloors(){
@@ -66,7 +68,7 @@ renderer.domElement.addEventListener('pointerup', e => {
   const hit = ray.intersectObjects(people, true)[0];
   if (hit){ const root = hit.object.userData.agentRoot; if (root === DUDU.body.g) onSelect(DUDU); else { const a = AGENTS.find(x => x.body.g === root); if (a) onSelect(a); } return; }
   // PC (mesa): livre abre o lançador (Claude ou Codex senta ali); ocupado mostra quem está nele
-  if (REAL){ const pc = pcPick(ray); if (pc){ abrirPC(pc.R, pc.mesa); return; } }
+  const pc = pcPick(ray); if (pc){ abrirPC(pc.R, pc.mesa); return; }
   const floors = PICK_FLOORS.filter(m => view.building || m.userData.f === view.floor).concat(PLATFORM_TOPS.filter(m => view.building || m.userData.f === view.floor));
   const fh = ray.intersectObjects(floors, false)[0];
   if (!fh) return;
@@ -81,11 +83,11 @@ function onSelect(a){
 }
 
 /* UI */
-let selected = AGENTS.find(a => a.state === 'waiting') || AGENTS[0] || null;
+let selected = null;   // fonte.js escolhe quem está esperando você (ou o primeiro) quando o estado chega
 const agentBy = id => AGENTS.find(a => a.id === id);
 let tab = 'planos', toastTimer = 0, tvTimer = 0;
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600); }
-function syncFollow(){ $('btnFollow').classList.toggle('on', follow); }
+function syncFollow(){ const b = $('btnFollow'); if (b) b.classList.toggle('on', follow); }
 function openDrawer(){ if (document.body.classList.contains('immersive') && !document.body.classList.contains('tv')) document.body.classList.add('drawer'); }
 function toggleDrawer(){ if (document.body.classList.contains('immersive')) document.body.classList.toggle('drawer'); }
 function toggleImmersive(force){
@@ -123,7 +125,7 @@ window.addEventListener('keydown', e => {
   else if (k === '0' || k === 'c') centerView();
   else if (k >= '1' && k <= '8'){ const list = ROOMS.filter(R => R.f === view.floor).sort((x,y) => x.slot - y.slot); const R = list[+k - 1]; if (R) goRoom(R.i); }
   else if (k === '9') goFocus('copa');
-  else if (k === 'f'){ follow = !follow; syncFollow(); } else if (k === 't') toggleImmersive(); else if (k === 'p') toggleDrawer(); else if (k === 'n') nextWaiting(); else if (k === 'v') toggleTV();
+  else if (k === 't') toggleImmersive(); else if (k === 'p') toggleDrawer(); else if (k === 'n') nextWaiting(); else if (k === 'v') toggleTV();
   else if (k === 'escape'){ if (document.body.classList.contains('tv')) toggleTV(); else if (document.body.classList.contains('immersive')) toggleImmersive(false); }
 });
 window.addEventListener('keyup', e => keys.delete(e.key.toLowerCase()));
@@ -133,7 +135,7 @@ function setHTML(el, html){ if (lastHTML[el.id] !== html){ el.innerHTML = html; 
 function setTab(t){ tab = t; dirty = true; agentShell = null; document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t))); $('pane').scrollTop = 0; }
 function logItems(list, withWho){
   return list.map(e => {
-    const mid = withWho ? `<span class="who">${esc(short(e.kind === 'xp' ? 'Empresa' : e.a.R.name,13))}</span>` : `<span class="t ${e.kind}">${esc(e.tag)}</span>`;
+    const mid = withWho ? `<span class="who">${esc(short(e.a.R.name,13))}</span>` : `<span class="t ${e.kind}">${esc(e.tag)}</span>`;
     const txt = withWho ? `<span class="x"><span class="t ${e.kind}">${esc(e.tag)}</span> · ${esc(e.text)}</span>` : `<span class="x">${esc(e.text)}</span>`;
     return `<li><time>${fmtTime(e.t)}</time>${mid}${txt}</li>`;
   }).join('');
@@ -143,26 +145,22 @@ function resetText(ts){ if (!ts || ts <= Date.now()) return 'Sem data de reiníc
 const planPrice = p => p.brl == null ? 'a confirmar' : (p.approx ? '~' : '') + brl(p.brl);
 const subsTotal = () => PLANS.reduce((s,p) => s + (p.brl || 0), 0);
 function renderPlans(){
-  let html = awayCard() + `<div class="card"><div class="sec"><h2>Assinaturas</h2><small>${brl(subsTotal())}/mês${REAL ? '' : ' + Higgsfield'}</small></div><p class="note">O traço branco em cada barra marca quanto da janela já passou. Barra à frente do traço significa ritmo acima do plano.</p></div>`;
+  let html = `<div class="card"><div class="sec"><h2>Assinaturas</h2><small>${brl(subsTotal())}/mês</small></div><p class="note">O traço branco em cada barra marca quanto da janela já passou. Barra à frente do traço significa ritmo acima do plano.</p></div>`;
   for (const p of PLANS){
     html += `<div class="card"><div class="plan-head">${brandIcon(p.id, 36) || `<span class="mono" style="--c:${p.color}">${p.mono}</span>`}<div><b>${esc(p.name)}</b><small>Plano ${esc(p.tier)}</small></div><div class="plan-cost">${planPrice(p)}<small class="note">por mês</small></div></div>`;
     if (p.meters){
       if (!p.meters.length) html += `<p class="note">${esc(p.sourceNote || 'Aguardando leitura.')}</p>`;
       for (const m of p.meters){ const info = meterInfo(m), used = Math.round(m.used);
         html += `<div class="meter"><div class="m-top"><span>${esc(m.label)}</span><small>${resetText(m.reset)}</small></div><div class="mbar"><i style="width:${clamp(m.used,0,100).toFixed(1)}%;background:${barColor(m.used)}"></i><b style="left:calc(${(info.elapsed*100).toFixed(1)}% - 1px)"></b></div><div class="m-foot">${used}% usado · ${100-used}% restante</div><div class="m-proj ${info.cls}">${esc(info.proj)}</div></div>`; }
-      const sess = AGENTS.filter(a => a.prov === p.prov);
-      html += `<ul class="sessions">${sess.slice(0,6).map(a => `<li><i style="background:${ST[a.state]}"></i><span>${esc(a.R.name)} · ${esc(a.name)}</span><em>${a.model}</em></li>`).join('')}${sess.length > 6 ? `<li><span style="color:var(--muted)">e mais ${sess.length-6}</span></li>` : ''}</ul>`;
     } else {
       if (!p.credit || !p.credit.total){ html +=`<p class="note">${esc(p.sourceNote || 'Sem fonte de dados ainda.')}</p></div>`; continue; }
       const c = p.credit, info = creditInfo(c), used = c.total - c.left;
       html += `<div class="meter"><div class="m-top"><span>Créditos do ciclo</span><small>Renova em ${c.daysLeft} dias</small></div><div class="mbar"><i style="width:${info.usedPct.toFixed(1)}%;background:${barColor(info.usedPct)}"></i><b style="left:calc(${(info.elapsed*100).toFixed(1)}% - 1px)"></b></div><div class="m-foot">${num(used)} usados · ${num(c.left)} de ${num(c.total)} restantes</div><div class="m-proj ${info.cls}">${esc(info.proj)}</div></div>
         <div class="meter"><div class="m-top"><span>Uso no ciclo</span><small>~${num(info.rate)} por dia</small></div><div class="m-foot">${Object.entries(c.mix).map(([k,v]) => `${esc(k)}: ${num(v)}`).join(' · ')}</div></div>`;
-      const sess = AGENTS.filter(a => a.prov === p.prov);
-      if (sess.length) html += `<ul class="sessions">${sess.map(a => `<li><i style="background:${ST[a.state]}"></i><span>${esc(a.name)} · ${esc(short(a.prompt, 38))}</span><em>${num(a.units)}</em></li>`).join('')}</ul>`;
     }
     html += `</div>`;
   }
-  return html + `<p class="note" style="padding:0 4px 6px">${REAL ? 'Preços dos planos do config.json. Uso do Claude e do Codex pelo Codenotch (ou pelas sessões do Codex); ElevenLabs pela API; Higgsfield manual.' : 'Preços dos planos informados por você. Uso e saldos simulados (protótipo).'}</p>`;
+  return html + `<p class="note" style="padding:0 4px 6px">Preços dos planos do config.json. Uso do Claude lido da conta; do Codex, pelas sessões; ElevenLabs pela API; Higgsfield manual.</p>`;
 }
 function renderSuggestions(){
   if (!SUGG.length) return `<div class="card"><p class="note">Nada pedindo atenção agora. As sugestões aparecem aqui quando um plano acelera, um agente trava, um projeto passa do orçamento ou sobra crédito.</p></div>`;
@@ -177,7 +175,7 @@ function whereText(a){
 }
 let agentShell = null;
 function permButtons(a){
-  if (!a.real || a.pendingId) return `<div class="row"><button class="allow" type="button" data-act="allow" data-arg="${a.id}">Permitir</button><button type="button" data-act="deny" data-arg="${a.id}">Negar</button></div>`;
+  if (a.pendingId) return `<div class="row"><button class="allow" type="button" data-act="allow" data-arg="${a.id}">Permitir</button><button type="button" data-act="deny" data-arg="${a.id}">Negar</button></div>`;
   return `<p class="note" style="margin-top:8px">${esc(a.permNote || 'Responda no terminal.')}</p>`;
 }
 function renderAgentTab(now){
@@ -187,28 +185,28 @@ function renderAgentTab(now){
   if (agentShell !== a){
     agentShell = a; lastHTML.agDyn = lastHTML.agLog = null;
     pane.innerHTML = `<div id="agDyn"></div>
-      ${a.real && NUVEM ? '' : a.real ? pcConvite(a) : `<div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
-        <div class="row"><small>${a.real ? 'Não dá para escrever numa sessão aberta: o texto vai para a área de transferência. Cole no terminal de ' + esc(a.proj || a.R.name) + '.' : 'O agente sai da convivência e volta pra mesa.'}</small><button class="btn solid" type="button" data-act="sendTask">${a.real ? 'Copiar' : 'Enviar'}</button></div></div>`}
+      ${NUVEM ? '' : pcConvite(a)}
       <div class="card"><div class="sec"><h2>Chat ao vivo</h2><small id="agCount"></small></div><ul class="log" id="agLog"></ul></div>`;
     lastHTML.pane = null;
   }
-  const st = a.state, credits = a.kind === 'higgs' || a.kind === 'eleven', wt = whereText(a), lv = levelOf(a.xp), into = a.xp % 100;
+  const st = a.state, wt = whereText(a);
   let html = `<div class="card"><div class="ag-head"><span class="swatch" style="background:linear-gradient(180deg, ${a.hair} 0 18%, ${a.skin} 18% 42%, ${a.color} 42% 100%)"></span><div style="min-width:0"><div class="ag-name">${esc(a.name)}</div><div class="ag-proj">${esc(a.proj && a.proj !== a.R.name ? a.R.name + ' · ' + a.proj : a.R.name)} · ${esc(FLOORS[a.R.f].name)}</div></div><span class="model">${esc(a.model)}</span></div>
     <span class="pill s-${st}"><i></i>${ST_LABEL[st]}${wt ? ' · ' + wt : ''}</span>`;
   if (st === 'waiting') html += `<div class="perm"><span class="k" style="color:var(--wait)">Pedindo permissão há ${fmtDur(now - a.waitSince)}</span>Quer ${a.kind === 'code' ? 'executar' : 'fazer'}:<code>${esc(a.waitCmd || TOOL_PT[a.tool] || a.tool || 'uma ação')}</code>${permButtons(a)}</div>`;
   else if (st === 'error') html += `<div class="now"><span class="k" style="color:var(--err)">Erro</span><code style="color:var(--err)">${esc(a.target)} → ${esc(a.errMsg)}</code></div>`;
   else if (st === 'working') html += `<div class="now"><span class="k">Agora</span><code>${esc(TOOL_PT[a.tool] || a.tool)}${a.target ? ' · ' + esc(a.target) : ''}</code></div>`;
   html += `<div class="prompt"><span class="k">${st === 'idle' ? 'Último prompt' : 'Prompt em andamento'}</span><p>${esc(a.prompt)}</p></div>
-    <div class="ag-actions"><button class="btn" type="button" data-act="followSel">${follow ? 'Parar de seguir' : 'Seguir no escritório'}</button>${st === 'idle' && !a.real ? `<button class="btn" type="button" data-act="wake" data-arg="${a.id}">Chamar pra mesa</button>` : ''}</div>
+    ${a.resposta ? `<div class="prompt resposta"><span class="k">${st === 'idle' ? 'Última resposta' : 'Disse por último'}${a.respostaEm ? ' · ' + fmtTime(new Date(a.respostaEm)) : ''}</span><p>${esc(short(a.resposta, 600))}</p></div>` : ''}
+    <div class="ag-actions">${!NUVEM ? `<button class="btn solid" type="button" data-act="focar" data-arg="${a.id}">Focar terminal</button>` : ''}<button class="btn" type="button" data-act="verSala" data-arg="${a.id}">Ver na sala</button></div>
     <div class="stats"><div class="stat"><span>Custo equivalente</span><b>${brlFromUsd(a.cost)}</b></div><div class="stat"><span>${st === 'idle' ? 'Parado há' : 'Na tarefa'}</span><b>${fmtDur(now - a.since)}</b></div>
-      <div class="stat"><span>${credits ? 'Créditos usados' : 'Tokens (entrada + cache)'}</span><b>${credits ? num(a.units) : fmtTok(a.tin)}</b></div>${a.real ? `<div class="stat"><span>Tarefas hoje</span><b>${a.tasksDone}</b></div>` : `<div class="stat"><span>Nível ${lv} · ${a.tasksDone} tarefas</span><b>${num(a.xp)} XP</b><div class="xpbar"><i style="width:${into}%"></i></div></div>`}</div></div>`;
+      <div class="stat"><span>Tokens (entrada + cache)</span><b>${fmtTok(a.tin)}</b></div><div class="stat"><span>Tarefas hoje</span><b>${a.tasksDone}</b></div></div></div>`;
   setHTML($('agDyn'), html);
   setHTML($('agLog'), logItems(a.log.slice(0,12), false));
   $('agCount').textContent = a.log.length + ' eventos';
 }
 const worstState = R => R.agents.some(x => x.state==='error') ? 'error' : R.agents.some(x => x.state==='waiting') ? 'waiting' : R.agents.some(x => x.state==='working') ? 'working' : 'idle';
 function renderOps(){
-  let html = `<div class="card"><div class="sec"><h2>Salas por andar</h2><small>consumo · orçamento</small></div>${REAL && !NUVEM ? '<button class="btn" type="button" data-act="editarSalas" style="margin:4px 0 8px">Editar salas</button>' : ''}<div class="projects">`;
+  let html = `<div class="card"><div class="sec"><h2>Salas por andar</h2><small>consumo · orçamento</small></div>${!NUVEM ? '<button class="btn" type="button" data-act="editarSalas" style="margin:4px 0 8px">Editar salas</button>' : ''}<div class="projects">`;
   for (const F of [...FLOORS].reverse()){
     const rooms = ROOMS.filter(R => R.f === F.i && (R.agents.length || R.base > 0));
     html += `<div class="fl-h">${F.short} · ${esc(F.name)}</div>`;
@@ -216,9 +214,6 @@ function renderOps(){
       html += `<button class="prow ${focus===R.i?'on':''}" type="button" data-act="room" data-arg="${R.i}"><span class="dot" style="background:${ST[w]};box-shadow:0 0 8px ${ST[w]}"></span><span style="min-width:0"><span class="pn">${esc(R.name)}</span><br><span class="ps">${esc(R.stack)} · ${R.agents.length} agente${R.agents.length !== 1 ? 's' : ''} · ${R.done} concluídas</span></span><span class="pc">${brl(c, 2)}${R.budget ? `<small>de ${brl(R.budget)}/dia</small>` : ''}</span>${R.budget ? `<span class="bar"><i class="${pct > 1 ? 'over' : ''}" style="width:${Math.min(100, pct*100).toFixed(1)}%"></i></span>` : ''}</button>`; }
   }
   html += `</div></div>` + orquestraCard() + costReport();
-  const un = REAL ? [] : ACHIEVEMENTS.filter(A => COMPANY.unlocked.includes(A.id));
-  if (!REAL) html += `<div class="card"><div class="sec"><h2>${REAL ? 'Marcos do dia' : 'Conquistas'}</h2><small>${REAL ? COMPANY.tasks + ' tarefas' : `nível ${companyLevel()} · ${num(COMPANY.xp)} XP`}</small></div>${un.length ? `<div class="trophies">${un.map(A => `<span class="trophy"><b>★</b>${esc(A.label)}</span>`).join('')}</div>` : '<p class="note">Nenhuma ainda hoje. Elas aparecem na estante de troféus da Diretoria.</p>'}
-    <p class="note" style="margin-top:8px">${REAL ? 'Mais tarefas hoje: ' + [...AGENTS].sort((x,y) => y.tasksDone - x.tasksDone).slice(0,3).filter(a => a.tasksDone).map(a => `${esc(a.R.name)} · ${esc(a.name)} (${a.tasksDone})`).join(' · ') : 'Top agentes: ' + [...AGENTS].sort((x,y) => y.xp - x.xp).slice(0,3).map(a => `${esc(a.name)} (${esc(a.R.name)}) nível ${levelOf(a.xp)}`).join(' · ')}</p></div>`;
   html += `<div class="card"><div class="sec"><h2>Atividade ao vivo</h2><small>${FEED.length} eventos</small></div><ul class="log">${logItems(FEED.slice(0,18), true)}</ul></div>`;
   return html;
 }
@@ -231,10 +226,9 @@ function renderPanel(now){
   $('kSubs').innerHTML = `${brl(subsTotal())} <small>/mês</small>`;
   const worstPlan = PLANS.filter(p => p.meters ? p.meters.length : p.credit && p.credit.total).map(p => p.meters ? [p.name, Math.max(...p.meters.map(m => m.used))] : [p.name, (p.credit.total-p.credit.left)/p.credit.total*100]).sort((a,b) => b[1]-a[1])[0];
   $('kSubsSub').textContent = `${PLANS.length} planos${worstPlan ? ` · mais usado: ${worstPlan[0]} ${Math.round(worstPlan[1])}%` : ''}`;
-  if (REAL){ $('kLevel').textContent = `${COMPANY.tasks} tarefas`; $('kXp').textContent = `${AGENTS.filter(a => a.state !== 'idle').length} de ${AGENTS.length} sessões ativas agora`; }
-  else { $('kLevel').textContent = 'Nível ' + companyLevel(); $('kXp').textContent = `${num(COMPANY.xp)} XP · ${COMPANY.tasks} tarefas hoje`; }
+  $('kLevel').textContent = `${COMPANY.tasks} tarefas`; $('kXp').textContent = `${AGENTS.filter(a => a.state !== 'idle').length} de ${AGENTS.length} sessões ativas agora`;
   const working = AGENTS.filter(x => x.state==='working').length, waiting = AGENTS.filter(x => x.state==='waiting').length, errors = AGENTS.filter(x => x.state==='error').length;
-  setHTML($('chips'), `<span class="chip"><i style="background:var(--ok)"></i>Trabalhando <b>${working}</b></span><button class="chip ${waiting?'alert':''}" type="button" data-act="next-wait"><i style="background:var(--wait)"></i>Precisam de você <b>${waiting}</b></button><span class="chip"><i style="background:var(--err)"></i>Erros <b>${errors}</b></span><button class="chip" type="button" data-act="tab" data-arg="sugestoes"><i style="background:var(--amber)"></i>Sugestões <b>${SUGG.length}</b></button>`);
+  setHTML($('chips'), `<span class="chip"><i style="background:var(--ok)"></i>Trabalhando <b>${working}</b></span><button class="chip ${waiting?'alert':''}" type="button" data-act="next-wait"><i style="background:var(--wait)"></i>Precisam de você <b>${waiting}</b></button><span class="chip"><i style="background:var(--err)"></i>Erros <b>${errors}</b></span><button class="chip" type="button" data-act="tab" data-arg="sugestoes"><i style="background:var(--amber)"></i>Sugestões <b>${SUGG.length}</b></button>${realState ?`<button class="chip ausente ${realState.away ? 'on' : ''}" type="button" data-act="away" data-arg="${realState.away ? 0 : 1}" title="${realState.away ? 'Pedidos de permissão esperam resposta pelo celular. Clique para desligar.' : 'Ligue quando sair do PC: os pedidos de permissão passam a chegar no celular.'}"><i></i>Modo ausente <b>${realState.away ? 'ligado' : 'desligado'}</b></button>` : ''}`);
   setHTML($('miniHud'), `<div><span>Consumo hoje</span><b>${brlFromUsd(totalCost())}</b></div><div><span>Sessão Claude</span><b>${(() => { const m = PLAN.claude.meters.find(x => /sess/i.test(x.label)) || PLAN.claude.meters[0]; return m ? Math.round(m.used) + '%' : '—'; })()}</b></div><div><span>Precisam de você</span><b style="color:${waiting ? 'var(--wait)' : 'var(--fg)'}">${waiting}</b></div><div><span>Tarefas hoje</span><b>${COMPANY.tasks}</b></div>`);
   const h = totalHist, mn = Math.min(...h), mx = Math.max(...h);
   const pts = h.map((v,k) => `${(k*(110/(h.length-1))).toFixed(1)},${(29 - (v-mn)/((mx-mn)||1)*25).toFixed(1)}`).join(' ');
@@ -262,13 +256,12 @@ document.addEventListener('click', e => {
   if (act === 'next-wait') nextWaiting();
   if (act === 'rot') rotateBy(+arg);
   if (act === 'zoom') zoomBy(+arg > 0 ? 1.35 : 1/1.35);
-  if (act === 'follow' || act === 'followSel'){ follow = !follow; syncFollow(); if (follow && selected && (view.building || view.floor !== selected.f)) setView(selected.f, false); }
+  if (act === 'focar'){ const a = agentBy(+arg); if (a) realFocar(a); }
+  if (act === 'verSala'){ const a = agentBy(+arg); if (a) goAgent(a); }
   if (act === 'immersive') toggleImmersive();
   if (act === 'drawer') toggleDrawer();
   if (act === 'tv') toggleTV();
   if (act === 'atalhos'){ const el = $('atalhos'); el.hidden = !el.hidden; b.setAttribute('aria-expanded', String(!el.hidden)); }
-  if (act === 'wake'){ const a = agentBy(+arg); if (a && a.state === 'idle') assignTask(a, pick(a.prompts)); }
-  if (act === 'sendTask'){ if (!selected) return; const ta = $('taskText'), v = ta && ta.value.trim(); if (!v){ toast('Escreva a tarefa antes de enviar'); return; } assignTask(selected, v); ta.value = ''; }
   if (act === 'live') goLive();
   if (act === 'center') centerView();
   dirty = true;
@@ -284,9 +277,7 @@ function agentLabel(a, compact){
   if (a.state === 'error') return compact ? 'Erro' : 'Erro · ' + short(a.errMsg, 26);
   if (a.state === 'idle'){
     if (a.path.length) return compact ? 'Caminhando' : 'Caminhando · ' + a.name;
-    if (a.copa && REAL) return compact ? 'Ocioso' : 'Ocioso · ' + a.name;
-    if (a.copa){ const w = COPA_LABEL[a.copa.kind].split(' '); return compact ? (/^(na|no)$/i.test(w[0]) ? w.slice(0, 2).join(' ') : w[0]) : COPA_LABEL[a.copa.kind] + ' · ' + a.name; }
-    return compact ? 'Ocioso' : 'Ocioso · ' + a.name;
+    return compact ? 'Ocioso' : 'Ocioso · ' + a.name;   // na convivência também: o que ele faz lá aparece na aba Agente
   }
   return compact || !a.target ? tp : tp + ' · ' + short(base(a.target), 22);
 }
@@ -304,8 +295,7 @@ function updateLabels(now, replaying){
     lab.el.style.display = 'flex';
     const dist = camera.position.distanceTo(g.position), compact = dist > 26 || view.building;
     const col = ST[st], txt = a === DUDU ? (compact ? 'Você' : 'Você · Dudu') : agentLabel(a, compact);
-    const lv = a === DUDU || compact ? '' : (REAL ? '' : `<span class="lv">Nv ${levelOf(a.xp)}</span>`);
-    const html = `<i></i>${esc(txt)}${lv}${st === 'waiting' ? '<span class="bang">!</span>' : ''}`;
+    const html = `<i></i>${esc(txt)}${st === 'waiting' ? '<span class="bang">!</span>' : ''}`;
     if (lab.pill.dataset.h !== html){ lab.pill.innerHTML = html; lab.pill.dataset.h = html; }
     lab.el.style.setProperty('--c', col);
     lab.el.classList.toggle('sel', a === selected); lab.el.classList.toggle('dim', st === 'idle');
@@ -319,7 +309,7 @@ function updateLabels(now, replaying){
 
 /* replay */
 const SNAPS = [];
-const SNAP_MAX = REAL ? 6000 : 900;   // no modo real o replay também carrega o histórico do agente (fonte.js)
+const SNAP_MAX = 6000;   // o replay também carrega o histórico do agente (fonte.js)
 let replayIdx = -1;
 const scrub = $('scrub');
 function snapshot(){

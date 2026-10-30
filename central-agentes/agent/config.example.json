@@ -83,8 +83,7 @@
       "_obs": "Tetos estimados em tokens equivalentes (entrada + saída, sem cache). Calibre comparando com o /usage do Claude Code.",
       "sessionTokenBudget": 9000000,
       "weeklyTokenBudget": 150000000,
-      "weeklyResetDow": 3, "weeklyResetHour": 9,
-      "experimentalOauthUsage": false
+      "weeklyResetDow": 3, "weeklyResetHour": 9
     },
     "gpt": { "name": "ChatGPT", "tier": "5x", "brl": 550 },
     "eleven": { "name": "ElevenLabs", "tier": "Starter", "brl": 33 },

@@ -122,6 +122,13 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [x] Saíram: botão de luz (sempre hora real), replay (e a gravação da linha do tempo no agente), avisos e cartão de marcos (ficam na estante e no quadro da Diretoria), "Em equipe" do lançador, código do cartão antigo "Trabalho em…"
 - [x] Atalhos do teclado atrás de um "?"; prédio do site sem login vai para a entrada; indicador "Empresa" virou "Hoje"
 
+## Fase 3.2 — rápido, sem Codenotch e mais útil (30/10/2026)
+- [x] Desempenho: o prédio congela a posição do que não se mexe (~4 mil objetos). Medido: de 2 para ~120 quadros/s e troca de aba de ~1 s para 20 ms. Minimizar e voltar não recria o desenho em 0×0
+- [x] Medidores do Claude direto da conta (`claude-plan.js`); Codenotch desligado (início do Windows e hooks)
+- [x] Cartão do agente: última fala dele (pergunta ou resumo) e "Focar terminal" (`POST /api/focar`); aviso do Windows quando alguém precisa de você; modo ausente virou botão no topo
+- [x] Saíram: "Seguir", lista de sessões nos planos, "Editar salas" no Projeto, modo protótipo com dados simulados
+- [x] Login do admin com a marca EDevsHub; admin e /central entram sozinhos quando o link do e-mail é aberto no mesmo perfil do navegador. Código de 6 dígitos no e-mail depende de SMTP próprio (o plano gratuito do Supabase não deixa editar o modelo)
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)

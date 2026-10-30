@@ -57,8 +57,10 @@ function handle(file, e) {
       const name = p.name || 'shell', input = p.arguments || p.input || p.action;
       a.tool = name; a.target = targetOf(name, input);
       if (fresh) { store.setState(a, 'working', t); store.event(a, 'tool', toolPt(name), a.target, t); }
-    } else if (p.type === 'message' && p.role === 'assistant' && fresh) {
-      // resposta final do turno: some do estado "trabalhando" após o sweep
+    } else if (p.type === 'message' && p.role === 'assistant') {
+      // última fala do agente (pergunta ou resumo do fim do turno): aparece no cartão dele; não sobe para a nuvem
+      const fala = (Array.isArray(p.content) ? p.content : []).filter(c => c && (c.type === 'output_text' || c.type === 'text') && c.text).map(c => c.text).join('\n').trim();
+      if (fala) { a.resposta = fala.slice(0, 1200); a.respostaEm = t; }
     }
   }
 

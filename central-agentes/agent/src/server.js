@@ -6,7 +6,7 @@ import crypto from 'node:crypto';
 import { ROOT_DIR, PORT, config, DATA_DIR, roomFor, ENV_DO_AGENTE } from './config.js';
 import { store } from './store.js';
 import { readCosts } from './history.js';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { postar, lerQuadro, delegar, tarefa, listaTarefas, modelosFluxo, iniciarFluxo, pastaDoProjeto } from './orquestra.js';
 import { infoProjeto, relatorioHTML } from './projetos.js';
 import { sessoesDaSala, pastaDaSessao } from './sessoes.js';
@@ -32,6 +32,17 @@ function abrirSessao(cwd, para, prompt, { sid = '', retomar = false } = {}) {
   const p = spawn('powershell.exe', ['-NoExit', '-NoProfile', '-Command', script], { cwd, detached: true, stdio: 'ignore', windowsHide: false,
     env: { ...Object.fromEntries(Object.entries(process.env).filter(([k]) => !ENV_DO_AGENTE.has(k))), EDH_CWD: cwd, EDH_PROMPT: prompt || '', EDH_SID: sid, EDH_TITULO: roomFor(cwd).project } });
   p.unref();
+}
+/** Traz para a frente a janela da sessão: o terminal aberto pela Central ("Central · projeto") ou a janela com a pasta no título
+ *  (VS Code, terminal). Os nomes vão por variável de ambiente, nunca pela linha de comando. */
+function focarJanela(cwd, projeto) {
+  const script = "$sh = New-Object -ComObject WScript.Shell; foreach ($t in @($env:EDH_A, $env:EDH_B)) { if (-not $t) { continue }; " +
+    "$ordem = @('Code', 'WindowsTerminal', 'powershell', 'pwsh', 'Cursor'); " +   // onde as sessões costumam rodar vem primeiro
+    "$p = Get-Process | Where-Object { $_.MainWindowHandle -ne 0 -and $_.MainWindowTitle -like ('*' + $t + '*') } | Sort-Object { $i = $ordem.IndexOf($_.ProcessName); if ($i -lt 0) { 99 } else { $i } } | Select-Object -First 1; " +
+    "if ($p) { [void]$sh.AppActivate($p.Id); 'ok ' + $p.ProcessName; exit } }; 'nada'";
+  const r = spawnSync('powershell.exe', ['-NoProfile', '-Command', script], { encoding: 'utf8', timeout: 8000, windowsHide: true,
+    env: { ...process.env, EDH_A: 'Central · ' + (projeto || ''), EDH_B: path.basename(cwd || '') } });
+  return String(r.stdout || '').trim();
 }
 const WEB = path.join(ROOT_DIR, 'web');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon' };
@@ -157,7 +168,7 @@ const server = http.createServer(async (req, res) => {
       store.changed();
       return send(res, 200, { ok: true });
     }
-    if (req.method === 'POST' && ['/api/quadro', '/api/tarefas', '/api/fluxos', '/api/sessao'].includes(p)) {
+    if (req.method === 'POST' && ['/api/quadro', '/api/tarefas', '/api/fluxos', '/api/sessao', '/api/focar'].includes(p)) {
       if (!authed(req)) return send(res, 403, { erro: 'token inválido' });
       const b = await readBody(req);
       try {
@@ -165,6 +176,12 @@ const server = http.createServer(async (req, res) => {
           // recado não executa nada: a pasta de quem escreve só decide o quadro (mesma regra de salas da leitura)
           const cwd = b.agente || b.projeto ? pastaDe(b) : b.cwd, r = cwd ? roomFor(cwd) : { room: b.projeto, project: b.projeto };
           return send(res, 200, postar({ projeto: r.project, sala: r.room, de: b.de, para: b.para, texto: b.texto }) || { erro: 'mensagem vazia' });
+        }
+        if (p === '/api/focar') {
+          const a = store.agents.get(String(b.agente || ''));
+          if (!a || !a.cwd) return send(res, 400, { erro: 'sessão sem pasta conhecida' });
+          const r = focarJanela(a.cwd, a.project);
+          return send(res, 200, { ok: r.startsWith('ok'), janela: r.replace(/^ok /, '') });
         }
         const mesa = Number.isInteger(b.mesa) && b.mesa >= 0 && b.mesa < 8 ? b.mesa : null;
         // continuar uma conversa: a pasta vem da própria conversa

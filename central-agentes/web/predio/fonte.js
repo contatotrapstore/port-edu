@@ -1,14 +1,14 @@
 // Central de Agentes · prédio 3D — fonte.js
 // Fonte real: lê o estado do agente local (SSE /api/events) e cria, atualiza e remove os bonecos.
-// Contrato dos dados: docs/CONTRATO-DE-DADOS.md. No modo simulado nada aqui roda (startReal só é chamado com REAL).
+// Contrato dos dados: docs/CONTRATO-DE-DADOS.md. Na nuvem (?fonte=nuvem) o estado vem do Supabase em vez do SSE.
 
 const REAL_AGENTS = new Map();   // id da sessão no agente local -> boneco
 const REAL_ROOM = new Map();     // id da sessão -> nome da sala (para o feed de sessões que já fecharam)
 const REAL_COLORS = ['#2E8A84','#4E63CF','#B8484E','#7A5FB0','#3E9E5E','#D09A3C','#45A39A','#C2852B','#3C7FB0','#C26B7A'];
-const SOURCE_LABEL = {codenotch:'via Codenotch', codex:'via sessões do Codex', estimado:'estimado', oauth:'via conta', api:'via API', manual:'manual'};
+const SOURCE_LABEL = {conta:'via conta', codex:'via sessões do Codex', estimado:'estimado', api:'via API', manual:'manual'};
 let realSeq = 0, realState = null;
 
-// Ferramentas reais que o protótipo não conhecia
+// Ferramentas reais além das do TOOL_PT básico (dados.js)
 Object.assign(TOOL_PT, {PowerShell:'Executando', MultiEdit:'Editando', NotebookEdit:'Editando', Glob:'Buscando', Agent:'Delegando', Task:'Delegando',
   WebSearch:'Pesquisando', TodoWrite:'Planejando', Skill:'Usando skill', ToolSearch:'Carregando ferramentas', AskUserQuestion:'Perguntando', Pensando:'Pensando',
   shell:'Executando', exec_command:'Executando', apply_patch:'Editando', js:'Executando', update_plan:'Planejando'});
@@ -60,6 +60,22 @@ function finishPath(a){
   a.f = f; a.path = []; a.ride = null; a.yaw = a.yawEnd ?? a.yaw; a.body.g.rotation.y = a.yaw;
 }
 
+// Aviso do Windows quando alguém precisa de você e o app não está na frente (permissão pedida no primeiro clique)
+function notificar(a){
+  if (!('Notification' in window) || Notification.permission !== 'granted' || (!document.hidden && document.hasFocus())) return;
+  try {
+    const n = new Notification(`${a.proj || a.R.name} precisa de você`, {body: short(a.waitCmd || 'Pedido de permissão', 140), tag: 'edh-' + a.key, icon: NUVEM ? '/central/icones/icone-192.png' : '/icones/icone-192.png'});
+    n.onclick = () => { window.focus(); goAgent(a); onSelect(a); n.close(); };
+  } catch { /* sem suporte */ }
+}
+document.addEventListener('pointerdown', () => { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); }, {once: true});
+async function realFocar(a){
+  try {
+    const r = await fetch('/api/focar', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: JSON.stringify({agente: a.key})});
+    const j = await r.json(); if (!r.ok) throw new Error(j.erro || r.status);
+    toast(j.ok ? 'Janela trazida para a frente' : 'Não achei a janela dessa sessão (ela pode estar no VS Code ou em outro app)');
+  } catch (err){ toast('Não deu: ' + err.message); }
+}
 function permNote(){
   if (NUVEM) return realState && realState.away ? 'O pedido está no terminal do PC e não chegou à nuvem.' : 'Ligue o modo ausente (aba Planos) para aprovar pelo celular. Sem ele, o pedido fica no terminal do PC.';
   return realState && realState.remoteApproval
@@ -70,10 +86,10 @@ function permNote(){
 function realUpdate(a, x, first){
   const prev = a.state;
   a.name = x.name || 'Principal'; a.proj = x.project || x.room; a.model = modelLabel(x.model); a.family = familyOf(x.model);
-  a.tool = prettyTool(x.tool); a.target = x.target || ''; if (x.prompt) a.prompt = x.prompt;
+  a.tool = prettyTool(x.tool); a.target = x.target || ''; if (x.prompt) a.prompt = x.prompt; a.resposta = x.resposta || ''; a.respostaEm = x.respostaEm || 0;
   const tk = x.tokens || {};
   a.cost = x.costUsdToday || 0; a.tin = (tk.in || 0) + (tk.cacheRead || 0) + (tk.cacheWrite || 0); a.tout = tk.out || 0;
-  a.tasksDone = x.tasksToday || 0; a.xp = a.tasksDone * 25;
+  a.tasksDone = x.tasksToday || 0;
   a.waitCmd = x.waitCmd || x.target || ''; a.errMsg = x.errMsg || ''; a.pendingId = x.pendingId || null; a.permNote = permNote();
   a.since = perfAt(x.since || Date.now()); if (x.state === 'waiting') a.waitSince = a.since;
   a.log = (x.log || []).map(e => toEv(e, a));
@@ -84,6 +100,7 @@ function realUpdate(a, x, first){
     else if (newest.kind === 'tool' && newest.text) a.bubble = {text: newest.tag + ' · ' + short(base(newest.text), 40), until: performance.now() + 3500};
   }
   if (newest) a.lastLogT = Math.max(a.lastLogT, newest.t);
+  if (!first && prev !== 'waiting' && x.state === 'waiting') notificar(a);
   a.state = x.state;
   // PC escolhido depois que a sessão já existia (conversa retomada): troca de mesa se ela estiver livre
   if (!first && Number.isInteger(x.mesa) && a.desk !== x.mesa && a.R && seatsOf(a.R).includes(x.mesa) && !a.R.agents.some(o => o !== a && o.desk === x.mesa)){ a.desk = x.mesa; realGo(a); return; }
@@ -99,9 +116,9 @@ function realCreate(x, first){
     prov: x.source === 'codex' ? 'gpt' : 'claude', kind: R.kind && R.kind !== 'fin' ? R.kind : 'code',
     color: REAL_COLORS[h % REAL_COLORS.length], skin: SKINS[h % SKINS.length], hair: HAIR[(h >>> 4) % HAIR.length],
     desk: free ?? null, ov: free == null ? R.agents.filter(o => o.desk == null).length : 0,
-    state: 'idle', tin: 0, tout: 0, cost: 0, units: 0, tool: '', target: '', prompt: '', since: performance.now(), next: Infinity,
+    state: 'idle', tin: 0, tout: 0, cost: 0, tool: '', target: '', prompt: '', since: performance.now(),
     waitSince: performance.now(), waitCmd: '', errMsg: '', log: [], idleSpot: h % 3, path: [], copa: null, spot: null, via: 'front',
-    pop: 0, yaw: Math.PI, xp: 0, tasksDone: 0, ride: null, bubble: null, prompts: [], waits: [], errs: [], pendingId: null, lastLogT: 0};
+    pop: 0, yaw: Math.PI, tasksDone: 0, ride: null, bubble: null, pendingId: null, lastLogT: 0};
   realUpdate(a, x, true);
   a.body = person(a); scene.add(a.body.g); a.lab = mkLabel(a);
   R.agents.push(a); AGENTS.push(a); REAL_AGENTS.set(x.id, a); REAL_ROOM.set(x.id, R.name);
@@ -128,7 +145,7 @@ function realPlans(s){
     if ('brl' in i) p.brl = i.brl; p.approx = false;
     if (p.meters){
       p.meters = (src.meters || []).map(m => ({label: m.label, used: m.usedPct || 0, reset: m.resetAt || 0, win: /semanal|dias/i.test(m.label) ? D7 : H5}));
-      p.sourceNote = p.id === 'gpt' ? 'Aguardando leitura do Codenotch ou de uma sessão do Codex.' : 'Aguardando leitura do Codenotch.';
+      p.sourceNote = p.id === 'gpt' ? 'Aguardando uma sessão do Codex.' : 'Aguardando a leitura da conta.';
     } else if (p.id === 'eleven'){
       const restam = Math.max(0, ((src.resetAt || 0) - Date.now()) / 86400e3);   // ciclo mensal: ~30,4 dias
       p.credit = src.source === 'api' && src.limit ? {total: src.limit, left: Math.max(0, src.limit - (src.used || 0)), unit: 'créditos', daysLeft: Math.ceil(restam), cycle: 30.4, elapsedDays: Math.max(0.5, 30.4 - restam), mix: {}} : null;
@@ -178,7 +195,7 @@ function realApply(s, first){
   }
   atualizarSeries();
   if (!first && tasks > COMPANY.tasks) ringBell();   // sino das entregas: toca a cada tarefa concluída
-  COMPANY.tasks = tasks; COMPANY.xp = tasks * 25;
+  COMPANY.tasks = tasks;
   // Quadro de cada sala: o que as sessões de lá estão fazendo (começo do último prompt)
   for (const R of ROOMS) R.tasks = [...new Set(R.agents.map(a => a.prompt).filter(Boolean).map(p => p.replace(/^["\s]+/, '').split(/\s+/).slice(0, 2).join(' ')))];
   BIZ.uptime = (s.uptime || []).map(u => [u.site, u.upPct, u.ok]);
@@ -213,11 +230,6 @@ async function realPermission(a, ok){
   } catch { toast('Agente local fora do ar'); }
 }
 
-async function realAssignTask(a, text){
-  try { await navigator.clipboard.writeText(text); toast(`Copiado. Cole no terminal de ${a.proj || a.R.name}`); }
-  catch { toast('Não consegui copiar. Selecione o texto e copie à mão.'); }
-}
-
 function startReal(){
   if (NUVEM) return startNuvemFront();
   $('simTag').textContent = 'Conectando ao agente local…';
@@ -231,7 +243,9 @@ function startReal(){
   });
   es.onerror = () => { $('simTag').textContent = 'Agente local fora do ar · tentando reconectar'; };
   // Avisa o agente que o painel está aberto e visível: só assim um pedido de permissão espera a resposta daqui
-  const ping = () => { if (document.visibilityState === 'visible') fetch('/api/presence', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: '{}'}).catch(() => {}); };
+  // o agente gera um token novo a cada reinício: 403 aqui = página com token velho → recarrega uma vez para pegar o novo
+  const tokenVelho = () => { let ult = 0; try { ult = +sessionStorage.getItem('edh-token-reload') || 0; } catch {} if (Date.now() - ult < 60e3) return; try { sessionStorage.setItem('edh-token-reload', String(Date.now())); } catch {} location.reload(); };
+  const ping = () => { if (document.visibilityState === 'visible') fetch('/api/presence', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-EDH-Token': window.EDH_TOKEN || ''}, body: '{}'}).then(r => { if (r.status === 403) tokenVelho(); }).catch(() => {}); };
   ping(); setInterval(ping, 10e3); document.addEventListener('visibilitychange', ping);
 }
 
@@ -299,7 +313,6 @@ function atualizarSeries(){
 }
 // Custo por projeto (sala ou pasta) no período: base do relatório por cliente
 function costReport(){
-  if (!REAL) return '';
   const from = new Date(); from.setDate(from.getDate() - (costPeriod - 1)); const fk = dayKeyLocal(from);
   const agg = new Map();
   for (const [d, rooms] of Object.entries(costDays)) if (d >= fk) for (const [room, v] of Object.entries(rooms)){
@@ -315,7 +328,7 @@ function costReport(){
 
 /* =========================== modo ausente =========================== */
 function awayCard(){
-  if (!REAL || !realState) return '';
+  if (!realState) return '';
   const on = !!realState.away;
   return `<div class="card"><div class="sec"><h2>Modo ausente</h2><small>${on ? 'ligado' : 'desligado'}</small></div>
     <p class="note">${on ? 'Pedidos de permissão esperam resposta pelo celular (Telegram ou site) por até 5 min antes de voltar ao terminal.' : 'Ligue quando sair do PC: os pedidos de permissão passam a chegar no celular.'}</p>
@@ -353,7 +366,7 @@ function startNuvemFront(){
 let lastQuadroT = 0;
 const ST_TAREFA = {'na fila': '⏳', 'rodando': '🟢', 'concluída': '✅', 'falhou': '❌'};
 function orquestraCard(){
-  if (!REAL || !realState) return '';
+  if (!realState) return '';
   const ts = realState.tarefas || [], q = (realState.quadro || []).slice(-12).reverse();
   if (NUVEM) return ts.length ? `<div class="card"><div class="sec"><h2>Tarefas entre agentes</h2></div><ul class="sessions">${ts.slice(0, 8).map(t => `<li><i style="background:var(--amber)"></i><span>${ST_TAREFA[t.status] || ''} ${esc(t.projeto)} · ${esc(t.para)} (${esc(t.modo)})</span><em>${esc(t.status)}</em></li>`).join('')}</ul></div>` : '';
   return `<div class="card"><div class="sec"><h2>Agentes conversando</h2><small>${ts.filter(t => t.status === 'rodando').length} rodando</small></div>
@@ -397,10 +410,9 @@ function renderProjeto(){
   const mes = dayKeyLocal(new Date()).slice(0, 7);
   let html = `<div class="card"><div class="ag-head"><span class="swatch" style="background:${R.cor || 'var(--amber)'}"></span><div style="min-width:0"><div class="ag-name">${esc(p.sala)}</div><div class="ag-proj">${esc(p.cliente ? 'Cliente: ' + p.cliente : '')}${p.descricao ? ' · ' + esc(p.descricao) : ''}</div></div></div>
     <div class="stats">${custo('Hoje', p.custos.hoje)}${custo('7 dias', p.custos.semana)}${custo('Mês', p.custos.mes)}</div>
-    <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">
+    <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">
       ${R.i !== undefined ? `<button class="btn solid" type="button" data-act="pcSala" data-arg="${R.i}">Chamar alguém para trabalhar</button>` : ''}
       ${p.cliente ? `<a class="btn" href="/relatorio?cliente=${encodeURIComponent(p.cliente)}&mes=${mes}" target="_blank" rel="noopener">Relatório do mês · ${esc(p.cliente)}</a>` : ''}
-      <button class="btn" type="button" data-act="editarSalas">Editar salas</button>
     </div>
     ${p.pasta ? `<p class="note" style="margin-top:8px">Pasta: <code>${esc(p.pasta)}</code></p>` : '<p class="note" style="margin-top:8px">Nenhuma sessão recente nesta sala: abra uma no projeto para o painel saber a pasta.</p>'}</div>`;
   if (p.git) html += `<div class="card"><div class="sec"><h2>Git</h2><small>${esc(p.git.branch)}</small></div>

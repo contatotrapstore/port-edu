@@ -6,15 +6,15 @@ Este arquivo é o contexto principal. Leia também `docs/ROADMAP.md` antes de co
 
 ## Quem é o usuário
 - Eduardo Gouveia (Dudu), dev full-stack sênior, Pinhais/PR. Trabalha solo, com muitos projetos ao mesmo tempo (Workana + clientes diretos + projetos próprios).
-- Usa Claude Code e Codex no **Windows nativo** (`C:\Users\GouveiaRx\.claude`, `C:\Users\GouveiaRx\.codex`). Medidor de uso dos planos: **Codenotch**.
+- Usa Claude Code e Codex no **Windows nativo** (`C:\Users\GouveiaRx\.claude`, `C:\Users\GouveiaRx\.codex`). Medidor de uso dos planos: lido direto da conta (Claude) e das sessões (Codex); o Codenotch foi desligado em 30/10/2026.
 - Esta pasta fica dentro do repositório do site (`Port Edu`), que é a central de projetos pessoais dele: site, agentes etc.
 - Fala português do Brasil. **Toda a interface em PT-BR e valores em R$** (câmbio configurável, padrão US$ 1 = R$ 5,40).
 
 ## Estado atual
 | Parte | Status |
 |---|---|
-| `web/predio/` | Prédio 3D (Three.js r145) **com dados reais** do agente (Fase 1.3): um boneco por sessão, entra pelo elevador, Permitir/Negar de verdade, planos do Codenotch, custo por projeto, replay com o histórico do dia. `?fonte=simulada` mostra o protótipo antigo. Números do Comercial e do Marketing (Workana, funil, tráfego, redes) ainda simulados e rotulados. |
-| `agent/` | Agente local em Node (sem dependências). Lê sessões reais do Claude Code e do Codex, recebe hooks, lê os medidores do Codenotch, consulta ElevenLabs, grava histórico em `agent/data`, expõe API + SSE em `127.0.0.1:4321`. **Fase 1 concluída em 29/10/2026.** Hooks instalados no `~/.claude/settings.json`; sobe sozinho com o Windows (`npm run autostart:on`). |
+| `web/predio/` | Prédio 3D (Three.js r145) **com dados reais** do agente (Fase 1.3): um boneco por sessão, entra pelo elevador, Permitir/Negar de verdade, planos lidos da conta, custo por projeto, replay com o histórico do dia. `?fonte=simulada` mostra o protótipo antigo. Números do Comercial e do Marketing (Workana, funil, tráfego, redes) ainda simulados e rotulados. |
+| `agent/` | Agente local em Node (sem dependências). Lê sessões reais do Claude Code e do Codex, recebe hooks, lê os medidores dos planos direto da conta, consulta ElevenLabs, grava histórico em `agent/data`, expõe API + SSE em `127.0.0.1:4321`. **Fase 1 concluída em 29/10/2026.** Hooks instalados no `~/.claude/settings.json`; sobe sozinho com o Windows (`npm run autostart:on`). |
 | `web/index.html` | Painel de depuração simples (lista ao vivo + Permitir/Negar) servido pelo agente. |
 | Fase 2 | **Código pronto e testado**, inativo até as chaves: Telegram (`agent/src/telegram.js`), alertas, espelho sanitizado no Supabase (`nuvem.js`, SQL em `supabase/`), painel `/central` no site (fonte em `site/central`, copiado para `public/central` por `npm run site:sync`). Falta o Eduardo criar o bot e o projeto Supabase (ROADMAP, "Para ligar a Fase 2"). |
 

@@ -4,7 +4,10 @@
 (() => {
   // No site, o prédio só abre com login (dados reais da nuvem); sem "?fonte=nuvem" não mostra mais dados de exemplo
   const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-  if (!local && new URLSearchParams(location.search).get('fonte') !== 'nuvem'){ location.replace('/central/predio?fonte=nuvem'); return; }
+  const nuvemPedida = new URLSearchParams(location.search).get('fonte') === 'nuvem';
+  if (!local && !nuvemPedida){ location.replace('/central/predio?fonte=nuvem'); return; }
+  // sem o agente (token) e sem a nuvem não há dados: avisa e não monta o prédio (o resto dos scripts nem carrega)
+  if (!nuvemPedida && !window.EDH_TOKEN){ const el = document.getElementById('loading'); if (el) el.textContent = 'Abra pelo app do PC (localhost:4321) ou pelo site /central'; return; }
   const FILES = ['marcas.js', 'dados.js', 'sim.js', 'cena.js', 'fachada.js', 'ui.js', 'fonte.js', 'pc.js', 'tv.js', 'app.js'];
   const base = document.currentScript.src.replace(/boot\.js(\?.*)?$/, '');
   const load = () => { for (const f of FILES){ const s = document.createElement('script'); s.src = base + f; s.async = false; document.body.appendChild(s); } };

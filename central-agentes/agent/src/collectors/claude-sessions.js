@@ -63,6 +63,9 @@ function handle(file, e) {
   const mid = e.message?.id;
   if (e.message?.stop_reason === 'end_turn' && mid && !sub && !turnSeen.has(mid) && isToday(t)) { turnSeen.add(mid); if (turnSeen.size > 50000) turnSeen.clear(); store.taskDone(a); }
   if (!Array.isArray(content)) return;
+  // última fala do agente (pergunta ou resumo do fim do turno): aparece no cartão dele; não sobe para a nuvem
+  const fala = content.filter(c => c?.type === 'text' && c.text).map(c => c.text).join('\n').trim();
+  if (fala && !sub) { a.resposta = fala.slice(0, 1200); a.respostaEm = t; }
   for (const c of content) {
     if (c?.type === 'tool_use') {
       a.tool = c.name; a.target = targetOf(c.name, c.input);

@@ -17,3 +17,13 @@
 .studio-sidebar nav.studio-sections{margin-top:36px}
 @media(max-width:1050px) and (min-width:761px){.studio-sidebar nav.studio-appswitch svg{display:none}}
 @media(max-width:760px){.studio-sidebar{flex-wrap:wrap;row-gap:14px}.studio-sidebar nav.studio-appswitch{order:3;width:100%;margin:0}.studio-sidebar nav.studio-sections{margin:0}}
+
+/* Login com a marca EDevsHub (mesmo acesso da Central de Agentes) */
+.studio-login .studio-login-brand{display:inline-flex;align-items:center;gap:14px;letter-spacing:-.5px}
+.studio-login .studio-login-name{display:block;font-size:24px;font-weight:600;color:#EDE6D6}
+.studio-login .studio-login-name small{display:block;margin-top:8px;font:11px var(--font-inter),sans-serif;text-transform:uppercase;letter-spacing:2px;color:#b0bcad}
+.studio-login .studio-eyebrow{color:#F5B935}
+.studio-login-box{border-top-color:#F5B935}
+.studio-root .studio-login-box button{background:#F5B935;color:#14110a}
+.studio-root .studio-login-box button:hover{background:#ffc94f}
+.studio-login-box input:focus-visible{outline:2px solid #F5B935;outline-offset:2px}

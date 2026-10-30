@@ -1,5 +1,5 @@
 // Alertas para o celular (Telegram; sem bot configurado, vão para o log):
-// - plano em 90% ou que, no ritmo atual, acaba antes do reinício (só com leitura confiável: Codenotch, Codex, conta)
+// - plano em 90% ou que, no ritmo atual, acaba antes do reinício (só com leitura confiável: conta do Claude, sessões do Codex)
 // - projeto que passou do orçamento do dia (config.json → rooms[].budgetBrl)
 // - site fora do ar (config.json → uptime), uma vez por site por dia
 // Cada alerta sai uma vez por janela (ou por dia, no orçamento). As chaves já enviadas ficam em data/alertas.json.
@@ -12,7 +12,7 @@ import { dayKey } from './history.js';
 
 const FILE = path.join(DATA_DIR, 'alertas.json');
 const H5 = 5 * 3600e3, D7 = 7 * 86400e3;
-const RELIABLE = new Set(['codenotch', 'codex', 'oauth']);
+const RELIABLE = new Set(['conta', 'codex']);
 const esc = s => String(s ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 const brl = v => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const when = ts => new Date(ts).toLocaleString('pt-BR', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
@@ -37,7 +37,7 @@ function check() {
     if (!plan || !RELIABLE.has(plan.source)) continue;
     for (const m of plan.meters || []) {
       if (!m.resetAt || m.resetAt <= now) continue;
-      // reinício arredondado para a hora: o Codenotch devolve o mesmo horário com milissegundos diferentes a cada leitura
+      // reinício arredondado para a hora: a conta devolve o mesmo horário com milissegundos diferentes a cada leitura
       const key = `${k}|${m.label}|${Math.round(m.resetAt / 3600e3)}`, p = projectMeter(m, now);
       if (m.usedPct >= 90 && !sent.has(key + '|90')) {
         mark(key + '|90');
