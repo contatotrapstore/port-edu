@@ -3,7 +3,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { ROOT_DIR, PORT, config, DATA_DIR, roomFor } from './config.js';
+import { ROOT_DIR, PORT, config, DATA_DIR, roomFor, ENV_DO_AGENTE } from './config.js';
 import { store } from './store.js';
 import { readHistory, readCosts, dayKey } from './history.js';
 import { spawn } from 'node:child_process';
@@ -26,7 +26,7 @@ function abrirSessao(cwd, para, prompt) {
   const cmd = para === 'codex' ? 'codex' : 'claude';
   const script = `Set-Location -LiteralPath $env:EDH_CWD; $host.UI.RawUI.WindowTitle = 'Central · ' + $env:EDH_TITULO; if ($env:EDH_PROMPT) { ${cmd} $env:EDH_PROMPT } else { ${cmd} }`;
   const p = spawn('powershell.exe', ['-NoExit', '-NoProfile', '-Command', script], { cwd, detached: true, stdio: 'ignore', windowsHide: false,
-    env: { ...process.env, EDH_CWD: cwd, EDH_PROMPT: prompt || '', EDH_TITULO: roomFor(cwd).project } });
+    env: { ...Object.fromEntries(Object.entries(process.env).filter(([k]) => !ENV_DO_AGENTE.has(k))), EDH_CWD: cwd, EDH_PROMPT: prompt || '', EDH_TITULO: roomFor(cwd).project } });
   p.unref();
 }
 const WEB = path.join(ROOT_DIR, 'web');

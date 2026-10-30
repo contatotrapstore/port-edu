@@ -9,7 +9,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { config, DATA_DIR, roomFor } from './config.js';
+import { config, DATA_DIR, roomFor, ENV_DO_AGENTE } from './config.js';
 const TAREFAS_FILE = path.join(DATA_DIR, 'tarefas.json');
 const salvarTarefas = () => fs.writeFile(TAREFAS_FILE, JSON.stringify([...tarefas.values()].slice(-100).map(pub)), () => {});
 /** Encerra o processo e os filhos (no Windows, matar só o cmd.exe deixa o node do claude/codex rodando). */
@@ -79,7 +79,9 @@ function proxima() {
 
 function executar(t) {
   rodando++; t.status = 'rodando'; t.inicio = Date.now(); store.changed();
-  const env = { ...process.env, EDH_JOB_DEPTH: '1', EDH_JOB_ID: t.id };
+  // tarefa delegada não herda as chaves do agent/.env (Supabase service_role, ElevenLabs, Telegram)
+  const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !ENV_DO_AGENTE.has(k)));
+  Object.assign(env, { EDH_JOB_DEPTH: '1', EDH_JOB_ID: t.id });
   let args, saidaFinal = null;
   const regra = t.modo === 'ler'
     ? 'Modo leitura: analise e responda; não edite arquivos.'

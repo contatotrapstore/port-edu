@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 export const AGENT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const ROOT_DIR = path.resolve(AGENT_DIR, '..');
 
+/** Nomes das chaves lidas do agent/.env: não passam para as tarefas delegadas (orquestra.js). */
+export const ENV_DO_AGENTE = new Set();
 function loadEnv() {
   const file = path.join(AGENT_DIR, '.env');
   if (!fs.existsSync(file)) return;
@@ -14,7 +16,7 @@ function loadEnv() {
     const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
     if (!m || line.trim().startsWith('#')) continue;
     const val = m[2].replace(/^["']|["']$/g, '');
-    if (!(m[1] in process.env)) process.env[m[1]] = val;
+    if (!(m[1] in process.env)) { process.env[m[1]] = val; if (!m[1].startsWith('EDH_')) ENV_DO_AGENTE.add(m[1]); }
   }
 }
 
