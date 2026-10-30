@@ -29,7 +29,7 @@ for(const format of ['reel','story'])test(`${format} accepts one checked vertica
   const bad=[{...media[0],provenance:{...media[0].provenance,...patch}}];
   assert.ok(publicationEligibility({...input,assets:bad,expectedFingerprint:fingerprint(bad),review:{decision:'approved',assetFingerprint:fingerprint(bad)}}));
  }
- assert.equal(publicationEligibility({...input,mode:'automatic'}),'invalid_mode');
+ assert.equal(publicationEligibility({...input,mode:'automatic'}),format==='reel'?null:'invalid_mode');
 });
 test('unknown formats fail closed while explicit carousel preserves legacy fingerprints',()=>{
  for(const format of ['',null,'REELS','image'])assert.equal(publicationEligibility({...base,format}),'invalid_format');

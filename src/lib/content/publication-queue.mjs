@@ -8,14 +8,22 @@ async function mediaAndReview(db,postId,revisionId){
  return {assets,review};
 }
 export async function automaticSchedule(db,brandId,ACCOUNT){
- // Only fresh, fully rendered drafts, one slot/day; never backfill missed days.
- const settings=(await db.query("select *,(now() at time zone timezone)::date::text as today from content_studio.settings where brand_id=coalesce($1::uuid,(select id from content_studio.brands where handle='edevshub')) and publication_enabled and publication_mode='automatic' and (now() at time zone timezone)::time between publish_time-interval '20 minutes' and publish_time+interval '5 minutes'",[brandId])).rows[0];
+ // Só rascunhos novos e já renderizados, um por horário: carrossel no publish_time e Reel no horário do Reel
+ // (brands.guidelines.reel_time, padrão 19h). Horário já ocupado (manual ou automático) não é duplicado; dia perdido não é recuperado.
+ const settings=(await db.query("select s.*,b.guidelines->>'reel_time' as reel_time,(now() at time zone s.timezone)::date::text as today,(now() at time zone s.timezone)::time as agora from content_studio.settings s join content_studio.brands b on b.id=s.brand_id where s.brand_id=coalesce($1::uuid,(select id from content_studio.brands where handle='edevshub')) and s.publication_enabled and s.publication_mode='automatic'",[brandId])).rows[0];
  if(!settings)return;
- const candidates=(await db.query("select p.id,p.active_revision_id,r.slides,case when r.brief ? 'format' then r.brief->>'format' else 'carousel' end as format from content_studio.posts p join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 and p.state='review' and r.created_at>now()-interval '36 hours' and r.brief->'generation' is not null and (not (r.brief ? 'format') or r.brief->>'format'='carousel') and not exists(select 1 from content_studio.schedules s where s.revision_id=r.id) and not exists(select 1 from content_studio.publications u where u.revision_id=r.id) order by r.created_at desc limit 10",[settings.brand_id])).rows;
- for(const post of candidates){
-  const {assets,review}=await mediaAndReview(db,post.id,post.active_revision_id),hash=fingerprint(assets);
-  if(publicationEligibility({revisionId:post.active_revision_id,activeRevision:post.active_revision_id,slides:post.slides,format:post.format,assets,review,expectedFingerprint:hash,mode:'automatic'}))continue;
-  await db.query("insert into content_studio.schedules(account_id,revision_id,local_date,local_time,timezone,slot_id,state,asset_fingerprint,approval_mode) values($1,$2,$3,$4,'America/Sao_Paulo','principal','scheduled',$5,'automatic') on conflict do nothing",[ACCOUNT,post.active_revision_id,settings.today,settings.publish_time,hash]);return;
+ for(const [format,slot,time] of [['carousel','principal',settings.publish_time],['reel','reel',settings.reel_time||'19:00:00']]){
+  const inside=(await db.query("select $1::time between $2::time-interval '20 minutes' and $2::time+interval '5 minutes' as ok",[settings.agora,time])).rows[0]?.ok;
+  if(!inside)continue;
+  const taken=(await db.query("select 1 from content_studio.schedules where account_id=$1 and local_date=$2::date and slot_id=$3 and state in ('scheduled','completed','paused')",[ACCOUNT,settings.today,slot])).rowCount;
+  if(taken)continue;
+  const filtro=format==='carousel'?"(not (r.brief ? 'format') or r.brief->>'format'='carousel')":"r.brief->>'format'='reel'";
+  const candidates=(await db.query("select p.id,p.active_revision_id,r.slides,case when r.brief ? 'format' then r.brief->>'format' else 'carousel' end as format from content_studio.posts p join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 and p.state='review' and r.created_at>now()-interval '36 hours' and r.brief->'generation' is not null and "+filtro+" and not exists(select 1 from content_studio.schedules s where s.revision_id=r.id) and not exists(select 1 from content_studio.publications u where u.revision_id=r.id) order by r.created_at desc limit 10",[settings.brand_id])).rows;
+  for(const post of candidates){
+   const {assets,review}=await mediaAndReview(db,post.id,post.active_revision_id),hash=fingerprint(assets);
+   if(publicationEligibility({revisionId:post.active_revision_id,activeRevision:post.active_revision_id,slides:post.slides,format:post.format,assets,review,expectedFingerprint:hash,mode:'automatic'}))continue;
+   await db.query("insert into content_studio.schedules(account_id,revision_id,local_date,local_time,timezone,slot_id,state,asset_fingerprint,approval_mode) values($1,$2,$3,$4,'America/Sao_Paulo',$5,'scheduled',$6,'automatic') on conflict do nothing",[ACCOUNT,post.active_revision_id,settings.today,time,slot,hash]);break;
+  }
  }
 }
 export async function publicationTick(db,{api,sign,shouldContinue=()=>true,brand}){

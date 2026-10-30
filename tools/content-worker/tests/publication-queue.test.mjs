@@ -2,9 +2,20 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {automaticSchedule,publicationTick} from '../../../src/lib/content/publication-queue.mjs';
 import {fingerprint} from '../../../src/lib/content/publication-policy.mjs';
-test('automatic scheduling only selects carousel revisions',async()=>{
- let query='';await automaticSchedule({query:async sql=>{if(sql.includes('select *,'))return {rows:[{brand_id:'b'}]};query=sql;return {rows:[]};}});
- assert.match(query,/brief\s*->>\s*'format'/);assert.match(query,/'carousel'/);
+test('automatic scheduling picks carousel at publish time and reel at reel time, never twice per slot',async()=>{
+ for(const [agora,esperado] of [['12:00','carousel'],['19:00','reel'],['15:00',null]]){
+  const candidatos=[];let slotOcupado=false;
+  await automaticSchedule({query:async(sql,args)=>{
+   if(sql.startsWith('select s.*'))return {rows:[{brand_id:'b',publish_time:'12:00:00',reel_time:null,today:'2026-11-03',agora:agora+':00'}]};
+   if(sql.startsWith('select $1::time between'))return {rows:[{ok:args[0].slice(0,5)===args[1].slice(0,5)}]};
+   if(sql.startsWith('select 1 from content_studio.schedules'))return {rowCount:slotOcupado?1:0,rows:[]};
+   if(sql.startsWith('select p.id'))candidatos.push(/'reel'/.test(sql)?'reel':'carousel');
+   return {rows:[]};
+  }},'b','123');
+  assert.deepEqual(candidatos,esperado?[esperado]:[]);
+ }
+ const vistos=[];await automaticSchedule({query:async(sql,args)=>{if(sql.startsWith('select s.*'))return {rows:[{brand_id:'b',publish_time:'12:00:00',today:'2026-11-03',agora:'12:00:00'}]};if(sql.startsWith('select $1::time between'))return {rows:[{ok:true}]};if(sql.startsWith('select 1 from content_studio.schedules'))return {rowCount:1,rows:[]};if(sql.startsWith('select p.id'))vistos.push(sql);return {rows:[]};}},'b','123');
+ assert.equal(vistos.length,0);
 });
 for(const format of ['reel','story'])test(`queue propagates ${format} from revision through eligibility and provider`,async()=>{
  const assets=[{id:'a',sha256:'x',kind:'mp4',object_key:'v.mp4',provenance:{format,slide:1,width:1080,height:1920,duration:30,qa:'vertical-layout-audio-passed'}}];const hash=fingerprint(assets);let scheduleSQL='',provider=[];

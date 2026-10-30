@@ -18,7 +18,12 @@ const schema={type:'object',additionalProperties:false,required:['topic','brief'
 function schemaFor(input){const urls=input.sources.map(s=>s.url);return {...schema,properties:{...schema.properties,sources:urls.length?{type:'array',items:{type:'string',enum:urls}}:{type:'array',items:{type:'string'},maxItems:0}}};}
 const RETENCAO=' Estrutura de retenção: o slide 1 é a capa e precisa parar a rolagem sozinho, com o fato concreto (número, nome da ferramenta ou resultado) em até 8 palavras, sem pergunta vaga. O slide 2 já entrega o ganho principal, sem introdução. Uma ideia por slide, frases curtas e verbos no presente. Pelo menos um slide salvável: passo a passo, comparação antes/depois ou checklist. O último slide pede um comentário com 2 ou 3 opções concretas e convida a salvar. A legenda começa pela mesma promessa da capa na primeira linha, usa no máximo 5 hashtags específicas e cita a fonte.';
 // Abertura do prompt pela marca da pauta (diretrizes em brands.guidelines); EDevsHub mantém o texto original
+const REEL=' FORMATO REEL NARRADO (não carrossel): 5 a 7 slides, cada um é uma cena no formato "Título curto de até 7 palavras. Fala da cena em 1 ou 2 frases." A narração somada (só as falas) tem de 380 a 650 caracteres, para 20 a 35 segundos. A primeira fala entrega o fato principal já na primeira frase, sem saudação. A última cena pede um comentário com duas opções concretas. Escreva números por extenso nas falas. A legenda do post resume o Reel e termina com a pergunta.';
 function abertura(input,padrao){
+ const extra=(input.format==='reel'?REEL:'')+(input.angle?' Ângulo pedido pelo editor: '+input.angle+'.':'');
+ return base(input,padrao).replace(/^Crie um carrossel/,input.format==='reel'?'Crie um roteiro de Reel':'Crie um carrossel')+extra;
+}
+function base(input,padrao){
  const b=input.brand;if(!b)return padrao;
  const lista=v=>Array.isArray(v)?v.join('; '):String(v||'');
  return `Crie um carrossel em português para ${b.name}: ${b.about||''}. Público: ${b.audience||''}. Tom de voz: ${b.tone||''}. Regras obrigatórias da marca: ${lista(b.rules)}. A legenda termina com "${b.cta||''}" e usa no máximo 5 hashtags entre: ${lista(b.hashtags)}. Use os eventos e fatos fornecidos com data, cidade e nome exatos.`;
