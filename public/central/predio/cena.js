@@ -81,6 +81,9 @@ const M = {
   leather: mat('#9C5E2B', {r:.55, env:.6}), cushion: mat('#B06C34', {r:.6}), rug: mat('#26332C', {r:1}), mug: mat('#EDE6D6', {r:.4}),
   headset: mat('#1B201E', {r:.4}), gold: mat('#E0B347', {r:.25, m:1, env:1.6}), brass: mat('#C9A04A', {r:.3, m:1, env:1.4}),
   slab: mat('#0E1613', {r:.9}), pillar: mat('#1A2621', {r:.8}),
+  // porta, janela e fachada
+  doorGlass: mat('#A9CFC0', {r:.04, m:.1, t:true, o:.22, env:1.8}), windowGlass: mat('#CFE6DD', {r:.02, m:.2, t:true, o:.1, env:2.2}),
+  frame: mat('#20262A', {r:.35, m:.6, env:.8}), sill: mat('#CFC6B2', {r:.55}), blind: mat('#D8D1C1', {r:.95, side:THREE.DoubleSide}), blindSlat: mat('#B9B1A0', {r:.8}),
 };
 const BOOK_COLORS = ['#8C3B2E','#C79A3E','#3E5A44','#2F4C66','#D9D3C4','#A8682C'].map(c => mat(c, {r:.8}));
 
@@ -262,9 +265,26 @@ function buildShell(R){
   const plate = canvasTex(512, 64, (c, w, h) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,w,h); c.strokeStyle = '#F5B935'; c.lineWidth = 3; c.strokeRect(2,2,w-4,h-4); c.fillStyle = '#EDE6D6'; c.font = font(700, 30); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(R.name.toUpperCase(), w/2, h/2 + 2); });
   const pm2 = screenMat(plate);
   plane(S.low, 2.6, .3, pm2, 1.2, .3, -.04, Math.PI); plane(S.low, 2.6, .3, pm2, -1.2, .3, .04); plane(S.tall, 2.6, .3, pm2, -1.2, 2.32, .065);
+  // Porta de vidro no vão da parede sul: batente, folha com puxador e dobradiça; abre quando alguém chega (app.js)
+  const [da, db] = [-RW/2 + .8, -RW/2 + 2.4], dw = db - da;
+  box(S.tall, .07, 2.18, .17, M.steel, da, 1.09, 0); box(S.tall, .07, 2.18, .17, M.steel, db, 1.09, 0); box(S.tall, dw + .14, .07, .17, M.steel, (da + db)/2, 2.17, 0);
+  const pivo = new THREE.Group(); pivo.position.set(da + .04, 0, 0); pivo.userData.dyn = true; S.tall.add(pivo);
+  box(pivo, dw - .1, 2.06, .025, M.doorGlass, (dw - .1)/2 + .01, 1.07, 0, {cast:false, recv:false});
+  for (const yy of [.06, 2.08]) box(pivo, dw - .08, .06, .045, M.steel, (dw - .08)/2, yy, 0);
+  for (const xx of [.03, dw - .1]) box(pivo, .05, 2.06, .045, M.steel, xx, 1.07, 0);
+  box(pivo, .03, .55, .03, M.neon, dw - .22, 1.05, .05, {cast:false}); box(pivo, .03, .55, .03, M.neon, dw - .22, 1.05, -.05, {cast:false});
+  R.door = {pivo, ang: 0};
+  // Janela de verdade na parede leste: cidade lá fora, vidro com reflexo, moldura, travessa, peitoril e persiana meio baixada
   plane(E.tall, 5.2, 1.4, CITY, .4, 1.55, .065);
-  box(E.tall, 5.3, .05, .05, M.charcoal, .4, .83, .07); box(E.tall, 5.3, .05, .05, M.charcoal, .4, 2.27, .07);
-  for (const fx of [-2.2, -.9, .4, 1.7, 3.0]) box(E.tall, .04, 1.44, .05, M.charcoal, fx, 1.55, .07);
+  plane(E.tall, 5.2, 1.4, M.windowGlass, .4, 1.55, .075, 0, {recv:false});
+  box(E.tall, 5.44, .08, .13, M.frame, .4, .81, .09); box(E.tall, 5.44, .08, .13, M.frame, .4, 2.29, .09);
+  box(E.tall, .08, 1.56, .13, M.frame, -2.28, 1.55, .09); box(E.tall, .08, 1.56, .13, M.frame, 3.08, 1.55, .09);
+  box(E.tall, 5.6, .05, .24, M.sill, .4, .76, .15);
+  box(E.tall, 5.2, .035, .05, M.frame, .4, 1.92, .09);
+  for (const fx of [-.9, .4, 1.7]) box(E.tall, .045, 1.44, .06, M.frame, fx, 1.55, .09);
+  box(E.tall, 5.36, .13, .12, M.frame, .4, 2.4, .1);
+  plane(E.tall, 5.2, .34, M.blind, .4, 2.17, .1, 0, {recv:false});
+  for (let k = 0; k < 5; k++) box(E.tall, 5.2, .012, .02, M.blindSlat, .4, 2.32 - k * .075, .105, {cast:false});
   for (const lx of [1.7, 4.8, 7.9]){ cyl(st, .18, .18, .03, M.neon, lx, WH + .3, 3.0, {cast:false}); cyl(st, .006, .006, .5, M.charcoal, lx, WH + .57, 3.0, {cast:false}); }
   const l = new THREE.PointLight('#FFB547', 2.3, 10, 2); l.position.set(RW/2, 2.5, 3.4); g.add(l); ROOM_LIGHTS.push(l); R.light = l;
   return g;
@@ -763,6 +783,16 @@ const arcadeTex = canvasTex(160, 200, (g, w, h) => {
 });
 FLOORS.forEach(F => openArea(F.i));
 
+/* ---------- marca: o "H" da EDevsHub desenhado em canvas ---------- */
+function desenhaMarca(g, x, y, s, cor = '#EDE6D6', ponto = '#F5B935'){
+  const u = s / 30;   // o símbolo original é 30 × 30
+  g.fillStyle = cor;
+  rr(g, x + 3*u, y + 3*u, 5*u, 24*u, 2.5*u); g.fill();
+  rr(g, x + 22*u, y + 3*u, 5*u, 24*u, 2.5*u); g.fill();
+  g.fillRect(x + 8*u, y + 13.5*u, 3*u, 3*u); g.fillRect(x + 19*u, y + 13.5*u, 3*u, 3*u);
+  g.fillStyle = ponto; g.beginPath(); g.arc(x + 15*u, y + 15*u, 2.6*u, 0, 7); g.fill();
+}
+
 /* slabs, pillars, elevator */
 const PLATFORM_TOPS = [];
 FLOORS.forEach(F => {
@@ -775,8 +805,9 @@ FLOORS.forEach(F => {
   const runner = mat('#1E2E26', {r:.95});
   add(g, new THREE.PlaneGeometry(WW, GAP - .8), runner, WW/2, .006, RD + GAP/2, {rx:-Math.PI/2, cast:false});
   add(g, new THREE.PlaneGeometry(WW + 4.5, 1.0), runner, WW/2 + 1.8, .006, WALK, {rx:-Math.PI/2, cast:false});
-  const sign = canvasTex(512, 96, (c, ww, hh) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,ww,hh); c.fillStyle = '#F5B935'; c.font = font(700, 46); c.textBaseline = 'middle'; c.fillText(F.short + ' · ' + F.name.toUpperCase(), 20, hh/2 + 2); });
-  plane(g, 3.4, .64, screenMat(sign), EX - .2, 2.9, EZ - 3.2, 0);
+  // placa do andar no elevador, com o símbolo da EDevsHub
+  const sign = canvasTex(640, 96, (c, ww, hh) => { c.fillStyle = '#0B1210'; c.fillRect(0,0,ww,hh); c.fillStyle = '#F5B935'; c.fillRect(0, hh - 5, ww, 5); desenhaMarca(c, 14, 14, 68); c.fillStyle = '#EDE6D6'; c.font = font(700, 40); c.textBaseline = 'middle'; c.fillText(F.short + ' · ' + F.name.toUpperCase(), 100, hh/2); });
+  plane(g, 4.25, .64, screenMat(sign), EX - .2, 2.9, EZ - 3.2, 0);
   add(g, new THREE.PlaneGeometry(9, 1), new THREE.MeshBasicMaterial({visible:false}), WW/2, .02, WD + 3.25, {rx:-Math.PI/2, cast:false}).userData = {f:F.i, plaza:true};
 });
 const EXPL = 8.6;

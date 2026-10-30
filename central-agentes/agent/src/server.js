@@ -9,6 +9,7 @@ import { readHistory, readCosts, dayKey } from './history.js';
 import { spawn } from 'node:child_process';
 import { postar, lerQuadro, delegar, tarefa, listaTarefas, modelosFluxo, iniciarFluxo, pastaDoProjeto } from './orquestra.js';
 import { infoProjeto, relatorioHTML } from './projetos.js';
+import { sessoesDaSala, pastaDaSessao } from './sessoes.js';
 import { aplicarSalas } from './config.js';
 
 const TOKEN = crypto.randomBytes(16).toString('hex');
@@ -22,11 +23,14 @@ const authed = req => [TOKEN, MCP_TOKEN].includes(req.headers['x-edh-token']);
 const origemOk = req => !req.headers.origin || /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(req.headers.origin);
 const jsonOk = req => /application\/json/i.test(req.headers['content-type'] || '');
 /** Sessão interativa nova num terminal próprio, na pasta do projeto. O texto vai por variável de ambiente, nunca pela linha de comando. */
-function abrirSessao(cwd, para, prompt) {
+// sid: Claude novo com id já escolhido (o boneco senta no PC reservado); retomar: continua uma conversa (Claude --resume / codex resume)
+function abrirSessao(cwd, para, prompt, { sid = '', retomar = false } = {}) {
   const cmd = para === 'codex' ? 'codex' : 'claude';
-  const script = `Set-Location -LiteralPath $env:EDH_CWD; $host.UI.RawUI.WindowTitle = 'Central · ' + $env:EDH_TITULO; if ($env:EDH_PROMPT) { ${cmd} $env:EDH_PROMPT } else { ${cmd} }`;
+  const inicio = retomar ? (para === 'codex' ? 'codex resume $env:EDH_SID' : 'claude --resume $env:EDH_SID')
+    : sid ? 'claude --session-id $env:EDH_SID' : cmd;
+  const script = `Set-Location -LiteralPath $env:EDH_CWD; $host.UI.RawUI.WindowTitle = 'Central · ' + $env:EDH_TITULO; if ($env:EDH_PROMPT) { ${inicio} $env:EDH_PROMPT } else { ${inicio} }`;
   const p = spawn('powershell.exe', ['-NoExit', '-NoProfile', '-Command', script], { cwd, detached: true, stdio: 'ignore', windowsHide: false,
-    env: { ...Object.fromEntries(Object.entries(process.env).filter(([k]) => !ENV_DO_AGENTE.has(k))), EDH_CWD: cwd, EDH_PROMPT: prompt || '', EDH_TITULO: roomFor(cwd).project } });
+    env: { ...Object.fromEntries(Object.entries(process.env).filter(([k]) => !ENV_DO_AGENTE.has(k))), EDH_CWD: cwd, EDH_PROMPT: prompt || '', EDH_SID: sid, EDH_TITULO: roomFor(cwd).project } });
   p.unref();
 }
 const WEB = path.join(ROOT_DIR, 'web');
@@ -132,6 +136,8 @@ const server = http.createServer(async (req, res) => {
       return send(res, 200, id ? (tarefa(id) || { erro: 'não encontrada' }) : listaTarefas());
     }
     if (p === '/api/fluxos' && req.method === 'GET') return send(res, 200, modelosFluxo());
+    // Conversas da sala (abertas e antigas) para "Continuar" no PC clicado
+    if (p === '/api/sessoes' && req.method === 'GET') return send(res, 200, sessoesDaSala(url.searchParams.get('sala') || '', 12));
     // Cartão do projeto (clique na sala) e relatório mensal por cliente (página para imprimir/salvar em PDF)
     if (p === '/api/projeto' && req.method === 'GET') return send(res, 200, infoProjeto(url.searchParams.get('sala') || ''));
     if (p === '/relatorio' && req.method === 'GET') return send(res, 200, relatorioHTML(url.searchParams.get('cliente') || '', url.searchParams.get('mes') || ''), 'text/html; charset=utf-8');
@@ -161,14 +167,30 @@ const server = http.createServer(async (req, res) => {
           const cwd = b.agente || b.projeto ? pastaDe(b) : b.cwd, r = cwd ? roomFor(cwd) : { room: b.projeto, project: b.projeto };
           return send(res, 200, postar({ projeto: r.project, sala: r.room, de: b.de, para: b.para, texto: b.texto }) || { erro: 'mensagem vazia' });
         }
+        const mesa = Number.isInteger(b.mesa) && b.mesa >= 0 && b.mesa < 8 ? b.mesa : null;
+        // continuar uma conversa: a pasta vem da própria conversa
+        if (p === '/api/sessao' && b.retomar) {
+          const fonte = b.retomar.fonte === 'codex' ? 'codex' : 'claude', id = String(b.retomar.id || '');
+          if (!/^[A-Za-z0-9-]{8,64}$/.test(id)) return send(res, 400, { erro: 'conversa inválida' });
+          const pasta = pastaDaSessao(fonte, id);
+          if (!pasta || !fs.existsSync(pasta)) return send(res, 400, { erro: 'não achei a pasta dessa conversa' });
+          store.reservar(fonte + ':' + id, roomFor(pasta).room, mesa);
+          abrirSessao(pasta, fonte, '', { sid: id, retomar: true });
+          return send(res, 200, { ok: true, pasta });
+        }
         const cwd = pastaDe(b);
         if (!cwd) return send(res, 400, { erro: 'não sei a pasta desse projeto: abra uma sessão nele antes ou informe a pasta' });
         // tarefa delegada não delega de novo: o MCP manda o id da tarefa em que roda
         const prof = b.job || Number(b.profundidade) ? 1 : 0;
-        if (p === '/api/tarefas') return send(res, 200, delegar({ para: b.para, modo: b.modo, tarefa: b.tarefa, cwd, de: b.de || 'painel', profundidade: prof }));
+        if (p === '/api/tarefas') return send(res, 200, delegar({ para: b.para, modo: b.modo, tarefa: b.tarefa, cwd, de: b.de || 'painel', profundidade: prof, mesa }));
         if (p === '/api/fluxos' && prof) return send(res, 400, { erro: 'tarefa delegada não pode iniciar fluxo' });
         if (p === '/api/fluxos') return send(res, 200, iniciarFluxo({ modelo: b.modelo, objetivo: b.objetivo, cwd, de: b.de || 'painel' }));
-        if (p === '/api/sessao') { abrirSessao(cwd, b.para, String(b.prompt || '').slice(0, 8000)); return send(res, 200, { ok: true, pasta: cwd }); }
+        if (p === '/api/sessao') {
+          const sala = roomFor(cwd).room, prompt = String(b.prompt || '').slice(0, 8000);
+          if (b.para === 'codex') { store.reservarCodex(sala, mesa); abrirSessao(cwd, 'codex', prompt); }
+          else { const sid = crypto.randomUUID(); store.reservar('claude:' + sid, sala, mesa); abrirSessao(cwd, 'claude', prompt, { sid }); }
+          return send(res, 200, { ok: true, pasta: cwd });
+        }
       } catch (err) { return send(res, 400, { erro: err.message }); }
     }
     if (req.method === 'POST' && p === '/api/away') {

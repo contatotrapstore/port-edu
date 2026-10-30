@@ -85,6 +85,8 @@ function realUpdate(a, x, first){
   }
   if (newest) a.lastLogT = Math.max(a.lastLogT, newest.t);
   a.state = x.state;
+  // PC escolhido depois que a sessão já existia (conversa retomada): troca de mesa se ela estiver livre
+  if (!first && Number.isInteger(x.mesa) && a.desk !== x.mesa && a.R && seatsOf(a.R).includes(x.mesa) && !a.R.agents.some(o => o !== a && o.desk === x.mesa)){ a.desk = x.mesa; realGo(a); return; }
   // Só anda quando entra ou sai do ocioso; trabalhando ↔ esperando ↔ erro continua na mesa
   if (!first && (prev === 'idle') !== (x.state === 'idle')) realGo(a);
 }
@@ -92,7 +94,7 @@ function realUpdate(a, x, first){
 function realCreate(x, first){
   const R = roomOfReal(x), h = hashOf(x.id);
   const used = new Set(R.agents.filter(o => o.desk != null).map(o => o.desk));
-  const free = seatsOf(R).find(d => !used.has(d));
+  const free = Number.isInteger(x.mesa) && seatsOf(R).includes(x.mesa) && !used.has(x.mesa) ? x.mesa : seatsOf(R).find(d => !used.has(d));
   const a = {id: ++realSeq, key: x.id, real: true, R, f: 0, name: '', proj: '', model: '', family: '',
     prov: x.source === 'codex' ? 'gpt' : 'claude', kind: R.kind && R.kind !== 'fin' ? R.kind : 'code',
     color: REAL_COLORS[h % REAL_COLORS.length], skin: SKINS[h % SKINS.length], hair: HAIR[(h >>> 4) % HAIR.length],
@@ -188,7 +190,7 @@ function realApply(s, first){
   for (const f of s.feed || []) FEED.push(toEv(f, REAL_AGENTS.get(f.agentId) || {R: {name: f.room || REAL_ROOM.get(f.agentId) || 'Sessão encerrada'}, name: ''}));
 
   realPlans(s);
-  if (!selected) selected = AGENTS.find(a => a.state === 'waiting') || AGENTS[0] || null;
+  if (!selected && !PC) selected = AGENTS.find(a => a.state === 'waiting') || AGENTS[0] || null;   // PC livre escolhido: não volta para um agente
   if (NUVEM) costDays = {[dayKeyLocal(new Date())]: Object.fromEntries((s.projects || s.rooms || []).map(r => [r.project || r.room, {room: r.room, costUsd: r.costUsdToday, tasks: r.tasksToday}]))};
   $('simTag').textContent = NUVEM ? `Nuvem · resumo sem prompts nem comandos · atualizado às ${new Date(s.updatedAt).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'})}` : `Dados reais · agente local · US$ 1 = R$ ${CAMBIO.toFixed(2).replace('.', ',')}`;
   checkAchievements();
@@ -425,7 +427,7 @@ function renderProjeto(){
   let html = `<div class="card"><div class="ag-head"><span class="swatch" style="background:${R.cor || 'var(--amber)'}"></span><div style="min-width:0"><div class="ag-name">${esc(p.sala)}</div><div class="ag-proj">${esc(p.cliente ? 'Cliente: ' + p.cliente : '')}${p.descricao ? ' · ' + esc(p.descricao) : ''}</div></div></div>
     <div class="stats">${custo('Hoje', p.custos.hoje)}${custo('7 dias', p.custos.semana)}${custo('Mês', p.custos.mes)}</div>
     <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:10px">
-      ${p.pasta ? '<button class="btn" type="button" data-act="abrirProj" data-arg="claude">Abrir Claude aqui</button><button class="btn" type="button" data-act="abrirProj" data-arg="codex">Abrir Codex aqui</button>' : ''}
+      ${R.i !== undefined ? `<button class="btn solid" type="button" data-act="pcSala" data-arg="${R.i}">Chamar alguém para trabalhar</button>` : ''}
       ${p.cliente ? `<a class="btn" href="/relatorio?cliente=${encodeURIComponent(p.cliente)}&mes=${mes}" target="_blank" rel="noopener">Relatório do mês · ${esc(p.cliente)}</a>` : ''}
       <button class="btn" type="button" data-act="editarSalas">Editar salas</button>
     </div>

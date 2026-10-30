@@ -107,6 +107,16 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [x] Prédio cabe na janela no computador (sem rolar a página; só o painel da direita rola); celular com cabeçalho compacto, barra numa linha e andares no rodapé
 - [x] /central em duas colunas no computador; barras de rolagem escuras
 
+## Fase 3.0 — PCs que funcionam, prédio de verdade e TV (30/10/2026)
+- [x] Andares: Térreo · Projetos Stg 1 · Projetos Stg 2 · EDevsHub Matriz
+- [x] Clique num PC livre (`web/predio/pc.js`): Claude ou Codex; conversar (terminal novo, `claude --session-id` já reservado para aquele PC), sozinho (tarefa em segundo plano, só ler ou pode editar) ou em equipe (fluxo). O boneco senta no PC escolhido (`store.reservar` / `reservarCodex`). PC ocupado mostra quem está nele
+- [x] "Continuar uma conversa": lista as conversas da sala dos últimos 30 dias (`agent/src/sessoes.js`, sem automáticas/subagentes/delegadas), abre `claude --resume` / `codex resume` num terminal
+- [x] Cartão confuso "Trabalho em…" virou um convite "Chamar"; o cartão do Projeto acha a pasta pela conversa mais recente
+- [x] Salas com porta de vidro que abre quando alguém chega e janela de verdade (moldura, peitoril, persiana, reflexo)
+- [x] Fachada (`fachada.js`): rua, calçada, postes, árvores, totem da marca, estrutura e pele de vidro nos fundos, letreiro iluminado e antena no topo
+- [x] Modo TV de recepção (`tv.js`): marca e "ao vivo", relógio, legenda do andar, números do dia, quem está trabalhando e faixa de acontecimentos sem comandos nem textos de pedido
+- [x] Símbolo da EDevsHub nas placas do elevador; placa "NO AR" do estúdio acende com gente trabalhando; barra de XP sumiu do modo real
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)

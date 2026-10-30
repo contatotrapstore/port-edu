@@ -61,6 +61,24 @@ caso('SessionEnd encerra a sessão', () => {
   assert.equal(a.ended, true); assert.equal(a.state, 'idle');
 });
 
+caso('PC escolhido: sessão do Claude reservada senta na mesa certa', () => {
+  const fb = roomFor(cwd).room;
+  store.reservar('claude:mesa-' + sid, fb, 2);
+  const a = store.applyHook({ hook_event_name: 'SessionStart', session_id: 'mesa-' + sid, cwd });
+  assert.equal(a.mesa, 2);
+});
+
+caso('PC escolhido: Codex novo pega a reserva da sala; sessão antiga não rouba', () => {
+  const fb = roomFor(cwd).room;
+  const velho = store.agent('codex:velho-' + sid, { source: 'codex', sessionId: 'velho', cwd });
+  velho._criado = Date.now() - 60e3;
+  store.reservarCodex(fb, 1);
+  store.agent('codex:velho-' + sid, { source: 'codex', cwd });   // sessão antiga se mexendo
+  assert.equal(velho.mesa, undefined);
+  const novo = store.agent('codex:novo-' + sid, { source: 'codex', sessionId: 'novo', cwd });
+  assert.equal(novo.mesa, 1);
+});
+
 // pedido de permissão: decisão chega na promise e o agente sai de "esperando"
 const a = store.applyHook({ hook_event_name: 'UserPromptSubmit', session_id: sid, cwd, prompt: 'de novo' });
 const pedido = store.requestPermission(a, 'Bash', { command: 'git push' }, 5000);

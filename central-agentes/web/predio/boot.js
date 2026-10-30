@@ -2,7 +2,7 @@
 // Carrega os scripts do prédio na ordem certa. Na nuvem (?fonte=nuvem, servido pelo site em /central/predio) faz antes
 // o login e busca o estado no Supabase, porque o layout das salas vem dele e precisa existir antes de montar a cena.
 (() => {
-  const FILES = ['marcas.js', 'dados.js', 'sim.js', 'cena.js', 'ui.js', 'fonte.js', 'app.js'];
+  const FILES = ['marcas.js', 'dados.js', 'sim.js', 'cena.js', 'fachada.js', 'ui.js', 'fonte.js', 'pc.js', 'tv.js', 'app.js'];
   const base = document.currentScript.src.replace(/boot\.js(\?.*)?$/, '');
   const load = () => { for (const f of FILES){ const s = document.createElement('script'); s.src = base + f; s.async = false; document.body.appendChild(s); } };
   const msg = t => { const el = document.getElementById('loading'); if (el) el.textContent = t; };

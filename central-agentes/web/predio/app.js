@@ -7,6 +7,14 @@ const clock = new THREE.Clock();
 let accScreen = 0, accWall = 0, lastPanel = 0, lastHist = performance.now(), lastSnap = 0, lastLightCheck = 0;
 function frame(){
   const dt = Math.min(.05, clock.getDelta()), now = performance.now(); T += dt;
+  pcMarkTick(T); fachadaTick(T); tvTick(now);
+  // portas: abrem quando alguém da sala chega perto (ou sai), fecham devagar
+  for (const R of ROOMS){
+    if (!R.door || !FLOORS[R.f].g.visible) continue;
+    const dx = R.ox + DOOR_X, dz = R.oz + RD;
+    const perto = R.agents.some(a => a.f === R.f && a.pos && Math.hypot(a.pos.x - dx, a.pos.z - dz) < 1.7);
+    R.door.ang += ((perto ? -1.35 : 0) - R.door.ang) * Math.min(1, dt * (perto ? 6 : 2.5)); R.door.pivo.rotation.y = R.door.ang;
+  }
   for (const a of AGENTS){
     step(a, now);
     if (a.ride){ a.ride.t = Math.min(1, a.ride.t + dt/2.4); cabTarget = a.ride.t; cab.position.y = FLOORS[a.ride.from].y + (FLOORS[a.ride.to].y - FLOORS[a.ride.from].y)*(a.ride.t < .5 ? 2*a.ride.t*a.ride.t : 1 - Math.pow(-2*a.ride.t + 2, 2)/2); if (a.ride.t >= 1){ a.f = a.ride.to; a.ride = null; } }
@@ -32,7 +40,7 @@ function frame(){
     if (w === 'error' || w === 'waiting'){ R.tint.material.color.set(ST[w]); R.tint.material.opacity = .03 + .05*pulse; } else R.tint.material.opacity = 0;
     // sala acesa com gente trabalhando, meia-luz quando vazia
     if (REAL && R.light){ const alvo = R.agents.some(a => a.state !== 'idle') ? 2.3 : .55; R.light.intensity += (alvo - R.light.intensity) * Math.min(1, dt*2); }
-    if (R.onAir){ const on = R.agents.some(a => a.kind === 'eleven' && a.state === 'working' && !a.path.length && !a.copa && !a.spot); R.onAir.color.set(on ? '#FF5A4E' : '#3A2422'); }
+    if (R.onAir){ const on = R.agents.some(a => (REAL || a.kind === 'eleven') && a.state === 'working' && !a.path.length && !a.copa && !a.spot); R.onAir.color.set(on ? '#FF5A4E' : '#3A2422'); }
   }
   if (bellG){ if (bellRing.t > 0){ bellRing.t -= dt; bellG.rotation.z = Math.sin(T*18) * .35 * Math.min(1, bellRing.t); } else bellG.rotation.z = 0; }
   // screens

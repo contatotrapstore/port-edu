@@ -26,6 +26,7 @@ const LEITURA = ['Read', 'Grep', 'Glob', 'WebSearch', 'Bash(git status:*)',
   'Bash(git diff)', 'Bash(git diff --stat)', 'Bash(git diff --cached)', 'Bash(git diff --cached --stat)', 'Bash(git diff HEAD)', 'Bash(git diff HEAD --stat)',
   'Bash(git log --oneline -20)', 'Bash(git log --oneline -50)', 'Bash(git log -5 --stat)', 'Bash(git show HEAD)', 'Bash(git show --stat HEAD)'];
 import { store } from './store.js';
+import { pastaRecente } from './sessoes.js';
 
 const CFG = { maxTarefas: 2, minutosMax: 30, maxUsdClaude: 3, ...(config.orquestra || {}) };
 const QUADRO_FILE = path.join(DATA_DIR, 'quadro.jsonl');
@@ -56,7 +57,7 @@ export function lerQuadro(projeto, limite = 30) {
 const pub = t => t.criadaEm && !t.cwd ? t : ({ id: t.id, para: t.para, modo: t.modo, projeto: t.projeto, sala: t.sala, de: t.de, tarefa: t.tarefa.slice(0, 300), status: t.status, criadaEm: t.criadaEm, inicio: t.inicio, fim: t.fim, custoUsd: t.custoUsd, resultado: t.resultado, erro: t.erro, fluxo: t.fluxo });
 
 /** Cria uma tarefa delegada. `cwd` = pasta do projeto (onde o trabalhador roda). */
-export function delegar({ para, modo = 'ler', tarefa, cwd, de = 'painel', profundidade = 0, fluxo = null }) {
+export function delegar({ para, modo = 'ler', tarefa, cwd, de = 'painel', profundidade = 0, fluxo = null, mesa = null }) {
   if (!['claude', 'codex'].includes(para)) throw new Error('para deve ser "claude" ou "codex"');
   if (!['ler', 'editar'].includes(modo)) throw new Error('modo deve ser "ler" ou "editar"');
   if (!tarefa || !String(tarefa).trim()) throw new Error('tarefa vazia');
@@ -64,7 +65,7 @@ export function delegar({ para, modo = 'ler', tarefa, cwd, de = 'painel', profun
   if (fila.length >= 10) throw new Error('fila cheia (10 tarefas esperando): aguarde as atuais terminarem');
   if (profundidade >= 1) throw new Error('tarefa delegada não pode delegar de novo (evita cadeia sem fim)');
   const { room, project } = roomFor(cwd);
-  const t = { id: 'j_' + Date.now().toString(36) + crypto.randomBytes(2).toString('hex'), para, modo, tarefa: String(tarefa).slice(0, 20000), cwd, projeto: project, sala: room, de, status: 'na fila', criadaEm: Date.now(), custoUsd: 0, resultado: '', erro: '', fluxo };
+  const t = { id: 'j_' + Date.now().toString(36) + crypto.randomBytes(2).toString('hex'), para, modo, tarefa: String(tarefa).slice(0, 20000), cwd, projeto: project, sala: room, de, status: 'na fila', criadaEm: Date.now(), custoUsd: 0, resultado: '', erro: '', fluxo, mesa: Number.isInteger(mesa) ? mesa : null };
   tarefas.set(t.id, t); fila.push(t); salvarTarefas();
   postar({ projeto: t.projeto, sala: t.sala, de, para: para === 'claude' ? 'Claude' : 'Codex', texto: `Tarefa (${modo}): ${t.tarefa.slice(0, 500)}` });
   proxima();
@@ -90,12 +91,14 @@ function executar(t) {
   if (t.para === 'claude') {
     t.sessionId = crypto.randomUUID();
     store.jobSessions.set(t.sessionId, `Delegado · ${t.de}`);
+    store.reservar('claude:' + t.sessionId, t.sala, t.mesa);   // PC escolhido no prédio
     // ler: modo plan (não edita nada) com leitura e git liberados; editar: bypass, aceita tudo sem perguntar (escolha do Eduardo)
     args = ['-p', '--output-format', 'json', '--session-id', t.sessionId, '--max-budget-usd', String(CFG.maxUsdClaude),
       ...(t.modo === 'ler' ? ['--permission-mode', 'plan', '--allowedTools', ...LEITURA] : ['--permission-mode', 'bypassPermissions'])].map(q);
     if (/^[\w.-]+$/.test(CFG.modeloClaude || '')) args.push('--model', CFG.modeloClaude);   // ex.: "sonnet" para gastar menos da janela
   } else {
     saidaFinal = path.join(os.tmpdir(), `edh-${t.id}.txt`);
+    store.reservarCodex(t.sala, t.mesa);
     // editar: sem sandbox, como o bypass do Claude
     args = ['exec', '--json', '--skip-git-repo-check', '-s', t.modo === 'ler' ? 'read-only' : 'danger-full-access', '-o', q(saidaFinal), '-'];
   }
@@ -161,7 +164,7 @@ function seguirFluxo(t) {
 /** Pasta do projeto a partir do nome da sala/projeto: a sessão mais recente que esteve lá. */
 export function pastaDoProjeto(nome) {
   const a = [...store.agents.values()].filter(x => (x.project === nome || x.room === nome) && x.cwd).sort((x, y) => y.lastActivity - x.lastActivity)[0];
-  return a ? a.cwd : null;
+  return a ? a.cwd : pastaRecente(nome);   // sala sem sessão aberta: a pasta da conversa mais recente dela
 }
 
 /** Encerra todas as tarefas em andamento (agente desligando). */

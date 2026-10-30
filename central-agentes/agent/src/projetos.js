@@ -5,6 +5,7 @@ import { config } from './config.js';
 import { store } from './store.js';
 import { readCosts, dayKey } from './history.js';
 import { listaTarefas } from './orquestra.js';
+import { pastaRecente } from './sessoes.js';
 
 const git = (cwd, args) => { try { const r = spawnSync('git', ['-C', cwd, ...args], { encoding: 'utf8', timeout: 5000, windowsHide: true }); return r.status === 0 ? r.stdout.trim() : null; } catch { return null; } };
 const sala = nome => (config.rooms || []).find(r => r.room === nome);
@@ -23,7 +24,7 @@ const diasAtras = n => dayKey(Date.now() - n * 86400e3);
 export function infoProjeto(nome) {
   const r = sala(nome); if (!r) return { erro: 'sala não encontrada' };
   const sessoes = [...store.agents.values()].filter(a => a.room === nome).sort((x, y) => y.lastActivity - x.lastActivity);
-  const pasta = sessoes.find(a => a.cwd)?.cwd || null;
+  const pasta = sessoes.find(a => a.cwd)?.cwd || pastaRecente(nome);   // sala sem sessão aberta: pasta da conversa mais recente
   const daSala = (k, v) => v.room ? v.room === nome : k === nome;
   let g = null;
   if (pasta) {

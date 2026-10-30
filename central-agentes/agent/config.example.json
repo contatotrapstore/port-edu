@@ -6,9 +6,9 @@
   "_obsRooms": "O prédio é montado a partir daqui. match = expressão sobre a pasta da sessão (barras normais, sem diferença de maiúsculas), testada na ordem da lista. slot = vaga no andar (térreo 0-3, 1º 0-6, 2º 0-4, 3º 0-3). type: project (padrão), control (Diretoria, térreo vaga 3, mesa do Dudu), reception, infra, studio. fallback: true recebe as pastas sem sala. cliente = de quem é o projeto (cor da sala e relatório mensal). vercel = nomes dos projetos na Vercel (deploys na TI e no cartão). budgetBrl = orçamento do dia em R$ (equivalente em API): passou, alerta no Telegram e barra no prédio.",
   "floors": [
     {"name":"Térreo","desc":"Recepção, TI, estúdio de posts e Diretoria"},
-    {"name":"Clientes","desc":"Um projeto por sala; o cliente aparece embaixo do nome"},
-    {"name":"Fernando e sites","desc":"ChatCupom, Beeder, Livoreto, sites e projetos avulsos"},
-    {"name":"Produtos EDevsHub","desc":"Site e vendas, Revix, Meu Financeiro e StayDirect"}
+    {"name":"Projetos Stg 1","desc":"Projetos de clientes, uma sala por projeto (o cliente aparece embaixo do nome)"},
+    {"name":"Projetos Stg 2","desc":"ChatCupom, Beeder, Livoreto, sites e projetos avulsos"},
+    {"name":"EDevsHub Matriz","desc":"Produtos da casa: site e vendas, Revix, Meu Financeiro e StayDirect"}
   ],
   "rooms": [
     {"room": "Recepção", "floor": 0, "slot": 0, "type": "reception", "stack": "Resumo do dia"},

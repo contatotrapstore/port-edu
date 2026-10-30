@@ -9,7 +9,7 @@ let view = {floor:0, building:false}, focus = null, follow = false, fly = null, 
 function fitDist(r){ const v = THREE.MathUtils.degToRad(camera.fov)/2, h = Math.atan(Math.tan(v) * camera.aspect); return r / Math.sin(Math.min(v, h)) * .92; }
 function presetFor(f){
   const fy = view.building ? 0 : FLOORS[view.floor].y;
-  if (view.building){ const t = V(WW/2 + 1, EXPL*1.5, (WD + PLAZA)/2); return [t.clone().add(V(.42, .42, .8).normalize().multiplyScalar(fitDist(Math.hypot(WW/2 + 3, EXPL*2.1)) * 1.05)), t]; }
+  if (view.building){ const t = V(WW/2 + 1, EXPL*1.62, (WD + PLAZA)/2); return [t.clone().add(V(.42, .4, .8).normalize().multiplyScalar(fitDist(Math.hypot(WW/2 + 3, EXPL*2.35)) * 1.08)), t]; }   // inclui o letreiro do topo
   if (f === null){ const t = V(WW/2 + 1, fy, (WD + PLAZA)/2); return [t.clone().add(V(.36, .68, .8).normalize().multiplyScalar(fitDist(Math.hypot(WW/2 + 2, (WD+PLAZA)/2)*.82))), t]; }
   if (f === 'copa'){ const zz = view.floor === 0 ? WD + 1 : 14, xx = view.floor === 0 ? 17 : view.floor === 3 ? 18 : 40; const t = V(xx, fy + .6, zz); return [t.clone().add(V(.3, .6, .8).normalize().multiplyScalar(Math.max(13, fitDist(9)))), t]; }
   const R = ROOMS[f], t = V(R.ox + RW/2, fy + .6, R.oz + RD/2 - .4);
@@ -25,6 +25,7 @@ function setView(floor, building){
   view.floor = floor; view.building = !!building; focus = null;
   FLOORS.forEach(F => { F.g.visible = view.building || F.i === view.floor; F.y = F.i * (view.building ? EXPL : FH); F.g.position.y = F.y; });
   pillars.visible = false; shaft.visible = view.building; shaft.scale.y = view.building ? EXPL/FH : 1;
+  scene.fog.near = view.building ? 120 : 60; scene.fog.far = view.building ? 240 : 140;   // prédio inteiro: câmera mais longe, sem afundar na neblina
   ROOM_LIGHTS.forEach(l => { l.visible = !view.building; });
   hemi.intensity = view.building ? Math.max(hemi.intensity, .7) : hemi.intensity; lastDay = -1; applyLight(); if (view.building) hemi.intensity += .35;
   const fy = view.building ? EXPL*1.5 : FLOORS[floor].y;
@@ -64,6 +65,8 @@ renderer.domElement.addEventListener('pointerup', e => {
   const people = AGENTS.filter(vis).map(a => a.body.g).concat(vis(DUDU) ? [DUDU.body.g] : []);
   const hit = ray.intersectObjects(people, true)[0];
   if (hit){ const root = hit.object.userData.agentRoot; if (root === DUDU.body.g) onSelect(DUDU); else { const a = AGENTS.find(x => x.body.g === root); if (a) onSelect(a); } return; }
+  // PC (mesa): livre abre o lançador (Claude ou Codex senta ali); ocupado mostra quem está nele
+  if (REAL){ const pc = pcPick(ray); if (pc){ abrirPC(pc.R, pc.mesa); return; } }
   const floors = PICK_FLOORS.filter(m => view.building || m.userData.f === view.floor).concat(PLATFORM_TOPS.filter(m => view.building || m.userData.f === view.floor));
   const fh = ray.intersectObjects(floors, false)[0];
   if (!fh) return;
@@ -74,7 +77,7 @@ renderer.domElement.addEventListener('pointerup', e => {
 });
 function onSelect(a){
   if (a === DUDU){ setTab('planos'); openDrawer(); toast('Seus planos e consumo'); return; }
-  selected = a; a.pop = 1; setTab('agente'); openDrawer(); dirty = true;
+  PC = null; selected = a; a.pop = 1; setTab('agente'); openDrawer(); dirty = true;
 }
 
 /* UI */
@@ -92,10 +95,12 @@ function toggleImmersive(force){
   try { if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
         if (!on && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {}); } catch (err) {}
 }
+let TV_LIGADA = false;
 function toggleTV(){
   const on = !document.body.classList.contains('tv');
-  if (on){ toggleImmersive(true); document.body.classList.add('tv'); document.body.classList.remove('drawer'); controls.autoRotate = true; tvTimer = 0; toast('Modo TV: troca de andar sozinho. Esc ou o botão no canto para sair'); }
-  else { document.body.classList.remove('tv'); controls.autoRotate = false; toggleImmersive(false); }
+  TV_LIGADA = on;
+  if (on){ toggleImmersive(true); document.body.classList.add('tv'); document.body.classList.remove('drawer'); controls.autoRotate = true; controls.autoRotateSpeed = .22; tvTimer = 0; tvUlt = 0; }
+  else { document.body.classList.remove('tv'); controls.autoRotate = false; controls.autoRotateSpeed = .45; toggleImmersive(false); }
 }
 document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && document.body.classList.contains('immersive')) toggleImmersive(false); });
 function nextWaiting(){
@@ -178,11 +183,12 @@ function permButtons(a){
 }
 function renderAgentTab(now){
   const pane = $('pane'), a = selected;
-  if (!a){ agentShell = null; setHTML(pane, '<div class="card"><p class="note">Nenhum agente selecionado. Toque num boneco no prédio ou numa sessão na aba Planos.</p></div>'); return; }
+  if (!a && PC && podeLancar()){ agentShell = null; renderPCTab(); return; }
+  if (!a){ agentShell = null; setHTML(pane, `<div class="card"><p class="note">Nenhum agente selecionado. Toque num boneco no prédio ou numa sessão na aba Planos.${podeLancar() ? ' Toque num PC livre para chamar o Claude ou o Codex para trabalhar nele.' : ''}</p></div>`); return; }
   if (agentShell !== a){
     agentShell = a; lastHTML.agDyn = lastHTML.agLog = null;
     pane.innerHTML = `<div id="agDyn"></div>
-      ${a.real && NUVEM ? '' : a.real ? workCard(a) : `<div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
+      ${a.real && NUVEM ? '' : a.real ? pcConvite(a) : `<div class="card task"><span class="k">Mandar tarefa para ${esc(a.name)}</span><textarea id="taskText" placeholder="Ex.: ${esc(a.prompts[0] || 'Descreva a próxima tarefa')}"></textarea>
         <div class="row"><small>${a.real ? 'Não dá para escrever numa sessão aberta: o texto vai para a área de transferência. Cole no terminal de ' + esc(a.proj || a.R.name) + '.' : 'O agente sai da convivência e volta pra mesa.'}</small><button class="btn solid" type="button" data-act="sendTask">${a.real ? 'Copiar' : 'Enviar'}</button></div></div>`}
       <div class="card"><div class="sec"><h2>Chat ao vivo</h2><small id="agCount"></small></div><ul class="log" id="agLog"></ul></div>`;
     lastHTML.pane = null;
@@ -196,7 +202,7 @@ function renderAgentTab(now){
   html += `<div class="prompt"><span class="k">${st === 'idle' ? 'Último prompt' : 'Prompt em andamento'}</span><p>${esc(a.prompt)}</p></div>
     <div class="ag-actions"><button class="btn" type="button" data-act="followSel">${follow ? 'Parar de seguir' : 'Seguir no escritório'}</button>${st === 'idle' && !a.real ? `<button class="btn" type="button" data-act="wake" data-arg="${a.id}">Chamar pra mesa</button>` : ''}</div>
     <div class="stats"><div class="stat"><span>Custo equivalente</span><b>${brlFromUsd(a.cost)}</b></div><div class="stat"><span>${st === 'idle' ? 'Parado há' : 'Na tarefa'}</span><b>${fmtDur(now - a.since)}</b></div>
-      <div class="stat"><span>${credits ? 'Créditos usados' : 'Tokens (entrada + cache)'}</span><b>${credits ? num(a.units) : fmtTok(a.tin)}</b></div>${a.real ? `<div class="stat"><span>Tarefas hoje</span><b>${a.tasksDone}</b>` : `<div class="stat"><span>Nível ${lv} · ${a.tasksDone} tarefas</span><b>${num(a.xp)} XP</b>`}<div class="xpbar"><i style="width:${into}%"></i></div></div></div></div>`;
+      <div class="stat"><span>${credits ? 'Créditos usados' : 'Tokens (entrada + cache)'}</span><b>${credits ? num(a.units) : fmtTok(a.tin)}</b></div>${a.real ? `<div class="stat"><span>Tarefas hoje</span><b>${a.tasksDone}</b></div>` : `<div class="stat"><span>Nível ${lv} · ${a.tasksDone} tarefas</span><b>${num(a.xp)} XP</b><div class="xpbar"><i style="width:${into}%"></i></div></div>`}</div></div>`;
   setHTML($('agDyn'), html);
   setHTML($('agLog'), logItems(a.log.slice(0,12), false));
   $('agCount').textContent = a.log.length + ' eventos';
@@ -241,6 +247,7 @@ document.addEventListener('click', e => {
   const t = e.target.closest('.tab'); if (t){ setTab(t.dataset.tab); return; }
   const b = e.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act, arg = b.dataset.arg;
+  if (pcAcao(act, arg)){ dirty = true; return; }
   if (act === 'allow'){ const a = agentBy(+arg); if (!a) return; selected = a; resolvePermission(a, true, false); }
   if (act === 'deny') resolvePermission(agentBy(+arg), false, false);
   if (act === 'agent'){ const a = agentBy(+arg); if (!a) return; a.pop = 1; goAgent(a); setTab('agente'); }
@@ -293,7 +300,7 @@ function updateLabels(now, replaying){
     const g = a.body.g, lab = a.lab;
     const onView = view.building || a.f === view.floor || (a.ride && (a.ride.to === view.floor || a.ride.from === view.floor));
     const st = a === DUDU ? 'boss' : a.state;
-    const showB = view.building ? (st === 'waiting' || st === 'error') : onView;
+    const showB = (view.building ? (st === 'waiting' || st === 'error') : onView) && !(TV_LIGADA && st === 'idle');   // na TV só quem está ativo
     g.visible = !!(view.building || onView) && !(replaying && a !== DUDU && !replaying.s[a.id]);   // no replay, some quem ainda não existia
     if (!showB || replaying){ lab.el.style.display = 'none'; continue; }
     tmpV.set(g.position.x, g.position.y + 2.0, g.position.z).project(camera);

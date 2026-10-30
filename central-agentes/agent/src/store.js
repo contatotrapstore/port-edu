@@ -30,6 +30,20 @@ class Store extends EventEmitter {
     // Modo ausente: pedidos de permissão esperam resposta pelo celular (Telegram ou site) mesmo sem painel aberto
     this.away = loadAway();
     this.jobSessions = new Map();   // sessão criada por tarefa delegada -> nome do boneco ("Delegado · …")
+    // PC escolhido no prédio para a sessão que vai abrir: o boneco senta nessa mesa
+    this.reservas = new Map();      // id da sessão ("claude:<uuid>", "codex:<id>") -> { room, mesa, ate }
+    this.reservasCodex = [];        // Codex novo ainda sem id: vale a primeira sessão nova que aparecer na sala
+  }
+
+  reservar(id, room, mesa) { if (Number.isInteger(mesa)) { this.reservas.set(id, { room, mesa, ate: Date.now() + 15 * 60e3 }); this.changed(); } }
+  reservarCodex(room, mesa) { if (Number.isInteger(mesa)) this.reservasCodex.push({ room, mesa, desde: Date.now(), ate: Date.now() + 5 * 60e3 }); }
+  _aplicarReserva(a) {
+    const agora = Date.now(), r = this.reservas.get(a.id);
+    if (r) { this.reservas.delete(a.id); if (r.ate > agora && r.room === a.room) { a.mesa = r.mesa; this.changed(); } return; }
+    if (a.source !== 'codex' || a.mesa != null || !a.room) return;
+    this.reservasCodex = this.reservasCodex.filter(x => x.ate > agora);
+    const i = this.reservasCodex.findIndex(x => x.room === a.room && a._criado >= x.desde - 5000);   // só sessão aberta depois do clique
+    if (i >= 0) { a.mesa = this.reservasCodex[i].mesa; this.reservasCodex.splice(i, 1); this.changed(); }
   }
 
   setAway(on, origem = '') {
@@ -55,7 +69,7 @@ class Store extends EventEmitter {
         name: base.name || 'Principal', model: base.model || '', state: 'idle', tool: '', target: '', prompt: '',
         since: Date.now(), lastActivity: 0, waitCmd: null, pendingId: null, errMsg: null,
         tokens: { in: 0, out: 0, cacheRead: 0, cacheWrite: 0 }, costUsdToday: 0, tasksToday: 0, log: [],
-        _seen: new Set(), _hook: 0,
+        _seen: new Set(), _hook: 0, _criado: Date.now(),
       };
       this.agents.set(id, a);
     }
@@ -73,6 +87,7 @@ class Store extends EventEmitter {
     if (base.name && a.name === 'Principal') a.name = base.name;
     const job = this.jobSessions.get(a.sessionId);
     if (job && a.name === 'Principal') a.name = job;
+    if (this.reservas.size || this.reservasCodex.length) this._aplicarReserva(a);
     return a;
   }
 
@@ -255,7 +270,7 @@ class Store extends EventEmitter {
     const now = Date.now(), hideMs = (config.idleHideMinutes || 240) * 60e3;
     const agents = [...this.agents.values()].filter(a => !a.ended && now - a.lastActivity < hideMs)
       .sort((x, y) => x.floor - y.floor || x.room.localeCompare(y.room) || (x.name === 'Principal' ? -1 : 1))
-      .map(({ _seen, _hook, ended, ...rest }) => rest);
+      .map(({ _seen, _hook, _criado, ended, ...rest }) => rest);
     const { rooms, projects } = this.dayTotals();
     return {
       updatedAt: new Date().toISOString(), usdBrl: config.usdBrl || 5.4, agents, plans: this.plans, planInfo: PLAN_INFO,
