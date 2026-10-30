@@ -165,6 +165,7 @@ const B={
     root.append(head(sc,s));
     const b=el('div','body cta');root.append(b);const o=el('div','opts');b.append(o);
     const opts=s.options.map((x,i)=>{const at=.35+i*.18;cue(sc.start+at,'pop',-8);return o.appendChild(anim(el('div','opt','<i>'+String.fromCharCode(65+i)+'</i>'+esc(x)),sc,at,'left',.4));});
+    if(s.text)b.append(anim(el('p','sub',rich(s.text)),sc,.3,'fade'));
     if(s.save)b.append(anim(el('div','save',BOOKMARK+rich(s.save)),sc,.4+opts.length*.18,'fade'));
     TICK.push({scene:sc,f:lt=>{const k=Math.floor(Math.max(0,lt-1.2)/.9)%opts.length;opts.forEach((x,i)=>x.classList.toggle('on',lt>1.2&&i===k));}});
   },
@@ -173,12 +174,14 @@ const B={
 B.statement=(sc,s,root)=>{
   root.append(head(sc,s));
   const b=el('div','body');root.append(b);
-  const k=anim(el('div','idx',esc(s.index||String(sc.i+1).padStart(2,'0'))),sc,.05,'pop',.6);b.append(k);
+  // no carrossel cada slide é uma cena só: o número vem da posição do slide (capa = 0)
+  const n=D.format==='carousel'?D.slide-1:sc.i+1;
+  const k=s.mark?anim(el('div','idx-mark',(D.theme&&D.theme.mark)||MARK),sc,.05,'pop',.6):anim(el('div','idx',esc(s.index||String(n).padStart(2,'0'))),sc,.05,'pop',.6);b.append(k);
   if(s.points){const ch=el('div','chips');s.points.forEach((p,i)=>{ch.append(anim(el('span','chip','<span class="dot"></span>'+rich(p)),sc,.4+i*.2,'pop',.4));cue(sc.start+.4+i*.2,'pop',-8);});b.append(ch);}
   TICK.push({scene:sc,f:lt=>{k.style.translate=`${Math.sin(lt*1.3)*10}px 0`;}});
 };
 const _hook=B.hook;
-B.hook=(sc,s,root)=>{if(s.number||s.morph)return _hook(sc,s,root);B.statement(sc,{...s,index:s.index||'▶'},root);};
+B.hook=(sc,s,root)=>{if(s.number||s.morph)return _hook(sc,s,root);B.statement(sc,{...s,mark:true},root);};
 B.cover=B.hook;
 
 // ---------- montagem ----------

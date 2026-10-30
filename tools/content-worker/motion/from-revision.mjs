@@ -24,9 +24,11 @@ export function motionItem(revision,format,{id='post',seed}={}){
   if(slides.length<2)throw Error('slides_insuficientes');
   if(format==='carousel'){
     // carrossel: capa, um slide por ideia e o último com o convite; sem narração
-    const out=slides.map((x,i)=>i===0?{kind:'cover',eyebrow:brief.series||'',title:x.title,sub:x.speech.length<=120?x.speech:undefined}
-      :i===slides.length-1?{kind:'cta',eyebrow:'Sua vez',title:x.title,options:[],save:x.speech.length<=70?x.speech:'Salva e segue pra mais'}
-      :{kind:'statement',title:x.title,sub:x.speech.length<=170?x.speech:x.speech.slice(0,167)+'…'});
+    // corta por frase (nunca no meio): capa até ~150 caracteres, miolo até ~230, convite final até ~220
+    const frases=(t,max)=>{let out='';for(const f of t.match(/[^.!?]+[.!?]*/g)||[t]){if((out+f).trim().length>max)break;out+=f;}return out.trim()||t.slice(0,max-1)+'…';};
+    const out=slides.map((x,i)=>i===0?{kind:'cover',eyebrow:brief.series||'',title:x.title,sub:frases(x.speech,150)}
+      :i===slides.length-1?{kind:'cta',eyebrow:'Sua vez',title:x.title,options:[],text:frases(x.speech,220),save:'Salva e segue pra mais'}
+      :{kind:'statement',title:x.title,sub:frases(x.speech,230)});
     return {id,format,seed:s,slideSeconds:6,slides:out,music:{style:['lofi','garage','warm'][s%3]}};
   }
   const narration=slides.map(x=>x.speech).join(' ');
