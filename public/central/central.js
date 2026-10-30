@@ -12,7 +12,8 @@ var dirty = false;   // marcas.js marca "redesenhar" quando o ícone em imagem c
   const MARGEM_MS = 5e3;         // o banco só aceita resposta com mais de 5 s antes de expirar
   const cfg = await fetch('/central/config.json', {cache: 'no-store'}).then(r => r.json()).catch(() => null);
   if (!cfg || !cfg.supabaseUrl || !window.supabase) return show('vNoConfig');
-  const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  // sessão em cookie, a mesma do admin de vídeos e reels (/admin): um login vale para os dois
+  const sb = window.edhSupabase(cfg.supabaseUrl, cfg.supabaseAnonKey);
 
   $('fLogin').addEventListener('submit', async e => {
     e.preventDefault();
@@ -27,6 +28,8 @@ var dirty = false;   // marcas.js marca "redesenhar" quando o ícone em imagem c
   sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') location.reload(); });
 
   const {data: {session}} = await sb.auth.getSession();
+  // volta do link do e-mail (?code=…): a troca pela sessão já aconteceu, limpa o endereço
+  if (new URLSearchParams(location.search).has('code')) history.replaceState(null, '', location.pathname);
   if (!session) return show('vLogin');
   $('sair').hidden = false;
 

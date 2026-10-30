@@ -7,3 +7,13 @@
 .studio-research{margin:24px 0 38px;padding:24px;border:1px solid #3c483e;border-radius:8px}.studio-research p{font-size:13px;line-height:1.6;color:#b0bcab;max-width:900px}.studio-research select{max-width:100%;background:#202823;border:1px solid #49554c;border-radius:4px;padding:12px;color:#eef1ed;font:14px var(--font-inter),sans-serif}.studio-research input[type=checkbox]{width:18px;height:18px;vertical-align:middle;margin-right:9px}.studio-research button{margin:5px 8px 5px 0}.studio-root button:disabled{opacity:.5;cursor:wait}.studio-research ul{font-size:13px;padding-left:20px;line-height:1.8}.studio-research li a{text-decoration:underline}
 
 .studio-research fieldset{border:1px solid var(--studio-line,#3b463c);padding:20px;display:grid;gap:14px;min-width:0}.studio-research fieldset legend{padding:0 8px}.studio-research fieldset label{display:block}.studio-research input[type=radio],.studio-research input[type=checkbox]{width:auto;accent-color:#c1d4ae}.studio-research button{min-height:44px}.studio-research fieldset p{margin:0}.studio-research li button{margin:8px 12px}
+/* Seletor Central | Conteúdo: o mesmo login abre a Central de Agentes (/central). Prefixo .studio-sidebar nav.studio-appswitch
+   para vencer as regras gerais de "nav" da lateral (inclusive a que esconde links no celular) */
+.studio-sidebar nav.studio-appswitch{display:flex;gap:2px;padding:3px;margin-top:28px;border:1px solid #343e35;border-radius:999px;background:#151b17}
+.studio-sidebar nav.studio-appswitch a{flex:1;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:7px 4px;border-radius:999px;font-size:12px;font-weight:600;color:#a4afa1;white-space:nowrap;text-decoration:none}
+.studio-sidebar nav.studio-appswitch a[href]:hover{color:#e9f1e5;background:#1d251f}
+.studio-sidebar nav.studio-appswitch a[aria-current]{background:#28362b;color:#e9f1e5}
+.studio-sidebar nav.studio-appswitch a:focus-visible{outline:2px solid #b8d4a8;outline-offset:2px}
+.studio-sidebar nav.studio-sections{margin-top:36px}
+@media(max-width:1050px) and (min-width:761px){.studio-sidebar nav.studio-appswitch svg{display:none}}
+@media(max-width:760px){.studio-sidebar{flex-wrap:wrap;row-gap:14px}.studio-sidebar nav.studio-appswitch{order:3;width:100%;margin:0}.studio-sidebar nav.studio-sections{margin:0}}

@@ -14,13 +14,28 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <!-- Painel da Central de Agentes no site (Fase 2). Fonte: central-agentes/site/central/ (index.html + central.js) → `npm run site:sync` copia para public/central/ -->
 <style>
-:root{--bg:#0B1210;--card:#121C18;--line:#22302B;--fg:#EDE6D6;--muted:#8E9A92;--amber:#F5B935;--ok:#5BD69E;--wait:#FFD84A;--err:#FF6B5E;--idle:#6F837B}
+:root{color-scheme:dark;scrollbar-color:#2A3A34 var(--bg);--bg:#0B1210;--card:#121C18;--line:#22302B;--fg:#EDE6D6;--muted:#8E9A92;--amber:#F5B935;--ok:#5BD69E;--wait:#FFD84A;--err:#FF6B5E;--idle:#6F837B}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 "Instrument Sans",system-ui,sans-serif}
-main{max-width:640px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 40px}
-header{display:flex;align-items:center;gap:10px;margin:4px 0 16px}
-header b{font-size:17px}header small{display:block;color:var(--muted);font-size:12px}
+main{max-width:640px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left))}
+header{display:flex;align-items:center;flex-wrap:wrap;gap:10px 12px;margin:4px 0 16px}
+header b{font-size:17px}header small{display:block;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
 header .sp{flex:1}
+header #sair{min-height:36px;padding:6px 12px;font-size:14px}
+/* Seletor Central | Conteúdo: o mesmo login do admin de vídeos e reels */
+.appswitch{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:99px;background:var(--card)}
+.appswitch a{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:99px;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;white-space:nowrap;min-height:34px}
+.appswitch a[href]:hover{color:var(--fg);background:#18241F}
+.appswitch a[aria-current]{background:rgba(245,185,53,.14);color:var(--amber)}
+.appswitch a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+@media (max-width:520px){header .appswitch{order:3;width:100%}}
+/* Computador: duas colunas (agora à esquerda, contexto à direita) */
+.cols{display:block}
+@media (min-width:980px){
+  main{max-width:1180px}
+  .cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:0 16px;align-items:start}
+  #vLogin,#vNoAccess,#vNoConfig{max-width:520px;margin-inline:auto}
+}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
 h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:600}
 .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -62,6 +77,10 @@ em.url,li.ag .t small{overflow-wrap:anywhere}em.url{max-width:45%;text-align:rig
     <svg width="28" height="28" viewBox="0 0 30 30" aria-hidden="true"><rect x="3" y="3" width="5" height="24" rx="2.5" fill="#EDE6D6"/><rect x="22" y="3" width="5" height="24" rx="2.5" fill="#EDE6D6"/><rect x="8" y="13.5" width="3" height="3" fill="#EDE6D6"/><rect x="19" y="13.5" width="3" height="3" fill="#EDE6D6"/><circle cx="15" cy="15" r="2.6" fill="#F5B935"/></svg>
     <div><b>Central de Agentes</b><small id="sub">EDevsHub</small></div>
     <span class="sp"></span>
+    <nav class="appswitch" aria-label="Trocar de painel">
+      <a aria-current="page"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 14V5l6-3 6 3v9h-4v-4H6v4z" fill="currentColor"/></svg>Central</a>
+      <a href="/admin/conteudo"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 5.8v4.4L10.3 8z" fill="currentColor"/></svg>Conteúdo</a>
+    </nav>
     <button id="sair" type="button" hidden>Sair</button>
   </header>
 
@@ -70,7 +89,7 @@ em.url,li.ag .t small{overflow-wrap:anywhere}em.url{max-width:45%;text-align:rig
   <section id="vLogin" class="card" hidden>
     <h2>Entrar</h2>
     <form id="fLogin" class="row" style="flex-wrap:wrap">
-      <label for="email" class="note" style="width:100%;margin:0 0 6px">Você recebe um link de acesso por e-mail.</label>
+      <label for="email" class="note" style="width:100%;margin:0 0 6px">Mesmo acesso do Content Studio: entrou aqui, entrou nos dois. Você recebe um link por e-mail.</label>
       <input id="email" type="email" autocomplete="email" required placeholder="seu@email.com">
       <button class="solid" type="submit" style="width:100%">Mandar link</button>
     </form>
@@ -85,6 +104,7 @@ em.url,li.ag .t small{overflow-wrap:anywhere}em.url{max-width:45%;text-align:rig
 
   <div id="vApp" hidden>
     <p id="offline" class="aviso" role="alert" hidden></p>
+    <div class="cols"><div>
     <section class="card">
       <div class="kpis">
         <div class="kpi"><span>Consumo hoje</span><b id="kCost">—</b><span>equivalente em API</span></div>
@@ -101,6 +121,7 @@ em.url,li.ag .t small{overflow-wrap:anywhere}em.url{max-width:45%;text-align:rig
     <section class="card" id="cPerm" hidden><h2>Precisam de você</h2><div id="perms"></div></section>
 
     <section class="card"><h2>Agentes</h2><ul id="agents"></ul></section>
+    </div><div>
 
     <section class="card" id="cConteudo" hidden><h2>Instagram · Content Studio</h2><div id="conteudo"></div></section>
 
@@ -110,12 +131,14 @@ em.url,li.ag .t small{overflow-wrap:anywhere}em.url{max-width:45%;text-align:rig
 
     <a class="btn solid" href="/central/predio?fonte=nuvem" style="width:100%">Abrir o prédio 3D</a>
     <p class="note">Resumo sem prompts, comandos nem caminhos de pasta. O detalhe completo fica só no PC (localhost:4321).</p>
+    </div></div>
   </div>
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="/central/predio/marcas.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.min.js" integrity="sha384-UagCvVPT5XXA0Hx+nJYUAGBFseHT9zBgpJMSebsAxl9lciTwbT+39j5VfRjdP5Tp" crossorigin="anonymous"></script>
+<script src="/central/predio/sessao.js"></script>
 <script src="/central/central.js"></script>
 </body>
 </html>

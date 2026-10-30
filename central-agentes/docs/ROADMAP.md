@@ -101,6 +101,12 @@ Código pronto e testado (29/10/2026; `npm test` no agent roda os testes do Tele
 - [x] Tarefas delegadas: modo "ler" = Claude em modo plan (leitura e git em formas fixas, sem WebFetch) / Codex read-only; modo "editar" = Claude em bypass (aceita tudo) / Codex sem sandbox, por escolha do Eduardo
 - [x] Testes: `npm test` = estado (hooks, custo, permissão, salas) + Telegram + nuvem; `node scripts/teste-mcp.mjs`
 
+## Fase 2.9 — Central e Content Studio juntos (30/10/2026)
+- [x] Login único: a Central (/central e o prédio na nuvem) guarda a sessão no mesmo cookie do admin (@supabase/ssr), por `web/predio/sessao.js`; entrar ou sair num vale para os dois. Teste: `node agent/scripts/teste-sessao-cookie.cjs` (usa o @supabase/ssr da raiz do site)
+- [x] Seletor "Central | Conteúdo" no prédio, no /central e na lateral do admin (visível também no celular)
+- [x] Prédio cabe na janela no computador (sem rolar a página; só o painel da direita rola); celular com cabeçalho compacto, barra numa linha e andares no rodapé
+- [x] /central em duas colunas no computador; barras de rolagem escuras
+
 ## Fase 3 — ideias guardadas
 - Disparar tarefas de verdade: iniciar `claude -p "<prompt>"` na pasta do projeto a partir do painel (sessão nova, não a aberta)
 - Relatório PDF de custo por cliente (identidade EDevsHub)
