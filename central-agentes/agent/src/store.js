@@ -263,7 +263,7 @@ class Store extends EventEmitter {
     this.plans.claude = {
       source: 'estimado',
       meters: [
-        { label: 'Sessão atual', usedPct: active ? Math.min(100, sess / (cfg.sessionTokenBudget || 1) * 100) : 0, resetAt: active ? start + H5 : 0, source: 'estimado' },
+        // sem limite de 5 horas desde 31/10: a estimativa reserva mostra só o semanal (como a conta)
         { label: 'Semanal · todos os modelos', usedPct: Math.min(100, week / (cfg.weeklyTokenBudget || 1) * 100), resetAt: wr.getTime() + D7, source: 'estimado' },
       ],
     };
