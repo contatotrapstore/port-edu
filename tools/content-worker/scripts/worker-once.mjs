@@ -52,7 +52,7 @@ try{
    fs.mkdirSync(root,{recursive:true});
    const g=brand.guidelines||{};
    fs.writeFileSync(path.join(root,'content.json'),JSON.stringify({series:g.series||'RADAR IA',theme:themeOf(brand),items:[motionItem({...revision,id:job.revision_id},format,{id:'post'})]}));
-   await run(process.execPath,[path.join(repo,'tools/content-worker/motion/produce.mjs'),'--project',root],repo,{...privateVoiceEnv,...(g.voice_id?{ELEVENLABS_VOICE_ID:String(g.voice_id)}:{})});
+   await run(process.execPath,[path.join(repo,'tools/content-worker/motion/produce.mjs'),'--project',root],repo,{...privateVoiceEnv,...(g.voz?.voice_id||g.voice_id?{ELEVENLABS_VOICE_ID:String(g.voz?.voice_id||g.voice_id)}:{}),...(g.voz?.modelo?{ELEVENLABS_MODEL_ID:String(g.voz.modelo)}:{})});
    const result=JSON.parse(fs.readFileSync(path.join(root,'qa.json'),'utf8')).find(r=>r.id==='post'),file=result?.files?.[0];
    motionQa=result;
    if(!vertical){if(result?.qa!=='carousel-layout-audio-passed'||result.files?.length!==revision.slides.length)throw Error('carousel_qa_failed');}

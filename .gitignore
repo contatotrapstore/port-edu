@@ -57,3 +57,7 @@ eduardo-gouveia-credenciais.pdf
 /tools/content-worker/.venv/
 /tools/content-worker/node_modules/
 /.superpowers/
+
+# Python
+__pycache__/
+*.pyc
