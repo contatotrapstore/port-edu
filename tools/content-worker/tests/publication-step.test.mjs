@@ -108,3 +108,12 @@ test('story image uses STORIES with image_url; reel refuses an image',async()=>{
   await assert.rejects(advancePublication({...input,format:'story',media,videos:undefined},{},async()=>{throw Error('provider_called');},async()=>{},async()=>true),/invalid_publication/);
 });
 
+test('container ERROR from Meta rebuilds children and parent once, then fails',async()=>{
+ const data={...input,format:'carousel',due:false};let state={},n=0;const pais=new Set();
+ const save=async s=>{state=s;};
+ const api=async(e,p,m)=>{if(m==='POST'){const id=String(100+(n++));if(p.media_type==='CAROUSEL')pais.add(id);return {id};}return {status_code:pais.has(e)?'ERROR':'FINISHED'};};
+ for(let i=0;i<8&&!state.retried;i++)await advancePublication(data,state,api,save,async()=>true);
+ assert.equal(state.retried,true);assert.equal(state.phase,'preparing');assert.deepEqual(state.children,[]);assert.ok(state.warnings.some(w=>w.code==='meta_container_error_retry'));
+ for(let i=0;i<8&&state.phase!=='failed';i++)await advancePublication(data,state,api,save,async()=>true);
+ assert.equal(state.phase,'failed');assert.equal(pais.size,2);
+});

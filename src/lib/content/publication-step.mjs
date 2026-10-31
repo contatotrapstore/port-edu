@@ -17,6 +17,9 @@ function mediaOf(input){
 export async function advancePublication(input,previous,api,save,allow){
  let state={children:[],...previous};
  const checkpoint=async patch=>{const next={...state,...patch};await save(next);state=next;return state;};
+ // A Meta às vezes devolve ERROR num contêiner sem dizer o motivo (31/10: os mesmos arquivos passaram minutos depois).
+ // Nada foi publicado ainda, então refaz filhos e pai do zero uma única vez antes de desistir.
+ const recomecar=reason=>checkpoint({children:[],childrenReady:false,parent:null,retried:true,phase:'preparing',warnings:[...(state.warnings||[]),{code:'meta_container_error_retry',reason,at:new Date().toISOString()}]});
  if(!input.enabled||!await allow())return {...state,phase:'paused'};
  const format=input.format===undefined?'carousel':input.format;
  const media=mediaOf(input),collaborators=input.collaborators===undefined?[]:input.collaborators;
@@ -43,7 +46,7 @@ export async function advancePublication(input,previous,api,save,allow){
   }
   if(format==='carousel'&&!state.childrenReady){
    const statuses=await Promise.all(state.children.map(id=>api(id,{fields:'status_code'},'GET')));
-   if(statuses.some(s=>['ERROR','EXPIRED'].includes(s.status_code)))return checkpoint({phase:'failed',reason:'media_processing_failed'});
+   if(statuses.some(s=>['ERROR','EXPIRED'].includes(s.status_code)))return state.retried?checkpoint({phase:'failed',reason:'media_processing_failed'}):recomecar('child_error');
    if(statuses.some(s=>s.status_code!=='FINISHED'))return state;
    await checkpoint({childrenReady:true});
   }
@@ -69,7 +72,7 @@ export async function advancePublication(input,previous,api,save,allow){
   }
   const status=await api(state.parent,{fields:'status_code'},'GET');
   if(status.status_code==='PUBLISHED')return checkpoint({phase:'complete',reconciled:true});
-  if(['ERROR','EXPIRED'].includes(status.status_code))return checkpoint({phase:'failed',reason:'container_expired_or_failed'});
+  if(['ERROR','EXPIRED'].includes(status.status_code))return state.retried?checkpoint({phase:'failed',reason:'container_expired_or_failed'}):recomecar('parent_error');
   if(status.status_code!=='FINISHED'||!input.due)return state;
   if(!await allow())return {...state,phase:'paused'};
   await checkpoint({phase:'sending'});
