@@ -14,6 +14,8 @@ export async function configureResearch(engine:string,daily:boolean,generate:boo
  try{await db.query('begin');
  const brand=(await db.query("select s.brand_id from content_studio.settings s join content_studio.brands b on b.id=s.brand_id where b.id=$1 for update of s",[(await currentBrand()).id])).rows[0];
  if(!brand)throw Error('Marca indisponível.');
+ const manual=(await db.query("select guidelines->>'production' as p from content_studio.brands where id=$1",[brand.brand_id])).rows[0]?.p==='manual-only';
+ if(manual&&(daily||generate))throw Error('Esta marca só recebe posts importados.');
  await db.query('update content_studio.settings set preferred_engine=$1,research_enabled=$2 where brand_id=$3',[engine,daily,brand.brand_id]);
  if(generate)await db.query("insert into content_studio.research_runs(brand_id,engine,request_key) values($1,$2,'manual:'||gen_random_uuid()::text) on conflict do nothing",[brand.brand_id,engine]);
  await db.query("insert into content_studio.events(actor,entity_id,action,metadata) values($1,$2,'research.configured',$3)",[actor.id,brand.brand_id,JSON.stringify({engine,daily,generate})]);

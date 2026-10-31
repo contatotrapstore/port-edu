@@ -20,7 +20,7 @@ import DraftForm from './DraftForm';
 import CentralLink from './CentralLink';
 import PautaLink from './PautaLink';
 import BrandSwitch from './BrandSwitch';
-const states:Record<string,string>={draft:'Rascunho',producing:'Em produção',review:'Em revisão',ready:'Pronto',scheduled:'Agendado',publishing:'Publicando',publishing_unknown:'Conferir publicação',published:'Publicado',paused:'Pausado'};
+const states:Record<string,string>={draft:'Rascunho',producing:'Em produção',review:'Em revisão',ready:'Pronto',scheduled:'Agendado',publishing:'Publicando',publishing_unknown:'Conferir publicação',published:'Publicado',archived:'Arquivado',paused:'Pausado'};
 export default async function Studio({searchParams}:{searchParams:Promise<{post?:string;saved?:string;error?:string;instagram?:string}>}){
  const admin=await getAdmin();if(!admin)redirect('/admin/login');
  // tudo em paralelo: antes eram ~10 idas ao banco em fila a cada troca de pauta
@@ -55,7 +55,7 @@ export default async function Studio({searchParams}:{searchParams:Promise<{post?
    </div>
   </div>
   <PublicationControl username={brand.username} location={publication.publisher_location} enabled={publication.publication_enabled} mode={publication.publication_mode} time={publication.publish_time} connected={instagramOk} online={online} lastSeen={publication.publisher_seen_at?new Date(publication.publisher_seen_at).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'}):null} error={publication.publisher_error} schedules={schedules} postId={selected?.id} revisionId={selected?.active_revision_id}/>
-  <ResearchControl engine={research.settings.preferred_engine} daily={research.settings.research_enabled} runs={research.runs}/>
+  {brand.guidelines.production==='manual-only'?<section id="pesquisa" className="studio-operation studio-research"><h2>Pesquisa automática</h2><p className="studio-fieldhint">Desligada para esta marca: ela só recebe posts importados.</p></section>:<ResearchControl engine={research.settings.preferred_engine} daily={research.settings.research_enabled} runs={research.runs}/>}
   <details id="ajustes" className="studio-fold studio-settings"><summary>Ajustes: conexão do Instagram e efeitos sonoros</summary>
    <InstagramConnection connected={instagramOk} appReady={appReady} username={brand.username}/>
    <section className="studio-research"><h2>Biblioteca de efeitos</h2><p className="studio-fieldhint">Amostra dos efeitos que o motor da fila gera (12 famílias). Sem músicas do catálogo do Instagram.</p><audio controls preload="none" aria-label="Amostra das doze famílias de efeitos sonoros" src="/content-studio/sound-preview.mp3?v=2"/></section>

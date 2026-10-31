@@ -35,7 +35,7 @@ try{
   // pauta planejada do dia (calendário em brands.guidelines.plan) tem prioridade sobre a pesquisa
   const plano=g.plan?.[data];
   // dia já agendado à mão: fecha a rodada sem gerar nada (não gasta a assinatura)
-  if(plano?.skip){await pool.query("update content_studio.research_runs set state='succeeded',lease_token=null,lease_until=null where id=$1 and lease_token=$2 and state='running'",[run.id,run.lease_token]);console.log(JSON.stringify({researched:false,skipped:data}));run=null;}
+  if(plano?.skip||g.production==='manual-only'){await pool.query("update content_studio.research_runs set state='succeeded',lease_token=null,lease_until=null where id=$1 and lease_token=$2 and state='running'",[run.id,run.lease_token]);console.log(JSON.stringify({researched:false,skipped:data}));run=null;}
   else{
   let sources,topic;
   if(plano){sources=await articleSources(plano.sources||[]);topic=plano.topic;}

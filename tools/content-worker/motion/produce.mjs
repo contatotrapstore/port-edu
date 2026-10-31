@@ -9,6 +9,7 @@ import {spawnSync} from 'node:child_process';
 import {parseEnv} from 'node:util';
 import {fileURLToPath} from 'node:url';
 import {openStudio} from './render.mjs';
+import {falar} from './voz.mjs';
 
 const MOTION=path.dirname(fileURLToPath(import.meta.url)),REPO=path.resolve(MOTION,'../../..');
 const arg=(k,d)=>{const i=process.argv.indexOf('--'+k);return i>0?process.argv[i+1]:d;};
@@ -37,18 +38,8 @@ async function eleven(endpoint,body,binary){
 
 // Voz: um pedido por roteiro, guardado com o alinhamento para nunca pagar duas vezes pelo mesmo texto
 async function voice(dir,text){
-  const voiceId=env.ELEVENLABS_VOICE_ID,model=env.ELEVENLABS_MODEL_ID||'eleven_v4',settings={stability:.45,similarity_boost:.78,style:.15,use_speaker_boost:true};
-  const key=hash(['tts',voiceId,model,text,settings]),meta=path.join(dir,'voice.json'),mp3=path.join(dir,'voice.mp3');
-  if(fs.existsSync(meta)&&fs.existsSync(mp3)){const m=JSON.parse(fs.readFileSync(meta,'utf8'));if(m.hash===key)return m;}
-  const res=await eleven(`/v1/text-to-speech/${voiceId}/with-timestamps?output_format=mp3_44100_128`,{text,model_id:model,voice_settings:settings});
-  fs.writeFileSync(path.join(dir,'voice.response.json'),JSON.stringify(res));
-  const a=res.alignment||res.normalized_alignment;const words=[];let w=null;
-  a.characters.forEach((c,i)=>{if(/\s/.test(c)){if(w){words.push(w);w=null;}return;}
-    if(!w)w={text:'',start:a.character_start_times_seconds[i],end:0};w.text+=c;w.end=a.character_end_times_seconds[i];});
-  if(w)words.push(w);
-  fs.writeFileSync(mp3,Buffer.from(res.audio_base64,'base64'));
-  const m={hash:key,provider:'ElevenLabs',voice_id:voiceId,model,settings,words,commercial_plan_verified:true};
-  fs.writeFileSync(meta,JSON.stringify(m,null,1));return m;
+  // mesmo cache de antes (hash do texto+voz+ajustes); a voz vem do ambiente, que o worker preenche com a voz da marca
+  return falar({dir,texto:text,voiceId:env.ELEVENLABS_VOICE_ID,model:env.ELEVENLABS_MODEL_ID||'eleven_v4',apiKey:env.ELEVENLABS_API_KEY});
 }
 
 // Trilha exclusiva do post (instrumental). Primeiro tenta o Eleven Music (termos do plano: uso comercial online liberado,

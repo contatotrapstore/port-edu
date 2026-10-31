@@ -7,7 +7,7 @@ import type {DraftInput} from './input';
 import {carriesImportedMedia,copiedAssetPlan,importedBriefFields} from './revision-carry.mjs';
 import {copyAssetObjects,removeAssetObjects,type ContentAsset} from './storage';
 export type ContentPost={id:string;topic:string;state:string;active_revision_id:string;created_at:Date;caption:string;brief:{text?:string;format?:'carousel'|'reel'|'story';generation?:{engine?:string;model?:string};production?:string;ai_generated?:boolean;collaborators?:string[]};slides:string[];source_refs:string[]};
-export async function listPosts(){await requireAdmin();const brand=await currentBrand();return (await contentDb().query<ContentPost>(`select p.*,r.caption,r.brief,r.slides,r.source_refs from content_studio.posts p left join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 order by p.created_at desc limit 100`,[brand.id])).rows;}
+export async function listPosts(){await requireAdmin();const brand=await currentBrand();return (await contentDb().query<ContentPost>(`select p.*,r.caption,r.brief,r.slides,r.source_refs from content_studio.posts p left join content_studio.revisions r on r.id=p.active_revision_id where p.brand_id=$1 and p.state<>'archived' order by p.created_at desc limit 100`,[brand.id])).rows;}
 export async function saveDraft(input:DraftInput,postId?:string,expectedRevision?:string){
  if(input.format!==undefined&&!['carousel','reel','story'].includes(input.format))throw Error('Formato inválido.');
  const actor=await requireAdmin(), db=await contentDb().connect();
