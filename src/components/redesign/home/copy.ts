@@ -39,7 +39,7 @@ const pt = {
   },
   projects: {
     title: "Quatro projetos, quatro tipos de software.",
-    intro: "Do CRM comercial à loja virtual: trabalhos entregues, cada um mostrado pela tela que melhor explica o que ele faz.",
+    intro: "Do CRM comercial à integração com IA: trabalhos entregues, cada um mostrado pela tela que melhor explica o que ele faz.",
     look: "No sistema",
     open: "Conhecer o projeto",
     all: "Ver todos os projetos",
@@ -275,7 +275,7 @@ const en: HomeCopy = {
   },
   projects: {
     title: "Four projects, four kinds of software.",
-    intro: "From a sales CRM to an online store: delivered work, each shown through the screen that best explains what it does.",
+    intro: "From a sales CRM to an AI integration: delivered work, each shown through the screen that best explains what it does.",
     look: "In the system",
     open: "See the project",
     all: "See all projects",
