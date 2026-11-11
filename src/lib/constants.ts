@@ -416,7 +416,9 @@ export const projects: Project[] = [
     image: "/images/projects/neuroialab.webp",
     cover: "/images/projects/covers/neuroialab.webp",
     gallery: ["/images/projects/neuroialab-1.webp", "/images/projects/neuroialab-2.webp", "/images/projects/neuroialab-3.webp"],
-    url: "https://www.neuroialab.com.br/store",
+    // Link escondido desde 11/11/2026: o projeto está pausado na Vercel (503
+    // DEPLOYMENT_PAUSED). Quando voltar a responder 200, é só descomentar.
+    // url: "https://www.neuroialab.com.br/store",
     year: "2025",
     category: "saas",
     output: [
@@ -555,10 +557,9 @@ export const projects: Project[] = [
     image: "/images/projects/cacaostore.webp",
     cover: "/images/projects/covers/cacaostore.webp",
     gallery: ["/images/projects/cacaostore-1.webp", "/images/projects/cacaostore-2.webp", "/images/projects/cacaostore-3.webp"],
-    url: "https://cacaostore.com.br/",
+    // Sem link desde 11/11/2026: cacaostore.com.br não existe mais (NXDOMAIN).
     category: "ecommerce",
     output: [
-      "loja no ar e vendendo",
       "design responsivo premium",
       "gestão simples pelo cliente",
     ],

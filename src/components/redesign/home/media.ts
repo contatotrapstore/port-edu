@@ -6,9 +6,6 @@ import mudaFluxo from "../../../../public/images/redesign/cases/muda-fluxo.webp"
 import pacePainel from "../../../../public/images/redesign/cases/pace-painel.webp";
 import paceProtocolos from "../../../../public/images/redesign/cases/pace-protocolos.webp";
 import reiPainel from "../../../../public/images/lp/rei-painel.webp";
-import cacaoHome from "../../../../public/images/projects/cacaostore-1.webp";
-import cacaoProdutos from "../../../../public/images/projects/cacaostore-2.webp";
-import cacaoMarca from "../../../../public/images/projects/cacaostore-3.webp";
 import type { HomeCaseId } from "./copy";
 
 /**
@@ -35,16 +32,6 @@ export const HOME_CASES: readonly { id: HomeCaseId; media: HomeCaseMedia }[] = [
   },
   { id: "rei", media: { layout: "system", main: reiPainel } },
   { id: "pace", media: { layout: "product", main: pacePainel, detail: paceProtocolos } },
-  {
-    id: "cacaostore",
-    media: {
-      layout: "store",
-      shots: [
-        { key: "home", image: cacaoHome },
-        { key: "products", image: cacaoProdutos },
-        { key: "brand", image: cacaoMarca },
-      ],
-    },
-  },
+  // Cacao Store fora da home desde 11/11/2026: o domínio da loja não existe mais (NXDOMAIN).
   { id: "mudapaisagens", media: { layout: "flow", main: mudaFluxo } },
 ];

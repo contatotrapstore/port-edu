@@ -180,7 +180,6 @@ const projectOverridesEN: Record<string, Partial<Project>> = {
       "Client-managed products and inventory",
     ],
     output: [
-      "store live and selling",
       "premium responsive design",
       "simple client-side management",
     ],

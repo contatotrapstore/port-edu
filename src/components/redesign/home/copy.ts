@@ -38,7 +38,7 @@ const pt = {
     sourceLink: "Ver perfil",
   },
   projects: {
-    title: "Cinco projetos, cinco tipos de software.",
+    title: "Quatro projetos, quatro tipos de software.",
     intro: "Do CRM comercial à loja virtual: trabalhos entregues, cada um mostrado pela tela que melhor explica o que ele faz.",
     look: "No sistema",
     open: "Conhecer o projeto",
@@ -274,7 +274,7 @@ const en: HomeCopy = {
     sourceLink: "See profile",
   },
   projects: {
-    title: "Five projects, five kinds of software.",
+    title: "Four projects, four kinds of software.",
     intro: "From a sales CRM to an online store: delivered work, each shown through the screen that best explains what it does.",
     look: "In the system",
     open: "See the project",

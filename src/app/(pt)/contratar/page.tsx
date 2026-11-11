@@ -119,19 +119,20 @@ export default function ContratarPage() {
   // grande, status em português e a operação sob controle. Nada de zoom por
   // CSS aqui — ampliar 1280px de origem é o que deixava a arte borrada.
   const heroCase = projects.find((p) => p.id === "rei")!;
-  // Mesmos projetos e capturas reais apresentados no carrossel C8. O resumo
+  // Capturas reais de projetos entregues (o carrossel C8 usava a Cacao Store,
+  // que saiu em 11/11/2026 porque o domínio da loja não existe mais). O resumo
   // permanece na landing para a prova não interromper o pedido de orçamento.
   const cases = [
     {
-      id: "cacaostore",
-      title: "Cacao Store",
-      category: "Loja virtual em Shopify",
-      image: "/images/projects/cacaostore-1.webp",
-      width: 1280,
-      height: 900,
-      alt: "Página inicial da Cacao Store com navegação, busca e catálogo de produtos",
-      description: "Loja personalizada para apresentar o catálogo e permitir compras online, com acesso pelo celular e computador.",
-      features: ["Catálogo e checkout integrados", "Gestão de produtos e estoque pelo cliente"],
+      id: "mudapaisagens",
+      title: "Muda Paisagens",
+      category: "Integração com IA",
+      image: "/images/redesign/cases/muda-fluxo.webp",
+      width: 699,
+      height: 460,
+      alt: "Fluxo de automação do qualificador de leads com IA, com as etapas entre WhatsApp e Pipefy.",
+      description: "Pré-atendimento com IA, perguntas de qualificação e registro no Pipefy, com integração pelo Make.",
+      features: ["Resposta automática a novos leads no WhatsApp Business", "Qualificação por perguntas estruturadas"],
     },
     {
       id: "pace",

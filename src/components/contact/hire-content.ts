@@ -83,7 +83,7 @@ const pt = {
   notFor: "Não serve para",
   casesTitle: "Sites, apps e plataformas já entregues",
   cases: [
-    { id: "cacaostore", title: "Cacao Store", category: "Loja virtual em Shopify", image: "/images/projects/cacaostore-1.webp", width: 1280, height: 900, alt: "Página inicial da Cacao Store com navegação, busca e catálogo de produtos", description: "Loja personalizada para apresentar o catálogo e permitir compras online, com acesso pelo celular e computador.", features: ["Catálogo e checkout integrados", "Gestão de produtos e estoque pelo cliente"] },
+    { id: "mudapaisagens", title: "Muda Paisagens", category: "Integração com IA", image: "/images/redesign/cases/muda-fluxo.webp", width: 699, height: 460, alt: "Fluxo de automação do qualificador de leads com IA, com as etapas entre WhatsApp e Pipefy.", description: "Pré-atendimento com IA, perguntas de qualificação e registro no Pipefy, com integração pelo Make.", features: ["Resposta automática a novos leads no WhatsApp Business", "Qualificação por perguntas estruturadas"] },
     { id: "pace", title: "PACE", category: "Plataforma web para clínicas", image: "/images/projects/pace-5.webp", width: 1280, height: 671, alt: "Tela de protocolos do PACE, com busca, categorias e modelos de sessão", description: "Plataforma para organizar protocolos, conduzir sessões guiadas e acompanhar os pacientes.", features: ["Protocolos e sessões em um painel", "Acessos por perfil e relatórios clínicos"] },
     { id: "rei", title: "Rei Sol Infraestrutura", category: "Sistema de gestão de obras", image: "/images/lp/rei-painel.webp", width: 830, height: 517, alt: "Painel da Rei Sol com obras, andamento e detalhes de uma tarefa", description: "Sistema para acompanhar obras por etapas e organizar as responsabilidades da equipe.", features: ["Etapas, tarefas e responsáveis", "Prazos, dependências e notificações internas"] },
   ],
@@ -157,7 +157,7 @@ const en: HireContent = {
   notFor: "Not for",
   casesTitle: "Websites, apps and platforms already delivered",
   cases: [
-    { ...pt.cases[0], category: "Shopify online store", alt: "Cacao Store home page with navigation, search and product catalog", description: "A custom store to present the catalog and sell online, on phones and computers.", features: ["Integrated catalog and checkout", "Products and stock managed by the client"] },
+    { ...pt.cases[0], category: "AI integration", alt: "Automation flow of the AI lead qualifier, with the steps between WhatsApp and Pipefy.", description: "AI pre-sales conversations, qualification questions and records in Pipefy, integrated through Make.", features: ["Automatic replies to new WhatsApp Business leads", "Qualification through structured questions"] },
     { ...pt.cases[1], category: "Web platform for clinics", alt: "PACE protocols screen with search, categories and session templates", description: "A platform to organize protocols, run guided sessions and follow patients.", features: ["Protocols and sessions in one dashboard", "Role-based access and clinical reports"] },
     { ...pt.cases[2], category: "Construction management system", alt: "Rei Sol dashboard with projects, progress and task details", description: "A system to follow construction projects by stage and organize the team’s responsibilities.", features: ["Stages, tasks and owners", "Deadlines, dependencies and internal notifications"] },
   ],
